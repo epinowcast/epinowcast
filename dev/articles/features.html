@@ -39,7 +39,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.5.0.1000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.6.0.1000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,6 +68,7 @@
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="../articles/temporal-aggregation.html">Temporal aggregation guide</a></li>
     <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul>
@@ -222,9 +223,18 @@ match your data structure and computational constraints.</p>
 <td>Weekly</td>
 <td>Reduced computational cost</td>
 <td><code>timestep = "week"</code></td>
-<td><code>enw_preprocess_data(..., timestep = "week")</code></td>
+<td><a href="temporal-aggregation.html">Temporal aggregation
+guide</a></td>
 </tr>
 <tr class="odd">
+<td>Daily process, weekly reporting</td>
+<td>Daily inference from once-a-week reporting</td>
+<td>
+<code>timestep = "day"</code> with weekly observation scaffold</td>
+<td><a href="temporal-aggregation.html">Temporal aggregation
+guide</a></td>
+</tr>
+<tr class="even">
 <td>Custom</td>
 <td>Any integer multiple of days</td>
 <td><code>timestep = 7</code></td>
@@ -240,10 +250,14 @@ preprocessing</li>
 <li>
 <code><a href="../reference/enw_aggregate_cumulative.html">enw_aggregate_cumulative()</a></code>: Convert between
 timesteps</li>
+<li>
+<code><a href="../reference/enw_rolling_sum.html">enw_rolling_sum()</a></code> and
+<code><a href="../reference/enw_dayofweek_structural_reporting.html">enw_dayofweek_structural_reporting()</a></code>: Build the
+daily-process / weekly-reporting scaffold</li>
 </ul>
 <p><strong>Where to see it:</strong> The <a href="epinowcast.html">getting started vignette</a> uses daily data. For
-weekly or custom timesteps, simply change the <code>timestep</code>
-argument in <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>.</p>
+weekly data, weekly reporting on a daily process, and a side-by-side
+comparison with the daily benchmark see the <a href="temporal-aggregation.html">temporal aggregation guide</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="stratification">Stratified and Multi-Group Nowcasting<a class="anchor" aria-label="anchor" href="#stratification"></a>
@@ -433,9 +447,9 @@ structural reporting metadata</li>
 timesteps</li>
 <li>See <code><a href="../reference/enw_report.html">?enw_report</a></code> for details</li>
 </ul>
-<p><strong>Where to see it:</strong> See
-<code>inst/examples/germany_weekly_reporting_daily_process_model.R</code>
-for an example with weekly reporting and a daily process model.</p>
+<p><strong>Where to see it:</strong> See the <a href="temporal-aggregation.html">temporal aggregation guide</a> for
+worked examples of weekly reporting on a daily process model, with both
+fitted and structural day-of-week reporting.</p>
 </div>
 <div class="section level2">
 <h2 id="latent-models">Latent Process Models<a class="anchor" aria-label="anchor" href="#latent-models"></a>

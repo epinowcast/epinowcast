@@ -70,6 +70,7 @@ in this vignette.
 Code
 
 ``` r
+
 library(epinowcast)
 library(data.table)
 library(purrr)
@@ -108,6 +109,7 @@ in many settings. We first summarise the data,
 Code
 
 ``` r
+
 summary(germany_covid19_hosp)
 #>  reference_date          location      age_group         confirm       
 #>  Min.   :2021-04-06   DE     : 90405   00-04:219555   Min.   :   0.00  
@@ -134,6 +136,7 @@ as follows,
 Code
 
 ``` r
+
 germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 germany_hosp <- germany_hosp[, .(reference_date, report_date, confirm)]
 germany_hosp
@@ -174,6 +177,7 @@ For example we could convert the data to a individual case linelist,
 Code
 
 ``` r
+
 germany_covid19_hosp_linelist <- germany_covid19_hosp |>
   enw_filter_reference_dates_by_report_start() |>
   enw_add_incidence() |>
@@ -203,6 +207,7 @@ function,
 Code
 
 ``` r
+
 incidence_from_linelist <- enw_linelist_to_incidence(
   germany_covid19_hosp_linelist,
   reference_date = "reference_date",
@@ -264,6 +269,7 @@ functions,
 Code
 
 ``` r
+
 complete_germany_hosp <- germany_hosp |>
   enw_filter_report_dates(latest_date = "2021-08-01") |>
   enw_filter_reference_dates(earliest_date = "2021-05-01") |>
@@ -296,6 +302,7 @@ functions as follows:
 Code
 
 ``` r
+
 rt_germany <- complete_germany_hosp |>
   enw_filter_report_dates(latest_date = "2021-07-01")
 rt_germany
@@ -322,6 +329,7 @@ rt_germany
 Code
 
 ``` r
+
 retro_germany <- complete_germany_hosp |>
   enw_filter_reference_dates(latest_date = "2021-07-01")
 retro_germany
@@ -352,6 +360,7 @@ and
 Code
 
 ``` r
+
 latest_germany_hosp <- retro_germany |>
   enw_obs_at_delay(max_delay = 30)
 head(latest_germany_hosp, n = 10)
@@ -379,6 +388,7 @@ use the `ggplot2` package to do this manually as follows,
 Code
 
 ``` r
+
 gh_vis_cohorts <- copy(retro_germany)[
   ,
   report_date := fcase(
@@ -567,6 +577,7 @@ follows,
 Code
 
 ``` r
+
 rt_formula <- ~ 1 + rw(week)
 ```
 
@@ -580,6 +591,7 @@ mass function (PMF) to account for right truncation.
 Code
 
 ``` r
+
 # first transform mean and sd to shape and scale
 gamma_mean <- 4
 gamma_sd <- 3
@@ -611,6 +623,7 @@ and normalise the PMF to account for right truncation.
 Code
 
 ``` r
+
 lgn_mean <- 5
 lgn_sd <- 2
 meanlog <- log(lgn_mean^2 / sqrt(lgn_sd^2 + lgn_mean^2))
@@ -640,6 +653,7 @@ effect. We can do this using the formula interface as follows,
 Code
 
 ``` r
+
 observation_formula <- ~ 1 + (1 | day_of_week)
 ```
 
@@ -651,6 +665,7 @@ function as follows,
 Code
 
 ``` r
+
 expectation_module <- partial(
   epinowcast::enw_expectation,
   r = rt_formula,
@@ -692,6 +707,7 @@ function as follows,
 Code
 
 ``` r
+
 reference_module <- partial(enw_reference, ~1, distribution = "lognormal")
 ```
 
@@ -716,6 +732,7 @@ notification and observed notifications for that reference date.
 Code
 
 ``` r
+
 obs_module <- partial(enw_obs, family = "poisson")
 ```
 
@@ -740,6 +757,7 @@ possible.
 Code
 
 ``` r
+
 rt_germany_pobs <- enw_preprocess_data(rt_germany, max_delay = 30)
 rt_germany_pobs
 #> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
@@ -765,6 +783,7 @@ for example the latest observations:
 Code
 
 ``` r
+
 enw_get_data(rt_germany_pobs, "latest") |> head()
 #>    reference_date report_date .group max_confirm confirm delay
 #>            <IDat>      <IDat>  <num>       <int>   <int> <num>
@@ -789,6 +808,7 @@ We do the same for the retrospective data:
 Code
 
 ``` r
+
 retro_germany_pobs <- enw_preprocess_data(retro_germany, max_delay = 30)
 retro_germany_pobs
 #> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
@@ -818,6 +838,7 @@ reporting delays.
 Code
 
 ``` r
+
 retro_nodelay_pobs <- enw_retrospective(retro_germany_pobs)
 retro_nodelay_pobs
 #> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
@@ -855,6 +876,7 @@ so that we can use posterior predictive checks to assess the model fit.
 Code
 
 ``` r
+
 fit_module <- partial(enw_fit_opts,
   chains = 2,
   parallel_chains = 2,
@@ -885,6 +907,7 @@ to run when called for the first time.
 Code
 
 ``` r
+
 epinowcast_model <- enw_model()
 ```
 
@@ -898,6 +921,7 @@ real-time,
 Code
 
 ``` r
+
 germany_nowcast <- epinowcast(
   data = rt_germany_pobs,
   expectation = expectation_module(data = rt_germany_pobs),
@@ -946,6 +970,7 @@ and then on the retrospectively observed data.
 Code
 
 ``` r
+
 retro_germany_nowcast <- epinowcast(
   data = retro_germany_pobs,
   expectation = expectation_module(data = retro_germany_pobs),
@@ -999,6 +1024,7 @@ process) from the final observation counts.
 Code
 
 ``` r
+
 retro_nodelay_nowcast <- epinowcast(
   data = retro_nodelay_pobs,
   expectation = expectation_module(data = retro_nodelay_pobs),
@@ -1056,6 +1082,7 @@ model is doing.
 Code
 
 ``` r
+
 plot(
   germany_nowcast, latest_germany_hosp[reference_date > as.Date("2021-06-01")]
 )
@@ -1098,6 +1125,7 @@ for in the model evaluation.
 Code
 
 ``` r
+
 plot(
   retro_germany_nowcast,
   latest_germany_hosp[reference_date > as.Date("2021-06-01")]
@@ -1125,6 +1153,7 @@ the plot will be quite overwhelming!).
 Code
 
 ``` r
+
 plot_select_pp_dates <- function(nowcast, dates) {
   nowcast |>
     summary(type = "posterior_prediction") |>
@@ -1167,6 +1196,7 @@ ultimately reported based on those that have already been reported.
 Code
 
 ``` r
+
 get_rt_posterior <- function(nowcast, expectation = expectation_module) {
   rt <- enw_posterior(nowcast$fit[[1]], variables = "r")
   cols <- c("mean", "median", "q5", "q20", "q80", "q95")
@@ -1244,6 +1274,7 @@ reporting delay.
 Code
 
 ``` r
+
 extract_epinowcast_cdf <- function(nowcast) {
   draws <- nowcast |>
     (\(x)
@@ -1334,6 +1365,7 @@ partially unobserved).
 Code
 
 ``` r
+
 get_expected_infections <- function(nowcast, expectation = expectation_module) {
   exp_cases <- enw_posterior(
     nowcast$fit[[1]],

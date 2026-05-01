@@ -22,6 +22,7 @@ comparison).
 Code
 
 ``` r
+
 library(epinowcast)
 library(data.table)
 library(ggplot2)
@@ -52,6 +53,7 @@ reported^(\[[**placeholder?**](#ref-placeholder)\]).
 Code
 
 ``` r
+
 nat_germany_hosp <-
   germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
   enw_filter_report_dates(latest_date = "2021-10-01")
@@ -107,6 +109,7 @@ nowcast horizon.
 Code
 
 ``` r
+
 pobs_full <- enw_preprocess_data(
   retro_nat_germany, max_delay = 40
 )
@@ -135,6 +138,7 @@ including a preview of the reporting triangle, use
 Code
 
 ``` r
+
 summary(pobs_full)
 #> ── Preprocessed nowcast data summary ─────────────────────────────────────────── 
 #> Groups: 1 | Timestep: day | Max delay: 40 
@@ -185,6 +189,7 @@ analyst would see them at the nowcast date.
 Code
 
 ``` r
+
 plot(pobs_full, type = "obs") +
   labs(y = "Hospitalisations", x = "Reference date")
 ```
@@ -209,6 +214,7 @@ delay used for the nowcast.
 Code
 
 ``` r
+
 plot(pobs_full, type = "delay_cumulative")
 ```
 
@@ -235,6 +241,7 @@ modelling.
 Code
 
 ``` r
+
 pobs <- enw_preprocess_data(
   retro_nat_germany, max_delay = 28
 )
@@ -265,6 +272,7 @@ comparison baseline.
 Code
 
 ``` r
+
 latest_germany_hosp <- nat_germany_hosp |>
   enw_obs_at_delay(max_delay = 28) |>
   enw_filter_reference_dates(
@@ -308,12 +316,14 @@ field but is not tuned for any particular problem.
 Code
 
 ``` r
+
 model <- enw_model()
 ```
 
 Code
 
 ``` r
+
 options(mc.cores = 2)
 fit_opts <- enw_fit_opts(
   save_warmup = FALSE,
@@ -334,6 +344,7 @@ nowcast_default <- epinowcast(
 Code
 
 ``` r
+
 nowcast_default
 #> ── epinowcast model output ───────────────────────────────────────────────────── 
 #> Groups: 1 | Timestep: day | Max delay: 28 
@@ -366,6 +377,7 @@ nowcast_default
 Code
 
 ``` r
+
 plot(
   nowcast_default,
   latest_obs = latest_germany_hosp
@@ -385,6 +397,7 @@ model captures the underlying data generation process.
 Code
 
 ``` r
+
 plot(nowcast_default, type = "posterior") +
   facet_wrap(vars(reference_date), scale = "free")
 ```
@@ -420,6 +433,7 @@ weekly periodicity visible in the data.
 Code
 
 ``` r
+
 expectation_module <- enw_expectation(
   ~ 1 + rw(week) + (1 | day_of_week),
   data = pobs
@@ -440,6 +454,7 @@ and standard deviation.
 Code
 
 ``` r
+
 lognormal_reference <- enw_reference(
   parametric = ~ 1 + (1 | day_of_week),
   distribution = "lognormal",
@@ -457,6 +472,7 @@ tested.
 Code
 
 ``` r
+
 np_reference <- enw_reference(
   parametric = ~0,
   non_parametric = ~ 1 + rw(delay) + (1 | day_of_week),
@@ -480,6 +496,7 @@ Stan model is already compiled, only sampling time is required.
 Code
 
 ``` r
+
 nowcast_lognormal <- epinowcast(
   data = pobs,
   expectation = expectation_module,
@@ -492,6 +509,7 @@ nowcast_lognormal <- epinowcast(
 Code
 
 ``` r
+
 nowcast_np <- epinowcast(
   data = pobs,
   expectation = expectation_module,
@@ -517,6 +535,7 @@ convergence (Rhat), and any divergent transitions.
 Code
 
 ``` r
+
 nowcast_lognormal
 #> ── epinowcast model output ───────────────────────────────────────────────────── 
 #> Groups: 1 | Timestep: day | Max delay: 28 
@@ -549,6 +568,7 @@ nowcast_lognormal
 Code
 
 ``` r
+
 nowcast_np
 #> ── epinowcast model output ───────────────────────────────────────────────────── 
 #> Groups: 1 | Timestep: day | Max delay: 28 
@@ -586,6 +606,7 @@ summaries.
 Code
 
 ``` r
+
 summaries <- list(
   Default = nowcast_default,
   Lognormal = nowcast_lognormal,
@@ -642,6 +663,7 @@ using the lognormal model as an example.
 Code
 
 ``` r
+
 # extract samples
 samples <- summary(
   nowcast_lognormal, type = "nowcast_samples"

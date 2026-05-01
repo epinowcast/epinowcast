@@ -69,6 +69,11 @@ Preprocessing functions
 
 ``` r
 library(data.table)
+#> 
+#> Attaching package: ‘data.table’
+#> The following object is masked from ‘package:base’:
+#> 
+#>     %notin%
 obs <- data.table(
   reference_date = as.IDate(c(
     "2021-10-01", "2021-10-02", "2021-10-03"

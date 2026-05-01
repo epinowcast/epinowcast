@@ -455,13 +455,13 @@ underlying model whilst continuing to use the package framework.
 The following table summarises how module function arguments map to
 parameters in the model definition:
 
-| Module Function                                                                        | Argument         | Parameters Modified                                                 |
-|----------------------------------------------------------------------------------------|------------------|---------------------------------------------------------------------|
-| [`enw_reference()`](https://package.epinowcast.org/dev/reference/enw_reference.md)     | `parametric`     | \\\mu\_{g,t}\\, \\\upsilon\_{g,t}\\ (delay distribution parameters) |
-| [`enw_reference()`](https://package.epinowcast.org/dev/reference/enw_reference.md)     | `non_parametric` | \\\delta\_{g,t,d}\\ (reference date hazard component)               |
-| [`enw_report()`](https://package.epinowcast.org/dev/reference/enw_report.md)           | `non_parametric` | \\\epsilon\_{g,t,d}\\ (report date hazard component)                |
-| [`enw_expectation()`](https://package.epinowcast.org/dev/reference/enw_expectation.md) | `r`              | \\R\_{g,t}\\ (reproduction number/growth rate)                      |
-| [`enw_expectation()`](https://package.epinowcast.org/dev/reference/enw_expectation.md) | `observation`    | \\\nu\_{g,t}\\ (ascertainment)                                      |
+| Module Function | Argument | Parameters Modified |
+|----|----|----|
+| [`enw_reference()`](https://package.epinowcast.org/dev/reference/enw_reference.md) | `parametric` | \\\mu\_{g,t}\\, \\\upsilon\_{g,t}\\ (delay distribution parameters) |
+| [`enw_reference()`](https://package.epinowcast.org/dev/reference/enw_reference.md) | `non_parametric` | \\\delta\_{g,t,d}\\ (reference date hazard component) |
+| [`enw_report()`](https://package.epinowcast.org/dev/reference/enw_report.md) | `non_parametric` | \\\epsilon\_{g,t,d}\\ (report date hazard component) |
+| [`enw_expectation()`](https://package.epinowcast.org/dev/reference/enw_expectation.md) | `r` | \\R\_{g,t}\\ (reproduction number/growth rate) |
+| [`enw_expectation()`](https://package.epinowcast.org/dev/reference/enw_expectation.md) | `observation` | \\\nu\_{g,t}\\ (ascertainment) |
 
 For additional implementation details and examples, see the
 documentation for each module function

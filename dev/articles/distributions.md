@@ -15,12 +15,12 @@ of each distribution, specifies how the parameters \\\mu\_{g,t}\\ and
 of the distribution (before discretization and adjustment for the
 assumed maximum delay).
 
-|                                       Distribution                                        |                      Parametrization                       |                                    Mean                                     |
-|:-----------------------------------------------------------------------------------------:|:----------------------------------------------------------:|:---------------------------------------------------------------------------:|
-|         [Log-normal](https://mc-stan.org/docs/functions-reference/lognormal.html)         |      \\\mu=\mu\_{g,t}\\, \\\sigma = \upsilon\_{g,t}\\      |              \\\exp(\mu\_{g,t}+\frac{\upsilon\_{g,t}^2}{2})\\               |
-| [Exponential](https://mc-stan.org/docs/functions-reference/exponential-distribution.html) |               \\\beta = \exp(-\mu\_{g,t})\\                |                            \\\exp(\mu\_{g,t})\\                             |
-|       [Gamma](https://mc-stan.org/docs/functions-reference/gamma-distribution.html)       | \\\alpha = \exp(\mu\_{g,t})\\, \\\beta = \upsilon\_{g,t}\\ |                    \\\exp(\mu\_{g,t})/\upsilon\_{g,t}\\                     |
-|          [Log-logistic](https://en.wikipedia.org/wiki/Log-logistic_distribution)          | \\\alpha = \exp(\mu\_{g,t})\\, \\\beta = \upsilon\_{g,t}\\ | \\\frac{\exp(\mu\_{g,t})\\\pi/\upsilon\_{g,t}}{\sin(\pi/\upsilon\_{g,t})}\\ |
+| Distribution | Parametrization | Mean |
+|:--:|:--:|:--:|
+| [Log-normal](https://mc-stan.org/docs/functions-reference/lognormal.html) | \\\mu=\mu\_{g,t}\\, \\\sigma = \upsilon\_{g,t}\\ | \\\exp(\mu\_{g,t}+\frac{\upsilon\_{g,t}^2}{2})\\ |
+| [Exponential](https://mc-stan.org/docs/functions-reference/exponential-distribution.html) | \\\beta = \exp(-\mu\_{g,t})\\ | \\\exp(\mu\_{g,t})\\ |
+| [Gamma](https://mc-stan.org/docs/functions-reference/gamma-distribution.html) | \\\alpha = \exp(\mu\_{g,t})\\, \\\beta = \upsilon\_{g,t}\\ | \\\exp(\mu\_{g,t})/\upsilon\_{g,t}\\ |
+| [Log-logistic](https://en.wikipedia.org/wiki/Log-logistic_distribution) | \\\alpha = \exp(\mu\_{g,t})\\, \\\beta = \upsilon\_{g,t}\\ | \\\frac{\exp(\mu\_{g,t})\\\pi/\upsilon\_{g,t}}{\sin(\pi/\upsilon\_{g,t})}\\ |
 
 ## Discretisation and adjustment for maximum delay
 

@@ -10,6 +10,7 @@ the plot types available for `enw_preprocess_data` objects.
 Code
 
 ``` r
+
 library(epinowcast)
 library(data.table)
 library(ggplot2)
@@ -25,6 +26,7 @@ reference dates and a maximum reporting delay of 40 days.
 Code
 
 ``` r
+
 nat_germany_hosp <-
   germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
   enw_filter_report_dates(latest_date = "2021-10-01")
@@ -39,6 +41,7 @@ retro_nat_germany <- nat_germany_hosp |>
 Code
 
 ``` r
+
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40)
 pobs
 #> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
@@ -75,6 +78,7 @@ by reference date. This is the data the model will attempt to nowcast.
 Code
 
 ``` r
+
 plot(pobs, type = "obs")
 ```
 
@@ -99,6 +103,7 @@ ribbons.
 Code
 
 ``` r
+
 plot(pobs, type = "delay_cumulative")
 ```
 
@@ -114,6 +119,7 @@ delay windows of interest.
 Code
 
 ``` r
+
 plot(
   pobs, type = "delay_cumulative",
   delay_group_thresh = c(0, 1, 3, 7, 14, 41)
@@ -138,6 +144,7 @@ delay group as a tile plot.
 Code
 
 ``` r
+
 plot(pobs, type = "delay_fraction")
 ```
 
@@ -161,6 +168,7 @@ and 90th percentiles are shown.
 Code
 
 ``` r
+
 plot(pobs, type = "delay_quantiles")
 ```
 
@@ -188,6 +196,7 @@ Custom quantiles can be specified.
 Code
 
 ``` r
+
 plot(pobs, type = "delay_quantiles", quantiles = c(0.25, 0.5, 0.75))
 ```
 
@@ -206,6 +215,7 @@ single view.
 Code
 
 ``` r
+
 plot(pobs, type = "delay_counts")
 ```
 
@@ -225,13 +235,13 @@ supported by many notifications or by only a handful.
 Each plot type corresponds to an exported function that can be called
 directly for more control.
 
-| Plot type            | Function                                                                                                   |
-|:---------------------|:-----------------------------------------------------------------------------------------------------------|
-| `"obs"`              | [`enw_plot_obs()`](https://package.epinowcast.org/dev/reference/enw_plot_obs.md)                           |
+| Plot type | Function |
+|:---|:---|
+| `"obs"` | [`enw_plot_obs()`](https://package.epinowcast.org/dev/reference/enw_plot_obs.md) |
 | `"delay_cumulative"` | [`enw_plot_delay_cumulative()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_cumulative.md) |
-| `"delay_fraction"`   | [`enw_plot_delay_fraction()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_fraction.md)     |
-| `"delay_quantiles"`  | [`enw_plot_delay_quantiles()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_quantiles.md)   |
-| `"delay_counts"`     | [`enw_plot_delay_counts()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_counts.md)         |
+| `"delay_fraction"` | [`enw_plot_delay_fraction()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_fraction.md) |
+| `"delay_quantiles"` | [`enw_plot_delay_quantiles()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_quantiles.md) |
+| `"delay_counts"` | [`enw_plot_delay_counts()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_counts.md) |
 
 These return standard `ggplot2` objects so layers, facets, and themes
 can be added freely. Grouped data are auto-faceted by `.group`; pass
@@ -240,6 +250,7 @@ can be added freely. Grouped data are auto-faceted by `.group`; pass
 Code
 
 ``` r
+
 enw_plot_delay_fraction(
   pobs, delay_group_thresh = c(0, 1, 3, 7, 14, 41)
 ) +
@@ -261,6 +272,7 @@ reporting proportions.
 Code
 
 ``` r
+
 nc <- enw_delay_categories(
   pobs, delay_group_thresh = c(0, 1, 3, 7, 14, 41)
 )
@@ -290,6 +302,7 @@ computes empirical delay quantiles by reference date.
 Code
 
 ``` r
+
 eq <- enw_delay_quantiles(pobs)
 head(eq)
 #> Key: <.group>

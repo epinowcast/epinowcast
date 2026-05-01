@@ -20,6 +20,7 @@ output, `loo` to approximately evaluate out of sample performance and
 Code
 
 ``` r
+
 library(epinowcast)
 library(data.table)
 library(purrr)
@@ -40,6 +41,7 @@ reduce the number of threads used.
 Code
 
 ``` r
+
 threads <- floor(min(max(1, parallel::detectCores() /  2), 6))
 options(mc.cores = 2)
 ```
@@ -69,6 +71,7 @@ of September for the last 40 days.
 Code
 
 ``` r
+
 nat_germany_hosp <- epinowcast::germany_covid19_hosp[location == "DE"]
 
 retro_nat_germany <- nat_germany_hosp |>
@@ -96,6 +99,7 @@ October for these dates, which will serve as the target “true” data.
 Code
 
 ``` r
+
 latest_nat_germany <- nat_germany_hosp |>
   enw_filter_report_dates(latest_date = "2021-10-20") |>
   enw_obs_at_delay(max_delay = 40) |>
@@ -137,6 +141,7 @@ counts after fitting the model.
 Code
 
 ``` r
+
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40, by = "age_group")
 pobs
 #>                     obs           new_confirm               latest
@@ -174,6 +179,7 @@ potential warning messages but in general this should not be done.
 Code
 
 ``` r
+
 fit <- enw_fit_opts(
   save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
   chains = 2
@@ -193,6 +199,7 @@ of final reported hospitalisations and the actual reported observations.
 Code
 
 ``` r
+
 plot(nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
@@ -214,6 +221,7 @@ for general guidance on inspecting and setting priors.
 Code
 
 ``` r
+
 priors <- summary(
   nowcast,
   type = "fit",
@@ -247,6 +255,7 @@ module and the formula interface as follows.
 Code
 
 ``` r
+
 expectation_module <- enw_expectation(
   ~ 0 + (1 | day_of_week) + (1 | day:.group), data = pobs
 )
@@ -263,6 +272,7 @@ We again visualise the nowcasts
 Code
 
 ``` r
+
 plot(exp_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
@@ -287,6 +297,7 @@ adjustment may be needed.
 Code
 
 ``` r
+
 plot(exp_nowcast, type = "posterior") +
   facet_wrap(vars(age_group, reference_date), scales = "free")
 ```
@@ -311,6 +322,7 @@ for some modules so the design matrix shows only unique rows with
 Code
 
 ``` r
+
 report_module_dow <- enw_report(~ (1 | day_of_week), data = pobs)
 ```
 
@@ -320,6 +332,7 @@ model included.
 Code
 
 ``` r
+
 dow_nowcast <- epinowcast(pobs,
   report = report_module_dow,
   expectation = expectation_module,
@@ -337,6 +350,7 @@ model in the same way as for the previous model.
 Code
 
 ``` r
+
 plot(dow_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
@@ -356,6 +370,7 @@ year age group (as these were the groups supplied in the data).
 Code
 
 ``` r
+
 reference_module_age <- enw_reference(~ 1 + (1 | age_group), data = pobs)
 ```
 
@@ -365,6 +380,7 @@ model and the day of the week adjusted report date model.
 Code
 
 ``` r
+
 age_nowcast <- epinowcast(pobs,
   reference = reference_module_age,
   report = report_module_dow,
@@ -381,6 +397,7 @@ data may have reduced compared to the first model.
 Code
 
 ``` r
+
 plot(age_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
@@ -404,6 +421,7 @@ parameter limits the additional computational overhead.
 Code
 
 ``` r
+
 reference_module_age_week <- enw_reference(
   ~ 1 + (1 | age_group) + rw(week), data = pobs
 )
@@ -414,6 +432,7 @@ As before we fit the nowcasting model,
 Code
 
 ``` r
+
 week_nowcast <- epinowcast(pobs,
   reference = reference_module_age_week,
   report = report_module_dow,
@@ -430,6 +449,7 @@ hospitalisations in some age groups.
 Code
 
 ``` r
+
 plot(week_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
@@ -450,6 +470,7 @@ still shared across data sets.
 Code
 
 ``` r
+
 reference_module_week_by_age <- enw_reference(
   ~ 1 + (1 | age_group) + rw(week, by = age_group), data = pobs
 )
@@ -460,6 +481,7 @@ We can now fit this model as before.
 Code
 
 ``` r
+
 age_week_nowcast <- epinowcast(pobs,
   reference = reference_module_week_by_age,
   report = report_module_dow,
@@ -476,6 +498,7 @@ hospitalisations in some age groups.
 Code
 
 ``` r
+
 plot(age_week_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
@@ -502,6 +525,7 @@ reference date models and then run a nowcast.
 Code
 
 ``` r
+
 independent_epinowcast <- function(obs, max_delay = 40, ...) {
   pobs_ind <- enw_preprocess_data(obs, max_delay = max_delay)
 
@@ -525,6 +549,7 @@ single data.frame.
 Code
 
 ``` r
+
 options(mc.cores = 2)
 
 independent_nowcast <- map(
@@ -560,6 +585,7 @@ modelling age groups.
 Code
 
 ``` r
+
 enw_plot_nowcast_quantiles(
   independent_nowcast_summary, latest_obs = latest_nat_germany
 ) +
@@ -614,6 +640,7 @@ informative names,
 Code
 
 ``` r
+
 nowcasts <- list(
   "Reference: Fixed, Report: Fixed" = exp_nowcast,
   "Reference: Fixed, Report: Day of week" = dow_nowcast,
@@ -629,6 +656,7 @@ tidy `data.frame` to make further analysis easier.
 Code
 
 ``` r
+
 summarised_nowcasts <- map(
   nowcasts, summary,
   probs = c(0.025, 0.05, seq(0.1, 0.9, by = 0.1), 0.95, 0.975)
@@ -661,6 +689,7 @@ the 35-59 year old age group in particular having poor nowcast coverage.
 Code
 
 ``` r
+
 enw_plot_nowcast_quantiles(
   summarised_nowcasts, latest_obs = latest_nat_germany
 ) +
@@ -683,6 +712,7 @@ we are not accounting for this by refitting the model as required.
 Code
 
 ``` r
+
 loos <- map(nowcasts, \(x) x$fit[[1]]$loo())
 loo_compare(loos)
 #>                                                     elpd_diff se_diff
@@ -721,6 +751,7 @@ underprediction for example).
 Code
 
 ``` r
+
 eval_obs <- latest_nat_germany[reference_date > (max(reference_date) - 7)]
 scores <- map_dfr(
   nowcasts, as_forecast_sample, eval_obs, .id = "model"
@@ -747,14 +778,14 @@ scores |>
   kable()
 ```
 
-| model                                                    |   bias | dss | crps | overprediction | underprediction | dispersion | log_score | mad | ae_median | se_mean |
-|:---------------------------------------------------------|-------:|----:|-----:|---------------:|----------------:|-----------:|----------:|----:|----------:|--------:|
-| Reference: Fixed, Report: Fixed                          | -0.011 | 6.0 | 12.0 |           4.30 |             3.8 |        4.1 |       3.9 |  17 |        18 |    1300 |
-| Reference: Fixed, Report: Day of week                    | -0.250 | 7.0 | 12.0 |           1.20 |             7.5 |        3.0 |       4.2 |  13 |        16 |     560 |
-| Reference: Age, Report: Day of week                      | -0.390 | 6.8 |  9.9 |           0.68 |             6.3 |        2.9 |       4.0 |  12 |        13 |     400 |
-| Reference: Age and week, Report: Day of week             |  0.048 | 5.5 |  8.4 |           3.30 |             1.6 |        3.5 |       3.6 |  15 |        12 |     570 |
-| Reference: Age and week by age, Report: Day of week      | -0.200 | 5.7 |  8.4 |           1.80 |             3.1 |        3.5 |       3.7 |  15 |        12 |     430 |
-| Independent by age, Reference: Week, Report: Day of week | -0.039 | 5.7 |  9.4 |           2.90 |             1.4 |        5.1 |       3.7 |  21 |        13 |     910 |
+| model | bias | dss | crps | overprediction | underprediction | dispersion | log_score | mad | ae_median | se_mean |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Reference: Fixed, Report: Fixed | -0.011 | 6.0 | 12.0 | 4.30 | 3.8 | 4.1 | 3.9 | 17 | 18 | 1300 |
+| Reference: Fixed, Report: Day of week | -0.250 | 7.0 | 12.0 | 1.20 | 7.5 | 3.0 | 4.2 | 13 | 16 | 560 |
+| Reference: Age, Report: Day of week | -0.390 | 6.8 | 9.9 | 0.68 | 6.3 | 2.9 | 4.0 | 12 | 13 | 400 |
+| Reference: Age and week, Report: Day of week | 0.048 | 5.5 | 8.4 | 3.30 | 1.6 | 3.5 | 3.6 | 15 | 12 | 570 |
+| Reference: Age and week by age, Report: Day of week | -0.200 | 5.7 | 8.4 | 1.80 | 3.1 | 3.5 | 3.7 | 15 | 12 | 430 |
+| Independent by age, Reference: Week, Report: Day of week | -0.039 | 5.7 | 9.4 | 2.90 | 1.4 | 5.1 | 3.7 | 21 | 13 | 910 |
 
 Finally we look across all scores relative to the simple model with no
 variation. This nicely captures the role of the last data point on
@@ -766,6 +797,7 @@ independently is also very clear.
 Code
 
 ``` r
+
 relative_scores <- scores |>
   add_relative_skill(
     by = c("reference_date", "age_group"),

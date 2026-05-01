@@ -33,6 +33,7 @@ gold-standard reference at a fraction of the cost.
 Code
 
 ``` r
+
 library(epinowcast)
 library(data.table)
 library(ggplot2)
@@ -48,6 +49,7 @@ behaved for demonstrating model fit.
 Code
 
 ``` r
+
 nat_germany_hosp <-
   germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
   enw_filter_report_dates(latest_date = "2021-07-01")
@@ -70,6 +72,7 @@ parallelisation.
 Code
 
 ``` r
+
 model <- enw_model(threads = FALSE)
 ```
 
@@ -85,6 +88,7 @@ parameterisation with a linear mean-variance relationship).
 Code
 
 ``` r
+
 shared_expectation <- enw_expectation(
   ~ 1 + rw(week) + (1 | day_of_week), data = pobs
 )
@@ -98,6 +102,7 @@ time.
 Code
 
 ``` r
+
 ref_a <- enw_reference(
   parametric = ~1, distribution = "lognormal", data = pobs
 )
@@ -111,6 +116,7 @@ reporting processes are evolving, but adds parameters.
 Code
 
 ``` r
+
 ref_b <- enw_reference(
   parametric = ~ 1 + rw(week) + (1 | day_of_week),
   distribution = "lognormal",
@@ -129,6 +135,7 @@ list of fits, which we reuse in each comparison section.
 Code
 
 ``` r
+
 fit_nowcast <- partial(
   epinowcast,
   data = pobs,
@@ -163,6 +170,7 @@ default) since none of the fits hit the treedepth cap in our checks.
 Code
 
 ``` r
+
 nuts_args <- list(
   save_warmup = FALSE, pp = TRUE,
   chains = 2,
@@ -177,6 +185,7 @@ nuts_args <- list(
 Code
 
 ``` r
+
 options(mc.cores = 2)
 
 nuts_prior_opts <- do.call(
@@ -196,6 +205,7 @@ effect of initialisation.
 Code
 
 ``` r
+
 nuts_pf_opts <- do.call(
   enw_fit_opts,
   c(
@@ -218,6 +228,7 @@ pathfinder performance at the cost of some additional runtime.
 Code
 
 ``` r
+
 pf_opts <- enw_fit_opts(
   sampler = enw_pathfinder, pp = TRUE, num_paths = 10
 )
@@ -231,6 +242,7 @@ fit_b_pf <- fit_nowcast(reference = ref_b, fit = pf_opts)
 Code
 
 ``` r
+
 fits <- list(
   "A: NUTS (prior init)" = fit_a_nuts,
   "A: NUTS (pathfinder init)" = fit_a_nuts_pf,
@@ -286,7 +298,7 @@ knitr::kable(
 
 Runtime and sampling efficiency for each spec and method. Min ESS/s is
 the minimum bulk effective sample size per second and is reported only
-for NUTS fits.
+for NUTS fits. {.table}
 
 Note that the runtime for pathfinder-initialised NUTS reported here only
 includes the NUTS sampling step. The pathfinder initialisation itself is
@@ -295,6 +307,7 @@ an additional overhead (though often small compared to sampling).
 Code
 
 ``` r
+
 ggplot(runtime_dt, aes(x = method, y = runtime, fill = spec)) +
   geom_col(position = "dodge") +
   labs(
@@ -330,6 +343,7 @@ apply to NUTS fits.
 Code
 
 ``` r
+
 nuts_fits <- list(
   "A: NUTS (prior init)" = fit_a_nuts,
   "A: NUTS (pathfinder init)" = fit_a_nuts_pf,
@@ -354,14 +368,14 @@ knitr::kable(
 )
 ```
 
-| Label                     | Samples | Max Rhat | Divergent transitions | Max tree depth |
-|:--------------------------|--------:|---------:|----------------------:|---------------:|
-| A: NUTS (prior init)      |    1000 |     1.02 |                     2 |             10 |
-| A: NUTS (pathfinder init) |    1000 |     1.02 |                     1 |              9 |
-| B: NUTS (prior init)      |    1000 |     1.01 |                     2 |              9 |
-| B: NUTS (pathfinder init) |    1000 |     1.01 |                     6 |             10 |
+| Label | Samples | Max Rhat | Divergent transitions | Max tree depth |
+|:---|---:|---:|---:|---:|
+| A: NUTS (prior init) | 1000 | 1.02 | 2 | 10 |
+| A: NUTS (pathfinder init) | 1000 | 1.02 | 1 | 9 |
+| B: NUTS (prior init) | 1000 | 1.01 | 2 | 9 |
+| B: NUTS (pathfinder init) | 1000 | 1.01 | 6 | 10 |
 
-MCMC diagnostics for NUTS fits.
+MCMC diagnostics for NUTS fits. {.table}
 
 All four NUTS fits converge well: Rhat values are close to 1 (well below
 the 1.05 threshold) and divergent transitions are minimal (1-2 per fit,
@@ -403,6 +417,7 @@ comparison plots.
 Code
 
 ``` r
+
 nowcast_summaries <- rbindlist(lapply(names(fits), function(nm) {
   s <- summary(fits[[nm]], type = "nowcast")
   s[, label := nm]
@@ -424,6 +439,7 @@ and 90% credible intervals can be compared directly.
 Code
 
 ``` r
+
 plot_nowcast_methods <- function(nc_dt, title) {
   ggplot(nc_dt, aes(x = reference_date, colour = method, fill = method)) +
     geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.15, colour = NA) +
@@ -449,6 +465,7 @@ plot_nowcast_methods <- function(nc_dt, title) {
 Code
 
 ``` r
+
 plot_nowcast_methods(
   nowcast_summaries[spec == "A (static delays)"],
   "Spec A (static delays)"
@@ -463,6 +480,7 @@ plot of chunk nowcast-comparison-a
 Code
 
 ``` r
+
 plot_nowcast_methods(
   nowcast_summaries[spec == "B (time-varying delays)"],
   "Spec B (time-varying delays)"
@@ -493,6 +511,7 @@ These include the delay distribution intercepts (`refp_mean_int` and
 Code
 
 ``` r
+
 param_vars <- c("refp_mean_int", "refp_sd_int", "sqrt_phi")
 
 param_summaries <- rbindlist(lapply(names(fits), function(nm) {
@@ -513,6 +532,7 @@ param_summaries <- rbindlist(lapply(names(fits), function(nm) {
 Code
 
 ``` r
+
 ggplot(
   param_summaries,
   aes(x = method, y = mean, colour = spec)
@@ -545,6 +565,7 @@ To make the comparison concrete we also tabulate the posterior mean and
 Code
 
 ``` r
+
 width_dt <- param_summaries[, .(
   Spec = spec, Method = method, Variable = variable,
   Mean = round(mean, 2),
@@ -553,28 +574,28 @@ width_dt <- param_summaries[, .(
 knitr::kable(width_dt, caption = "Posterior means and 90% CrI widths.")
 ```
 
-| Spec                    | Method                 | Variable           | Mean | 90% CrI width |
-|:------------------------|:-----------------------|:-------------------|-----:|--------------:|
-| A (static delays)       | NUTS (prior init)      | refp_mean_int\[1\] | 3.91 |          1.89 |
-| A (static delays)       | NUTS (prior init)      | refp_sd_int\[1\]   | 4.14 |          0.83 |
-| A (static delays)       | NUTS (prior init)      | sqrt_phi\[1\]      | 1.83 |          0.27 |
-| A (static delays)       | NUTS (pathfinder init) | refp_mean_int\[1\] | 3.96 |          1.94 |
-| A (static delays)       | NUTS (pathfinder init) | refp_sd_int\[1\]   | 4.17 |          0.83 |
-| A (static delays)       | NUTS (pathfinder init) | sqrt_phi\[1\]      | 1.83 |          0.27 |
-| A (static delays)       | Pathfinder             | refp_mean_int\[1\] | 3.84 |          0.43 |
-| A (static delays)       | Pathfinder             | refp_sd_int\[1\]   | 4.20 |          0.13 |
-| A (static delays)       | Pathfinder             | sqrt_phi\[1\]      | 1.88 |          0.18 |
-| B (time-varying delays) | NUTS (prior init)      | refp_mean_int\[1\] | 3.66 |          2.12 |
-| B (time-varying delays) | NUTS (prior init)      | refp_sd_int\[1\]   | 3.91 |          1.12 |
-| B (time-varying delays) | NUTS (prior init)      | sqrt_phi\[1\]      | 1.74 |          0.28 |
-| B (time-varying delays) | NUTS (pathfinder init) | refp_mean_int\[1\] | 3.67 |          2.20 |
-| B (time-varying delays) | NUTS (pathfinder init) | refp_sd_int\[1\]   | 3.91 |          1.19 |
-| B (time-varying delays) | NUTS (pathfinder init) | sqrt_phi\[1\]      | 1.74 |          0.28 |
-| B (time-varying delays) | Pathfinder             | refp_mean_int\[1\] | 2.94 |          0.36 |
-| B (time-varying delays) | Pathfinder             | refp_sd_int\[1\]   | 2.04 |          0.17 |
-| B (time-varying delays) | Pathfinder             | sqrt_phi\[1\]      | 1.62 |          0.09 |
+| Spec | Method | Variable | Mean | 90% CrI width |
+|:---|:---|:---|---:|---:|
+| A (static delays) | NUTS (prior init) | refp_mean_int\[1\] | 3.91 | 1.89 |
+| A (static delays) | NUTS (prior init) | refp_sd_int\[1\] | 4.14 | 0.83 |
+| A (static delays) | NUTS (prior init) | sqrt_phi\[1\] | 1.83 | 0.27 |
+| A (static delays) | NUTS (pathfinder init) | refp_mean_int\[1\] | 3.96 | 1.94 |
+| A (static delays) | NUTS (pathfinder init) | refp_sd_int\[1\] | 4.17 | 0.83 |
+| A (static delays) | NUTS (pathfinder init) | sqrt_phi\[1\] | 1.83 | 0.27 |
+| A (static delays) | Pathfinder | refp_mean_int\[1\] | 3.84 | 0.43 |
+| A (static delays) | Pathfinder | refp_sd_int\[1\] | 4.20 | 0.13 |
+| A (static delays) | Pathfinder | sqrt_phi\[1\] | 1.88 | 0.18 |
+| B (time-varying delays) | NUTS (prior init) | refp_mean_int\[1\] | 3.66 | 2.12 |
+| B (time-varying delays) | NUTS (prior init) | refp_sd_int\[1\] | 3.91 | 1.12 |
+| B (time-varying delays) | NUTS (prior init) | sqrt_phi\[1\] | 1.74 | 0.28 |
+| B (time-varying delays) | NUTS (pathfinder init) | refp_mean_int\[1\] | 3.67 | 2.20 |
+| B (time-varying delays) | NUTS (pathfinder init) | refp_sd_int\[1\] | 3.91 | 1.19 |
+| B (time-varying delays) | NUTS (pathfinder init) | sqrt_phi\[1\] | 1.74 | 0.28 |
+| B (time-varying delays) | Pathfinder | refp_mean_int\[1\] | 2.94 | 0.36 |
+| B (time-varying delays) | Pathfinder | refp_sd_int\[1\] | 2.04 | 0.17 |
+| B (time-varying delays) | Pathfinder | sqrt_phi\[1\] | 1.62 | 0.09 |
 
-Posterior means and 90% CrI widths.
+Posterior means and 90% CrI widths. {.table style="width:100%;"}
 
 Across all three parameters the point estimates (means) are broadly
 aligned between NUTS and pathfinder. The 90% credible intervals from
@@ -612,6 +633,7 @@ the pathfinder update as much information as possible.
 Code
 
 ``` r
+
 day1_posterior <- summary(fit_a_nuts, type = "fit")
 # Borrow key parameters and ensure one row per variable
 to_borrow <- c(
@@ -648,6 +670,7 @@ updates.
 Code
 
 ``` r
+
 retro_day2 <- nat_germany_hosp |>
   enw_filter_report_dates(remove_days = 29) |>
   enw_filter_reference_dates(include_days = 30)
@@ -667,6 +690,7 @@ factory mirroring `fit_nowcast` above.
 Code
 
 ``` r
+
 fit_day2 <- partial(
   epinowcast,
   data = pobs_day2,
@@ -697,6 +721,7 @@ We fit day 2 using three approaches:
 Code
 
 ``` r
+
 fit_day2_pf_informed <- fit_day2(fit = pf_opts_pp, priors = day1_posterior)
 fit_day2_pf_default <- fit_day2(fit = pf_opts_pp)
 fit_day2_nuts <- fit_day2(fit = nuts_prior_opts)
@@ -705,6 +730,7 @@ fit_day2_nuts <- fit_day2(fit = nuts_prior_opts)
 Code
 
 ``` r
+
 update_runtime <- data.table(
   Method = c(
     "Pathfinder (informed priors)",
@@ -733,6 +759,7 @@ running pathfinder from scratch.
 Code
 
 ``` r
+
 update_fits <- list(
   "Pathfinder (informed priors)" = fit_day2_pf_informed,
   "Pathfinder (default priors)" = fit_day2_pf_default,
@@ -772,6 +799,7 @@ plot of chunk update-nowcast-comparison
 Code
 
 ``` r
+
 update_params <- collect_summaries(
   update_fits, type = "fit",
   variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
@@ -811,11 +839,11 @@ for details on setting priors from previous fits.
 
 ## Summary
 
-| Method                 | Speed                                      | Posterior quality                                                 | Diagnostics           | Best for                                                      |
-|------------------------|--------------------------------------------|-------------------------------------------------------------------|-----------------------|---------------------------------------------------------------|
-| NUTS (prior init)      | Slow                                       | Gold standard                                                     | Full MCMC diagnostics | Final inference, publication                                  |
-| NUTS (pathfinder init) | Similar to prior-init NUTS on these models | Gold standard                                                     | Full MCMC diagnostics | Difficult models where standard NUTS shows convergence issues |
-| Pathfinder             | ~7-15x faster than NUTS here               | Approximate; narrow posteriors with high Pareto k on these models | Pareto k only         | Model development, exploration, quick checks                  |
+| Method | Speed | Posterior quality | Diagnostics | Best for |
+|----|----|----|----|----|
+| NUTS (prior init) | Slow | Gold standard | Full MCMC diagnostics | Final inference, publication |
+| NUTS (pathfinder init) | Similar to prior-init NUTS on these models | Gold standard | Full MCMC diagnostics | Difficult models where standard NUTS shows convergence issues |
+| Pathfinder | ~7-15x faster than NUTS here | Approximate; narrow posteriors with high Pareto k on these models | Pareto k only | Model development, exploration, quick checks |
 
 **Practical guidance:**
 

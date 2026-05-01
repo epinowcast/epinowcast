@@ -58,3 +58,10 @@
   Stan](https://package.epinowcast.org/dev/articles/stan-help.md):
 
   How to address issues you may encounter with Stan
+
+- [Temporal aggregation
+  guide](https://package.epinowcast.org/dev/articles/temporal-aggregation.md):
+
+  How to fit nowcasts when the data and process timesteps differ,
+  including pure weekly, weekly reporting on a daily process, and a
+  daily benchmark.

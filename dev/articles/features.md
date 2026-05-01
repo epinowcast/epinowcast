@@ -12,31 +12,32 @@ function-specific details, see `?function_name`.
 
 ## Core Capabilities
 
-| Capability                | What it enables                                             | Where to learn more                                                                                      |
-|---------------------------|-------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
-| **Flexible timesteps**    | Daily, weekly, or custom aggregation                        | [Different timesteps](#timesteps)                                                                        |
-| **Multi-stratification**  | Age groups, regions, pathogens                              | [Stratification](#stratification)                                                                        |
-| **Mixed delay models**    | Parametric + non-parametric delays                          | [Delay modelling](#delay-modelling)                                                                      |
-| **Report date effects**   | Day-of-week patterns, structural reporting                  | [Report date effects](#report-date-effects)                                                              |
-| **Latent process models** | Growth rates, renewal processes                             | [Latent models](#latent-models)                                                                          |
-| **Hierarchical effects**  | Random effects, random walks                                | [Hierarchical structure](#hierarchical)                                                                  |
-| **Missing data handling** | Missing reference dates                                     | [Missing data](#missing-data)                                                                            |
-| **Retrospective Rt**      | Rt estimation from finalised counts without delay modelling | [Rt estimation vignette](https://package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.md) |
-| **Custom priors**         | Inspect and replace default priors                          | [Prior specification](#priors)                                                                           |
-| **Model comparison**      | LOO-CV, posterior predictive checks                         | [Model evaluation](#model-evaluation)                                                                    |
-| **Inference methods**     | NUTS, pathfinder, pathfinder-initialised NUTS               | [Inference methods vignette](https://package.epinowcast.org/dev/articles/inference-methods.md)           |
-| **Data visualisation**    | Inspect preprocessing and nowcast output                    | [Visualisation](#visualisation)                                                                          |
+| Capability | What it enables | Where to learn more |
+|----|----|----|
+| **Flexible timesteps** | Daily, weekly, or custom aggregation | [Different timesteps](#timesteps) |
+| **Multi-stratification** | Age groups, regions, pathogens | [Stratification](#stratification) |
+| **Mixed delay models** | Parametric + non-parametric delays | [Delay modelling](#delay-modelling) |
+| **Report date effects** | Day-of-week patterns, structural reporting | [Report date effects](#report-date-effects) |
+| **Latent process models** | Growth rates, renewal processes | [Latent models](#latent-models) |
+| **Hierarchical effects** | Random effects, random walks | [Hierarchical structure](#hierarchical) |
+| **Missing data handling** | Missing reference dates | [Missing data](#missing-data) |
+| **Retrospective Rt** | Rt estimation from finalised counts without delay modelling | [Rt estimation vignette](https://package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.md) |
+| **Custom priors** | Inspect and replace default priors | [Prior specification](#priors) |
+| **Model comparison** | LOO-CV, posterior predictive checks | [Model evaluation](#model-evaluation) |
+| **Inference methods** | NUTS, pathfinder, pathfinder-initialised NUTS | [Inference methods vignette](https://package.epinowcast.org/dev/articles/inference-methods.md) |
+| **Data visualisation** | Inspect preprocessing and nowcast output | [Visualisation](#visualisation) |
 
 ## Different Timesteps and Timespans
 
 `epinowcast` supports flexible temporal aggregation to match your data
 structure and computational constraints.
 
-| Timestep | Use case                     | How to specify               | Example                                                                               |
-|----------|------------------------------|------------------------------|---------------------------------------------------------------------------------------|
-| Daily    | High resolution surveillance | `timestep = "day"` (default) | [Getting started vignette](https://package.epinowcast.org/dev/articles/epinowcast.md) |
-| Weekly   | Reduced computational cost   | `timestep = "week"`          | `enw_preprocess_data(..., timestep = "week")`                                         |
-| Custom   | Any integer multiple of days | `timestep = 7`               | `enw_preprocess_data(..., timestep = 7)`                                              |
+| Timestep | Use case | How to specify | Example |
+|----|----|----|----|
+| Daily | High resolution surveillance | `timestep = "day"` (default) | [Getting started vignette](https://package.epinowcast.org/dev/articles/epinowcast.md) |
+| Weekly | Reduced computational cost | `timestep = "week"` | [Temporal aggregation guide](https://package.epinowcast.org/dev/articles/temporal-aggregation.md) |
+| Daily process, weekly reporting | Daily inference from once-a-week reporting | `timestep = "day"` with weekly observation scaffold | [Temporal aggregation guide](https://package.epinowcast.org/dev/articles/temporal-aggregation.md) |
+| Custom | Any integer multiple of days | `timestep = 7` | `enw_preprocess_data(..., timestep = 7)` |
 
 **Key functions:**
 
@@ -44,25 +45,30 @@ structure and computational constraints.
   Set timestep during preprocessing
 - [`enw_aggregate_cumulative()`](https://package.epinowcast.org/dev/reference/enw_aggregate_cumulative.md):
   Convert between timesteps
+- [`enw_rolling_sum()`](https://package.epinowcast.org/dev/reference/enw_rolling_sum.md)
+  and
+  [`enw_dayofweek_structural_reporting()`](https://package.epinowcast.org/dev/reference/enw_dayofweek_structural_reporting.md):
+  Build the daily-process / weekly-reporting scaffold
 
 **Where to see it:** The [getting started
 vignette](https://package.epinowcast.org/dev/articles/epinowcast.md)
-uses daily data. For weekly or custom timesteps, simply change the
-`timestep` argument in
-[`enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/enw_preprocess_data.md).
+uses daily data. For weekly data, weekly reporting on a daily process,
+and a side-by-side comparison with the daily benchmark see the [temporal
+aggregation
+guide](https://package.epinowcast.org/dev/articles/temporal-aggregation.md).
 
 ## Stratified and Multi-Group Nowcasting
 
 Nowcast across multiple groups simultaneously with hierarchical sharing
 of information.
 
-| Stratification type  | Use case                    | How to specify                  | Example                                                                                                             |
-|----------------------|-----------------------------|---------------------------------|---------------------------------------------------------------------------------------------------------------------|
-| Age groups           | Age-stratified surveillance | `by = c("age_group")`           | [Germany age-stratified vignette](https://package.epinowcast.org/dev/articles/germany-age-stratified-nowcasting.md) |
-| Geographic regions   | Regional nowcasts           | `by = c("region")`              | Set `by` in [`enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/enw_preprocess_data.md)          |
-| Multiple factors     | E.g., age × region          | `by = c("age_group", "region")` | Combine factors in `by` argument                                                                                    |
-| Independent groups   | No sharing between groups   | Use `.group` in formulas        | Default behaviour                                                                                                   |
-| Hierarchical sharing | Partial pooling             | Random effects in formulas      | `~1 + (1 | .group)`                                                                                                 |
+| Stratification type | Use case | How to specify | Example |
+|----|----|----|----|
+| Age groups | Age-stratified surveillance | `by = c("age_group")` | [Germany age-stratified vignette](https://package.epinowcast.org/dev/articles/germany-age-stratified-nowcasting.md) |
+| Geographic regions | Regional nowcasts | `by = c("region")` | Set `by` in [`enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/enw_preprocess_data.md) |
+| Multiple factors | E.g., age × region | `by = c("age_group", "region")` | Combine factors in `by` argument |
+| Independent groups | No sharing between groups | Use `.group` in formulas | Default behaviour |
+| Hierarchical sharing | Partial pooling | Random effects in formulas | `~1 + (1 | .group)` |
 
 **Key functions:**
 
@@ -80,13 +86,13 @@ hierarchical effects.
 Model reporting delays using parametric distributions, non-parametric
 hazards, or combinations.
 
-| Approach              | When to use                                            | How to specify                                                          | Example                          |
-|-----------------------|--------------------------------------------------------|-------------------------------------------------------------------------|----------------------------------|
-| Parametric only       | Sparse data (provides regularisation), faster fitting  | `enw_reference(parametric = ~1, distribution = "lognormal")`            | Default in vignettes             |
-| Non-parametric only   | Multimodal or highly complex delay patterns            | `enw_reference(parametric = ~0, non_parametric = ~1 + (1 | delay))`     | Flexible hazard model            |
-| Mixed model           | Parametric baseline + adjustments for complex patterns | `enw_reference(parametric = ~1, non_parametric = ~0 + (1 | delay_cat))` | Best of both                     |
-| Time-varying delays   | Changing reporting over time                           | Include time effects in formulas                                        | `parametric = ~1 + week`         |
-| Group-specific delays | Different delays by strata                             | Random effects by group                                                 | `parametric = ~1 + (1 | .group)` |
+| Approach | When to use | How to specify | Example |
+|----|----|----|----|
+| Parametric only | Sparse data (provides regularisation), faster fitting | `enw_reference(parametric = ~1, distribution = "lognormal")` | Default in vignettes |
+| Non-parametric only | Multimodal or highly complex delay patterns | `enw_reference(parametric = ~0, non_parametric = ~1 + (1 | delay))` | Flexible hazard model |
+| Mixed model | Parametric baseline + adjustments for complex patterns | `enw_reference(parametric = ~1, non_parametric = ~0 + (1 | delay_cat))` | Best of both |
+| Time-varying delays | Changing reporting over time | Include time effects in formulas | `parametric = ~1 + week` |
+| Group-specific delays | Different delays by strata | Random effects by group | `parametric = ~1 + (1 | .group)` |
 
 **Available distributions:** See the [distributions
 vignette](https://package.epinowcast.org/dev/articles/distributions.md)
@@ -109,12 +115,12 @@ examples.
 
 Model report date effects and known reporting structures.
 
-| Approach                       | When to use                                 | How to specify                                                                                                                              | Example                           |
-|--------------------------------|---------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
-| Non-parametric report effects  | Day-of-week or other report date patterns   | `enw_report(non_parametric = ~1 + (1 | day_of_week))`                                                                                       | Flexible report date effects      |
-| Structural reporting schedules | Known fixed reporting cycles (e.g., weekly) | `enw_report(structural = structural_data)`                                                                                                  | Weekly reporting on specific days |
-| Day-of-week structural         | Weekly reporting pattern                    | `enw_dayofweek_structural_reporting(pobs, "Monday")`                                                                                        | Monday-only reporting             |
-| Custom structural patterns     | Complex reporting schedules                 | [`enw_structural_reporting_metadata()`](https://package.epinowcast.org/dev/reference/enw_structural_reporting_metadata.md) with custom data | Flexible aggregation              |
+| Approach | When to use | How to specify | Example |
+|----|----|----|----|
+| Non-parametric report effects | Day-of-week or other report date patterns | `enw_report(non_parametric = ~1 + (1 | day_of_week))` | Flexible report date effects |
+| Structural reporting schedules | Known fixed reporting cycles (e.g., weekly) | `enw_report(structural = structural_data)` | Weekly reporting on specific days |
+| Day-of-week structural | Weekly reporting pattern | `enw_dayofweek_structural_reporting(pobs, "Monday")` | Monday-only reporting |
+| Custom structural patterns | Complex reporting schedules | [`enw_structural_reporting_metadata()`](https://package.epinowcast.org/dev/reference/enw_structural_reporting_metadata.md) with custom data | Flexible aggregation |
 
 **Key functions:**
 
@@ -130,23 +136,24 @@ Model report date effects and known reporting structures.
   [`?enw_report`](https://package.epinowcast.org/dev/reference/enw_report.md)
   for details
 
-**Where to see it:** See
-`inst/examples/germany_weekly_reporting_daily_process_model.R` for an
-example with weekly reporting and a daily process model.
+**Where to see it:** See the [temporal aggregation
+guide](https://package.epinowcast.org/dev/articles/temporal-aggregation.md)
+for worked examples of weekly reporting on a daily process model, with
+both fitted and structural day-of-week reporting.
 
 ## Latent Process Models
 
 Specify the generative model for the expected latent process (e.g.,
 infections, hospitalisations).
 
-| Model type            | What it assumes                             | How to specify (formulas for `r` unless stated) | Example                                                                                                  |
-|-----------------------|---------------------------------------------|-------------------------------------------------|----------------------------------------------------------------------------------------------------------|
-| Daily random effects  | Flexible day-to-day changes                 | `~0 + (1 | day:.group)` (default)               | Most flexible                                                                                            |
-| Weekly random walk    | Smooth week-to-week trends                  | `~1 + rw(week, by = .group)`                    | Smoother estimates                                                                                       |
-| Growth rate           | Exponential growth/decline                  | `generation_time = 1` (default)                 | Simple trend                                                                                             |
-| Renewal process       | Epidemic dynamics                           | `generation_time = c(0.2, 0.5, 0.3)`            | [Rt estimation vignette](https://package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.md) |
-| Fixed effects         | Covariates (e.g., interventions)            | `~1 + intervention + ...`                       | Include predictors                                                                                       |
-| Observation modifiers | Ascertainment variation (e.g., day of week) | `observation = ~1 + day_of_week`                | Adjust for reporting patterns                                                                            |
+| Model type | What it assumes | How to specify (formulas for `r` unless stated) | Example |
+|----|----|----|----|
+| Daily random effects | Flexible day-to-day changes | `~0 + (1 | day:.group)` (default) | Most flexible |
+| Weekly random walk | Smooth week-to-week trends | `~1 + rw(week, by = .group)` | Smoother estimates |
+| Growth rate | Exponential growth/decline | `generation_time = 1` (default) | Simple trend |
+| Renewal process | Epidemic dynamics | `generation_time = c(0.2, 0.5, 0.3)` | [Rt estimation vignette](https://package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.md) |
+| Fixed effects | Covariates (e.g., interventions) | `~1 + intervention + ...` | Include predictors |
+| Observation modifiers | Ascertainment variation (e.g., day of week) | `observation = ~1 + day_of_week` | Adjust for reporting patterns |
 
 **Key functions:**
 
@@ -164,13 +171,13 @@ demonstrates renewal process models with generation times.
 
 Build hierarchical models using the formula interface.
 
-| Feature              | What it does           | Syntax                                                                                            | Use case                       |
-|----------------------|------------------------|---------------------------------------------------------------------------------------------------|--------------------------------|
-| Random intercepts    | Group-level variation  | `~1 + (1 | group)`                                                                                | Partial pooling between groups |
-| Random slopes        | Group-specific effects | `~x + (x | group)`                                                                                | Effect varies by group         |
-| Random walks         | Temporal smoothing     | `~rw(time)`                                                                                       | Smooth trends over time        |
-| Grouped random walks | Group-specific trends  | `~rw(time, by = group)`                                                                           | Different trends per group     |
-| Sparse design        | Memory efficient       | `sparse = TRUE` in [`enw_formula()`](https://package.epinowcast.org/dev/reference/enw_formula.md) | Large sparse matrices          |
+| Feature | What it does | Syntax | Use case |
+|----|----|----|----|
+| Random intercepts | Group-level variation | `~1 + (1 | group)` | Partial pooling between groups |
+| Random slopes | Group-specific effects | `~x + (x | group)` | Effect varies by group |
+| Random walks | Temporal smoothing | `~rw(time)` | Smooth trends over time |
+| Grouped random walks | Group-specific trends | `~rw(time, by = group)` | Different trends per group |
+| Sparse design | Memory efficient | `sparse = TRUE` in [`enw_formula()`](https://package.epinowcast.org/dev/reference/enw_formula.md) | Large sparse matrices |
 
 **Key functions:**
 
@@ -194,11 +201,11 @@ and customised. To set custom priors, pass a `data.frame` with columns
 `variable`, `mean`, and `sd` to the `priors` argument of
 [`epinowcast()`](https://package.epinowcast.org/dev/reference/epinowcast.md).
 
-| Task                    | How to do it                              | Details                           |
-|-------------------------|-------------------------------------------|-----------------------------------|
-| Inspect module priors   | `enw_reference(data = pobs)$priors`       | Each module returns its defaults  |
-| Replace specific priors | `enw_replace_priors(priors, custom)`      | Merge custom values into defaults |
-| Pass to model           | `epinowcast(..., priors = custom_priors)` | Overrides matching defaults       |
+| Task | How to do it | Details |
+|----|----|----|
+| Inspect module priors | `enw_reference(data = pobs)$priors` | Each module returns its defaults |
+| Replace specific priors | `enw_replace_priors(priors, custom)` | Merge custom values into defaults |
+| Pass to model | `epinowcast(..., priors = custom_priors)` | Overrides matching defaults |
 
 **Key functions:**
 
@@ -213,19 +220,19 @@ and customised. To set custom priors, pass a `data.frame` with columns
 Handle two types of missing data: missing reference dates and missing
 observations.
 
-| Type                    | What it handles                                           | Use cases                                                                 | How to use                                                                                                                        |
-|-------------------------|-----------------------------------------------------------|---------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| Missing reference dates | Reports with known report date but unknown reference date | Model partial reporting                                                   | `enw_missing(formula = ~1)`                                                                                                       |
-| Missing observations    | Control which observations are used in the likelihood     | Forecasting, excluding outliers, handling NAs, testing parameter recovery | Set `.observed = FALSE` and use `observation_indicator` in [`enw_obs()`](https://package.epinowcast.org/dev/reference/enw_obs.md) |
+| Type | What it handles | Use cases | How to use |
+|----|----|----|----|
+| Missing reference dates | Reports with known report date but unknown reference date | Model partial reporting | `enw_missing(formula = ~1)` |
+| Missing observations | Control which observations are used in the likelihood | Forecasting, excluding outliers, handling NAs, testing parameter recovery | Set `.observed = FALSE` and use `observation_indicator` in [`enw_obs()`](https://package.epinowcast.org/dev/reference/enw_obs.md) |
 
 **Common missing observation workflows:**
 
-| Use case                | How to implement                                                                                                                                   |
-|-------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| Forecasting             | [`enw_extend_date()`](https://package.epinowcast.org/dev/reference/enw_extend_date.md) to add future dates marked as unobserved                    |
-| Exclude outliers        | Manually set `.observed = FALSE` for outlier observations                                                                                          |
-| Handle NAs              | [`enw_flag_observed_observations()`](https://package.epinowcast.org/dev/reference/enw_flag_observed_observations.md) marks NA values as unobserved |
-| Test parameter recovery | Set `.observed = FALSE` for subset of data, check if model recovers parameters                                                                     |
+| Use case | How to implement |
+|----|----|
+| Forecasting | [`enw_extend_date()`](https://package.epinowcast.org/dev/reference/enw_extend_date.md) to add future dates marked as unobserved |
+| Exclude outliers | Manually set `.observed = FALSE` for outlier observations |
+| Handle NAs | [`enw_flag_observed_observations()`](https://package.epinowcast.org/dev/reference/enw_flag_observed_observations.md) marks NA values as unobserved |
+| Test parameter recovery | Set `.observed = FALSE` for subset of data, check if model recovers parameters |
 
 **Key functions:**
 
@@ -259,12 +266,12 @@ observations.
 
 Assess model fit and compare models.
 
-| Method                      | What it provides                  | How to use                                           | Where to learn                                                                                                    |
-|-----------------------------|-----------------------------------|------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
-| Posterior predictive checks | Visual fit assessment             | `enw_fit_opts(pp = TRUE)`                            | [Model vignette](https://package.epinowcast.org/dev/articles/model.md)                                            |
-| LOO-CV                      | Model comparison                  | `enw_fit_opts(output_loglik = TRUE)` + `loo` package | See [`?loo::loo`](https://mc-stan.org/loo/reference/loo.html)                                                     |
-| Scoring rules               | Probabilistic forecast evaluation | `scoringutils` package                               | [Germany hierarchical vignette](https://package.epinowcast.org/dev/articles/germany-age-stratified-nowcasting.md) |
-| Convergence diagnostics     | MCMC quality checks               | Check `$fit$summary()`                               | [Stan help vignette](https://package.epinowcast.org/dev/articles/stan-help.md)                                    |
+| Method | What it provides | How to use | Where to learn |
+|----|----|----|----|
+| Posterior predictive checks | Visual fit assessment | `enw_fit_opts(pp = TRUE)` | [Model vignette](https://package.epinowcast.org/dev/articles/model.md) |
+| LOO-CV | Model comparison | `enw_fit_opts(output_loglik = TRUE)` + `loo` package | See [`?loo::loo`](https://mc-stan.org/loo/reference/loo.html) |
+| Scoring rules | Probabilistic forecast evaluation | `scoringutils` package | [Germany hierarchical vignette](https://package.epinowcast.org/dev/articles/germany-age-stratified-nowcasting.md) |
+| Convergence diagnostics | MCMC quality checks | Check `$fit$summary()` | [Stan help vignette](https://package.epinowcast.org/dev/articles/stan-help.md) |
 
 **Key functions:**
 
@@ -283,10 +290,10 @@ shows model scoring and evaluation.
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods are
 available for both preprocessed data and nowcast output.
 
-| Object                | Plot types                                                                               | What it shows                                     |
-|-----------------------|------------------------------------------------------------------------------------------|---------------------------------------------------|
-| `enw_preprocess_data` | `"obs"`, `"delay_cumulative"`, `"delay_fraction"`, `"delay_quantiles"`, `"delay_counts"` | Reporting patterns and delay structure            |
-| `epinowcast`          | `"nowcast"`, `"posterior_prediction"`                                                    | Nowcast estimates and posterior predictive checks |
+| Object | Plot types | What it shows |
+|----|----|----|
+| `enw_preprocess_data` | `"obs"`, `"delay_cumulative"`, `"delay_fraction"`, `"delay_quantiles"`, `"delay_counts"` | Reporting patterns and delay structure |
+| `epinowcast` | `"nowcast"`, `"posterior_prediction"` | Nowcast estimates and posterior predictive checks |
 
 **Key functions:**
 
@@ -312,14 +319,14 @@ demonstrates all preprocessing plot types.
 
 Control computational efficiency and parallelisation.
 
-| Feature                   | What it does                                  | How to specify                               | When to use                                 |
-|---------------------------|-----------------------------------------------|----------------------------------------------|---------------------------------------------|
-| Within-chain threading    | Parallel likelihood calculation across strata | `threads_per_chain = 4`                      | Many strata, large datasets, complex models |
-| Parallel chains           | Multiple chains simultaneously                | `parallel_chains = 4`                        | Multiple cores available                    |
-| Sparse design matrices    | Memory reduction                              | `sparse_design = TRUE`                       | Very sparse designs                         |
-| Likelihood aggregation    | Parallelisation level                         | `likelihood_aggregation = "snapshots"`       | Default usually best                        |
-| Pathfinder                | Fast approximate inference                    | `sampler = enw_pathfinder`                   | Exploration/debugging                       |
-| Pathfinder initialisation | Use pathfinder to initialise MCMC             | `init_method = "pathfinder"` in `enw_sample` | Improve MCMC convergence                    |
+| Feature | What it does | How to specify | When to use |
+|----|----|----|----|
+| Within-chain threading | Parallel likelihood calculation across strata | `threads_per_chain = 4` | Many strata, large datasets, complex models |
+| Parallel chains | Multiple chains simultaneously | `parallel_chains = 4` | Multiple cores available |
+| Sparse design matrices | Memory reduction | `sparse_design = TRUE` | Very sparse designs |
+| Likelihood aggregation | Parallelisation level | `likelihood_aggregation = "snapshots"` | Default usually best |
+| Pathfinder | Fast approximate inference | `sampler = enw_pathfinder` | Exploration/debugging |
+| Pathfinder initialisation | Use pathfinder to initialise MCMC | `init_method = "pathfinder"` in `enw_sample` | Improve MCMC convergence |
 
 **Key functions:**
 
@@ -340,14 +347,14 @@ guidance on computational settings.
 
 Prepare and process data for nowcasting.
 
-| Task                    | Functions                                                                                                                                                                                                            | Purpose                     |
-|-------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------|
-| Convert from line list  | [`enw_linelist_to_incidence()`](https://package.epinowcast.org/dev/reference/enw_linelist_to_incidence.md)                                                                                                           | Individual → aggregate data |
-| Complete date sequences | [`enw_complete_dates()`](https://package.epinowcast.org/dev/reference/enw_complete_dates.md)                                                                                                                         | Fill missing dates          |
-| Filter by dates         | [`enw_filter_report_dates()`](https://package.epinowcast.org/dev/reference/enw_filter_report_dates.md), [`enw_filter_reference_dates()`](https://package.epinowcast.org/dev/reference/enw_filter_reference_dates.md) | Subset data                 |
-| Add metadata            | [`enw_add_metaobs_features()`](https://package.epinowcast.org/dev/reference/enw_add_metaobs_features.md)                                                                                                             | Day of week, holidays, etc. |
-| Change timesteps        | [`enw_aggregate_cumulative()`](https://package.epinowcast.org/dev/reference/enw_aggregate_cumulative.md)                                                                                                             | Daily → weekly, etc.        |
-| Main preprocessing      | [`enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/enw_preprocess_data.md)                                                                                                                       | All-in-one wrapper          |
+| Task | Functions | Purpose |
+|----|----|----|
+| Convert from line list | [`enw_linelist_to_incidence()`](https://package.epinowcast.org/dev/reference/enw_linelist_to_incidence.md) | Individual → aggregate data |
+| Complete date sequences | [`enw_complete_dates()`](https://package.epinowcast.org/dev/reference/enw_complete_dates.md) | Fill missing dates |
+| Filter by dates | [`enw_filter_report_dates()`](https://package.epinowcast.org/dev/reference/enw_filter_report_dates.md), [`enw_filter_reference_dates()`](https://package.epinowcast.org/dev/reference/enw_filter_reference_dates.md) | Subset data |
+| Add metadata | [`enw_add_metaobs_features()`](https://package.epinowcast.org/dev/reference/enw_add_metaobs_features.md) | Day of week, holidays, etc. |
+| Change timesteps | [`enw_aggregate_cumulative()`](https://package.epinowcast.org/dev/reference/enw_aggregate_cumulative.md) | Daily → weekly, etc. |
+| Main preprocessing | [`enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/enw_preprocess_data.md) | All-in-one wrapper |
 
 **Where to see it:** The [getting started
 vignette](https://package.epinowcast.org/dev/articles/epinowcast.md)
@@ -360,15 +367,15 @@ interest. If you need any of these capabilities, please reach out via
 our [community forum](https://community.epinowcast.org/) or [GitHub
 discussions](https://github.com/epinowcast/epinowcast/discussions).
 
-| Feature                         | Status        | Notes                                                                                                                                                                                                                                                                                             |
-|---------------------------------|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Non-count data                  | Not supported | Currently limited to count data with Poisson/negative binomial likelihoods                                                                                                                                                                                                                        |
-| Negative updates                | Not supported | Cannot handle reporting corrections that reduce previously reported counts                                                                                                                                                                                                                        |
-| Delay-only models               | Not supported | Currently requires count data alongside delay modelling                                                                                                                                                                                                                                           |
-| **Retrospective Rt estimation** | Supported     | Use `max_delay = 1` or [`enw_retrospective()`](https://package.epinowcast.org/dev/reference/enw_retrospective.md) to skip delay modelling and estimate Rt from finalised counts. See the [Rt estimation vignette](https://package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.md) |
-| Susceptibility depletion        | Not supported | Renewal process assumes constant susceptibility                                                                                                                                                                                                                                                   |
-| Uncertain generation time       | Not supported | Generation time distribution treated as fixed and known                                                                                                                                                                                                                                           |
-| Forecasting examples            | Missing       | Functionality exists but lacks worked examples in vignettes                                                                                                                                                                                                                                       |
+| Feature | Status | Notes |
+|----|----|----|
+| Non-count data | Not supported | Currently limited to count data with Poisson/negative binomial likelihoods |
+| Negative updates | Not supported | Cannot handle reporting corrections that reduce previously reported counts |
+| Delay-only models | Not supported | Currently requires count data alongside delay modelling |
+| **Retrospective Rt estimation** | Supported | Use `max_delay = 1` or [`enw_retrospective()`](https://package.epinowcast.org/dev/reference/enw_retrospective.md) to skip delay modelling and estimate Rt from finalised counts. See the [Rt estimation vignette](https://package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.md) |
+| Susceptibility depletion | Not supported | Renewal process assumes constant susceptibility |
+| Uncertain generation time | Not supported | Generation time distribution treated as fixed and known |
+| Forecasting examples | Missing | Functionality exists but lacks worked examples in vignettes |
 
 **Get involved:** We welcome contributions and discussions about
 extending the package to support these features. See our [community
