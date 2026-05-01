@@ -397,11 +397,11 @@ ggplot(weekly_plot_data) +
 <p class="caption">Weekly-scale nowcasts from all four models on shared axes.</p>
 </div>
 
-All three daily-process models have CRPS in the tens at the weekly resolution while the pure weekly model sits at around 290 — an order-of-magnitude gap driven by its `rw(week)` random walk having only four weekly observations to learn from, so when the series turns over at the end of the window it lacks the within-week structure needed to catch the reversal and instead extrapolates the recent rising trend.
+All three daily-process models score much better on weekly CRPS than the pure weekly model on this slice — by roughly an order of magnitude — driven by the latter's `rw(week)` random walk having only four weekly observations to learn from, so when the series turns over at the end of the window it lacks the within-week structure needed to catch the reversal and instead extrapolates the recent rising trend.
 Bias and coverage tell a more nuanced story than CRPS alone.
 The daily-process models have small or near-zero bias on the daily scale but pick up a positive bias once their seven daily samples are summed: summing right-skewed posterior draws shifts the posterior mass upward and the weekly truth itself uses a slightly shorter reporting horizon than the daily samples (`enw_obs_at_delay(max_delay = 4, "week")` evaluates at three weeks while the daily samples are at twenty-seven days), so the same draws score well against daily truth but over-predict against weekly truth.
-Coverage should ideally match the nominal level, with both under- and over-coverage indicating miscalibration: the daily benchmark has the tightest intervals and under-covers severely on these three weeks, the fitted variant is closer to nominal but still under-covers, and the structural variant is wider than warranted (its 90 percent interval contains every common week).
-With only three common weeks scored, the coverage estimates have very limited resolution (each week shifts coverage by 33 percentage points) so they should be read as indicative rather than definitive.
+Coverage should ideally match the nominal level, with both under- and over-coverage indicating miscalibration: the daily benchmark has the tightest intervals and tends to under-cover, the fitted variant is closer to nominal but can still under-cover, and the structural variant tends to be wider than warranted at this aggregation.
+With only a small number of common weeks scored the coverage estimates have very limited resolution and should be read as indicative rather than definitive.
 On a flatter or more slowly varying series the gap between the weekly model and the daily-process models will be smaller; the gap can be larger near turning points like this one.
 
 ## Daily scale
@@ -504,18 +504,18 @@ ggplot(daily_plot_data) +
 </div>
 
 The daily benchmark has the lowest daily CRPS, as expected from the model with access to the full daily data.
-The two weekly-reporting variants are close behind: the structural variant tracks the benchmark very closely on CRPS, bias and coverage, and the fitted variant is a little wider with slightly negative bias and 90 percent coverage of 76 percent rather than the nominal 90.
+The two weekly-reporting variants are close behind: the structural variant tracks the benchmark very closely on CRPS, bias and coverage, while the fitted variant is a little wider with slightly negative bias and somewhat below-nominal coverage.
 This is the pay-off for using a daily latent process with a known reporting cycle: even when reporting only happens once a week, the daily-scale nowcasts barely degrade compared with a fully daily fit.
 
-The structural variant lands right at nominal 90 percent coverage on this slice, the benchmark slightly over-covers, and only the fitted variant under-covers; in all three the median tracks the truth closely.
-Where coverage is off (most visibly the fitted variant), the most likely cause is the default lognormal reporting delay with no temporal variation rather than the temporal scaffold itself.
+The structural variant typically lands close to nominal coverage on this slice, the benchmark close to or slightly above nominal, and the fitted variant a little below; in all three the median tracks the truth closely.
+Where coverage is off, the most likely cause is the default lognormal reporting delay with no temporal variation rather than the temporal scaffold itself.
 A non-parametric or time-varying delay (or an explicit day-of-week effect on the reporting hazard) would give the model the flexibility to track the lengthening tail; see [getting started](epinowcast.html) and `?enw_reference` for the available options.
 
 Together with the weekly-scale results above, this means the weekly-reporting scaffold gives up very little in either direction: it stays competitive at weekly aggregation and recovers the daily structure that a pure weekly model cannot represent at all.
 
 ## Runtime
 
-Comparable runtimes show how much computation each approach buys you.
+Different approaches also have different computational costs.
 
 
 ``` r
