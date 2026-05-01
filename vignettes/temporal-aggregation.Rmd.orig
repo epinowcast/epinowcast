@@ -356,7 +356,7 @@ On a flatter or more slowly varying series the gap between the weekly model and 
 
 We then compare approaches 2, 3, and 4 at the daily scale to check that the weekly-reporting variants recover daily structure rather than merely producing the right weekly totals.
 The pure weekly model is excluded because it has no daily output.
-Daily samples are scored against `latest_obs_daily` over the daily reference dates the three models share.
+Daily samples are scored against `latest_obs_daily` over the daily reference dates that fall within the same common weeks used for the weekly comparison, so the two tables cover the same period.
 
 ```{r daily-scores}
 samples_at_daily <- function(nowcast) {
@@ -380,6 +380,9 @@ common_days <- as.Date(Reduce(
   c(lapply(daily_samples, function(s) unique(s$reference_date)),
     list(daily_truth$reference_date))
 ))
+common_days <- common_days[
+  ceiling_to_weekly_bin(common_days) %in% common_weeks
+]
 
 scored_daily <- map_dfr(
   daily_samples,
@@ -426,13 +429,13 @@ ggplot(daily_plot_data) +
   theme(legend.position = "bottom")
 ```
 
-The daily benchmark has the lowest daily CRPS, the smallest bias, and the best 90 percent coverage, as expected from the model with access to the full daily data.
-The two weekly-reporting variants are close behind on CRPS, slightly more negatively biased, and only modestly worse on coverage.
+The daily benchmark has the lowest daily CRPS, as expected from the model with access to the full daily data.
+The two weekly-reporting variants are close behind: the structural variant tracks the benchmark very closely on CRPS, bias and coverage, and the fitted variant is a little wider with slightly negative bias and 90 percent coverage of 76 percent rather than the nominal 90.
 This is the pay-off for using a daily latent process with a known reporting cycle: even when reporting only happens once a week, the daily-scale nowcasts barely degrade compared with a fully daily fit.
 
-All three daily models under-cover at the 90 percent level — around 70-85 percent rather than the nominal 90 — with the latest data points sitting a little above their upper credible bands.
-Both under- and over-coverage signal miscalibration; here the issue is intervals that are slightly too tight, most likely a misspecification of the reporting delay rather than a problem with the temporal scaffold: we are using the default lognormal delay with no temporal variation, and a non-parametric or time-varying delay (or an explicit day-of-week effect on the reporting hazard) would give the model the flexibility to track the lengthening tail.
-The [getting started vignette](epinowcast.html) and `?enw_reference` cover the available options.
+The structural variant lands right at nominal 90 percent coverage on this slice, the benchmark slightly over-covers, and only the fitted variant under-covers; in all three the median tracks the truth closely.
+Where coverage is off (most visibly the fitted variant), the most likely cause is the default lognormal reporting delay with no temporal variation rather than the temporal scaffold itself.
+A non-parametric or time-varying delay (or an explicit day-of-week effect on the reporting hazard) would give the model the flexibility to track the lengthening tail; see [getting started](epinowcast.html) and `?enw_reference` for the available options.
 
 Together with the weekly-scale results above, this means the weekly-reporting scaffold gives up very little in either direction: it stays competitive at weekly aggregation and recovers the daily structure that a pure weekly model cannot represent at all.
 
