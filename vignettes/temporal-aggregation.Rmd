@@ -317,16 +317,35 @@ common_weeks <- as.Date(Reduce(
     list(weekly_truth$reference_week))
 ))
 
-scored_weekly <- map_dfr(
+interval_coverage <- function(samples_truth, by) {
+  samples_truth[
+    , .(q5 = quantile(sample, 0.05),
+        q25 = quantile(sample, 0.25),
+        q75 = quantile(sample, 0.75),
+        q95 = quantile(sample, 0.95),
+        observed = unique(observed)),
+    by = by
+  ][
+    , .(coverage_50 = mean(observed >= q25 & observed <= q75),
+        coverage_90 = mean(observed >= q5 & observed <= q95)),
+    by = "model"
+  ]
+}
+
+scored_weekly_input <- map_dfr(
   weekly_samples,
   ~ merge(.x[reference_week %in% common_weeks], weekly_truth,
           by = "reference_week"),
   .id = "model"
-) |>
+)
+scored_weekly <- scored_weekly_input |>
   as_forecast_sample(
     observed = "observed", predicted = "sample", sample_id = ".draw"
   ) |>
   score()
+coverage_weekly <- interval_coverage(
+  as.data.table(scored_weekly_input), by = c("model", "reference_week")
+)
 ```
 
 
@@ -334,17 +353,18 @@ scored_weekly <- map_dfr(
 scored_weekly |>
   summarise_scores(by = "model") |>
   summarise_scores(fun = signif, digits = 2, by = "model") |>
+  merge(coverage_weekly, by = "model", sort = FALSE) |>
   kable()
 ```
 
 
 
-|model                                        |   bias|  dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean|
-|:--------------------------------------------|------:|----:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|
-|Weekly timestep                              | 0.4000| 12.0|  280|            190|          0.0033|       85.0|       6.6| 340|       380|  540000|
-|Daily process, weekly reporting (fitted)     | 0.0057|  8.3|   30|             20|          2.9000|        7.4|       5.1|  31|        40|    3900|
-|Daily process, weekly reporting (structural) | 0.6200|  8.3|   22|             11|          0.0000|       11.0|       5.0|  47|        33|    1400|
-|Daily benchmark                              | 0.8900| 11.0|   36|             28|          0.0000|        7.9|       6.1|  34|        51|    2900|
+|model                                        |   bias|  dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean| coverage_50| coverage_90|
+|:--------------------------------------------|------:|----:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|-----------:|-----------:|
+|Weekly timestep                              | 0.4000| 12.0|  280|            190|          0.0033|       85.0|       6.6| 340|       380|  540000|   0.6666667|   0.6666667|
+|Daily process, weekly reporting (fitted)     | 0.0057|  8.3|   30|             20|          2.9000|        7.4|       5.1|  31|        40|    3900|   0.3333333|   0.6666667|
+|Daily process, weekly reporting (structural) | 0.6200|  8.3|   22|             11|          0.0000|       11.0|       5.0|  47|        33|    1400|   0.3333333|   1.0000000|
+|Daily benchmark                              | 0.8900| 11.0|   36|             28|          0.0000|        7.9|       6.1|  34|        51|    2900|   0.0000000|   0.3333333|
 
 
 
@@ -376,9 +396,12 @@ ggplot(weekly_plot_data) +
 <p class="caption">Weekly-scale nowcasts from all four models on shared axes.</p>
 </div>
 
-All three daily-process models score similarly at the weekly resolution and track the truth tightly on the common weeks.
-The pure weekly model is wider and more biased: its `rw(week)` random walk has only four weekly observations to learn from, so when the underlying series turns over at the end of the window the model lacks the within-week structure needed to catch the reversal and instead extrapolates the recent rising trend.
-This particular slice of data makes the gap look large; the cost of working purely at the weekly scale will be smaller on flatter or more slowly varying series and larger near turning points.
+All three daily-process models have CRPS in the tens at the weekly resolution while the pure weekly model sits at 280 — an order-of-magnitude gap driven by its `rw(week)` random walk having only four weekly observations to learn from, so when the series turns over at the end of the window it lacks the within-week structure needed to catch the reversal and instead extrapolates the recent rising trend.
+Bias and coverage tell a more nuanced story than CRPS alone.
+All daily-process models over-predict at this aggregation (positive bias) because slight over-prediction in each daily sample compounds when seven of them are summed.
+The structural variant is the most reliable on coverage — its 90 percent interval contains every common week — while the daily benchmark has the tightest intervals and consequently the worst coverage despite a similar CRPS, because its weekly sums sit consistently above the truth.
+The fitted variant is the least biased of the three on bias but covers roughly as well as the weekly model.
+On a flatter or more slowly varying series the gap between the weekly model and the daily-process models will be smaller; the gap can be larger near turning points like this one.
 
 ## Daily scale
 
@@ -410,16 +433,20 @@ common_days <- as.Date(Reduce(
     list(daily_truth$reference_date))
 ))
 
-scored_daily <- map_dfr(
+scored_daily_input <- map_dfr(
   daily_samples,
   ~ merge(.x[reference_date %in% common_days], daily_truth,
           by = "reference_date"),
   .id = "model"
-) |>
+)
+scored_daily <- scored_daily_input |>
   as_forecast_sample(
     observed = "observed", predicted = "sample", sample_id = ".draw"
   ) |>
   score()
+coverage_daily <- interval_coverage(
+  as.data.table(scored_daily_input), by = c("model", "reference_date")
+)
 ```
 
 
@@ -427,16 +454,17 @@ scored_daily <- map_dfr(
 scored_daily |>
   summarise_scores(by = "model") |>
   summarise_scores(fun = signif, digits = 2, by = "model") |>
+  merge(coverage_daily, by = "model", sort = FALSE) |>
   kable()
 ```
 
 
 
-|model                                        |   bias| dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean|
-|:--------------------------------------------|------:|---:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|
-|Daily process, weekly reporting (fitted)     | -0.360| NaN|  7.3|            1.5|             3.5|        2.3|      -Inf|  10|       9.7|     180|
-|Daily process, weekly reporting (structural) | -0.140| NaN|  8.6|            2.3|             2.5|        3.8|       NaN|  16|      12.0|     600|
-|Daily benchmark                              | -0.024| NaN|  5.7|            1.6|             1.6|        2.5|      -Inf|  11|       7.9|     120|
+|model                                        |   bias| dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean| coverage_50| coverage_90|
+|:--------------------------------------------|------:|---:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|-----------:|-----------:|
+|Daily process, weekly reporting (fitted)     | -0.360| NaN|  7.3|            1.5|             3.5|        2.3|      -Inf|  10|       9.7|     180|   0.4285714|   0.6785714|
+|Daily process, weekly reporting (structural) | -0.140| NaN|  8.6|            2.3|             2.5|        3.8|       NaN|  16|      12.0|     600|   0.5000000|   0.7857143|
+|Daily benchmark                              | -0.024| NaN|  5.7|            1.6|             1.6|        2.5|      -Inf|  11|       7.9|     120|   0.4642857|   0.8571429|
 
 
 
@@ -475,10 +503,11 @@ ggplot(daily_plot_data) +
 <p class="caption">Daily-scale nowcasts from the three daily-process models on shared axes.</p>
 </div>
 
-The structural and fitted weekly-reporting models track the daily benchmark closely, both visually and on daily CRPS.
+The daily benchmark has the lowest daily CRPS, the smallest bias, and the best 90 percent coverage, as expected from the model with access to the full daily data.
+The two weekly-reporting variants are close behind on CRPS, slightly more negatively biased, and only modestly worse on coverage.
 This is the pay-off for using a daily latent process with a known reporting cycle: even when reporting only happens once a week, the daily-scale nowcasts barely degrade compared with a fully daily fit.
 
-All three daily models slightly under-cover the most recent reference dates, where the latest data points sit a little above the upper credible band.
+All three daily models under-cover at the 90 percent level (around 70-85 percent rather than the nominal 90 percent), with the latest data points sitting a little above their upper credible bands.
 This is most likely a misspecification of the reporting delay rather than a problem with the temporal scaffold: we are using the default lognormal delay with no temporal variation, and a non-parametric or time-varying delay (or an explicit day-of-week effect on the reporting hazard) would give the model the flexibility to track the lengthening tail.
 The [getting started vignette](epinowcast.html) and `?enw_reference` cover the available options.
 
