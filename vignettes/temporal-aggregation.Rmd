@@ -385,6 +385,10 @@ ggplot(weekly_plot_data) +
     inherit.aes = FALSE, size = 1.5
   ) +
   labs(x = "Reference week", y = "Notifications") +
+  guides(
+    colour = guide_legend(nrow = 2),
+    fill = guide_legend(nrow = 2)
+  ) +
   theme(legend.position = "bottom")
 ```
 
@@ -487,6 +491,10 @@ ggplot(daily_plot_data) +
     inherit.aes = FALSE, size = 1
   ) +
   labs(x = "Reference date", y = "Notifications") +
+  guides(
+    colour = guide_legend(nrow = 2),
+    fill = guide_legend(nrow = 2)
+  ) +
   theme(legend.position = "bottom")
 ```
 
