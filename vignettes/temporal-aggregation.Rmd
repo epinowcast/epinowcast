@@ -498,10 +498,10 @@ runtimes <- data.table(
     "Daily benchmark"
   ),
   `Run time (s)` = signif(c(
-    nowcast_weekly$run_time,
-    nowcast_weekly_rep$run_time,
-    nowcast_weekly_rep_structural$run_time,
-    nowcast_daily$run_time
+    enw_get_data(nowcast_weekly, "run_time"),
+    enw_get_data(nowcast_weekly_rep, "run_time"),
+    enw_get_data(nowcast_weekly_rep_structural, "run_time"),
+    enw_get_data(nowcast_daily, "run_time")
   ), 2)
 )
 kable(runtimes)
@@ -520,7 +520,7 @@ kable(runtimes)
 
 The pure weekly model is the cheapest by a wide margin — five weekly delay bins is a much smaller reporting triangle than 28 daily bins, and the model has correspondingly fewer parameters.
 Among the daily models the structural variant is fastest for two reasons: pinning the reporting cycle removes the day-of-week random effect on the report side, and `observation_indicator = ".observed"` restricts the likelihood to Wednesday-only cells, so the model evaluates roughly seven times fewer likelihood contributions than the fitted variant or the daily benchmark.
-The fitted variant is the slowest as it has to learn the day-of-week effect from the full daily grid under sparse Wednesday-only signal and uses a lower `adapt_delta`; the daily benchmark sits between them.
+The fitted variant has the simplest likelihood per evaluation of the two remaining models — the LOCF step function in `confirm` is highly redundant — but it has to explore a wider posterior over the day-of-week random effects, so its run time and the daily benchmark's are similar and the ordering between them depends on Stan's run-to-run variability.
 
 # Choosing an approach
 
