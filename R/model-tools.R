@@ -63,7 +63,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     # Store dense matrices
     data$fdesign <- formula$fixed$design
     if (fintercept) {
-      data$fdesign <- data$fdesign[, -1]
+      data$fdesign <- data$fdesign[, -1, drop = FALSE]
     }
     data$rdesign <- formula$random$design
 
