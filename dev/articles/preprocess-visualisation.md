@@ -27,9 +27,10 @@ Code
 
 ``` r
 
-nat_germany_hosp <-
-  germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
-  enw_filter_report_dates(latest_date = "2021-10-01")
+nat_germany_hosp <- enw_filter_report_dates(
+  germany_covid19_hosp[location == "DE"][age_group == "00+"],
+  latest_date = "2021-10-01"
+)
 
 retro_nat_germany <- nat_germany_hosp |>
   enw_filter_report_dates(remove_days = 40) |>

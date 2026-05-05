@@ -350,12 +350,14 @@ ceiling_to_weekly_bin <- function(x) {
 samples_to_weekly <- function(nowcast, daily = TRUE) {
   samples <- as.data.table(summary(nowcast, type = "nowcast_samples"))
   if (daily) {
+    # nolint start: object_usage_linter.
     samples[, reference_week := ceiling_to_weekly_bin(reference_date)]
     samples <- samples[
       , .(sample = sum(sample), n_days = .N),
       by = c("reference_week", ".draw")
     ]
     samples <- samples[n_days == 7L][, n_days := NULL]
+    # nolint end
   } else {
     samples <- samples[, .(reference_week = as.Date(reference_date),
                            .draw, sample)]
