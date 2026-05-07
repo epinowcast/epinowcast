@@ -67,6 +67,36 @@
       attr(,"assign")
       [1] 0
       
+      $data$rep_arima_present
+      [1] 0
+      
+      $data$rep_arima_T
+      [1] 0
+      
+      $data$rep_arima_G
+      [1] 0
+      
+      $data$rep_arima_p
+      [1] 0
+      
+      $data$rep_arima_d
+      [1] 0
+      
+      $data$rep_arima_q
+      [1] 0
+      
+      $data$rep_arima_type
+      [1] 1
+      
+      $data$rep_arima_n_obs
+      [1] 0
+      
+      $data$rep_arima_time_idx
+      integer(0)
+      
+      $data$rep_arima_group_idx
+      integer(0)
+      
       $data$rep_agg_p
       [1] 0
       

@@ -176,6 +176,36 @@
       attr(,"assign")
       [1] 1 2 3
       
+      $data$refp_arima_present
+      [1] 0
+      
+      $data$refp_arima_T
+      [1] 0
+      
+      $data$refp_arima_G
+      [1] 0
+      
+      $data$refp_arima_p
+      [1] 0
+      
+      $data$refp_arima_d
+      [1] 0
+      
+      $data$refp_arima_q
+      [1] 0
+      
+      $data$refp_arima_type
+      [1] 1
+      
+      $data$refp_arima_n_obs
+      [1] 0
+      
+      $data$refp_arima_time_idx
+      integer(0)
+      
+      $data$refp_arima_group_idx
+      integer(0)
+      
       $data$model_refp
       [1] 2
       
@@ -1049,6 +1079,36 @@
       attr(,"assign")
       [1] 0
       
+      $data$refnp_arima_present
+      [1] 0
+      
+      $data$refnp_arima_T
+      [1] 0
+      
+      $data$refnp_arima_G
+      [1] 0
+      
+      $data$refnp_arima_p
+      [1] 0
+      
+      $data$refnp_arima_d
+      [1] 0
+      
+      $data$refnp_arima_q
+      [1] 0
+      
+      $data$refnp_arima_type
+      [1] 1
+      
+      $data$refnp_arima_n_obs
+      [1] 0
+      
+      $data$refnp_arima_time_idx
+      integer(0)
+      
+      $data$refnp_arima_group_idx
+      integer(0)
+      
       $data$model_refnp
       [1] 0
       
@@ -1119,6 +1179,36 @@
            (Intercept)
       attr(,"assign")
       [1] 0
+      
+      $data$refp_arima_present
+      [1] 0
+      
+      $data$refp_arima_T
+      [1] 0
+      
+      $data$refp_arima_G
+      [1] 0
+      
+      $data$refp_arima_p
+      [1] 0
+      
+      $data$refp_arima_d
+      [1] 0
+      
+      $data$refp_arima_q
+      [1] 0
+      
+      $data$refp_arima_type
+      [1] 1
+      
+      $data$refp_arima_n_obs
+      [1] 0
+      
+      $data$refp_arima_time_idx
+      integer(0)
+      
+      $data$refp_arima_group_idx
+      integer(0)
       
       $data$model_refp
       [1] 0
@@ -3620,6 +3710,36 @@
       attr(,"assign")
       [1] 1 2 3
       
+      $data$refnp_arima_present
+      [1] 0
+      
+      $data$refnp_arima_T
+      [1] 0
+      
+      $data$refnp_arima_G
+      [1] 0
+      
+      $data$refnp_arima_p
+      [1] 0
+      
+      $data$refnp_arima_d
+      [1] 0
+      
+      $data$refnp_arima_q
+      [1] 0
+      
+      $data$refnp_arima_type
+      [1] 1
+      
+      $data$refnp_arima_n_obs
+      [1] 0
+      
+      $data$refnp_arima_time_idx
+      integer(0)
+      
+      $data$refnp_arima_group_idx
+      integer(0)
+      
       $data$model_refnp
       [1] 1
       
@@ -3692,6 +3812,36 @@
            (Intercept)
       attr(,"assign")
       [1] 0
+      
+      $data$refp_arima_present
+      [1] 0
+      
+      $data$refp_arima_T
+      [1] 0
+      
+      $data$refp_arima_G
+      [1] 0
+      
+      $data$refp_arima_p
+      [1] 0
+      
+      $data$refp_arima_d
+      [1] 0
+      
+      $data$refp_arima_q
+      [1] 0
+      
+      $data$refp_arima_type
+      [1] 1
+      
+      $data$refp_arima_n_obs
+      [1] 0
+      
+      $data$refp_arima_time_idx
+      integer(0)
+      
+      $data$refp_arima_group_idx
+      integer(0)
       
       $data$model_refp
       [1] 2
@@ -4579,6 +4729,36 @@
       4     0         1
       attr(,"assign")
       [1] 1 2
+      
+      $data$refnp_arima_present
+      [1] 0
+      
+      $data$refnp_arima_T
+      [1] 0
+      
+      $data$refnp_arima_G
+      [1] 0
+      
+      $data$refnp_arima_p
+      [1] 0
+      
+      $data$refnp_arima_d
+      [1] 0
+      
+      $data$refnp_arima_q
+      [1] 0
+      
+      $data$refnp_arima_type
+      [1] 1
+      
+      $data$refnp_arima_n_obs
+      [1] 0
+      
+      $data$refnp_arima_time_idx
+      integer(0)
+      
+      $data$refnp_arima_group_idx
+      integer(0)
       
       $data$model_refnp
       [1] 1

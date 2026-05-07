@@ -16,6 +16,9 @@
       $parsed_formula$rw
       character(0)
       
+      $parsed_formula$arima
+      character(0)
+      
       
       $expanded_formula
       [1] "~1 + age_group"
@@ -47,6 +50,9 @@
       [1] 1
       
       
+      $arima
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -68,6 +74,9 @@
       
       
       $parsed_formula$rw
+      character(0)
+      
+      $parsed_formula$arima
       character(0)
       
       
@@ -102,6 +111,9 @@
       [1] 1 2
       
       
+      $arima
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -123,6 +135,9 @@
       
       
       $parsed_formula$rw
+      character(0)
+      
+      $parsed_formula$arima
       character(0)
       
       
@@ -214,6 +229,9 @@
       [1] 1 2 3 4 5 6 7 8
       
       
+      $arima
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -236,6 +254,9 @@
       
       
       $parsed_formula$rw
+      character(0)
+      
+      $parsed_formula$arima
       character(0)
       
       
@@ -279,6 +300,9 @@
       [1] 1 2 3 4
       
       
+      $arima
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -301,6 +325,9 @@
       
       $parsed_formula$rw
       [1] "rw(week)"
+      
+      $parsed_formula$arima
+      character(0)
       
       
       $expanded_formula
@@ -337,6 +364,9 @@
       [1] 1 2 3
       
       
+      $arima
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -359,6 +389,9 @@
       
       $parsed_formula$rw
       [1] "rw(week, age_group)"
+      
+      $parsed_formula$arima
+      character(0)
       
       
       $expanded_formula
@@ -401,6 +434,9 @@
       [1] 1 2 3 4
       
       
+      $arima
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -423,6 +459,9 @@
       
       $parsed_formula$rw
       [1] "rw(week)"
+      
+      $parsed_formula$arima
+      character(0)
       
       
       $expanded_formula
@@ -464,6 +503,9 @@
       [1] 1 2 3 4
       
       
+      $arima
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -485,6 +527,9 @@
       
       
       $parsed_formula$rw
+      character(0)
+      
+      $parsed_formula$arima
       character(0)
       
       
@@ -519,6 +564,9 @@
       [1] 1 2
       
       
+      $arima
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -538,6 +586,9 @@
       NULL
       
       $parsed_formula$rw
+      character(0)
+      
+      $parsed_formula$arima
       character(0)
       
       
@@ -575,6 +626,9 @@
       integer(0)
       
       
+      $arima
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -599,6 +653,9 @@
       
       
       $parsed_formula$rw
+      character(0)
+      
+      $parsed_formula$arima
       character(0)
       
       
@@ -670,6 +727,9 @@
       [1] 1 2 3 4 5 6 7 8 9
       
       
+      $arima
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -692,6 +752,9 @@
       
       $parsed_formula$rw
       [1] "rw(week)"
+      
+      $parsed_formula$arima
+      character(0)
       
       
       $expanded_formula
@@ -725,6 +788,9 @@
       $random$index
       [1] 1 2 3
       
+      
+      $arima
+      list()
       
       attr(,"class")
       [1] "enw_formula" "list"       

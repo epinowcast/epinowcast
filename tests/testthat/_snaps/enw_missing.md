@@ -81,6 +81,36 @@
       attr(,"assign")
       [1] 1 2
       
+      $data$miss_arima_present
+      [1] 0
+      
+      $data$miss_arima_T
+      [1] 0
+      
+      $data$miss_arima_G
+      [1] 0
+      
+      $data$miss_arima_p
+      [1] 0
+      
+      $data$miss_arima_d
+      [1] 0
+      
+      $data$miss_arima_q
+      [1] 0
+      
+      $data$miss_arima_type
+      [1] 1
+      
+      $data$miss_arima_n_obs
+      [1] 0
+      
+      $data$miss_arima_time_idx
+      integer(0)
+      
+      $data$miss_arima_group_idx
+      integer(0)
+      
       $data$miss_st
       [1] 21
       
@@ -189,6 +219,36 @@
       
       $data$miss_rdesign
       numeric(0)
+      
+      $data$miss_arima_present
+      [1] 0
+      
+      $data$miss_arima_T
+      [1] 0
+      
+      $data$miss_arima_G
+      [1] 0
+      
+      $data$miss_arima_p
+      [1] 0
+      
+      $data$miss_arima_d
+      [1] 0
+      
+      $data$miss_arima_q
+      [1] 0
+      
+      $data$miss_arima_type
+      [1] 1
+      
+      $data$miss_arima_n_obs
+      [1] 0
+      
+      $data$miss_arima_time_idx
+      integer(0)
+      
+      $data$miss_arima_group_idx
+      integer(0)
       
       $data$missing_reference
       numeric(0)
