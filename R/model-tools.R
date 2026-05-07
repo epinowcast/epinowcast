@@ -21,6 +21,15 @@
 #'  - `prefix_rdesign`: The random effects design matrix
 #'  - `prefix_rncol`: The number of columns (i.e random effects) in the random
 #'  effect design matrix (minus 1 as the intercept is dropped).
+#'  - `prefix_arima_present`: `1` if the formula contains an [arima()] term,
+#'  `0` otherwise.
+#'  - `prefix_arima_T`, `prefix_arima_G`: ARIMA series length and group count.
+#'  - `prefix_arima_p`, `prefix_arima_d`, `prefix_arima_q`: ARIMA orders.
+#'  - `prefix_arima_type`: `1` if ARIMA parameters are shared across groups
+#'  ("dependent"), `0` if per-group ("independent").
+#'  - `prefix_arima_time_idx`, `prefix_arima_group_idx`: per-observation
+#'  lookup vectors into the latent ARIMA series.
+#'  - `prefix_arima_n_obs`: length of the lookup vectors.
 #' @family modeltools
 #' @importFrom cli cli_abort
 #' @export
@@ -39,7 +48,17 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     fncol = 0,
     rncol = 0,
     fdesign = numeric(0),
-    rdesign = numeric(0)
+    rdesign = numeric(0),
+    arima_present = 0L,
+    arima_T = 0L,
+    arima_G = 0L,
+    arima_p = 0L,
+    arima_d = 0L,
+    arima_q = 0L,
+    arima_type = 1L,
+    arima_n_obs = 0L,
+    arima_time_idx = integer(0),
+    arima_group_idx = integer(0)
   )
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
@@ -67,6 +86,24 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     }
     data$rdesign <- formula$random$design
 
+    if (length(formula$arima) > 1L) {
+      cli::cli_abort(
+        "Only one `arima()` term per formula is currently supported."
+      )
+    }
+    if (length(formula$arima) == 1L) {
+      a <- formula$arima[[1]]
+      data$arima_present <- 1L
+      data$arima_T <- a$T
+      data$arima_G <- a$G
+      data$arima_p <- a$p
+      data$arima_d <- a$d
+      data$arima_q <- a$q
+      data$arima_type <- as.integer(a$type == "dependent")
+      data$arima_n_obs <- length(a$time_idx)
+      data$arima_time_idx <- as.integer(a$time_idx)
+      data$arima_group_idx <- as.integer(a$group_idx)
+    }
   }
   names(data) <- sprintf("%s_%s", prefix, names(data))
   data

@@ -30,6 +30,15 @@ design matrix (minus 1 if an intercept is present).
 \item \code{prefix_rdesign}: The random effects design matrix
 \item \code{prefix_rncol}: The number of columns (i.e random effects) in the random
 effect design matrix (minus 1 as the intercept is dropped).
+\item \code{prefix_arima_present}: \code{1} if the formula contains an \code{\link[=arima]{arima()}} term,
+\code{0} otherwise.
+\item \code{prefix_arima_T}, \code{prefix_arima_G}: ARIMA series length and group count.
+\item \code{prefix_arima_p}, \code{prefix_arima_d}, \code{prefix_arima_q}: ARIMA orders.
+\item \code{prefix_arima_type}: \code{1} if ARIMA parameters are shared across groups
+("dependent"), \code{0} if per-group ("independent").
+\item \code{prefix_arima_time_idx}, \code{prefix_arima_group_idx}: per-observation
+lookup vectors into the latent ARIMA series.
+\item \code{prefix_arima_n_obs}: length of the lookup vectors.
 }
 }
 \description{

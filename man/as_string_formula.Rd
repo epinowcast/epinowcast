@@ -23,12 +23,16 @@ epinowcast:::as_string_formula(~ 1 + age_group)
 }
 \seealso{
 Functions used to help convert formulas into model designs
+\code{\link{arima}()},
+\code{\link{arima_terms}()},
+\code{\link{construct_arima}()},
 \code{\link{construct_re}()},
 \code{\link{construct_rw}()},
 \code{\link{enw_formula}()},
 \code{\link{enw_manual_formula}()},
 \code{\link{parse_formula}()},
 \code{\link{re}()},
+\code{\link{remove_arima_terms}()},
 \code{\link{remove_rw_terms}()},
 \code{\link{rw}()},
 \code{\link{rw_terms}()},

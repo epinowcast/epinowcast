@@ -87,8 +87,23 @@ effects that evolve smoothly over time. For example:
 variance across locations
 }
 
-These three types of effects can be combined in a single formula, for
-example: \code{~ 1 + age_group + (1 | location) + rw(week, location)}
+\strong{ARIMA residuals}: Uses the \code{\link[=arima]{arima()}} helper to add an ARIMA(p, d, q)
+latent residual series to the linear predictor. Unlike \code{\link[=rw]{rw()}}, the
+kernel that maps unit-normal shocks to the latent series depends on
+the autoregressive and moving-average parameters, so the term does
+not produce design-matrix columns; it carries lookup metadata that
+the Stan layer uses with the kernel from
+\code{inst/stan/functions/arima_kernel.stan}. For example:
+\itemize{
+\item \code{~ arima(week)}: AR(1) on weekly residuals
+\item \code{~ arima(week, location, p = 2, d = 1, q = 1)}: ARIMA(2, 1, 1) per
+location with shared parameters across groups by setting
+\code{type = "dependent"}
+\item \code{arima(time, d = 1, p = 0, q = 0)} is equivalent to \code{rw(time)}
+}
+
+These four types of effects can be combined in a single formula,
+for example: \code{~ 1 + age_group + (1 | location) + rw(week, location)}
 specifies fixed age effects, random location intercepts, and
 location-specific random walks over time.
 }
@@ -166,12 +181,16 @@ doi:10.18637/jss.v067.i01
 }
 \seealso{
 Functions used to help convert formulas into model designs
+\code{\link{arima}()},
+\code{\link{arima_terms}()},
 \code{\link{as_string_formula}()},
+\code{\link{construct_arima}()},
 \code{\link{construct_re}()},
 \code{\link{construct_rw}()},
 \code{\link{enw_manual_formula}()},
 \code{\link{parse_formula}()},
 \code{\link{re}()},
+\code{\link{remove_arima_terms}()},
 \code{\link{remove_rw_terms}()},
 \code{\link{rw}()},
 \code{\link{rw_terms}()},
