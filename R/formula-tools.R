@@ -373,15 +373,9 @@ arima <- function(time, by, p = 1, d = 0, q = 0,
   } else {
     by <- deparse(substitute(by))
   }
-  if (!is.numeric(p) || p < 0 || p != as.integer(p)) {
-    cli::cli_abort("`p` must be a non-negative integer.")
-  }
-  if (!is.numeric(d) || d < 0 || d != as.integer(d)) {
-    cli::cli_abort("`d` must be a non-negative integer.")
-  }
-  if (!is.numeric(q) || q < 0 || q != as.integer(q)) {
-    cli::cli_abort("`q` must be a non-negative integer.")
-  }
+  .check_arima_order(p, "p")
+  .check_arima_order(d, "d")
+  .check_arima_order(q, "q")
   if (p == 0 && d == 0 && q == 0) {
     cli::cli_abort(
       "`arima(p = 0, d = 0, q = 0)` is degenerate; use a fixed effect."
@@ -394,6 +388,16 @@ arima <- function(time, by, p = 1, d = 0, q = 0,
   )
   class(out) <- "enw_arima_term"
   out
+}
+
+# Internal helper: validate that an ARIMA order argument is a non-negative
+# integer. Used to keep `arima()` cyclomatic complexity below the lint
+# threshold without changing its public behaviour.
+.check_arima_order <- function(value, name) {
+  if (!is.numeric(value) || value < 0 || value != as.integer(value)) {
+    cli::cli_abort("`{name}` must be a non-negative integer.")
+  }
+  invisible(NULL)
 }
 
 #' Constructs random walk terms
@@ -1128,7 +1132,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
       parsed_formula$arima,
       ~ eval(parse(text = paste0("epinowcast::", .)))
     )
-    arima_specs <- purrr::map(arima_specs, ~ construct_arima(., data))
+    arima_specs <- purrr::map(arima_specs, construct_arima, data = data)
   } else {
     arima_specs <- list()
   }
