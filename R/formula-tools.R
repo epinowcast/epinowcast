@@ -771,6 +771,22 @@ construct_re <- function(re, data) {
 #' a fixed effects matrix (which may be sparse for computational efficiency)
 #' and a random effects matrix that defines the hierarchical structure.
 #'
+#' ## Divergence from lme4
+#'
+#' `epinowcast` diverges from `lme4` and `brms` in two ways. Random
+#' effects within a group are assumed to have independent standard
+#' deviations. We do not fit a correlation between random intercepts
+#' and slopes as `(1 + x | g)` would in `lme4`. In practice most formulas
+#' in this package have a single effect per group, so a correlation does
+#' not apply. Fixed and random effect design matrices are also stacked
+#' internally rather than added; the two formulations are mathematically
+#' equivalent.
+#'
+#' We have looked into both alternatives and do not currently plan to
+#' change either. If you have a use case where correlated random-effect
+#' standard deviations would help, please open an issue at
+#' <https://github.com/epinowcast/epinowcast/issues>.
+#'
 #' @references
 #' For users new to formula syntax in R:
 #' - **Fixed effects**: See `?formula` and the "Statistical Models in R"

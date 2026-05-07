@@ -112,6 +112,23 @@ vary by covariates and groups. The formula is converted to design matrices:
 a fixed effects matrix (which may be sparse for computational efficiency)
 and a random effects matrix that defines the hierarchical structure.
 }
+
+\subsection{Divergence from lme4}{
+
+\code{epinowcast} diverges from \code{lme4} and \code{brms} in two ways. Random
+effects within a group are assumed to have independent standard
+deviations. We do not fit a correlation between random intercepts
+and slopes as \code{(1 + x | g)} would in \code{lme4}. In practice most formulas
+in this package have a single effect per group, so a correlation does
+not apply. Fixed and random effect design matrices are also stacked
+internally rather than added; the two formulations are mathematically
+equivalent.
+
+We have looked into both alternatives and do not currently plan to
+change either. If you have a use case where correlated random-effect
+standard deviations would help, please open an issue at
+\url{https://github.com/epinowcast/epinowcast/issues}.
+}
 }
 \examples{
 # Use meta data for references dates from the Germany COVID-19
