@@ -11,11 +11,9 @@ rw(time, by)
 
 \item{by}{Defines the grouping parameter used for the random walk.
 If not specified no grouping is used. Currently this is limited to a single
-variable.}
-
-\item{type}{Character string, how standard deviation of grouped random
-walks is estimated: "independent", or "dependent" across groups;
-enforced by \code{\link[base:match.arg]{base::match.arg()}}.}
+variable. Each group draws an independent shock series; the latent
+standard deviation is shared across groups (per-group standard
+deviations are a planned extension).}
 }
 \value{
 A list of class \code{enw_arima_term} (with \code{p = 0}, \code{d = 1},

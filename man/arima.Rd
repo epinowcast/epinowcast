@@ -22,16 +22,12 @@ Defaults to 0.}
 
 \item{q}{Non-negative integer. Order of the moving-average part.
 Defaults to 0.}
-
-\item{type}{Character string, controls how parameters of grouped
-ARIMA series are pooled across groups. \code{"dependent"} shares \code{phi},
-\code{theta}, and \code{sigma} across groups (a single ARIMA process applied
-independently to each group's shocks). \code{"independent"} fits a
-separate set of parameters per group. Enforced by \code{\link[base:match.arg]{base::match.arg()}}.}
 }
 \value{
 A list of class \code{enw_arima_term} describing the ARIMA term,
-interpretable by \code{\link[=construct_arima]{construct_arima()}}.
+interpretable by \code{\link[=construct_arima]{construct_arima()}}. Each group draws an independent
+shock series; \code{phi}, \code{theta}, and \code{sigma} are shared across groups
+(per-group parameters are a planned extension).
 }
 \description{
 A call to \code{arima()} can be used in the \code{formula} argument

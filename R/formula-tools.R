@@ -289,11 +289,9 @@ parse_formula <- function(formula) {
 #'
 #' @param by Defines the grouping parameter used for the random walk.
 #' If not specified no grouping is used. Currently this is limited to a single
-#' variable.
-#'
-#' @param type Character string, how standard deviation of grouped random
-#' walks is estimated: "independent", or "dependent" across groups;
-#' enforced by [base::match.arg()].
+#' variable. Each group draws an independent shock series; the latent
+#' standard deviation is shared across groups (per-group standard
+#' deviations are a planned extension).
 #'
 #' @return A list of class `enw_arima_term` (with `p = 0`, `d = 1`,
 #' `q = 0`) that can be interpreted by [construct_arima()].
@@ -353,14 +351,10 @@ rw <- function(time, by) {
 #' @param q Non-negative integer. Order of the moving-average part.
 #' Defaults to 0.
 #'
-#' @param type Character string, controls how parameters of grouped
-#' ARIMA series are pooled across groups. `"dependent"` shares `phi`,
-#' `theta`, and `sigma` across groups (a single ARIMA process applied
-#' independently to each group's shocks). `"independent"` fits a
-#' separate set of parameters per group. Enforced by [base::match.arg()].
-#'
 #' @return A list of class `enw_arima_term` describing the ARIMA term,
-#' interpretable by [construct_arima()].
+#' interpretable by [construct_arima()]. Each group draws an independent
+#' shock series; `phi`, `theta`, and `sigma` are shared across groups
+#' (per-group parameters are a planned extension).
 #' @export
 #' @importFrom cli cli_abort
 #' @family formulatools
