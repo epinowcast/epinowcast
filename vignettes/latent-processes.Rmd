@@ -33,7 +33,7 @@ This vignette walks through three of them on the same small slice of the German 
 
 - **Random walk on weeks** via `rw(week)`. The growth rate has iid Gaussian increments per week; the cumulative sum of those increments is what enters the linear predictor.
 - **Independent per-week-and-group random effects** via `(1 | week:.group)`. Each (week, group) combination has its own random level drawn from a shared Gaussian, with no time-correlation structure across weeks.
-- **ARIMA(p, d, q) residuals** via `arima(day, age_group, p, d, q)`. The growth rate is built up through a parameter-dependent kernel applied to unit-normal shocks, supporting arbitrary autoregressive and moving-average orders and integration.
+- **ARIMA(p, d, q) residuals** via `arima(day, age_group, p, d, q)`. The growth rate is built up through a parameter-dependent kernel applied to unit-normal shocks, supporting arbitrary autoregressive and moving-average orders and integration. When `by` is supplied each group has its own innovation series; the AR/MA parameters and latent standard deviation are currently shared across groups.
 
 The fits use `enw_pathfinder()` for fast variational inference so the vignette stays snappy at build time.
 For a real analysis switch to NUTS via `enw_sample()`.
@@ -122,7 +122,7 @@ plot(nowcast_re)
 
 `arima(time, by, p, d, q, type)` adds a latent ARIMA(p, d, q) residual series to the linear predictor.
 Differencing is applied via the cumulative-sum operator and the ARMA part via a parameter-dependent Toeplitz kernel built from the impulse response; both compose with a single matrix multiplication onto unit-normal shocks.
-Setting `type = "dependent"` shares `phi`, `theta`, and `sigma` across groups (a single ARIMA process applied independently to each group's shocks), which is usually a sensible default unless groups are believed to differ in their dynamics.
+When `by` is supplied each group has its own column of unit-normal shocks; the AR/MA parameters and latent standard deviation are currently shared across groups.
 
 `arima(time, d = 1, p = 0, q = 0)` recovers the same model as `rw(time)`; setting `p > 0` or `q > 0` adds autoregressive or moving-average structure on top.
 
@@ -130,7 +130,7 @@ Setting `type = "dependent"` shares `phi`, `theta`, and `sigma` across groups (a
 nowcast_arima <- epinowcast(
   pobs,
   expectation = enw_expectation(
-    r = ~ 1 + arima(day, age_group, p = 1, d = 1, type = "dependent"),
+    r = ~ 1 + arima(day, age_group, p = 1, d = 1),
     data = pobs
   ),
   obs = enw_obs(family = "negbin", data = pobs),
@@ -161,4 +161,4 @@ kable(arima_pars, digits = 3)
 | ARIMA | `arima(day, by, p, d, q)` | You want explicit autocorrelated short-range structure on the residuals, e.g. `arima(p = 1, d = 0)` for stationary AR(1) deviations around a smooth trend, or `arima(p = 1, d = 1)` for AR(1) on the differences. |
 
 The three options can be combined within the same formula; for example `~ 1 + week + arima(day, p = 1)` gives a linear time trend with AR(1) residuals.
-The `by` argument on `arima()` and `rw()` lets you fit independent series per group, with `type = "dependent"` sharing the standard deviation and dynamics across groups.
+The `by` argument on `arima()` and `rw()` lets each group draw its own innovation series; the AR/MA parameters and latent standard deviation are currently shared across groups (per-group parameters are a planned extension).

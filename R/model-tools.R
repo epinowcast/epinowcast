@@ -25,10 +25,9 @@
 #'  `0` otherwise.
 #'  - `prefix_arima_T`, `prefix_arima_G`: ARIMA series length and group count.
 #'  - `prefix_arima_p`, `prefix_arima_d`, `prefix_arima_q`: ARIMA orders.
-#'  - `prefix_arima_type`: `1` if ARIMA parameters are shared across groups
-#'  ("dependent"), `0` if per-group ("independent").
-#'  - `prefix_arima_time_idx`, `prefix_arima_group_idx`: per-observation
-#'  lookup vectors into the latent ARIMA series.
+#'  - `prefix_arima_flat_idx`: per-observation column-major index into a
+#'  `(T x G)` ARIMA residual matrix, used by Stan to gather residuals
+#'  with `to_vector(eps)[flat_idx]`.
 #'  - `prefix_arima_n_obs`: length of the lookup vectors.
 #' @family modeltools
 #' @importFrom cli cli_abort
@@ -55,7 +54,6 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     arima_p = 0L,
     arima_d = 0L,
     arima_q = 0L,
-    arima_type = 1L,
     arima_n_obs = 0L,
     arima_flat_idx = integer(0)
   )
@@ -98,7 +96,6 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
       data$arima_p <- a$p
       data$arima_d <- a$d
       data$arima_q <- a$q
-      data$arima_type <- as.integer(a$type == "dependent")
       data$arima_n_obs <- length(a$time_idx)
       # Pre-flatten (time, group) into a single column-major index
       # over a (T x G) matrix so the Stan side can do a single

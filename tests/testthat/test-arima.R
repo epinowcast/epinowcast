@@ -18,14 +18,12 @@ test_that("arima() returns an enw_arima_term with the expected fields", {
   expect_identical(a$p, 1L)
   expect_identical(a$d, 0L)
   expect_identical(a$q, 0L)
-  expect_identical(a$type, "dependent")
 
-  b <- arima(week, day_of_week, p = 2, d = 1, q = 1, type = "dependent")
+  b <- arima(week, day_of_week, p = 2, d = 1, q = 1)
   expect_identical(b$by, "day_of_week")
   expect_identical(b$p, 2L)
   expect_identical(b$d, 1L)
   expect_identical(b$q, 1L)
-  expect_identical(b$type, "dependent")
 })
 
 test_that("arima() rejects invalid orders", {
@@ -121,7 +119,7 @@ test_that("enw_formula() collects arima specs alongside fixed/random/rw", {
 
 test_that("enw_formula_as_data_list() ships the arima Stan data", {
   f <- enw_formula(
-    ~ 1 + arima(week, day_of_week, p = 1, d = 1, type = "dependent"),
+    ~ 1 + arima(week, day_of_week, p = 1, d = 1),
     data
   )
   dl <- enw_formula_as_data_list(f, "ref")
@@ -130,7 +128,7 @@ test_that("enw_formula_as_data_list() ships the arima Stan data", {
   expect_identical(dl$ref_arima_p, 1L)
   expect_identical(dl$ref_arima_d, 1L)
   expect_identical(dl$ref_arima_q, 0L)
-  expect_identical(dl$ref_arima_type, 1L) # 1 == "dependent"
+  expect_identical(length(dl$ref_arima_flat_idx), nrow(data))
   expect_identical(dl$ref_arima_T, length(unique(data$week)))
   expect_identical(dl$ref_arima_G, length(unique(data$day_of_week)))
   expect_identical(length(dl$ref_arima_flat_idx), nrow(data))

@@ -83,8 +83,8 @@ effects that evolve smoothly over time. For example:
 \itemize{
 \item \code{~ rw(week)}: a random walk over weeks
 \item \code{~ rw(week, location)}: independent random walks for each location
-\item \code{~ rw(week, location, type = "dependent")}: random walks with shared
-variance across locations
+\item \code{~ rw(week, location)}: random walks with shared variance across
+locations (per-group variance is a planned extension)
 }
 
 \strong{ARIMA residuals}: Uses the \code{\link[=arima]{arima()}} helper to add an ARIMA(p, d, q)
@@ -96,9 +96,10 @@ the Stan layer uses with the kernel from
 \code{inst/stan/functions/arima_kernel.stan}. For example:
 \itemize{
 \item \code{~ arima(week)}: AR(1) on weekly residuals
-\item \code{~ arima(week, location, p = 2, d = 1, q = 1)}: ARIMA(2, 1, 1) per
-location with shared parameters across groups by setting
-\code{type = "dependent"}
+\item \code{~ arima(week, location, p = 2, d = 1, q = 1)}: ARIMA(2, 1, 1)
+driven by independent shocks per location, with \code{phi}, \code{theta},
+and \code{sigma} shared across locations (per-group parameters are a
+planned extension)
 \item \code{arima(time, d = 1, p = 0, q = 0)} is equivalent to \code{rw(time)}
 }
 

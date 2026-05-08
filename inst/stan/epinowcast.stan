@@ -73,7 +73,6 @@ data {
   int<lower=0> expr_arima_p;
   int<lower=0> expr_arima_d;
   int<lower=0> expr_arima_q;
-  int<lower=0, upper=1> expr_arima_type;
   int<lower=0> expr_arima_n_obs;
   array[expr_arima_n_obs] int<lower=1> expr_arima_flat_idx;
     array[2, 1] real expr_arima_sigma_p;
@@ -98,7 +97,6 @@ data {
   int<lower=0> expl_arima_p;
   int<lower=0> expl_arima_d;
   int<lower=0> expl_arima_q;
-  int<lower=0, upper=1> expl_arima_type;
   int<lower=0> expl_arima_n_obs;
   array[expl_arima_n_obs] int<lower=1> expl_arima_flat_idx;
     array[2, 1] real expl_arima_sigma_p;
@@ -128,7 +126,6 @@ data {
   int<lower=0> refp_arima_p;
   int<lower=0> refp_arima_d;
   int<lower=0> refp_arima_q;
-  int<lower=0, upper=1> refp_arima_type;
   int<lower=0> refp_arima_n_obs;
   array[refp_arima_n_obs] int<lower=1> refp_arima_flat_idx;
     array[2, 1] real refp_arima_sigma_p;     // mean scale prior
@@ -150,7 +147,6 @@ data {
   int<lower=0> refnp_arima_p;
   int<lower=0> refnp_arima_d;
   int<lower=0> refnp_arima_q;
-  int<lower=0, upper=1> refnp_arima_type;
   int<lower=0> refnp_arima_n_obs;
   array[refnp_arima_n_obs] int<lower=1> refnp_arima_flat_idx;
     array[2, 1] real refnp_arima_sigma_p;
@@ -173,7 +169,6 @@ data {
   int<lower=0> rep_arima_p;
   int<lower=0> rep_arima_d;
   int<lower=0> rep_arima_q;
-  int<lower=0, upper=1> rep_arima_type;
   int<lower=0> rep_arima_n_obs;
   array[rep_arima_n_obs] int<lower=1> rep_arima_flat_idx;
     array[2, 1] real rep_arima_sigma_p;
@@ -212,7 +207,6 @@ data {
   int<lower=0> miss_arima_p;
   int<lower=0> miss_arima_d;
   int<lower=0> miss_arima_q;
-  int<lower=0, upper=1> miss_arima_type;
   int<lower=0> miss_arima_n_obs;
   array[miss_arima_n_obs] int<lower=1> miss_arima_flat_idx;
     array[2, 1] real miss_arima_sigma_p;

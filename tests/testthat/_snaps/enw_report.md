@@ -85,9 +85,6 @@
       $data$rep_arima_q
       [1] 0
       
-      $data$rep_arima_type
-      [1] 1
-      
       $data$rep_arima_n_obs
       [1] 0
       

@@ -381,7 +381,7 @@
       [1] 0
       
       $arima[[1]]$type
-      [1] "dependent"
+      NULL
       
       $arima[[1]]$T
       [1] 2
@@ -484,7 +484,7 @@
       [1] 0
       
       $arima[[1]]$type
-      [1] "dependent"
+      NULL
       
       $arima[[1]]$T
       [1] 2
@@ -592,7 +592,7 @@
       [1] 0
       
       $arima[[1]]$type
-      [1] "dependent"
+      NULL
       
       $arima[[1]]$T
       [1] 2
@@ -917,7 +917,7 @@
       [1] 0
       
       $arima[[1]]$type
-      [1] "dependent"
+      NULL
       
       $arima[[1]]$T
       [1] 2

@@ -305,19 +305,8 @@ parse_formula <- function(formula) {
 #'
 #' rw(time, location)
 #'
-#' rw(time, location, type = "dependent")
-rw <- function(time, by, type = c("dependent", "independent")) {
-  type <- match.arg(type)
-  if (type == "independent") {
-    cli::cli_abort(c(
-      "`type = \"independent\"` is not yet wired into the Stan layer.",
-      i = paste(
-        "Grouped random walks currently share a single standard",
-        "deviation across groups (equivalent to `type = \"dependent\"`);",
-        "per-group parameters are a planned extension."
-      )
-    ))
-  }
+#' rw(time, location)
+rw <- function(time, by) {
   if (missing(time)) {
     cli::cli_abort("`time` must be present")
   } else {
@@ -331,8 +320,7 @@ rw <- function(time, by, type = c("dependent", "independent")) {
   }
   out <- list(
     time = time, by = by,
-    p = 0L, d = 1L, q = 0L,
-    type = type
+    p = 0L, d = 1L, q = 0L
   )
   class(out) <- "enw_arima_term"
   out
@@ -379,20 +367,8 @@ rw <- function(time, by, type = c("dependent", "independent")) {
 #' @examples
 #' arima(time)
 #' arima(time, location)
-#' arima(time, location, p = 2, d = 1, q = 1, type = "dependent")
-arima <- function(time, by, p = 1, d = 0, q = 0,
-                  type = c("dependent", "independent")) {
-  type <- match.arg(type)
-  if (type == "independent") {
-    cli::cli_abort(c(
-      "`type = \"independent\"` is not yet wired into the Stan layer.",
-      i = paste(
-        "All groups currently share `phi`, `theta`, and `sigma`",
-        "(equivalent to `type = \"dependent\"`); per-group parameters",
-        "are a planned extension."
-      )
-    ))
-  }
+#' arima(time, location, p = 2, d = 1, q = 1)
+arima <- function(time, by, p = 1, d = 0, q = 0) {
   if (missing(time)) {
     cli::cli_abort("`time` must be present")
   } else {
@@ -413,8 +389,7 @@ arima <- function(time, by, p = 1, d = 0, q = 0,
   }
   out <- list(
     time = time, by = by,
-    p = as.integer(p), d = as.integer(d), q = as.integer(q),
-    type = type
+    p = as.integer(p), d = as.integer(d), q = as.integer(q)
   )
   class(out) <- "enw_arima_term"
   out
@@ -965,8 +940,8 @@ construct_re <- function(re, data) {
 #' effects that evolve smoothly over time. For example:
 #' - `~ rw(week)`: a random walk over weeks
 #' - `~ rw(week, location)`: independent random walks for each location
-#' - `~ rw(week, location, type = "dependent")`: random walks with shared
-#' variance across locations
+#' - `~ rw(week, location)`: random walks with shared variance across
+#' locations (per-group variance is a planned extension)
 #'
 #' **ARIMA residuals**: Uses the [arima()] helper to add an ARIMA(p, d, q)
 #' latent residual series to the linear predictor. Unlike [rw()], the
@@ -978,8 +953,8 @@ construct_re <- function(re, data) {
 #' - `~ arima(week)`: AR(1) on weekly residuals
 #' - `~ arima(week, location, p = 2, d = 1, q = 1)`: ARIMA(2, 1, 1)
 #' driven by independent shocks per location, with `phi`, `theta`,
-#' and `sigma` shared across locations (the only mode currently
-#' wired; `type = "independent"` is a planned extension)
+#' and `sigma` shared across locations (per-group parameters are a
+#' planned extension)
 #' - `arima(time, d = 1, p = 0, q = 0)` is equivalent to `rw(time)`
 #'
 #' These four types of effects can be combined in a single formula,

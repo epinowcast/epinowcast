@@ -34,10 +34,9 @@ effect design matrix (minus 1 as the intercept is dropped).
 \code{0} otherwise.
 \item \code{prefix_arima_T}, \code{prefix_arima_G}: ARIMA series length and group count.
 \item \code{prefix_arima_p}, \code{prefix_arima_d}, \code{prefix_arima_q}: ARIMA orders.
-\item \code{prefix_arima_type}: \code{1} if ARIMA parameters are shared across groups
-("dependent"), \code{0} if per-group ("independent").
-\item \code{prefix_arima_time_idx}, \code{prefix_arima_group_idx}: per-observation
-lookup vectors into the latent ARIMA series.
+\item \code{prefix_arima_flat_idx}: per-observation column-major index into a
+\verb{(T x G)} ARIMA residual matrix, used by Stan to gather residuals
+with \code{to_vector(eps)[flat_idx]}.
 \item \code{prefix_arima_n_obs}: length of the lookup vectors.
 }
 }

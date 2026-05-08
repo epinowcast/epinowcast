@@ -94,9 +94,6 @@
       $data$miss_arima_q
       [1] 0
       
-      $data$miss_arima_type
-      [1] 1
-      
       $data$miss_arima_n_obs
       [1] 40
       
@@ -233,9 +230,6 @@
       
       $data$miss_arima_q
       [1] 0
-      
-      $data$miss_arima_type
-      [1] 1
       
       $data$miss_arima_n_obs
       [1] 0

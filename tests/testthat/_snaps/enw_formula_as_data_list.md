@@ -53,9 +53,6 @@
       $simple_arima_q
       [1] 0
       
-      $simple_arima_type
-      [1] 1
-      
       $simple_arima_n_obs
       [1] 0
       
@@ -117,9 +114,6 @@
       
       $simple_arima_q
       [1] 0
-      
-      $simple_arima_type
-      [1] 1
       
       $simple_arima_n_obs
       [1] 0
@@ -183,9 +177,6 @@
       
       $simple_arima_q
       [1] 0
-      
-      $simple_arima_type
-      [1] 1
       
       $simple_arima_n_obs
       [1] 0
@@ -258,9 +249,6 @@
       $complex_arima_q
       [1] 0
       
-      $complex_arima_type
-      [1] 1
-      
       $complex_arima_n_obs
       [1] 0
       
@@ -331,9 +319,6 @@
       
       $comple_arima_q
       [1] 0
-      
-      $comple_arima_type
-      [1] 1
       
       $comple_arima_n_obs
       [1] 0

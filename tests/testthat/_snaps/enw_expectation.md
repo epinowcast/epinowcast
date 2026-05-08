@@ -457,9 +457,6 @@
       $data$expr_arima_q
       [1] 0
       
-      $data$expr_arima_type
-      [1] 1
-      
       $data$expr_arima_n_obs
       [1] 0
       
@@ -722,9 +719,6 @@
       
       $data$expl_arima_q
       [1] 0
-      
-      $data$expl_arima_type
-      [1] 1
       
       $data$expl_arima_n_obs
       [1] 0
@@ -1014,9 +1008,6 @@
       $data$expr_arima_q
       [1] 0
       
-      $data$expr_arima_type
-      [1] 1
-      
       $data$expr_arima_n_obs
       [1] 0
       
@@ -1280,9 +1271,6 @@
       $data$expl_arima_q
       [1] 0
       
-      $data$expl_arima_type
-      [1] 1
-      
       $data$expl_arima_n_obs
       [1] 0
       
@@ -1520,9 +1508,6 @@
       $data$expr_arima_q
       [1] 0
       
-      $data$expr_arima_type
-      [1] 1
-      
       $data$expr_arima_n_obs
       [1] 0
       
@@ -1660,9 +1645,6 @@
       
       $data$expl_arima_q
       [1] 0
-      
-      $data$expl_arima_type
-      [1] 1
       
       $data$expl_arima_n_obs
       [1] 0

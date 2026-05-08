@@ -69,7 +69,7 @@ where:
 Two properties of this factorisation are useful:
 
 - **$D^d$ is data-only.** It can be precomputed and does not contribute to the autodiff graph in Stan.
-- **$T(\psi)$ is parameter-dependent.** It is rebuilt every gradient evaluation, but it is built once per group (or once globally for `type = "dependent"`), then applied to all shocks in a single matrix multiplication.
+- **$T(\psi)$ is parameter-dependent.** It is rebuilt every gradient evaluation, but it is built once globally and applied to all shocks in a single matrix multiplication.
 
 Composing the two and applying once to shocks gives the full ARIMA(p, d, q) latent:
 
@@ -117,12 +117,9 @@ The loop body is a single matrix lookup and an add; the loop length is bounded b
 
 # Group structure: dependent vs independent
 
-`type = "dependent"` (the recommended default) shares $\phi$, $\theta$, and $\sigma$ across groups.
-The kernel $K$ is built once and applied to each column of the $T \times G$ shock matrix in one matrix multiplication, with each group's series being driven by its own column of shocks.
-This is appropriate when groups are believed to share dynamics (e.g. age strata of the same disease in the same country).
-
-`type = "independent"` would fit per-group $\phi$, $\theta$, and $\sigma$.
-The R-side metadata supports this distinction (the `expr_arima_type` data field), but the current Stan implementation builds a single shared kernel; switching to independent kernels per group is a follow-up that requires a small extension to the Stan code (loop over $g$ building per-group $K_g$).
+When `by` is supplied each group has its own column of unit-normal shocks `z[, g]`, but the AR/MA parameters $\phi$, $\theta$, and the latent standard deviation $\sigma$ are shared across groups.
+The kernel $K$ is built once and applied to each column of the $T \times G$ shock matrix in one matrix multiplication, with each group's series being driven by its own innovations under a common dynamic.
+Per-group parameters (each group with its own $\phi$, $\theta$, and $\sigma$) are a planned extension that would loop over $g$ building per-group $K_g$; until that lands the helpers do not expose a `type` argument.
 
 # Special cases
 
@@ -176,7 +173,7 @@ For per-observation modules (`sparse = FALSE`) the joint key is unique by constr
 
 - One ARIMA term per formula. The R side aborts if multiple are supplied; lifting this requires the Stan side to gain a vector of latent series rather than a single one.
 - AR stationarity is enforced; MA invertibility is not (rarely a problem in practice).
-- `type = "independent"` is metadata-only; the Stan side currently uses shared dynamics regardless.
+- Grouped series share AR/MA parameters and latent standard deviation across groups; per-group parameters are a planned extension. Until that lands `arima()` and `rw()` do not take a `type` argument.
 - The kernel is built dense ($T \times T$) every iteration. For very long series (thousands of time points) the autodiff cost grows as $O(T^2)$; in that regime a recursive form (computing $\epsilon$ via the ARMA filter directly) would be preferable.
 - ARIMA on the parametric reference standard deviation (`refp_sd`) is not wired; only the mean carries an ARIMA residual. Time-varying sd is rarely the right model and would multiply the PMF cost again.
 

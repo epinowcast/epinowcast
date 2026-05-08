@@ -4,7 +4,7 @@
 \alias{arima}
 \title{Adds an ARIMA(p, d, q) latent residual to the model.}
 \usage{
-arima(time, by, p = 1, d = 0, q = 0, type = c("independent", "dependent"))
+arima(time, by, p = 1, d = 0, q = 0)
 }
 \arguments{
 \item{time}{Defines the time index of the ARIMA process.}
@@ -46,7 +46,7 @@ model construction. Setting \code{p = d = q = 0} is not allowed; use
 \examples{
 arima(time)
 arima(time, location)
-arima(time, location, p = 2, d = 1, q = 1, type = "dependent")
+arima(time, location, p = 2, d = 1, q = 1)
 }
 \seealso{
 Functions used to help convert formulas into model designs
