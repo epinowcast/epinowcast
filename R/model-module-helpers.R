@@ -473,3 +473,52 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
 
   metadata[, .(.group, date, report_date, report)]
 }
+
+# Build conditional ARIMA initial values for a module's prefix.
+#
+# Pulls the `<prefix>_arima_*` size and presence fields from `data`
+# (as shipped by `enw_formula_as_data_list()`) and the
+# `<prefix>_arima_sigma_p` (and optionally `<prefix>_arima_sd_sigma_p`)
+# rows from the prior list. Returns a named list of initial values
+# for any ARIMA parameters that are non-empty given the data; returns
+# an empty list when no ARIMA term is present for this prefix.
+#
+# Used by `enw_expectation()`, `enw_reference()`, `enw_report()`, and
+# `enw_missing()` to keep their `inits` functions short and to keep
+# the per-module ARIMA boilerplate in one place.
+.arima_inits <- function(data, priors, prefix, with_sd_sigma = FALSE) {
+  init <- list()
+  pT <- data[[paste0(prefix, "_arima_T")]]
+  pG <- data[[paste0(prefix, "_arima_G")]]
+  pp <- data[[paste0(prefix, "_arima_p")]]
+  pq <- data[[paste0(prefix, "_arima_q")]]
+  ppresent <- data[[paste0(prefix, "_arima_present")]]
+  if (isTRUE(pT > 0 && pG > 0)) {
+    init[[paste0(prefix, "_arima_z")]] <- matrix(
+      rnorm(pT * pG, 0, 0.01), pT, pG
+    )
+  }
+  if (isTRUE(pp > 0)) {
+    init[[paste0(prefix, "_arima_pacf")]] <- array(
+      runif(pp, -0.1, 0.1)
+    )
+  }
+  if (isTRUE(pq > 0)) {
+    init[[paste0(prefix, "_arima_theta")]] <- array(
+      rnorm(pq, 0, 0.01)
+    )
+  }
+  if (isTRUE(ppresent > 0)) {
+    sp <- priors[[paste0(prefix, "_arima_sigma_p")]]
+    init[[paste0(prefix, "_arima_sigma")]] <- array(
+      abs(rnorm(1, sp[1], sp[2] / 10))
+    )
+    if (with_sd_sigma) {
+      sd_p <- priors[[paste0(prefix, "_arima_sd_sigma_p")]]
+      init[[paste0(prefix, "_arima_sd_sigma")]] <- array(
+        abs(rnorm(1, sd_p[1], sd_p[2] / 10))
+      )
+    }
+  }
+  init
+}

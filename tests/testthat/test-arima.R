@@ -18,7 +18,7 @@ test_that("arima() returns an enw_arima_term with the expected fields", {
   expect_identical(a$p, 1L)
   expect_identical(a$d, 0L)
   expect_identical(a$q, 0L)
-  expect_identical(a$type, "independent")
+  expect_identical(a$type, "dependent")
 
   b <- arima(week, day_of_week, p = 2, d = 1, q = 1, type = "dependent")
   expect_identical(b$by, "day_of_week")

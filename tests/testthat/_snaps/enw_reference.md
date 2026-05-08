@@ -149,7 +149,7 @@
       [1] 0
       
       $data$refp_arima_type
-      [1] 0
+      [1] 1
       
       $data$refp_arima_n_obs
       [1] 40
@@ -3679,7 +3679,7 @@
       [1] 0
       
       $data$refnp_arima_type
-      [1] 0
+      [1] 1
       
       $data$refnp_arima_n_obs
       [1] 800

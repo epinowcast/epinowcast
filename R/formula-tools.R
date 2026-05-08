@@ -306,8 +306,18 @@ parse_formula <- function(formula) {
 #' rw(time, location)
 #'
 #' rw(time, location, type = "dependent")
-rw <- function(time, by, type = c("independent", "dependent")) {
+rw <- function(time, by, type = c("dependent", "independent")) {
   type <- match.arg(type)
+  if (type == "independent") {
+    cli::cli_abort(c(
+      "`type = \"independent\"` is not yet wired into the Stan layer.",
+      i = paste(
+        "Grouped random walks currently share a single standard",
+        "deviation across groups (equivalent to `type = \"dependent\"`);",
+        "per-group parameters are a planned extension."
+      )
+    ))
+  }
   if (missing(time)) {
     cli::cli_abort("`time` must be present")
   } else {
@@ -371,8 +381,18 @@ rw <- function(time, by, type = c("independent", "dependent")) {
 #' arima(time, location)
 #' arima(time, location, p = 2, d = 1, q = 1, type = "dependent")
 arima <- function(time, by, p = 1, d = 0, q = 0,
-                  type = c("independent", "dependent")) {
+                  type = c("dependent", "independent")) {
   type <- match.arg(type)
+  if (type == "independent") {
+    cli::cli_abort(c(
+      "`type = \"independent\"` is not yet wired into the Stan layer.",
+      i = paste(
+        "All groups currently share `phi`, `theta`, and `sigma`",
+        "(equivalent to `type = \"dependent\"`); per-group parameters",
+        "are a planned extension."
+      )
+    ))
+  }
   if (missing(time)) {
     cli::cli_abort("`time` must be present")
   } else {
@@ -404,8 +424,9 @@ arima <- function(time, by, p = 1, d = 0, q = 0,
 # integer. Used to keep `arima()` cyclomatic complexity below the lint
 # threshold without changing its public behaviour.
 .check_arima_order <- function(value, name) {
-  if (!is.numeric(value) || value < 0 || value != as.integer(value)) {
-    cli::cli_abort("`{name}` must be a non-negative integer.")
+  if (!is.numeric(value) || length(value) != 1L || is.na(value) ||
+      !is.finite(value) || value < 0 || value != as.integer(value)) {
+    cli::cli_abort("`{name}` must be a non-negative integer scalar.")
   }
   invisible(NULL)
 }
@@ -531,6 +552,11 @@ construct_arima <- function(arima, data) {
       )
     }
     by_vals <- data[[arima$by]]
+    if (anyNA(by_vals)) {
+      cli::cli_abort(
+        "Grouping variable `{arima$by}` contains missing values."
+      )
+    }
     group_levels <- if (is.factor(by_vals)) levels(droplevels(by_vals)) else
       sort(unique(by_vals))
     G <- length(group_levels)
@@ -950,9 +976,10 @@ construct_re <- function(re, data) {
 #' the Stan layer uses with the kernel from
 #' `inst/stan/functions/arima_kernel.stan`. For example:
 #' - `~ arima(week)`: AR(1) on weekly residuals
-#' - `~ arima(week, location, p = 2, d = 1, q = 1)`: ARIMA(2, 1, 1) per
-#' location with shared parameters across groups by setting
-#' `type = "dependent"`
+#' - `~ arima(week, location, p = 2, d = 1, q = 1)`: ARIMA(2, 1, 1)
+#' driven by independent shocks per location, with `phi`, `theta`,
+#' and `sigma` shared across locations (the only mode currently
+#' wired; `type = "independent"` is a planned extension)
 #' - `arima(time, d = 1, p = 0, q = 0)` is equivalent to `rw(time)`
 #'
 #' These four types of effects can be combined in a single formula,

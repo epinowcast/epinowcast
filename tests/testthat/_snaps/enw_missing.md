@@ -95,7 +95,7 @@
       [1] 0
       
       $data$miss_arima_type
-      [1] 0
+      [1] 1
       
       $data$miss_arima_n_obs
       [1] 40
@@ -173,7 +173,7 @@
       3: miss_arima_sigma
                                                                                    description
       1:               Intercept on the logit scale for the proportion missing reference dates
-      2:      Standard deviation of scaled pooled logit missing reference date\n       effects
+      2:              Standard deviation of scaled pooled logit missing reference date effects
       3: Standard deviation of the ARIMA latent residual on missing-reference logit proportion
                   distribution mean  sd
       1:                Normal    0 1.0
@@ -269,7 +269,7 @@
       3: miss_arima_sigma
                                                                                    description
       1:               Intercept on the logit scale for the proportion missing reference dates
-      2:      Standard deviation of scaled pooled logit missing reference date\n       effects
+      2:              Standard deviation of scaled pooled logit missing reference date effects
       3: Standard deviation of the ARIMA latent residual on missing-reference logit proportion
                   distribution mean  sd
       1:                Normal    0 1.0

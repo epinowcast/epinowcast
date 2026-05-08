@@ -611,7 +611,10 @@ enw_stan_to_r <- function(
   check_cmdstanr()
   overloaded_fns <- c(
     "delay_lpmf.stan", "allocate_observed_obs.stan", "obs_lpmf.stan",
-    "effects_priors_lp.stan"
+    "effects_priors_lp.stan",
+    # regression.stan calls the overloaded effect_priors_lp() so it
+    # cannot be standalone-compiled when that file is excluded.
+    "regression.stan"
   )
   if (any(files %in% overloaded_fns)) {
     cli::cli_warn(c(
