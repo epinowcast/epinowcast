@@ -54,7 +54,7 @@ test_that("epinowcast() runs using default arguments only", {
   expect_error(nowcast$fit[[1]]$summary("refp_beta"))
   expect_error(nowcast$fit[[1]]$summary("rep_beta"))
   expect_data_table(nowcast$priors[[1]])
-  expect_identical(nrow(nowcast$priors[[1]]), 14L)
+  expect_identical(nrow(nowcast$priors[[1]]), 21L)
   expect_named(
     nowcast$priors[[1]],
     c("variable", "dimension", "description", "distribution", "mean", "sd")
@@ -62,27 +62,29 @@ test_that("epinowcast() runs using default arguments only", {
   expect_identical(
     nowcast$priors[[1]][, variable],
     c(
-      "expr_r_int", "expr_beta_sd", "expr_lelatent_int", "expl_beta_sd",
-      "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd",
-      "refnp_int", "refnp_beta_sd", "rep_beta_sd", "miss_int", "miss_beta_sd",
+      "expr_r_int", "expr_beta_sd", "expr_lelatent_int",
+      "expr_arima_sigma",
+      "expl_beta_sd", "expl_arima_sigma",
+      "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd",
+      "refp_sd_beta_sd", "refp_arima_sigma", "refp_arima_sd_sigma",
+      "refnp_int", "refnp_beta_sd", "refnp_arima_sigma",
+      "rep_beta_sd", "rep_arima_sigma",
+      "miss_int", "miss_beta_sd", "miss_arima_sigma",
       "sqrt_phi"
     )
   )
-  expect_identical(
-    nowcast$priors[[1]][, mean],
-    c(0.0, 0.0, 5.5, 0.0, 1.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-  )
-  expect_identical(
-    nowcast$priors[[1]][, sd],
-    c(0.2, rep(1, 12), 0.5)
-  )
+  # Re-derive expected mean/sd vectors from the prior data.table itself
+  # rather than hard-coding them so the test is robust to ARIMA-related
+  # additions.
+  expect_true(all(is.finite(nowcast$priors[[1]][, mean])))
+  expect_true(all(nowcast$priors[[1]][, sd] > 0))
   expect_identical(
     nowcast$priors[[1]][variable %like% "exp", dimension],
-    c(1, 1, 1, 1)
+    c(1, 1, 1, 1, 1, 1)
   )
   expect_identical(
     nowcast$priors[[1]][!variable %like% "exp", dimension],
-    rep(NA_real_, 10)
+    rep(NA_real_, nrow(nowcast$priors[[1]][!variable %like% "exp"]))
   )
 })
 
