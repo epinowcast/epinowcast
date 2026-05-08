@@ -18,14 +18,14 @@
  * @return A vector of expected observations for the given index.
  * 
  * @note This function performs several steps:
- *       1. Retrieves the final observed/imputed expected observation for the 
+ *       1. Retrieves the final observed/imputed expected observation for the
  *          given group and time.
- *       2. Aggregates various hazard effects using `combine_logit_hazards`.
+ *       2. Aggregates parametric, non-parametric and reporting-time logit
+ *          hazards inline (logic was previously in `combine_logit_hazards`).
  *       3. Combines the final expected observation with the time-varying
  *          effects  to compute the expected observations using `expected_obs`.
  *
  * Dependencies:
- *  - `combine_logit_hazards`
  *  - `expected_obs`
  *
  */
@@ -39,16 +39,35 @@ vector expected_obs_from_index(
   array[,,] int rep_agg_n_selected,
   array[,,,] int rep_agg_selected_idx
 ) {
-  // Combine logit hazards from reference and reporting time effects
+  // Combine logit hazards from reference and reporting time effects.
+  // Inlined from combine_logit_hazards to avoid a redundant per-snapshot
+  // vector allocation inside reduce_sum.
   vector[l] lh;
   profile("model_likelihood_hazard_allocations") {
-    lh = combine_logit_hazards(
-      i, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, g, t, l, refnp_lh, ref_np, p
-    );
+    if (ref_p) {
+      lh = refp_lh[1:l, dpmfs[i]];
+      if (ref_np) {
+        lh += segment(refnp_lh, p, l);
+      }
+      if (rep_h) {
+        lh += srdlh[rdlurd[g, t:(t + l - 1)]];
+      }
+    } else if (ref_np) {
+      lh = segment(refnp_lh, p, l);
+      if (rep_h) {
+        lh += srdlh[rdlurd[g, t:(t + l - 1)]];
+      }
+    } else if (rep_h) {
+      lh = srdlh[rdlurd[g, t:(t + l - 1)]];
+    } else {
+      lh = rep_vector(0, l);
+    }
   }
-  // Extract precomputed selected indices for this group/time
-  array[l] int n_sel;
-  array[l, l] int sel_idx;
+  // Only allocate aggregation index buffers when reporting-probability
+  // aggregation is active. The l x l int array can dominate per-snapshot
+  // allocation otherwise.
+  array[rep_agg_p ? l : 0] int n_sel;
+  array[rep_agg_p ? l : 0, rep_agg_p ? l : 0] int sel_idx;
   if (rep_agg_p == 1) {
     n_sel = rep_agg_n_selected[g, t, 1:l];
     sel_idx = rep_agg_selected_idx[g, t, 1:l, 1:l];
