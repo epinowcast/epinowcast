@@ -17,7 +17,15 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 4,
+  fig.path = "figures/latent-processes-"
+)
+```
 
 The expectation module's `r` formula controls the latent log growth rate.
 Several options exist for giving it time-series structure; each is a different choice for how `r` is allowed to vary over time and across groups.
@@ -33,26 +41,21 @@ For a real analysis switch to NUTS via `enw_sample()`.
 
 # Setup
 
-
-``` r
+```{r setup, message = FALSE}
 library(epinowcast)
 library(data.table)
-#> Warning: package 'data.table' was built under R version 4.5.2
 library(ggplot2) # nolint: unused_import_linter. Required by plot.epinowcast().
-#> Warning: package 'ggplot2' was built under R version 4.5.2
 library(knitr)
 ```
 
-
-``` r
+```{r}
 options(mc.cores = 2)
 ```
 
 We work with three German age strata reported nationally over five weeks of reference dates ending 28 days before the latest available reports.
 The same `pobs` is used for every fit so any difference between the resulting nowcasts is down to the latent-process choice rather than the data.
 
-
-``` r
+```{r data}
 nat_germany_hosp <- germany_covid19_hosp[
   location == "DE" & age_group %in% c("00+", "00-04", "80+")
 ]
@@ -69,8 +72,7 @@ pobs <- suppressWarnings(
 A common fit configuration is reused across the models.
 `enw_pathfinder()` is a fast approximate sampler that suits feature tours and exploration; for production fits use `enw_sample()` instead.
 
-
-``` r
+```{r fit-opts}
 fit <- enw_fit_opts(
   sampler = enw_pathfinder,
   num_paths = 4, single_path_draws = 50, draws = 200,
@@ -83,34 +85,18 @@ fit <- enw_fit_opts(
 `rw(week)` adds one Gaussian increment per week; the cumulative sum of those increments is added to `r`.
 Mathematically this is equivalent to a (correlated) Gaussian prior over the per-week growth rates with a single shared standard deviation.
 
-
-``` r
+```{r rw-fit, results = "hide"}
 nowcast_rw <- epinowcast(
   pobs,
   expectation = enw_expectation(r = ~ rw(week), data = pobs),
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
 )
-#> ℹ Using model /Users/lshsa2/code/epinowcast/epinowcast/worktrees/regression/inst/stan/epinowcast.stan.
-#> ℹ Include is /Users/lshsa2/code/epinowcast/epinowcast/worktrees/regression/inst/stan.
-#> ! `enw_cache_location` is not set.
-#> ℹ Using `tempdir()` at
-#>   /var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T//Rtmp99N6w0 for the
-#>   epinowcast model cache location.
-#> ℹ Set a specific cache location using `enw_set_cache` to control Stan
-#>   recompilation in this R session or across R sessions.
-#> ℹ For example: `enw_set_cache(tools::R_user_dir(package = "epinowcast",
-#>   "cache"), type = c('session', 'persistent'))`.
-#> ℹ See `?enw_set_cache` for details.
-#> Chain 1 Warning: file '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/Rtmp99N6w0/init-36df6916983e_1.json' is being used to initialize all 4 chains!
 ```
 
-
-``` r
+```{r rw-plot, fig.cap = "Nowcast under a random walk on weeks."}
 plot(nowcast_rw)
 ```
-
-![Nowcast under a random walk on weeks.](figures/latent-processes-rw-plot-1.png)
 
 # Independent per-(week, group) random effects
 
@@ -118,8 +104,7 @@ plot(nowcast_rw)
 Unlike the random walk, there is no time correlation across weeks; each week starts afresh.
 This is the natural choice when weekly fluctuations look like noise rather than drift.
 
-
-``` r
+```{r re-fit, results = "hide"}
 nowcast_re <- epinowcast(
   pobs,
   expectation = enw_expectation(
@@ -128,26 +113,11 @@ nowcast_re <- epinowcast(
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
 )
-#> ℹ Using model /Users/lshsa2/code/epinowcast/epinowcast/worktrees/regression/inst/stan/epinowcast.stan.
-#> ℹ Include is /Users/lshsa2/code/epinowcast/epinowcast/worktrees/regression/inst/stan.
-#> ! `enw_cache_location` is not set.
-#> ℹ Using `tempdir()` at
-#>   /var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T//Rtmp99N6w0 for the
-#>   epinowcast model cache location.
-#> ℹ Set a specific cache location using `enw_set_cache` to control Stan
-#>   recompilation in this R session or across R sessions.
-#> ℹ For example: `enw_set_cache(tools::R_user_dir(package = "epinowcast",
-#>   "cache"), type = c('session', 'persistent'))`.
-#> ℹ See `?enw_set_cache` for details.
-#> Chain 1 Warning: file '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/Rtmp99N6w0/init-36df60e8bda0_1.json' is being used to initialize all 4 chains!
 ```
 
-
-``` r
+```{r re-plot, fig.cap = "Nowcast under independent per-(week, group) random effects."}
 plot(nowcast_re)
 ```
-
-![Nowcast under independent per-(week, group) random effects.](figures/latent-processes-re-plot-1.png)
 
 # ARIMA(p, d, q) residuals
 
@@ -157,8 +127,7 @@ When `by` is supplied each group has its own column of unit-normal shocks; the A
 
 `arima(time, d = 1, p = 0, q = 0)` recovers the same model as `rw(time)`; setting `p > 0` or `q > 0` adds autoregressive or moving-average structure on top.
 
-
-``` r
+```{r arima-fit, results = "hide"}
 nowcast_arima <- epinowcast(
   pobs,
   expectation = enw_expectation(
@@ -168,46 +137,21 @@ nowcast_arima <- epinowcast(
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
 )
-#> ℹ Using model /Users/lshsa2/code/epinowcast/epinowcast/worktrees/regression/inst/stan/epinowcast.stan.
-#> ℹ Include is /Users/lshsa2/code/epinowcast/epinowcast/worktrees/regression/inst/stan.
-#> ! `enw_cache_location` is not set.
-#> ℹ Using `tempdir()` at
-#>   /var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T//Rtmp99N6w0 for the
-#>   epinowcast model cache location.
-#> ℹ Set a specific cache location using `enw_set_cache` to control Stan
-#>   recompilation in this R session or across R sessions.
-#> ℹ For example: `enw_set_cache(tools::R_user_dir(package = "epinowcast",
-#>   "cache"), type = c('session', 'persistent'))`.
-#> ℹ See `?enw_set_cache` for details.
-#> Chain 1 Warning: file '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/Rtmp99N6w0/init-36df504427ad_1.json' is being used to initialize all 4 chains!
 ```
 
-
-``` r
+```{r arima-plot, fig.cap = "Nowcast under an ARIMA(1, 1, 0) residual on day."}
 plot(nowcast_arima)
 ```
 
-![Nowcast under an ARIMA(1, 1, 0) residual on day.](figures/latent-processes-arima-plot-1.png)
-
 The ARIMA-specific posterior summaries:
 
-
-``` r
+```{r arima-pars}
 arima_pars <- summary(nowcast_arima, type = "fit")[
   grepl("expr_arima_(pacf|sigma)", variable),
   .(variable, mean, q5, q95)
 ]
 kable(arima_pars, digits = 3)
 ```
-
-
-
-|variable            |   mean|     q5|    q95|
-|:-------------------|------:|------:|------:|
-|expr_arima_pacf[1]  | -0.199| -0.263| -0.193|
-|expr_arima_sigma[1] |  0.009|  0.008|  0.009|
-
-
 
 # When to reach for which
 
