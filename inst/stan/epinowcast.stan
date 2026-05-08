@@ -211,10 +211,13 @@ parameters {
 transformed parameters{
   // Expectation model
   vector[expr_t * g] r; // growth rate of observations (log)
-  array[g] vector[expr_ft]  exp_llatent; // expected latent cases (log)
+  // exp_llatent is only declared (and saved) when needed downstream, i.e. when
+  // expl_obs == 1. When expl_obs == 0 it would be identical to exp_lobs, so we
+  // skip the redundant copy by computing exp_lobs directly below.
+  array[expl_obs ? g : 0] vector[expl_obs ? expr_ft : 0] exp_llatent;
   vector[expl_obs ? expl_fnindex : 0] expl_prop; // latent-to-obs proportion
   array[g] vector[t]  exp_lobs; // expected obs by reference date (log)
-  
+
   // Reference model
   // Parametric reference model
   vector[refp_fnrow] refp_mean;
@@ -238,12 +241,15 @@ transformed parameters{
   r = combine_effects(
     expr_r_int, expr_beta, expr_fnindex, expr_fncol, expr_fdesign, expr_sparse, expr_beta_sd, expr_rdesign, expr_fintercept, sparse_design
   );
-  exp_llatent = log_expected_latent_from_r(
-    expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
-    expr_ft, g
-  );
-  // Get latent-to-obs proportions and map expected latent cases to expected observations
+  // Get latent-to-obs proportions and map expected latent cases to expected
+  // observations. When expl_obs == 0 the latent cases are identical to the
+  // expected observations, so we write the renewal output directly into
+  // exp_lobs and skip the redundant exp_llatent storage.
   if (expl_obs) {
+    exp_llatent = log_expected_latent_from_r(
+      expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
+      expr_ft, g
+    );
     expl_prop = combine_effects(
       {0}, expl_beta, expl_fnindex, expl_fncol, expl_fdesign, expl_sparse, expl_beta_sd, expl_rdesign, 1, sparse_design
     );
@@ -252,7 +258,10 @@ transformed parameters{
       expl_lrd_sparse.3, t, g, expl_prop
     );
   } else {
-    exp_lobs = exp_llatent; // assume latent cases and obs are identical
+    exp_lobs = log_expected_latent_from_r(
+      expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
+      expr_ft, g
+    );
   }
   }
 
@@ -262,16 +271,26 @@ transformed parameters{
   if (model_refp) {
     // calculate sparse reference date effects
     profile("transformed_delay_reference_time_effects") {
-    refp_mean = combine_effects(
-      refp_mean_int, refp_mean_beta, refp_fnrow, refp_fncol, refp_fdesign,
-      refp_sparse, refp_mean_beta_sd, refp_rdesign, 1, sparse_design
-    );
-    if (model_refp > 1) {
-      refp_sd = combine_effects(
-        {log(refp_sd_int[1])}, refp_sd_beta, refp_fnrow, refp_fncol, refp_fdesign, refp_sparse, refp_sd_beta_sd, refp_rdesign, 1, sparse_design
+    if (refp_fncol == 0 && refp_rncol == 0) {
+      // No varying effects: combine_effects collapses to a copy of the
+      // intercept, so skip the function call (and the wasteful log->exp
+      // round-trip on refp_sd) to keep these off the autodiff tape.
+      refp_mean = rep_vector(refp_mean_int[1], refp_fnrow);
+      if (model_refp > 1) {
+        refp_sd = rep_vector(refp_sd_int[1], refp_fnrow);
+      }
+    } else {
+      refp_mean = combine_effects(
+        refp_mean_int, refp_mean_beta, refp_fnrow, refp_fncol, refp_fdesign,
+        refp_sparse, refp_mean_beta_sd, refp_rdesign, 1, sparse_design
       );
-      refp_sd = exp(refp_sd);
-    } 
+      if (model_refp > 1) {
+        refp_sd = combine_effects(
+          {log(refp_sd_int[1])}, refp_sd_beta, refp_fnrow, refp_fncol, refp_fdesign, refp_sparse, refp_sd_beta_sd, refp_rdesign, 1, sparse_design
+        );
+        refp_sd = exp(refp_sd);
+      }
+    }
     }
     // calculate parametric reference date logit hazards (unless no reporting
     // effects)
