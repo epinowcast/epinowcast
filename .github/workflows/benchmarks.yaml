@@ -1,67 +1,40 @@
 name: Benchmarks
 
 concurrency:
-  group: >-
-    ${{ github.workflow }}-${{
-      github.event.issue.number || github.run_id
-    }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 on:
-  issue_comment:
-    types: [created]
-  workflow_dispatch:
+  pull_request:
+    paths:
+      # Stan code: any change here can shift wall-time
+      - "inst/stan/**"
+      # Benchmarking code itself
+      - "touchstone/**"
+      # Benchmark workflows
+      - ".github/workflows/benchmarks*.yaml"
+      # Manual trigger file: touch `.benchmark` to force a benchmark run
+      - ".benchmark"
 
 jobs:
   prepare:
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      (
-        github.event_name == 'issue_comment' &&
-        github.event.issue.pull_request &&
-        contains(github.event.comment.body, '/benchmark')
-      )
     runs-on: ubuntu-latest
     outputs:
       config: ${{ steps.read_touchstone_config.outputs.config }}
     steps:
-      - name: React to comment
-        if: github.event_name == 'issue_comment'
-        uses: actions/github-script@v9
-        with:
-          script: |
-            await github.rest.reactions.createForIssueComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: context.payload.comment.id,
-              content: 'rocket'
-            });
-
-      - name: Get PR head ref
-        if: github.event_name == 'issue_comment'
-        id: pr
-        run: |
-          PR_DATA=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.issue.number }})
-          echo "ref=$(echo $PR_DATA | jq -r '.head.ref')" >> $GITHUB_OUTPUT
-          echo "sha=$(echo $PR_DATA | jq -r '.head.sha')" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ github.token }}
-
       - name: Checkout repo
         uses: actions/checkout@v6
         with:
-          ref: ${{ steps.pr.outputs.ref || github.ref }}
           fetch-depth: 0
 
       - id: read_touchstone_config
         run: |
-          content=`cat ./touchstone/config.json`
-          # the following lines are only required for multi line json
-          content="${content//'%'/'%25'}"
-          content="${content//$'\n'/'%0A'}"
-          content="${content//$'\r'/'%0D'}"
-          # end of optional handling for multi line json
-          echo "::set-output name=config::$content"
+          {
+            echo 'config<<EOF'
+            cat ./touchstone/config.json
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
   build:
     needs: prepare
     runs-on: ${{ matrix.config.os }}
@@ -75,11 +48,10 @@ jobs:
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-
       - uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
-          extra-repositories: "https://stan-dev.r-universe.dev"
+          extra-repositories: 'https://stan-dev.r-universe.dev'
 
       - name: Install cmdstanr
         run: |
@@ -94,9 +66,10 @@ jobs:
 
       - uses: lorenzwalthert/touchstone/actions/receive@main
         with:
-          cache-version: 1
-          touchstone_ref: '@7ce2cd7'
+          cache-version: 2
+          touchstone_ref: '@main'
+          extra-packages: any::cmdstanr
+          extra-repositories: 'https://stan-dev.r-universe.dev'
           benchmarking_repo: ${{ matrix.config.benchmarking_repo }}
           benchmarking_ref: ${{ matrix.config.benchmarking_ref }}
           benchmarking_path: ${{ matrix.config.benchmarking_path }}
-          extra-repositories: 'https://stan-dev.r-universe.dev'
