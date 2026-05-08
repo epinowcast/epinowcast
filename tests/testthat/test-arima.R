@@ -181,7 +181,9 @@ test_that(
         show_exceptions = FALSE, refresh = 0, adapt_delta = 0.95
       )
     )
-    draws <- summary(fit, type = "fit")
+    # Posterior may cap ESS for the small-iter integration fit and emit
+    # a benign warning; the convergence check below is what matters.
+    draws <- suppressWarnings(summary(fit, type = "fit"))
     arima_pars <- draws[grepl("expr_arima_(pacf|sigma)", variable)]
     expect_true(nrow(arima_pars) >= 2)
     expect_true(all(arima_pars$rhat < 1.1))
