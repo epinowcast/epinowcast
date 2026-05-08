@@ -126,3 +126,43 @@ matrix arima_filter(matrix Z, vector phi, vector theta, int d) {
   int T = rows(Z);
   return arima_kernel_matrix(phi, theta, d, T) * Z;
 }
+
+/**
+ * Add an ARIMA(p, d, q) latent residual to a per-observation predictor.
+ *
+ * Encapsulates the kernel build, scaling, and per-observation lookup
+ * so module call sites are a single line. When `present` is 0 the
+ * input is returned unchanged.
+ *
+ * @param base       Predictor to which the latent is added.
+ * @param n_obs      Length of `base` and of the lookup vectors.
+ * @param present    0 = inert, 1 = active.
+ * @param T          Number of time points in the latent series.
+ * @param G          Number of groups.
+ * @param p, d, q    ARIMA orders.
+ * @param z          Unit-normal shocks (T x G).
+ * @param pacf       Partial autocorrelations on (-1, 1), length p.
+ * @param theta      MA coefficients, length q.
+ * @param sigma      Length-1 array (empty when not present) holding the
+ *                   latent standard deviation.
+ * @param time_idx   Per-observation time index in 1..T.
+ * @param group_idx  Per-observation group index in 1..G.
+ *
+ * @return A new vector equal to `base + sigma * (D^d * T(psi)) * z`
+ *         looked up at the per-observation indices.
+ */
+vector apply_arima_residual(vector base, int n_obs,
+                            int present, int T, int G,
+                            int p, int d, int q,
+                            matrix z, vector pacf, vector theta,
+                            array[] real sigma,
+                            array[] int time_idx, array[] int group_idx) {
+  if (!present) return base;
+  vector[p] phi = pacf_to_phi(pacf);
+  matrix[T, G] eps = sigma[1] * arima_filter(z, phi, theta, d);
+  vector[n_obs] result = base;
+  for (i in 1:n_obs) {
+    result[i] += eps[time_idx[i], group_idx[i]];
+  }
+  return result;
+}

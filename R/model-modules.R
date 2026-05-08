@@ -144,7 +144,7 @@ enw_reference <- function(
   out$priors <- data.table::data.table(
     variable = c(
       "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd",
-      "refnp_int", "refnp_beta_sd"
+      "refnp_int", "refnp_beta_sd", "refnp_arima_sigma"
     ),
     description = c(
       "Log mean intercept for parametric reference date delay",
@@ -152,14 +152,15 @@ enw_reference <- function(
       "Standard deviation of scaled pooled parametric mean effects",
       "Standard deviation of scaled pooled parametric sd effects",
       "Intercept for non-parametric reference date delay",
-      "Standard deviation of scaled pooled non-parametric effects"
+      "Standard deviation of scaled pooled non-parametric effects",
+      "Standard deviation of the ARIMA latent residual on non-parametric reference logit hazards"
     ),
     distribution = c(
       "Normal", rep("Zero truncated normal", 3),
-      "Normal", "Zero truncated normal"
+      "Normal", "Zero truncated normal", "Zero truncated normal"
     ),
-    mean = c(1, 0.5, 0, 0, 0, 0),
-    sd = 1
+    mean = c(1, 0.5, 0, 0, 0, 0, 0),
+    sd = c(1, 1, 1, 1, 1, 1, 0.2)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -224,6 +225,25 @@ enw_reference <- function(
             priors$refnp_beta_sd_p[2] / 10
           )))
         }
+      }
+      # ARIMA term parameters for non-parametric reference logit hazards
+      if (isTRUE(data$refnp_arima_T > 0 && data$refnp_arima_G > 0)) {
+        init$refnp_arima_z <- matrix(
+          rnorm(data$refnp_arima_T * data$refnp_arima_G, 0, 0.01),
+          data$refnp_arima_T, data$refnp_arima_G
+        )
+      }
+      if (isTRUE(data$refnp_arima_p > 0)) {
+        init$refnp_arima_pacf <- array(runif(data$refnp_arima_p, -0.1, 0.1))
+      }
+      if (isTRUE(data$refnp_arima_q > 0)) {
+        init$refnp_arima_theta <- array(rnorm(data$refnp_arima_q, 0, 0.01))
+      }
+      if (isTRUE(data$refnp_arima_present > 0)) {
+        init$refnp_arima_sigma <- array(abs(rnorm(
+          1, priors$refnp_arima_sigma_p[1],
+          priors$refnp_arima_sigma_p[2] / 10
+        )))
       }
       init
     }
@@ -510,9 +530,10 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       "expr_r_int", "expr_beta_sd",
       rep("expr_lelatent_int", length(seed_obs)),
       "expr_arima_sigma",
-      "expl_beta_sd"
+      "expl_beta_sd",
+      "expl_arima_sigma"
     ),
-    dimension = c(1, 1, seq_along(seed_obs), 1, 1),
+    dimension = c(1, 1, seq_along(seed_obs), 1, 1, 1),
     description = c(
       "Intercept of the log growth rate",
       "Standard deviation of scaled pooled log growth rate effects",
@@ -524,15 +545,17 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
         length(seed_obs)
       ),
       "Standard deviation of the ARIMA latent residual on log growth rate",
-      "Standard deviation of scaled pooled log growth rate effects"
+      "Standard deviation of scaled pooled log growth rate effects",
+      "Standard deviation of the ARIMA latent residual on log latent-to-obs proportion"
     ),
     distribution = c(
       "Normal", "Zero truncated normal", rep("Normal", length(seed_obs)),
       "Zero truncated normal",
+      "Zero truncated normal",
       "Zero truncated normal"
     ),
-    mean = c(0, 0, seed_obs, 0, 0),
-    sd = c(0.2, 1, rep(1, length(seed_obs)), 0.2, 1)
+    mean = c(0, 0, seed_obs, 0, 0, 0),
+    sd = c(0.2, 1, rep(1, length(seed_obs)), 0.2, 1, 0.2)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -589,6 +612,25 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       }
       if (data$expl_fncol > 0) {
         init$expl_beta <- array(rnorm(data$expl_fncol, 0, 0.01))
+      }
+      # ARIMA term parameters for the latent-to-obs proportion
+      if (isTRUE(data$expl_arima_T > 0 && data$expl_arima_G > 0)) {
+        init$expl_arima_z <- matrix(
+          rnorm(data$expl_arima_T * data$expl_arima_G, 0, 0.01),
+          data$expl_arima_T, data$expl_arima_G
+        )
+      }
+      if (isTRUE(data$expl_arima_p > 0)) {
+        init$expl_arima_pacf <- array(runif(data$expl_arima_p, -0.1, 0.1))
+      }
+      if (isTRUE(data$expl_arima_q > 0)) {
+        init$expl_arima_theta <- array(rnorm(data$expl_arima_q, 0, 0.01))
+      }
+      if (isTRUE(data$expl_arima_present > 0)) {
+        init$expl_arima_sigma <- array(abs(rnorm(
+          1, priors$expl_arima_sigma_p[1],
+          priors$expl_arima_sigma_p[2] / 10
+        )))
       }
       if (data$expl_rncol > 0) {
         init$expl_beta_sd <- array(abs(rnorm(
@@ -703,15 +745,16 @@ enw_missing <- function(formula = ~1, data) {
   out$data <- data_list
   # Define default priors
   out$priors <- data.table::data.table(
-    variable = c("miss_int", "miss_beta_sd"),
+    variable = c("miss_int", "miss_beta_sd", "miss_arima_sigma"),
     description = c(
       "Intercept on the logit scale for the proportion missing reference dates",
       "Standard deviation of scaled pooled logit missing reference date
-       effects"
+       effects",
+      "Standard deviation of the ARIMA latent residual on missing-reference logit proportion"
     ),
-    distribution = c("Normal", "Zero truncated normal"),
-    mean = c(0, 0),
-    sd = c(1, 1)
+    distribution = c("Normal", "Zero truncated normal", "Zero truncated normal"),
+    mean = c(0, 0, 0),
+    sd = c(1, 1, 0.2)
   )
   # Define a function for sampling from the priors and data
   out$inits <- function(data, priors) {
@@ -735,6 +778,25 @@ enw_missing <- function(formula = ~1, data) {
             priors$miss_beta_sd_p[2] / 10
           )))
         }
+      }
+      # ARIMA term parameters for missing-reference logit proportion
+      if (isTRUE(data$miss_arima_T > 0 && data$miss_arima_G > 0)) {
+        init$miss_arima_z <- matrix(
+          rnorm(data$miss_arima_T * data$miss_arima_G, 0, 0.01),
+          data$miss_arima_T, data$miss_arima_G
+        )
+      }
+      if (isTRUE(data$miss_arima_p > 0)) {
+        init$miss_arima_pacf <- array(runif(data$miss_arima_p, -0.1, 0.1))
+      }
+      if (isTRUE(data$miss_arima_q > 0)) {
+        init$miss_arima_theta <- array(rnorm(data$miss_arima_q, 0, 0.01))
+      }
+      if (isTRUE(data$miss_arima_present > 0)) {
+        init$miss_arima_sigma <- array(abs(rnorm(
+          1, priors$miss_arima_sigma_p[1],
+          priors$miss_arima_sigma_p[2] / 10
+        )))
       }
       init
     }

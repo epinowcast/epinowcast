@@ -90,6 +90,7 @@ where $r_0$ is the optional intercept, $X_{r}$ is the design matrix for fixed ef
 
 This model is specified via the `r` argument of `enw_expectation()` (see `?enw_expectation`).
 For example, `enw_expectation(r = ~ 1 + rw(week))` implements a weekly random walk for the log reproduction number as described above.
+ARIMA(p, d, q) latent residuals are also supported through the `arima()` formula helper; see the [latent processes vignette](latent-processes.html) for usage and the [ARIMA implementation notes](arima.html) for the maths and parameterisation choices.
 
 ## Latent infections/notifications
 
