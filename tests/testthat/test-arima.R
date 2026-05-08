@@ -161,3 +161,32 @@ test_that("enw_formula_as_data_list() rejects multiple arima terms", {
     "Only one"
   )
 })
+
+test_that(
+  "enw_expectation() supports an arima() term on the growth rate", {
+    skip_on_cran()
+    skip_on_os("windows")
+    skip_on_local()
+    pobs <- enw_example("preprocessed")
+    exp <- enw_expectation(
+      r = ~ 1 + arima(day, p = 1, d = 1), data = pobs
+    )
+    expect_identical(exp$data$expr_arima_present, 1L)
+    expect_identical(exp$data$expr_arima_p, 1L)
+    expect_identical(exp$data$expr_arima_d, 1L)
+    expect_true(any(exp$priors$variable == "expr_arima_sigma"))
+    fit <- epinowcast(
+      pobs,
+      expectation = exp,
+      fit = enw_fit_opts(
+        save_warmup = FALSE, pp = FALSE, chains = 2, parallel_chains = 2,
+        iter_warmup = 250, iter_sampling = 250, show_messages = FALSE,
+        show_exceptions = FALSE, refresh = 0, adapt_delta = 0.95
+      )
+    )
+    draws <- summary(fit, type = "fit")
+    arima_pars <- draws[grepl("expr_arima_(pacf|sigma)", variable)]
+    expect_true(nrow(arima_pars) >= 2)
+    expect_true(all(arima_pars$rhat < 1.1))
+  }
+)

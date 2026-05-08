@@ -1,0 +1,164 @@
+---
+title: "Latent process options for the growth-rate model"
+description: "Random walks, group random slopes, and ARIMA(p, d, q) residuals — the time-series structures available in the formula interface for the growth rate."
+author: Epinowcast Team
+output:
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{Latent process options for the growth-rate model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 4
+)
+```
+
+The expectation module's `r` formula controls the latent log growth rate.
+Several options exist for giving it time-series structure; each is a different choice for how `r` is allowed to vary over time and across groups.
+
+This vignette walks through three of them on the same small slice of the German COVID-19 hospitalisation data:
+
+- **Random walk on weeks** via `rw(week)`. The growth rate has iid Gaussian increments per week; the cumulative sum of those increments is what enters the linear predictor.
+- **Independent per-week-and-group random effects** via `(1 | week:.group)`. Each (week, group) combination has its own random level drawn from a shared Gaussian, with no time-correlation structure across weeks.
+- **ARIMA(p, d, q) residuals** via `arima(day, age_group, p, d, q)`. The growth rate is built up through a parameter-dependent kernel applied to unit-normal shocks, supporting arbitrary autoregressive and moving-average orders and integration.
+
+The fits use `enw_pathfinder()` for fast variational inference so the vignette stays snappy at build time.
+For a real analysis switch to NUTS via `enw_sample()`.
+
+# Setup
+
+```{r setup, message = FALSE}
+library(epinowcast)
+library(data.table)
+library(ggplot2) # nolint: unused_import_linter. Required by plot.epinowcast().
+library(knitr)
+```
+
+```{r}
+options(mc.cores = 2)
+```
+
+We work with three German age strata reported nationally over five weeks of reference dates ending 28 days before the latest available reports.
+The same `pobs` is used for every fit so any difference between the resulting nowcasts is down to the latent-process choice rather than the data.
+
+```{r data}
+nat_germany_hosp <- germany_covid19_hosp[
+  location == "DE" & age_group %in% c("00+", "00-04", "80+")
+]
+
+retro <- nat_germany_hosp |>
+  enw_filter_report_dates(remove_days = 28) |>
+  enw_filter_reference_dates(include_days = 35)
+
+pobs <- suppressWarnings(
+  enw_preprocess_data(retro, by = "age_group", max_delay = 14)
+)
+```
+
+A common fit configuration is reused across the models.
+`enw_pathfinder()` is a fast approximate sampler that suits feature tours and exploration; for production fits use `enw_sample()` instead.
+
+```{r fit-opts}
+fit <- enw_fit_opts(
+  sampler = enw_pathfinder,
+  num_paths = 4, single_path_draws = 50, draws = 200,
+  refresh = 0, show_messages = FALSE
+)
+```
+
+# Random walk on weeks
+
+`rw(week)` adds one Gaussian increment per week; the cumulative sum of those increments is added to `r`.
+Mathematically this is equivalent to a (correlated) Gaussian prior over the per-week growth rates with a single shared standard deviation.
+
+```{r rw-fit, results = "hide"}
+nowcast_rw <- epinowcast(
+  pobs,
+  expectation = enw_expectation(r = ~ rw(week), data = pobs),
+  obs = enw_obs(family = "negbin", data = pobs),
+  fit = fit
+)
+```
+
+```{r rw-plot, fig.cap = "Nowcast under a random walk on weeks."}
+plot(nowcast_rw)
+```
+
+# Independent per-(week, group) random effects
+
+`(1 | week:.group)` adds a separate random level for every (week, group) cell, drawn from a shared Gaussian.
+Unlike the random walk, there is no time correlation across weeks; each week starts afresh.
+This is the natural choice when weekly fluctuations look like noise rather than drift.
+
+```{r re-fit, results = "hide"}
+nowcast_re <- epinowcast(
+  pobs,
+  expectation = enw_expectation(
+    r = ~ 1 + (1 | week:.group), data = pobs
+  ),
+  obs = enw_obs(family = "negbin", data = pobs),
+  fit = fit
+)
+```
+
+```{r re-plot, fig.cap = "Nowcast under independent per-(week, group) random effects."}
+plot(nowcast_re)
+```
+
+# ARIMA(p, d, q) residuals
+
+`arima(time, by, p, d, q, type)` adds a latent ARIMA(p, d, q) residual series to the linear predictor.
+Differencing is applied via the cumulative-sum operator and the ARMA part via a parameter-dependent Toeplitz kernel built from the impulse response; both compose with a single matrix multiplication onto unit-normal shocks.
+Setting `type = "dependent"` shares `phi`, `theta`, and `sigma` across groups (a single ARIMA process applied independently to each group's shocks), which is usually a sensible default unless groups are believed to differ in their dynamics.
+
+`arima(time, d = 1, p = 0, q = 0)` recovers the same model as `rw(time)`; setting `p > 0` or `q > 0` adds autoregressive or moving-average structure on top.
+
+```{r arima-fit, results = "hide"}
+nowcast_arima <- epinowcast(
+  pobs,
+  expectation = enw_expectation(
+    r = ~ 1 + arima(day, age_group, p = 1, d = 1, type = "dependent"),
+    data = pobs
+  ),
+  obs = enw_obs(family = "negbin", data = pobs),
+  fit = fit
+)
+```
+
+```{r arima-plot, fig.cap = "Nowcast under an ARIMA(1, 1, 0) residual on day."}
+plot(nowcast_arima)
+```
+
+The ARIMA-specific posterior summaries:
+
+```{r arima-pars}
+arima_pars <- summary(nowcast_arima, type = "fit")[
+  grepl("expr_arima_(pacf|sigma)", variable),
+  .(variable, mean, q5, q95)
+]
+kable(arima_pars, digits = 3)
+```
+
+# When to reach for which
+
+| Latent option | Formula example | Useful when |
+|---|---|---|
+| Random walk | `rw(week)` | The growth rate evolves smoothly week-to-week with no preferred direction; the standard non-stationary smoother. |
+| Independent random effects | `(1 \| week:.group)` | Weekly fluctuations look like noise around a stable mean rather than a drifting trend; no time correlation is imposed. |
+| ARIMA | `arima(day, by, p, d, q)` | You want explicit autocorrelated short-range structure on the residuals, e.g. `arima(p = 1, d = 0)` for stationary AR(1) deviations around a smooth trend, or `arima(p = 1, d = 1)` for AR(1) on the differences. |
+
+The three options can be combined within the same formula; for example `~ 1 + week + arima(day, p = 1)` gives a linear time trend with AR(1) residuals.
+The `by` argument on `arima()` and `rw()` lets you fit independent series per group, with `type = "dependent"` sharing the standard deviation and dynamics across groups.

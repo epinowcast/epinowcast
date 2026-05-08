@@ -2,6 +2,7 @@ functions {
 #include functions/utils.stan
 #include functions/combine_effects.stan
 #include functions/effects_priors_lp.stan
+#include functions/arima_kernel.stan
 #include functions/log_expected_latent_from_r.stan
 #include functions/log_expected_obs_from_latent.stan
 #include functions/discretised_logit_hazard.stan
@@ -64,6 +65,18 @@ data {
   array[2, g * expr_r_seed] real expr_lelatent_int_p; 
   array[2, 1] real expr_r_int_p;
   array[2, 1] real expr_beta_sd_p;
+  // ARIMA(p, d, q) latent residual on growth rate
+  int<lower=0, upper=1> expr_arima_present;
+  int<lower=0> expr_arima_T;
+  int<lower=0> expr_arima_G;
+  int<lower=0> expr_arima_p;
+  int<lower=0> expr_arima_d;
+  int<lower=0> expr_arima_q;
+  int<lower=0, upper=1> expr_arima_type;
+  int<lower=0> expr_arima_n_obs;
+  array[expr_arima_n_obs] int<lower=1> expr_arima_time_idx;
+  array[expr_arima_n_obs] int<lower=1> expr_arima_group_idx;
+  array[2, 1] real expr_arima_sigma_p;
   // ---- Latent case submodule ----
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
   // Partial PMF of the latent delay distribution as a convolution matrix
@@ -178,6 +191,11 @@ parameters {
   array[expr_fintercept ? 1 : 0] real<offset = expr_r_int_p[1, 1], multiplier = expr_r_int_p[2, 1]> expr_r_int; // growth rate intercept
   vector[expr_fncol] expr_beta;
   vector<lower=0>[expr_rncol] expr_beta_sd;
+  // Growth rate ARIMA term parameters
+  matrix[expr_arima_T, expr_arima_G] expr_arima_z;
+  vector<lower=-1, upper=1>[expr_arima_p] expr_arima_pacf;
+  vector[expr_arima_q] expr_arima_theta;
+  array[expr_arima_present ? 1 : 0] real<lower=0> expr_arima_sigma;
   // ---- Latent case submodule ----
   vector[expl_fncol] expl_beta;
   vector<lower=0>[expl_rncol] expl_beta_sd;
@@ -238,6 +256,18 @@ transformed parameters{
   r = combine_effects(
     expr_r_int, expr_beta, expr_fnindex, expr_fncol, expr_fdesign, expr_sparse, expr_beta_sd, expr_rdesign, expr_fintercept, sparse_design
   );
+  if (expr_arima_present) {
+    // Stationary AR(p) coefficients via partial autocorrelations
+    vector[expr_arima_p] expr_arima_phi = pacf_to_phi(expr_arima_pacf);
+    // Apply parameter-dependent ARIMA(p, d, q) kernel to unit-normal shocks
+    matrix[expr_arima_T, expr_arima_G] expr_arima_eps =
+      expr_arima_sigma[1] * arima_filter(
+        expr_arima_z, expr_arima_phi, expr_arima_theta, expr_arima_d
+      );
+    for (i in 1:expr_arima_n_obs) {
+      r[i] += expr_arima_eps[expr_arima_time_idx[i], expr_arima_group_idx[i]];
+    }
+  }
   exp_llatent = log_expected_latent_from_r(
     expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
     expr_ft, g
@@ -336,6 +366,17 @@ model {
   effect_priors_lp(
     expr_beta, expr_beta_sd, expr_beta_sd_p, expr_fncol, expr_rncol
   );
+  // Growth rate ARIMA priors (only active when an arima() term is supplied)
+  if (expr_arima_present) {
+    to_vector(expr_arima_z) ~ std_normal();
+    if (expr_arima_q > 0) {
+      expr_arima_theta ~ std_normal();
+    }
+    expr_arima_sigma[1] ~ normal(
+      expr_arima_sigma_p[1, 1], expr_arima_sigma_p[2, 1]
+    ) T[0, ];
+    // expr_arima_pacf has implicit uniform(-1, 1) prior via its bounds
+  }
   // ---- Latent case submodule ----
   // latent-to-obs proportion
   effect_priors_lp(

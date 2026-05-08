@@ -509,9 +509,10 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
     variable = c(
       "expr_r_int", "expr_beta_sd",
       rep("expr_lelatent_int", length(seed_obs)),
+      "expr_arima_sigma",
       "expl_beta_sd"
     ),
-    dimension = c(1, 1, seq_along(seed_obs), 1),
+    dimension = c(1, 1, seq_along(seed_obs), 1, 1),
     description = c(
       "Intercept of the log growth rate",
       "Standard deviation of scaled pooled log growth rate effects",
@@ -522,14 +523,16 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
         ),
         length(seed_obs)
       ),
+      "Standard deviation of the ARIMA latent residual on log growth rate",
       "Standard deviation of scaled pooled log growth rate effects"
     ),
     distribution = c(
       "Normal", "Zero truncated normal", rep("Normal", length(seed_obs)),
+      "Zero truncated normal",
       "Zero truncated normal"
     ),
-    mean = c(0, 0, seed_obs, 0),
-    sd = c(0.2, 1, rep(1, length(seed_obs)), 1)
+    mean = c(0, 0, seed_obs, 0, 0),
+    sd = c(0.2, 1, rep(1, length(seed_obs)), 0.2, 1)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -564,6 +567,25 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
         init$expr_r_int <- array(rnorm(
           1, priors$expr_r_int_p[1], priors$expr_r_int_p[2] * 0.1
         ))
+      }
+      # ARIMA term parameters: present-but-empty when not requested
+      if (data$expr_arima_T > 0 && data$expr_arima_G > 0) {
+        init$expr_arima_z <- matrix(
+          rnorm(data$expr_arima_T * data$expr_arima_G, 0, 0.01),
+          data$expr_arima_T, data$expr_arima_G
+        )
+      }
+      if (data$expr_arima_p > 0) {
+        init$expr_arima_pacf <- array(runif(data$expr_arima_p, -0.1, 0.1))
+      }
+      if (data$expr_arima_q > 0) {
+        init$expr_arima_theta <- array(rnorm(data$expr_arima_q, 0, 0.01))
+      }
+      if (data$expr_arima_present > 0) {
+        init$expr_arima_sigma <- array(abs(rnorm(
+          1, priors$expr_arima_sigma_p[1],
+          priors$expr_arima_sigma_p[2] / 10
+        )))
       }
       if (data$expl_fncol > 0) {
         init$expl_beta <- array(rnorm(data$expl_fncol, 0, 0.01))
