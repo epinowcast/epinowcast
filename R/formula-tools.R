@@ -1177,6 +1177,31 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     data = data,
     sparse = sparse
   )
+
+  # Joint sparse dedup: when an ARIMA term is supplied alongside a
+  # sparse design, deduplicate by the joint (covariate row × ARIMA
+  # time × ARIMA group) granularity rather than by covariate row
+  # alone. This lets downstream consumers that loop over fdesign rows
+  # (for example a per-row PMF call) benefit from coarse-time ARIMA
+  # without paying per-snapshot cost.
+  if (sparse && length(arima_specs) > 0) {
+    arima_spec <- arima_specs[[1]]
+    joint_keys <- paste(
+      fixed$index, arima_spec$time_idx, arima_spec$group_idx,
+      sep = "__"
+    )
+    unique_keys <- unique(joint_keys)
+    new_index <- match(joint_keys, unique_keys)
+    parts <- do.call(
+      rbind, strsplit(unique_keys, "__", fixed = TRUE)
+    )
+    cov_idx <- as.integer(parts[, 1])
+    fixed$design <- fixed$design[cov_idx, , drop = FALSE]
+    fixed$index <- new_index
+    arima_spec$time_idx <- as.integer(parts[, 2])
+    arima_spec$group_idx <- as.integer(parts[, 3])
+    arima_specs[[1]] <- arima_spec
+  }
   # Extract fixed effects metadata
   metadata <- enw_effects_metadata(fixed$design)
 

@@ -149,18 +149,29 @@ The half-normal prior on $\sigma$ is the most consequential of these in practice
 
 # Where it is wired
 
-The helper is wired into every module whose Stan-side predictor is indexed at the per-observation level:
+`arima()` is wired into every module that takes a formula:
 
-- `enw_expectation()` — both the growth rate `r` formula and the latent-to-obs `observation` formula.
-- `enw_reference()` non-parametric formula (`refnp`).
-- `enw_missing()` formula (`miss`).
+- `enw_expectation()` — both the growth rate `r` and the latent-to-obs `observation` formulas.
+- `enw_reference()` — both the parametric mean (`refp_mean`) and the non-parametric (`refnp`) formulas.
+- `enw_report()` (`rep`).
+- `enw_missing()` (`miss`).
 
-These modules all build their formula with `sparse = FALSE`, so the predictor returned by `combine_effects()` is one entry per observation, aligned with the per-observation lookup vectors that `arima()` produces.
-The same Stan helper function `apply_arima_residual()` is used for all of them; the per-module Stan boilerplate is the parameter declarations and a single function call.
+The Stan-side wiring uses two single entry points: `regression_predictor()` for the transform and `regression_priors_lp()` for the priors. Each module's Stan code calls these once instead of separately invoking `combine_effects()` and a bespoke ARIMA block, keeping the per-module boilerplate to a parameter declaration and one function call per side.
 
-The reference parametric formulas (`refp_mean`, `refp_sd`) and the report formula (`rep`) build their formula with `sparse = TRUE`, returning a unique-row-indexed predictor that is mapped to observations later via a separate index vector.
-Wiring `arima()` into those modules requires either switching them to `sparse = FALSE` when an ARIMA term is supplied, or applying the residual at the consumption site rather than the construction site.
-Until that work lands, using `arima()` in those formulas will be parsed and shipped to Stan but the latent term will be inert there.
+# Joint sparse dedup
+
+The modules that previously used `sparse = TRUE` on their fixed-effect design (`refp` and `rep`) need the ARIMA residual to vary at a *finer* granularity than their covariate dedup. The cheap composition is the **joint** dedup: deduplicate the design at the granularity of unique (covariate row × ARIMA time × ARIMA group) tuples rather than by covariate row alone.
+
+Concretely, `enw_formula()` now does the following when both `sparse = TRUE` and an `arima()` term are present:
+
+1. Build the standard sparse fixed-effect design (unique covariate rows + per-observation findex).
+2. For each observation, form a joint key `(covariate_row, arima_time, arima_group)`.
+3. Take unique joint keys; map each observation to its joint-tuple index.
+4. Expand the fixed-effect design to one row per joint tuple (covariate columns repeat across the time/group axis), and update the ARIMA term's `time_idx` / `group_idx` to live at the joint-tuple granularity.
+
+Downstream code that loops over fdesign rows (e.g. `refp`'s per-row `discretised_logit_hazard()` PMF call) then runs over **joint tuples**, which is the smallest set of distinct parameter combinations that the data actually requires. Coarse-time ARIMA pays the natural cost: with weekly ARIMA on daily snapshots, the PMF count is `weeks × groups`, not `days × groups`.
+
+For per-observation modules (`sparse = FALSE`) the joint key is unique by construction, so the dedup is a no-op — the existing per-obs apply path is unchanged.
 
 # Limitations
 
@@ -168,7 +179,7 @@ Until that work lands, using `arima()` in those formulas will be parsed and ship
 - AR stationarity is enforced; MA invertibility is not (rarely a problem in practice).
 - `type = "independent"` is metadata-only; the Stan side currently uses shared dynamics regardless.
 - The kernel is built dense ($T \times T$) every iteration. For very long series (thousands of time points) the autodiff cost grows as $O(T^2)$; in that regime a recursive form (computing $\epsilon$ via the ARMA filter directly) would be preferable.
-- Reference parametric mean/sd and report-time formulas use a sparse (unique-row) predictor and are not yet wired; see "Where it is wired" above.
+- ARIMA on the parametric reference standard deviation (`refp_sd`) is not wired; only the mean carries an ARIMA residual. Time-varying sd is rarely the right model and would multiply the PMF cost again.
 
 # References
 

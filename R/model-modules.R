@@ -144,6 +144,7 @@ enw_reference <- function(
   out$priors <- data.table::data.table(
     variable = c(
       "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd",
+      "refp_arima_sigma",
       "refnp_int", "refnp_beta_sd", "refnp_arima_sigma"
     ),
     description = c(
@@ -151,16 +152,18 @@ enw_reference <- function(
       "Log standard deviation for the parametric reference date delay",
       "Standard deviation of scaled pooled parametric mean effects",
       "Standard deviation of scaled pooled parametric sd effects",
+      "Standard deviation of the ARIMA latent residual on the parametric reference mean",
       "Intercept for non-parametric reference date delay",
       "Standard deviation of scaled pooled non-parametric effects",
       "Standard deviation of the ARIMA latent residual on non-parametric reference logit hazards"
     ),
     distribution = c(
       "Normal", rep("Zero truncated normal", 3),
+      "Zero truncated normal",
       "Normal", "Zero truncated normal", "Zero truncated normal"
     ),
-    mean = c(1, 0.5, 0, 0, 0, 0, 0),
-    sd = c(1, 1, 1, 1, 1, 1, 0.2)
+    mean = c(1, 0.5, 0, 0, 0, 0, 0, 0),
+    sd = c(1, 1, 1, 1, 0.2, 1, 1, 0.2)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -209,6 +212,25 @@ enw_reference <- function(
             priors$refp_sd_beta_sd_p[2] / 10
           )))
         }
+      }
+      # ARIMA term parameters for parametric reference mean
+      if (isTRUE(data$refp_arima_T > 0 && data$refp_arima_G > 0)) {
+        init$refp_arima_z <- matrix(
+          rnorm(data$refp_arima_T * data$refp_arima_G, 0, 0.01),
+          data$refp_arima_T, data$refp_arima_G
+        )
+      }
+      if (isTRUE(data$refp_arima_p > 0)) {
+        init$refp_arima_pacf <- array(runif(data$refp_arima_p, -0.1, 0.1))
+      }
+      if (isTRUE(data$refp_arima_q > 0)) {
+        init$refp_arima_theta <- array(rnorm(data$refp_arima_q, 0, 0.01))
+      }
+      if (isTRUE(data$refp_arima_present > 0)) {
+        init$refp_arima_sigma <- array(abs(rnorm(
+          1, priors$refp_arima_sigma_p[1],
+          priors$refp_arima_sigma_p[2] / 10
+        )))
       }
       if (data$model_refnp > 0) {
         if (data$refnp_fintercept > 0) {
@@ -358,11 +380,14 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   out$formula$non_parametric <- form$formula
   out$data <- data_list
   out$priors <- data.table::data.table(
-    variable = "rep_beta_sd",
-    description = "Standard deviation of scaled pooled report date effects",
-    distribution = "Zero truncated normal",
-    mean = 0,
-    sd = 1
+    variable = c("rep_beta_sd", "rep_arima_sigma"),
+    description = c(
+      "Standard deviation of scaled pooled report date effects",
+      "Standard deviation of the ARIMA latent residual on report-time logit hazards"
+    ),
+    distribution = c("Zero truncated normal", "Zero truncated normal"),
+    mean = c(0, 0),
+    sd = c(1, 0.2)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -378,6 +403,25 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
         init$rep_beta_sd <- array(abs(rnorm(
           data$rep_rncol, priors$rep_beta_sd_p[1],
           priors$rep_beta_sd_p[2] / 10
+        )))
+      }
+      # ARIMA term parameters for report-time logit hazards
+      if (isTRUE(data$rep_arima_T > 0 && data$rep_arima_G > 0)) {
+        init$rep_arima_z <- matrix(
+          rnorm(data$rep_arima_T * data$rep_arima_G, 0, 0.01),
+          data$rep_arima_T, data$rep_arima_G
+        )
+      }
+      if (isTRUE(data$rep_arima_p > 0)) {
+        init$rep_arima_pacf <- array(runif(data$rep_arima_p, -0.1, 0.1))
+      }
+      if (isTRUE(data$rep_arima_q > 0)) {
+        init$rep_arima_theta <- array(rnorm(data$rep_arima_q, 0, 0.01))
+      }
+      if (isTRUE(data$rep_arima_present > 0)) {
+        init$rep_arima_sigma <- array(abs(rnorm(
+          1, priors$rep_arima_sigma_p[1],
+          priors$rep_arima_sigma_p[2] / 10
         )))
       }
       init

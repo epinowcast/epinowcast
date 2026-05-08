@@ -113,11 +113,26 @@ data {
   int refp_fncol;
   matrix[refp_fnrow, refp_fncol] refp_fdesign;
   int refp_rncol;
-  matrix[refp_fncol, refp_rncol + 1] refp_rdesign; 
+  matrix[refp_fncol, refp_rncol + 1] refp_rdesign;
   array[2, 1] real refp_mean_int_p;
   array[2, 1] real refp_sd_int_p;
   array[2, 1] real refp_mean_beta_sd_p;
   array[2, 1] real refp_sd_beta_sd_p;
+  // ARIMA latent residual on the parametric reference mean. Adds an
+  // ARIMA-cell contribution per joint-deduplicated (covariate row x
+  // ARIMA time x ARIMA group) tuple, so the per-tuple PMF call still
+  // pays only for distinct combinations.
+  int<lower=0, upper=1> refp_arima_present;
+  int<lower=0> refp_arima_T;
+  int<lower=0> refp_arima_G;
+  int<lower=0> refp_arima_p;
+  int<lower=0> refp_arima_d;
+  int<lower=0> refp_arima_q;
+  int<lower=0, upper=1> refp_arima_type;
+  int<lower=0> refp_arima_n_obs;
+  array[refp_arima_n_obs] int<lower=1> refp_arima_time_idx;
+  array[refp_arima_n_obs] int<lower=1> refp_arima_group_idx;
+  array[2, 1] real refp_arima_sigma_p;
   // Non-parametric reference model
   int model_refnp;
   int refnp_fnindex;
@@ -144,13 +159,26 @@ data {
   // Reporting time model
   int model_rep;
   int rep_t; // total number of reporting times (t + dmax - 1)
-  int rep_fnrow; 
-  array[g, rep_t] int rep_findex; 
+  int rep_fnrow;
+  array[g, rep_t] int rep_findex;
   int rep_fncol;
   matrix[rep_fnrow, rep_fncol] rep_fdesign;
-  int rep_rncol; 
-  matrix[rep_fncol, rep_rncol + 1] rep_rdesign; 
+  int rep_rncol;
+  matrix[rep_fncol, rep_rncol + 1] rep_rdesign;
   array[2, 1] real rep_beta_sd_p;
+  // ARIMA latent residual on report-time logit hazards (joint sparse
+  // dedup as for refp).
+  int<lower=0, upper=1> rep_arima_present;
+  int<lower=0> rep_arima_T;
+  int<lower=0> rep_arima_G;
+  int<lower=0> rep_arima_p;
+  int<lower=0> rep_arima_d;
+  int<lower=0> rep_arima_q;
+  int<lower=0, upper=1> rep_arima_type;
+  int<lower=0> rep_arima_n_obs;
+  array[rep_arima_n_obs] int<lower=1> rep_arima_time_idx;
+  array[rep_arima_n_obs] int<lower=1> rep_arima_group_idx;
+  array[2, 1] real rep_arima_sigma_p;
   // Reporting probability aggregation: precomputed indices for log_sum_exp
   int rep_agg_p;
   array[rep_agg_p ? g : 0, rep_agg_p ? t : 0, rep_agg_p ? dmax : 0] int rep_agg_n_selected;
@@ -246,10 +274,15 @@ parameters {
   // Parametric reference model
   array[model_refp ? 1 : 0] real<offset = refp_mean_int_p[1,1], multiplier = refp_mean_int_p[2,1]> refp_mean_int;
   array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; 
-  vector[model_refp ? refp_fncol : 0] refp_mean_beta; 
-  vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta; 
+  vector[model_refp ? refp_fncol : 0] refp_mean_beta;
+  vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta;
   vector<lower=0>[refp_rncol] refp_mean_beta_sd;
-  vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd; 
+  vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd;
+  // Parametric reference ARIMA term parameters (mean only; sd not modulated)
+  matrix[refp_arima_T, refp_arima_G] refp_arima_z;
+  vector<lower=-1, upper=1>[refp_arima_p] refp_arima_pacf;
+  vector[refp_arima_q] refp_arima_theta;
+  array[refp_arima_present ? 1 : 0] real<lower=0> refp_arima_sigma;
   // Non-parametric reference model
   array[model_refnp && refnp_fintercept ? 1 : 0] real refnp_int;
   vector[model_refnp ? refnp_fncol : 0] refnp_beta;
@@ -262,7 +295,12 @@ parameters {
 
   // Report model
   vector[rep_fncol] rep_beta;
-  vector<lower=0>[rep_rncol] rep_beta_sd; 
+  vector<lower=0>[rep_rncol] rep_beta_sd;
+  // Report-time ARIMA term parameters
+  matrix[rep_arima_T, rep_arima_G] rep_arima_z;
+  vector<lower=-1, upper=1>[rep_arima_p] rep_arima_pacf;
+  vector[rep_arima_q] rep_arima_theta;
+  array[rep_arima_present ? 1 : 0] real<lower=0> rep_arima_sigma;
 
   // Missing reference date model
   array[model_miss] real miss_int;
@@ -340,18 +378,23 @@ transformed parameters{
   // Parametric reference model
   profile("transformed_delay_parametric_reference_time_total") {
   if (model_refp) {
-    // calculate sparse reference date effects
+    // calculate sparse reference date effects (with ARIMA on the mean
+    // applied per joint-deduplicated tuple)
     profile("transformed_delay_reference_time_effects") {
-    refp_mean = combine_effects(
+    refp_mean = regression_predictor(
       refp_mean_int, refp_mean_beta, refp_fnrow, refp_fncol, refp_fdesign,
-      refp_sparse, refp_mean_beta_sd, refp_rdesign, 1, sparse_design
+      refp_sparse, refp_mean_beta_sd, refp_rdesign, 1, sparse_design,
+      refp_arima_present, refp_arima_T, refp_arima_G,
+      refp_arima_p, refp_arima_d, refp_arima_q, refp_arima_n_obs,
+      refp_arima_z, refp_arima_pacf, refp_arima_theta, refp_arima_sigma,
+      refp_arima_time_idx, refp_arima_group_idx
     );
     if (model_refp > 1) {
       refp_sd = combine_effects(
         {log(refp_sd_int[1])}, refp_sd_beta, refp_fnrow, refp_fncol, refp_fdesign, refp_sparse, refp_sd_beta_sd, refp_rdesign, 1, sparse_design
       );
       refp_sd = exp(refp_sd);
-    } 
+    }
     }
     // calculate parametric reference date logit hazards (unless no reporting
     // effects)
@@ -381,9 +424,14 @@ transformed parameters{
 
   // Report model
   profile("transformed_delay_reporting_time_effects") {
-  srdlh = combine_effects(
-      {0}, rep_beta, rep_fnrow, rep_fncol, rep_fdesign, rep_sparse, rep_beta_sd, rep_rdesign, 1, sparse_design
-    );
+  srdlh = regression_predictor(
+    {0}, rep_beta, rep_fnrow, rep_fncol, rep_fdesign,
+    rep_sparse, rep_beta_sd, rep_rdesign, 1, sparse_design,
+    rep_arima_present, rep_arima_T, rep_arima_G,
+    rep_arima_p, rep_arima_d, rep_arima_q, rep_arima_n_obs,
+    rep_arima_z, rep_arima_pacf, rep_arima_theta, rep_arima_sigma,
+    rep_arima_time_idx, rep_arima_group_idx
+  );
   }
 
   // Missing reference model
@@ -443,9 +491,11 @@ model {
     if (model_refp > 1) {
       refp_sd_int ~ normal(refp_sd_int_p[1], refp_sd_int_p[2]);
     }
-    effect_priors_lp(
-      refp_mean_beta, refp_mean_beta_sd, refp_mean_beta_sd_p, refp_fncol,
-       refp_rncol
+    regression_priors_lp(
+      refp_mean_beta, refp_mean_beta_sd, refp_mean_beta_sd_p,
+      refp_fncol, refp_rncol,
+      refp_arima_present, refp_arima_q,
+      refp_arima_z, refp_arima_theta, refp_arima_sigma, refp_arima_sigma_p
     );
     if (model_refp > 1) {
       effect_priors_lp(
@@ -468,7 +518,11 @@ model {
   }
 
   // Report model
-  effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
+  regression_priors_lp(
+    rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol,
+    rep_arima_present, rep_arima_q,
+    rep_arima_z, rep_arima_theta, rep_arima_sigma, rep_arima_sigma_p
+  );
   
   // Missing reference date model
   if (model_miss) {
