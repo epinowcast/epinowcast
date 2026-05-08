@@ -334,12 +334,14 @@ model {
   
   // growth rate effect priors
   effect_priors_lp(
-    expr_beta, expr_beta_sd, expr_beta_sd_p, expr_fncol, expr_rncol
+    expr_beta, expr_beta_sd, expr_beta_sd_p, expr_rdesign, expr_fncol,
+    expr_rncol
   );
   // ---- Latent case submodule ----
   // latent-to-obs proportion
   effect_priors_lp(
-    expl_beta, expl_beta_sd, expl_beta_sd_p, expl_fncol, expl_rncol
+    expl_beta, expl_beta_sd, expl_beta_sd_p, expl_rdesign, expl_fncol,
+    expl_rncol
   );
   
   // Reference model
@@ -350,13 +352,13 @@ model {
       refp_sd_int ~ normal(refp_sd_int_p[1], refp_sd_int_p[2]);
     }
     effect_priors_lp(
-      refp_mean_beta, refp_mean_beta_sd, refp_mean_beta_sd_p, refp_fncol,
-       refp_rncol
+      refp_mean_beta, refp_mean_beta_sd, refp_mean_beta_sd_p, refp_rdesign,
+      refp_fncol, refp_rncol
     );
     if (model_refp > 1) {
       effect_priors_lp(
-        refp_sd_beta, refp_sd_beta_sd, refp_sd_beta_sd_p, refp_fncol,
-        refp_rncol
+        refp_sd_beta, refp_sd_beta_sd, refp_sd_beta_sd_p, refp_rdesign,
+        refp_fncol, refp_rncol
       );
     }
   }
@@ -366,18 +368,22 @@ model {
       refnp_int[refnp_fintercept] ~ normal(refnp_int_p[1], refnp_int_p[2]);
     }
     effect_priors_lp(
-      refnp_beta, refnp_beta_sd, refnp_beta_sd_p, refnp_fncol, refnp_rncol
+      refnp_beta, refnp_beta_sd, refnp_beta_sd_p, refnp_rdesign, refnp_fncol,
+      refnp_rncol
     );
   }
 
   // Report model
-  effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
+  effect_priors_lp(
+    rep_beta, rep_beta_sd, rep_beta_sd_p, rep_rdesign, rep_fncol, rep_rncol
+  );
   
   // Missing reference date model
   if (model_miss) {
     miss_int ~ normal(miss_int_p[1], miss_int_p[2]);
     effect_priors_lp(
-      miss_beta, miss_beta_sd, miss_beta_sd_p, miss_fncol, miss_rncol
+      miss_beta, miss_beta_sd, miss_beta_sd_p, miss_rdesign, miss_fncol,
+      miss_rncol
     );
   }
   

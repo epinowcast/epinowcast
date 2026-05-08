@@ -70,10 +70,15 @@ vector combine_effects(array[] real intercept, vector beta,
                        matrix rdesign,
                        int add_intercept, int sparse_design) {
   if (neffs) {
-    vector[1 + num_elements(beta_sd)] ext_beta_sd = append_row(1.0, beta_sd);
     vector[nobs] result;
-    vector[neffs] scaled_beta = beta .* (rdesign * ext_beta_sd);
-    
+    // EXPERIMENT (issue #800): centred parameterisation. `beta` is now at
+    // the data scale already (see effects_priors_lp.stan), so no rescaling
+    // is applied here. The non-centred path used:
+    //   vector[1 + num_elements(beta_sd)] ext_beta_sd =
+    //     append_row(1.0, beta_sd);
+    //   vector[neffs] scaled_beta = beta .* (rdesign * ext_beta_sd);
+    vector[neffs] scaled_beta = beta;
+
     if (sparse_design) {
       // Extract sparse matrix components from fdesign
       result = csr_matrix_times_vector(
