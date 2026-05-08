@@ -129,8 +129,7 @@ The R-side metadata supports this distinction (the `expr_arima_type` data field)
 The factorisation makes several familiar models special cases of the same code path:
 
 - `arima(time, p = 0, d = 0, q = 0)` is degenerate and rejected by the constructor.
-- `arima(time, p = 0, d = 1, q = 0)` reduces to a random walk: $\psi = (1, 0, 0, \dots)$, so $T(\psi) = I$ and $K = D$ is the cumulative-sum operator.
-  This is mathematically equivalent to `rw(time)` (which uses the same cumulative-membership construction in fixed-effect form) and produces the same posterior up to parameterisation differences.
+- `arima(time, p = 0, d = 1, q = 0)` reduces to a random walk: $\psi = (1, 0, 0, \dots)$, so $T(\psi) = I$ and $K = D$ is the cumulative-sum operator. **`rw(time)` is now a thin user-facing wrapper that constructs exactly this term**; both go through the same backend and produce identical posteriors. The pure-differencing case (no AR or MA structure) is detected in `arima_filter()` and short-circuited to a per-column `cumulative_sum()` so the kernel is never materialised — the cost is $O(T G)$ per evaluation, the same as the previous bespoke random-walk implementation.
 - `arima(time, p = 1, d = 0, q = 0)` is a stationary AR(1): $\psi_k = \phi^{k-1}$, $T(\psi)$ is the standard AR(1) Toeplitz, $K = T(\psi)$.
 - `arima(time, p = 0, d = 1, q = 1)` is an integrated MA(1) (the random-walk-with-correlated-shocks model commonly seen in epidemiology).
 

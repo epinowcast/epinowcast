@@ -121,9 +121,26 @@ matrix arima_kernel_matrix(vector phi, vector theta, int d, int T) {
  * Each column is filtered independently through the same kernel. For
  * per-group `phi` / `theta` (independent type), call this once per
  * group with the appropriate column.
+ *
+ * When p = q = 0 (pure differencing, ARIMA(0, d, 0)) the operation
+ * reduces to repeated cumulative sums per column, which avoids
+ * materialising the T x T kernel matrix and saves O(T^2) work per
+ * iteration. This makes ARIMA(0, 1, 0) — the random-walk equivalent —
+ * cost O(T G) per evaluation instead of O(T^2 G).
  */
 matrix arima_filter(matrix Z, vector phi, vector theta, int d) {
   int T = rows(Z);
+  int G = cols(Z);
+  if (num_elements(phi) == 0 && num_elements(theta) == 0) {
+    if (d == 0) return Z;
+    matrix[T, G] result = Z;
+    for (i in 1:d) {
+      for (g in 1:G) {
+        result[, g] = cumulative_sum(result[, g]);
+      }
+    }
+    return result;
+  }
   return arima_kernel_matrix(phi, theta, d, T) * Z;
 }
 

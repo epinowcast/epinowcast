@@ -144,7 +144,7 @@ enw_reference <- function(
   out$priors <- data.table::data.table(
     variable = c(
       "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd",
-      "refp_arima_sigma",
+      "refp_arima_sigma", "refp_arima_sd_sigma",
       "refnp_int", "refnp_beta_sd", "refnp_arima_sigma"
     ),
     description = c(
@@ -152,18 +152,19 @@ enw_reference <- function(
       "Log standard deviation for the parametric reference date delay",
       "Standard deviation of scaled pooled parametric mean effects",
       "Standard deviation of scaled pooled parametric sd effects",
-      "Standard deviation of the ARIMA latent residual on the parametric reference mean",
+      "Scale of the ARIMA latent residual on the parametric reference mean",
+      "Scale of the ARIMA latent residual on the parametric reference sd",
       "Intercept for non-parametric reference date delay",
       "Standard deviation of scaled pooled non-parametric effects",
       "Standard deviation of the ARIMA latent residual on non-parametric reference logit hazards"
     ),
     distribution = c(
       "Normal", rep("Zero truncated normal", 3),
-      "Zero truncated normal",
+      "Zero truncated normal", "Zero truncated normal",
       "Normal", "Zero truncated normal", "Zero truncated normal"
     ),
-    mean = c(1, 0.5, 0, 0, 0, 0, 0, 0),
-    sd = c(1, 1, 1, 1, 0.2, 1, 1, 0.2)
+    mean = c(1, 0.5, 0, 0, 0, 0, 0, 0, 0),
+    sd = c(1, 1, 1, 1, 0.2, 0.2, 1, 1, 0.2)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -230,6 +231,10 @@ enw_reference <- function(
         init$refp_arima_sigma <- array(abs(rnorm(
           1, priors$refp_arima_sigma_p[1],
           priors$refp_arima_sigma_p[2] / 10
+        )))
+        init$refp_arima_sd_sigma <- array(abs(rnorm(
+          1, priors$refp_arima_sd_sigma_p[1],
+          priors$refp_arima_sd_sigma_p[2] / 10
         )))
       }
       if (data$model_refnp > 0) {

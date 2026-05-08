@@ -118,9 +118,14 @@
       
       
       $priors
-            variable                                             description
-      1: rep_beta_sd Standard deviation of scaled pooled report date effects
-                  distribution mean sd
-      1: Zero truncated normal    0  1
+                variable
+      1:     rep_beta_sd
+      2: rep_arima_sigma
+                                                                          description
+      1:                      Standard deviation of scaled pooled report date effects
+      2: Standard deviation of the ARIMA latent residual on report-time logit hazards
+                  distribution mean  sd
+      1: Zero truncated normal    0 1.0
+      2: Zero truncated normal    0 0.2
       
 

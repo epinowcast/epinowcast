@@ -60,7 +60,8 @@ test_that("enw_reference supports parametric models", {
       "refp_mean_int", "refp_sd_int", "refp_mean_beta",
       "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
       "refnp_int", "refnp_beta", "refnp_beta_sd",
-      "refp_mean", "refp_sd"
+      "refp_mean", "refp_sd",
+      "refp_arima_z", "refp_arima_sigma", "refp_arima_sd_sigma"
     )
   )
   c(
@@ -112,10 +113,15 @@ test_that("enw_reference supports non-parametric models", {
     data = pobs
   )
   inits <- ref$inits(ref$data, ref$priors)()
+  # rw(week) now flows through the ARIMA backend, so the
+  # corresponding step coefficients live in refnp_arima_z and the
+  # step standard deviation in refnp_arima_sigma rather than in
+  # refnp_beta_sd. With only fixed effects (delay) and an ARIMA
+  # term, refnp_rncol = 0 so refnp_beta_sd is empty.
   zero_length <- c(
     "refp_mean_int", "refp_sd_int", "refp_mean_beta",
     "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
-    "refp_mean", "refp_sd"
+    "refp_mean", "refp_sd", "refnp_beta_sd"
   )
   expect_zero_length_or_not(zero_length, inits)
   # check that not having an intercept works as expected

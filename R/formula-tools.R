@@ -274,10 +274,16 @@ parse_formula <- function(formula) {
 
 #' Adds random walks with Gaussian steps to the model.
 #'
-#' A call to `rw()` can be used in the 'formula' argument of model
-#' construction functions in the `epinowcast` package such as [enw_formula()].
-#' Does not evaluate arguments but instead simply passes information for use in
-#' model construction.
+#' A call to `rw()` can be used in the `formula` argument of model
+#' construction functions in the `epinowcast` package such as
+#' [enw_formula()]. Mathematically a Gaussian random walk is exactly
+#' an ARIMA(0, 1, 0) process; `rw(time, by, type)` is now a thin
+#' wrapper over [arima()] with `p = 0`, `d = 1`, `q = 0`. It is kept
+#' as a user-facing convenience because random walks are the most
+#' common time-series structure in `epinowcast` formulas.
+#'
+#' Does not evaluate arguments but instead simply passes information
+#' for use in model construction.
 #'
 #' @param time Defines the random walk time period.
 #'
@@ -289,8 +295,8 @@ parse_formula <- function(formula) {
 #' walks is estimated: "independent", or "dependent" across groups;
 #' enforced by [base::match.arg()].
 #'
-#' @return A list defining the time frame, group, and type with class
-#' "enw_rw_term" that can be interpreted by [construct_rw()].
+#' @return A list of class `enw_arima_term` (with `p = 0`, `d = 1`,
+#' `q = 0`) that can be interpreted by [construct_arima()].
 #' @export
 #' @importFrom cli cli_abort
 #' @family formulatools
@@ -303,7 +309,7 @@ parse_formula <- function(formula) {
 rw <- function(time, by, type = c("independent", "dependent")) {
   type <- match.arg(type)
   if (missing(time)) {
-    cli::cli_abort("time must be present")
+    cli::cli_abort("`time` must be present")
   } else {
     time <- deparse(substitute(time))
   }
@@ -313,8 +319,12 @@ rw <- function(time, by, type = c("independent", "dependent")) {
   } else {
     by <- deparse(substitute(by))
   }
-  out <- list(time = time, by = by, type = type)
-  class(out) <- "enw_rw_term"
+  out <- list(
+    time = time, by = by,
+    p = 0L, d = 1L, q = 0L,
+    type = type
+  )
+  class(out) <- "enw_arima_term"
   out
 }
 
@@ -432,85 +442,21 @@ arima <- function(time, by, p = 1, d = 0, q = 0,
 #'
 #' epinowcast:::construct_rw(rw(week, day_of_week), data)
 construct_rw <- function(rw, data) {
-  if (!inherits(rw, "enw_rw_term")) {
+  # rw() now returns an enw_arima_term with p = 0, d = 1, q = 0; this
+  # function delegates to construct_arima() so callers see the unified
+  # backend output. Older enw_rw_term inputs are coerced for compat.
+  if (inherits(rw, "enw_rw_term")) {
+    rw$p <- 0L
+    rw$d <- 1L
+    rw$q <- 0L
+    class(rw) <- "enw_arima_term"
+  }
+  if (!inherits(rw, "enw_arima_term")) {
     cli::cli_abort(
-      paste0(
-        "Argument `rw` must be a random walk term as constructed by ",
-        "`epinowcast:::rw`"
-      )
+      "`rw` must be a term constructed by `rw()` or `arima()`."
     )
   }
-
-  if (!is.numeric(data[[rw$time]])) {
-    cli::cli_abort(
-      paste0(
-        "The time variable {rw$time} is not numeric but must be ",
-        "to be used as a random walk term."
-      )
-    )
-  }
-
-  if (anyNA(data[[rw$time]])) {
-    cli::cli_abort("The time variable {rw$time} contains non-numeric values.")
-  }
-
-  # add new cumulative features to use for the random walk
-  data <- enw_add_cumulative_membership(
-    data,
-    feature = rw$time
-  )
-  ctime <- paste0("c", rw$time)
-  terms <- grep(ctime, colnames(data), value = TRUE)
-  fdata <- data[, c(terms, rw$by), with = FALSE]
-  if (!is.null(rw$by)) {
-    if (is.null(fdata[[rw$by]])) {
-      cli::cli_abort(
-        paste0(
-          "Requested grouping variable, {rw$by} is not present in the ",
-          "supplied data"
-        )
-      )
-    }
-    if (length(unique(fdata[[rw$by]])) < 2) {
-      cli::cli_inform(
-        paste0(
-          "A grouped random walk using {rw$by} is not possible as this ",
-          "variable has fewer than 2 unique values."
-        )
-      )
-      rw$by <- NULL
-    } else {
-      terms <- paste0(rw$by, ":", terms)
-    }
-  }
-
-  # make a fixed effects design matrix
-  fixed <- enw_manual_formula(
-    fdata,
-    fixed = terms, no_contrasts = TRUE
-  )$fixed$design
-
-  # extract effects metadata
-  effects <- enw_effects_metadata(fixed)
-
-  # implement random walk structure effects
-  if (is.null(rw$by) || rw$type == "dependent") {
-    effects <- enw_add_pooling_effect(
-      effects, var_name = paste0("rw__", rw$time), prefix = ctime
-    )
-  } else {
-    for (i in unique(fdata[[rw$by]])) {
-      nby <- paste0(rw$by, i)
-      effects <- enw_add_pooling_effect(
-        effects, var_name = paste0("rw__", nby, "__", rw$time),
-        finder_fn = function(effect, pattern, prefix) {
-          grepl(pattern, effect) & startsWith(effect, prefix)
-        },
-        pattern = ctime, prefix = paste0(rw$by, i)
-      )
-    }
-  }
-  list(data = data, terms = terms, effects = effects)
+  construct_arima(rw, data)
 }
 
 #' Constructs ARIMA term metadata
@@ -1101,35 +1047,19 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # Parse formula
   parsed_formula <- parse_formula(formula)
 
-  # Get random walk effects by iteratively looping through (as variables are
-  # created in input data so need to use iteratively)
-  if (length(parsed_formula$rw) > 0) {
-    rw <- purrr::map(
-      parsed_formula$rw,
-      ~ eval(parse(text = paste0("epinowcast::", .)))
-    )
-    for (i in seq_along(rw)) {
-      rw[[i]] <- construct_rw(rw[[i]], data)
-      data <- rw[[i]]$data
-      rw[[i]]$data <- NULL
-    }
-    rw <- purrr::transpose(rw)
-    rw_terms <- unlist(rw$terms)
-    rw_metadata <- data.table::rbindlist(
-      rw$effects,
-      use.names = TRUE, fill = TRUE
-    )
-  } else {
-    rw_terms <- NULL
-    rw_metadata <- NULL
-  }
+  rw_terms <- NULL
+  rw_metadata <- NULL
 
-  # ARIMA terms do not contribute fixed-effect columns; instead they
-  # carry per-observation lookup metadata used at the Stan layer to
-  # apply a parameter-dependent kernel to unit-normal shocks.
-  if (length(parsed_formula$arima) > 0) {
+  # rw() and arima() now share a single backend: rw(time, by, type)
+  # is exactly arima(time, by, p = 0, d = 1, q = 0, type = type) and
+  # both produce enw_arima_term objects. Process them together
+  # through construct_arima so they pick up the per-observation
+  # lookup metadata used at the Stan layer to apply a
+  # parameter-dependent kernel to unit-normal shocks.
+  arima_calls <- c(parsed_formula$rw, parsed_formula$arima)
+  if (length(arima_calls) > 0) {
     arima_specs <- purrr::map(
-      parsed_formula$arima,
+      arima_calls,
       ~ eval(parse(text = paste0("epinowcast::", .)))
     )
     arima_specs <- purrr::map(arima_specs, construct_arima, data = data)

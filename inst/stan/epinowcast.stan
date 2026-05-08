@@ -118,10 +118,12 @@ data {
   array[2, 1] real refp_sd_int_p;
   array[2, 1] real refp_mean_beta_sd_p;
   array[2, 1] real refp_sd_beta_sd_p;
-  // ARIMA latent residual on the parametric reference mean. Adds an
-  // ARIMA-cell contribution per joint-deduplicated (covariate row x
-  // ARIMA time x ARIMA group) tuple, so the per-tuple PMF call still
-  // pays only for distinct combinations.
+  // ARIMA latent residual on the parametric reference. Shocks and
+  // kernel are shared between mean and sd; each quantity has its own
+  // scale (sigma) so they can grow time-varying structure
+  // independently. Joint-deduplicated at (covariate row x ARIMA time
+  // x ARIMA group) so the per-tuple PMF call pays only for distinct
+  // combinations.
   int<lower=0, upper=1> refp_arima_present;
   int<lower=0> refp_arima_T;
   int<lower=0> refp_arima_G;
@@ -132,7 +134,8 @@ data {
   int<lower=0> refp_arima_n_obs;
   array[refp_arima_n_obs] int<lower=1> refp_arima_time_idx;
   array[refp_arima_n_obs] int<lower=1> refp_arima_group_idx;
-  array[2, 1] real refp_arima_sigma_p;
+  array[2, 1] real refp_arima_sigma_p;     // mean scale prior
+  array[2, 1] real refp_arima_sd_sigma_p;  // sd scale prior
   // Non-parametric reference model
   int model_refnp;
   int refnp_fnindex;
@@ -278,11 +281,13 @@ parameters {
   vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta;
   vector<lower=0>[refp_rncol] refp_mean_beta_sd;
   vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd;
-  // Parametric reference ARIMA term parameters (mean only; sd not modulated)
+  // Parametric reference ARIMA term parameters. Shocks and kernel
+  // shared between mean and sd; per-quantity scales independent.
   matrix[refp_arima_T, refp_arima_G] refp_arima_z;
   vector<lower=-1, upper=1>[refp_arima_p] refp_arima_pacf;
   vector[refp_arima_q] refp_arima_theta;
   array[refp_arima_present ? 1 : 0] real<lower=0> refp_arima_sigma;
+  array[refp_arima_present ? 1 : 0] real<lower=0> refp_arima_sd_sigma;
   // Non-parametric reference model
   array[model_refnp && refnp_fintercept ? 1 : 0] real refnp_int;
   vector[model_refnp ? refnp_fncol : 0] refnp_beta;
@@ -390,8 +395,15 @@ transformed parameters{
       refp_arima_time_idx, refp_arima_group_idx
     );
     if (model_refp > 1) {
-      refp_sd = combine_effects(
-        {log(refp_sd_int[1])}, refp_sd_beta, refp_fnrow, refp_fncol, refp_fdesign, refp_sparse, refp_sd_beta_sd, refp_rdesign, 1, sparse_design
+      refp_sd = regression_predictor(
+        {log(refp_sd_int[1])}, refp_sd_beta, refp_fnrow, refp_fncol,
+        refp_fdesign, refp_sparse, refp_sd_beta_sd, refp_rdesign, 1,
+        sparse_design,
+        refp_arima_present, refp_arima_T, refp_arima_G,
+        refp_arima_p, refp_arima_d, refp_arima_q, refp_arima_n_obs,
+        refp_arima_z, refp_arima_pacf, refp_arima_theta,
+        refp_arima_sd_sigma,
+        refp_arima_time_idx, refp_arima_group_idx
       );
       refp_sd = exp(refp_sd);
     }
@@ -502,6 +514,15 @@ model {
         refp_sd_beta, refp_sd_beta_sd, refp_sd_beta_sd_p, refp_fncol,
         refp_rncol
       );
+    }
+    // Per-quantity sd scale for the shared ARIMA latent. Shocks /
+    // kernel are already drawn / priored by the mean-side
+    // regression_priors_lp() above, so only the second scale needs a
+    // prior here.
+    if (refp_arima_present && model_refp > 1) {
+      refp_arima_sd_sigma[1] ~ normal(
+        refp_arima_sd_sigma_p[1, 1], refp_arima_sd_sigma_p[2, 1]
+      ) T[0, ];
     }
   }
   // Non-parametric reference model
