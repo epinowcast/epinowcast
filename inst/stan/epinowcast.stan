@@ -75,9 +75,8 @@ data {
   int<lower=0> expr_arima_q;
   int<lower=0, upper=1> expr_arima_type;
   int<lower=0> expr_arima_n_obs;
-  array[expr_arima_n_obs] int<lower=1> expr_arima_time_idx;
-  array[expr_arima_n_obs] int<lower=1> expr_arima_group_idx;
-  array[2, 1] real expr_arima_sigma_p;
+  array[expr_arima_n_obs] int<lower=1> expr_arima_flat_idx;
+    array[2, 1] real expr_arima_sigma_p;
   // ---- Latent case submodule ----
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
   // Partial PMF of the latent delay distribution as a convolution matrix
@@ -101,9 +100,8 @@ data {
   int<lower=0> expl_arima_q;
   int<lower=0, upper=1> expl_arima_type;
   int<lower=0> expl_arima_n_obs;
-  array[expl_arima_n_obs] int<lower=1> expl_arima_time_idx;
-  array[expl_arima_n_obs] int<lower=1> expl_arima_group_idx;
-  array[2, 1] real expl_arima_sigma_p;
+  array[expl_arima_n_obs] int<lower=1> expl_arima_flat_idx;
+    array[2, 1] real expl_arima_sigma_p;
 
   // Reference time model
   // Parametric reference model
@@ -132,9 +130,8 @@ data {
   int<lower=0> refp_arima_q;
   int<lower=0, upper=1> refp_arima_type;
   int<lower=0> refp_arima_n_obs;
-  array[refp_arima_n_obs] int<lower=1> refp_arima_time_idx;
-  array[refp_arima_n_obs] int<lower=1> refp_arima_group_idx;
-  array[2, 1] real refp_arima_sigma_p;     // mean scale prior
+  array[refp_arima_n_obs] int<lower=1> refp_arima_flat_idx;
+    array[2, 1] real refp_arima_sigma_p;     // mean scale prior
   array[2, 1] real refp_arima_sd_sigma_p;  // sd scale prior
   // Non-parametric reference model
   int model_refnp;
@@ -155,9 +152,8 @@ data {
   int<lower=0> refnp_arima_q;
   int<lower=0, upper=1> refnp_arima_type;
   int<lower=0> refnp_arima_n_obs;
-  array[refnp_arima_n_obs] int<lower=1> refnp_arima_time_idx;
-  array[refnp_arima_n_obs] int<lower=1> refnp_arima_group_idx;
-  array[2, 1] real refnp_arima_sigma_p;
+  array[refnp_arima_n_obs] int<lower=1> refnp_arima_flat_idx;
+    array[2, 1] real refnp_arima_sigma_p;
 
   // Reporting time model
   int model_rep;
@@ -179,9 +175,8 @@ data {
   int<lower=0> rep_arima_q;
   int<lower=0, upper=1> rep_arima_type;
   int<lower=0> rep_arima_n_obs;
-  array[rep_arima_n_obs] int<lower=1> rep_arima_time_idx;
-  array[rep_arima_n_obs] int<lower=1> rep_arima_group_idx;
-  array[2, 1] real rep_arima_sigma_p;
+  array[rep_arima_n_obs] int<lower=1> rep_arima_flat_idx;
+    array[2, 1] real rep_arima_sigma_p;
   // Reporting probability aggregation: precomputed indices for log_sum_exp
   int rep_agg_p;
   array[rep_agg_p ? g : 0, rep_agg_p ? t : 0, rep_agg_p ? dmax : 0] int rep_agg_n_selected;
@@ -219,9 +214,8 @@ data {
   int<lower=0> miss_arima_q;
   int<lower=0, upper=1> miss_arima_type;
   int<lower=0> miss_arima_n_obs;
-  array[miss_arima_n_obs] int<lower=1> miss_arima_time_idx;
-  array[miss_arima_n_obs] int<lower=1> miss_arima_group_idx;
-  array[2, 1] real miss_arima_sigma_p;
+  array[miss_arima_n_obs] int<lower=1> miss_arima_flat_idx;
+    array[2, 1] real miss_arima_sigma_p;
 
   // Observation model
   int model_obs; // control parameter for the observation model
@@ -354,7 +348,7 @@ transformed parameters{
     expr_arima_present, expr_arima_T, expr_arima_G,
     expr_arima_p, expr_arima_d, expr_arima_q, expr_arima_n_obs,
     expr_arima_z, expr_arima_pacf, expr_arima_theta, expr_arima_sigma,
-    expr_arima_time_idx, expr_arima_group_idx
+    expr_arima_flat_idx
   );
   exp_llatent = log_expected_latent_from_r(
     expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
@@ -368,7 +362,7 @@ transformed parameters{
       expl_arima_present, expl_arima_T, expl_arima_G,
       expl_arima_p, expl_arima_d, expl_arima_q, expl_arima_n_obs,
       expl_arima_z, expl_arima_pacf, expl_arima_theta, expl_arima_sigma,
-      expl_arima_time_idx, expl_arima_group_idx
+      expl_arima_flat_idx
     );
     exp_lobs = log_expected_obs_from_latent(
       exp_llatent, expl_lrd_n, expl_lrd_sparse.1, expl_lrd_sparse.2,
@@ -392,7 +386,7 @@ transformed parameters{
       refp_arima_present, refp_arima_T, refp_arima_G,
       refp_arima_p, refp_arima_d, refp_arima_q, refp_arima_n_obs,
       refp_arima_z, refp_arima_pacf, refp_arima_theta, refp_arima_sigma,
-      refp_arima_time_idx, refp_arima_group_idx
+      refp_arima_flat_idx
     );
     if (model_refp > 1) {
       refp_sd = regression_predictor(
@@ -403,7 +397,7 @@ transformed parameters{
         refp_arima_p, refp_arima_d, refp_arima_q, refp_arima_n_obs,
         refp_arima_z, refp_arima_pacf, refp_arima_theta,
         refp_arima_sd_sigma,
-        refp_arima_time_idx, refp_arima_group_idx
+        refp_arima_flat_idx
       );
       refp_sd = exp(refp_sd);
     }
@@ -429,7 +423,7 @@ transformed parameters{
       refnp_arima_present, refnp_arima_T, refnp_arima_G,
       refnp_arima_p, refnp_arima_d, refnp_arima_q, refnp_arima_n_obs,
       refnp_arima_z, refnp_arima_pacf, refnp_arima_theta, refnp_arima_sigma,
-      refnp_arima_time_idx, refnp_arima_group_idx
+      refnp_arima_flat_idx
     );
     }
   }
@@ -442,7 +436,7 @@ transformed parameters{
     rep_arima_present, rep_arima_T, rep_arima_G,
     rep_arima_p, rep_arima_d, rep_arima_q, rep_arima_n_obs,
     rep_arima_z, rep_arima_pacf, rep_arima_theta, rep_arima_sigma,
-    rep_arima_time_idx, rep_arima_group_idx
+    rep_arima_flat_idx
   );
   }
 
@@ -454,7 +448,7 @@ transformed parameters{
       miss_arima_present, miss_arima_T, miss_arima_G,
       miss_arima_p, miss_arima_d, miss_arima_q, miss_arima_n_obs,
       miss_arima_z, miss_arima_pacf, miss_arima_theta, miss_arima_sigma,
-      miss_arima_time_idx, miss_arima_group_idx
+      miss_arima_flat_idx
     ));
   }
   // Observation model

@@ -34,7 +34,7 @@ vector regression_predictor(
   int arima_p, int arima_d, int arima_q, int arima_n_obs,
   matrix arima_z, vector arima_pacf, vector arima_theta,
   array[] real arima_sigma,
-  array[] int arima_time_idx, array[] int arima_group_idx
+  array[] int arima_flat_idx
 ) {
   vector[nobs] base = combine_effects(
     intercept, beta, nobs, neffs, fdesign, sparse, beta_sd, rdesign,
@@ -44,7 +44,7 @@ vector regression_predictor(
     base, arima_n_obs, arima_present, arima_T, arima_G,
     arima_p, arima_d, arima_q,
     arima_z, arima_pacf, arima_theta, arima_sigma,
-    arima_time_idx, arima_group_idx
+    arima_flat_idx
   );
 }
 

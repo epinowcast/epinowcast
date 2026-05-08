@@ -133,8 +133,7 @@ test_that("enw_formula_as_data_list() ships the arima Stan data", {
   expect_identical(dl$ref_arima_type, 1L) # 1 == "dependent"
   expect_identical(dl$ref_arima_T, length(unique(data$week)))
   expect_identical(dl$ref_arima_G, length(unique(data$day_of_week)))
-  expect_identical(length(dl$ref_arima_time_idx), nrow(data))
-  expect_identical(length(dl$ref_arima_group_idx), nrow(data))
+  expect_identical(length(dl$ref_arima_flat_idx), nrow(data))
 })
 
 test_that("enw_formula_as_data_list() returns inert defaults without arima", {

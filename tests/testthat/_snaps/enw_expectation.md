@@ -463,10 +463,7 @@
       $data$expr_arima_n_obs
       [1] 0
       
-      $data$expr_arima_time_idx
-      integer(0)
-      
-      $data$expr_arima_group_idx
+      $data$expr_arima_flat_idx
       integer(0)
       
       $data$expl_lrd_n
@@ -732,10 +729,7 @@
       $data$expl_arima_n_obs
       [1] 0
       
-      $data$expl_arima_time_idx
-      integer(0)
-      
-      $data$expl_arima_group_idx
+      $data$expl_arima_flat_idx
       integer(0)
       
       
@@ -1026,10 +1020,7 @@
       $data$expr_arima_n_obs
       [1] 0
       
-      $data$expr_arima_time_idx
-      integer(0)
-      
-      $data$expr_arima_group_idx
+      $data$expr_arima_flat_idx
       integer(0)
       
       $data$expl_lrd_n
@@ -1295,10 +1286,7 @@
       $data$expl_arima_n_obs
       [1] 0
       
-      $data$expl_arima_time_idx
-      integer(0)
-      
-      $data$expl_arima_group_idx
+      $data$expl_arima_flat_idx
       integer(0)
       
       
@@ -1538,10 +1526,7 @@
       $data$expr_arima_n_obs
       [1] 0
       
-      $data$expr_arima_time_idx
-      integer(0)
-      
-      $data$expr_arima_group_idx
+      $data$expr_arima_flat_idx
       integer(0)
       
       $data$expl_lrd_n
@@ -1682,10 +1667,7 @@
       $data$expl_arima_n_obs
       [1] 0
       
-      $data$expl_arima_time_idx
-      integer(0)
-      
-      $data$expl_arima_group_idx
+      $data$expl_arima_flat_idx
       integer(0)
       
       

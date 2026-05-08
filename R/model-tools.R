@@ -57,8 +57,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     arima_q = 0L,
     arima_type = 1L,
     arima_n_obs = 0L,
-    arima_time_idx = integer(0),
-    arima_group_idx = integer(0)
+    arima_flat_idx = integer(0)
   )
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
@@ -101,8 +100,13 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
       data$arima_q <- a$q
       data$arima_type <- as.integer(a$type == "dependent")
       data$arima_n_obs <- length(a$time_idx)
-      data$arima_time_idx <- as.integer(a$time_idx)
-      data$arima_group_idx <- as.integer(a$group_idx)
+      # Pre-flatten (time, group) into a single column-major index
+      # over a (T x G) matrix so the Stan side can do a single
+      # vectorised gather (`to_vector(eps)[flat_idx]`) instead of a
+      # per-observation lookup loop.
+      data$arima_flat_idx <- as.integer(
+        (a$group_idx - 1L) * a$T + a$time_idx
+      )
     }
   }
   names(data) <- sprintf("%s_%s", prefix, names(data))

@@ -74,14 +74,16 @@ vector arma_impulse(vector phi, vector theta, int T) {
 /**
  * Build the lower-triangular Toeplitz matrix from a length-T impulse
  * response.
+ *
+ * Uses column-wise vector-slice assignment (one assignment per
+ * column) rather than scalar element loops, so the inner work runs
+ * through Stan's vectorised primitives.
  */
 matrix lower_toeplitz(vector psi) {
   int T = num_elements(psi);
   matrix[T, T] K = rep_matrix(0.0, T, T);
-  for (t in 1:T) {
-    for (s in 1:t) {
-      K[t, s] = psi[t - s + 1];
-    }
+  for (s in 1:T) {
+    K[s:T, s] = head(psi, T - s + 1);
   }
   return K;
 }
@@ -89,14 +91,17 @@ matrix lower_toeplitz(vector psi) {
 /**
  * Build the d-fold cumulative-sum operator (lower triangular).
  *
- * `cumulative_op(T, 0)` is the identity; `cumulative_op(T, 1)` is the
- * matrix of ones on and below the diagonal; `cumulative_op(T, d)` for
- * d >= 1 integrates d times.
+ * Provided as a utility; the ARIMA kernel path no longer materialises
+ * this matrix per iteration. `arima_kernel_matrix()` instead applies
+ * `cumulative_sum()` to the columns of the ARMA Toeplitz, avoiding
+ * both the D^d build and the dense T x T multiply that follows it.
  */
 matrix cumulative_op(int T, int d) {
   if (d == 0) return diag_matrix(rep_vector(1.0, T));
   matrix[T, T] D1 = rep_matrix(0.0, T, T);
-  for (t in 1:T) for (s in 1:t) D1[t, s] = 1.0;
+  for (s in 1:T) {
+    D1[s:T, s] = rep_vector(1.0, T - s + 1);
+  }
   matrix[T, T] D = D1;
   for (i in 2:d) D = D * D1;
   return D;
@@ -106,13 +111,22 @@ matrix cumulative_op(int T, int d) {
  * Build the full ARIMA(p, d, q) kernel.
  *
  * Returns the T x T lower-triangular matrix that maps unit-normal
- * shocks to the latent ARIMA series.
+ * shocks to the latent ARIMA series. The d-fold integration is
+ * applied as `d` repeated `cumulative_sum()` calls on the columns of
+ * the ARMA Toeplitz, which is mathematically identical to D^d * T(psi)
+ * but skips both the construction of the D^d matrix and the dense
+ * matrix-matrix multiply that follows it. For `d = 0` no integration
+ * pass is taken.
  */
 matrix arima_kernel_matrix(vector phi, vector theta, int d, int T) {
   vector[T] psi = arma_impulse(phi, theta, T);
-  matrix[T, T] arma_K = lower_toeplitz(psi);
-  if (d == 0) return arma_K;
-  return cumulative_op(T, d) * arma_K;
+  matrix[T, T] K = lower_toeplitz(psi);
+  for (i in 1:d) {
+    for (col in 1:T) {
+      K[, col] = cumulative_sum(K[, col]);
+    }
+  }
+  return K;
 }
 
 /**
@@ -173,13 +187,13 @@ vector apply_arima_residual(vector base, int n_obs,
                             int p, int d, int q,
                             matrix z, vector pacf, vector theta,
                             array[] real sigma,
-                            array[] int time_idx, array[] int group_idx) {
+                            array[] int flat_idx) {
   if (!present) return base;
   vector[p] phi = pacf_to_phi(pacf);
   matrix[T, G] eps = sigma[1] * arima_filter(z, phi, theta, d);
-  vector[n_obs] result = base;
-  for (i in 1:n_obs) {
-    result[i] += eps[time_idx[i], group_idx[i]];
-  }
-  return result;
+  // Vectorised gather: flat_idx is precomputed in transformed data
+  // as (group_idx - 1) * T + time_idx, so to_vector(eps) (column-
+  // major flatten) [flat_idx] returns the per-observation residuals
+  // in one shot, replacing the previous element-by-element loop.
+  return base + to_vector(eps)[flat_idx];
 }

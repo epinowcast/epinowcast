@@ -59,10 +59,7 @@
       $simple_arima_n_obs
       [1] 0
       
-      $simple_arima_time_idx
-      integer(0)
-      
-      $simple_arima_group_idx
+      $simple_arima_flat_idx
       integer(0)
       
 
@@ -127,10 +124,7 @@
       $simple_arima_n_obs
       [1] 0
       
-      $simple_arima_time_idx
-      integer(0)
-      
-      $simple_arima_group_idx
+      $simple_arima_flat_idx
       integer(0)
       
 
@@ -196,10 +190,7 @@
       $simple_arima_n_obs
       [1] 0
       
-      $simple_arima_time_idx
-      integer(0)
-      
-      $simple_arima_group_idx
+      $simple_arima_flat_idx
       integer(0)
       
 
@@ -273,10 +264,7 @@
       $complex_arima_n_obs
       [1] 0
       
-      $complex_arima_time_idx
-      integer(0)
-      
-      $complex_arima_group_idx
+      $complex_arima_flat_idx
       integer(0)
       
 
@@ -350,10 +338,7 @@
       $comple_arima_n_obs
       [1] 0
       
-      $comple_arima_time_idx
-      integer(0)
-      
-      $comple_arima_group_idx
+      $comple_arima_flat_idx
       integer(0)
       
 

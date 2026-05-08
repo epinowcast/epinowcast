@@ -91,10 +91,7 @@
       $data$rep_arima_n_obs
       [1] 0
       
-      $data$rep_arima_time_idx
-      integer(0)
-      
-      $data$rep_arima_group_idx
+      $data$rep_arima_flat_idx
       integer(0)
       
       $data$rep_agg_p

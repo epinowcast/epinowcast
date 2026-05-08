@@ -100,13 +100,9 @@
       $data$miss_arima_n_obs
       [1] 40
       
-      $data$miss_arima_time_idx
+      $data$miss_arima_flat_idx
        [1] 1 1 1 1 1 1 1 2 2 2 2 2 2 2 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 6 6 6
       [39] 6 6
-      
-      $data$miss_arima_group_idx
-       [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-      [39] 1 1
       
       $data$miss_st
       [1] 21
@@ -244,10 +240,7 @@
       $data$miss_arima_n_obs
       [1] 0
       
-      $data$miss_arima_time_idx
-      integer(0)
-      
-      $data$miss_arima_group_idx
+      $data$miss_arima_flat_idx
       integer(0)
       
       $data$missing_reference
