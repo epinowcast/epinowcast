@@ -46,14 +46,16 @@ arima(time, location, p = 2, d = 1, q = 1)
 }
 \seealso{
 Functions used to help convert formulas into model designs
+\code{\link{ar}()},
 \code{\link{arima_terms}()},
-\code{\link{arma_aliases}},
+\code{\link{arma}()},
 \code{\link{as_string_formula}()},
 \code{\link{construct_arima}()},
 \code{\link{construct_re}()},
 \code{\link{construct_rw}()},
 \code{\link{enw_formula}()},
 \code{\link{enw_manual_formula}()},
+\code{\link{ma}()},
 \code{\link{parse_formula}()},
 \code{\link{re}()},
 \code{\link{remove_arima_terms}()},

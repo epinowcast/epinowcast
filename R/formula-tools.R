@@ -378,39 +378,24 @@ arima <- function(time, by, p = 1, d = 0, q = 0) {
   .arima_term(time, by, p, d, q)
 }
 
-#' Convenience aliases for common ARIMA(p, d, q) special cases.
+#' Autoregressive alias for [arima()]
 #'
-#' `ar()`, `ma()`, and `arma()` are thin wrappers around [arima()] that
-#' set the unused orders to zero. They exist so the in-formula syntax
-#' matches the common-case vocabulary (and matches `brms`'s in-formula
-#' `ar()` / `ma()` / `arma()` for users coming from there).
-#'
-#' Equivalences:
-#' - `ar(time, by, p)` = `arima(time, by, p = p, d = 0, q = 0)`
-#' - `ma(time, by, q)` = `arima(time, by, p = 0, d = 0, q = q)`
-#' - `arma(time, by, p, q)` = `arima(time, by, p = p, d = 0, q = q)`
-#'
-#' For an integrated (random-walk) series use [rw()] or
-#' `arima(time, by, p = 0, d = 1, q = 0)` directly.
+#' Thin wrapper around [arima()] that fixes `d = 0` and `q = 0`. Matches
+#' the in-formula `ar()` helper that `brms` users will be familiar with.
+#' Equivalent to `arima(time, by, p = p, d = 0, q = 0)`.
 #'
 #' @param time Time variable for the latent series; numeric.
 #' @param by Optional grouping variable. Each group draws an
 #' independent shock series; AR/MA parameters and the latent standard
 #' deviation are shared across groups.
-#' @param p,q Orders. Defaults to `1`.
+#' @param p Autoregressive order. Defaults to `1`.
 #'
 #' @return An `enw_arima_term` interpretable by [construct_arima()].
-#' @name arma_aliases
 #' @family formulatools
+#' @export
 #' @examples
 #' ar(time)
 #' ar(time, location, p = 2)
-#' ma(time, location, q = 2)
-#' arma(time, location, p = 1, q = 1)
-NULL
-
-#' @rdname arma_aliases
-#' @export
 ar <- function(time, by, p = 1) {
   if (missing(time)) cli::cli_abort("`time` must be present")
   time <- deparse(substitute(time))
@@ -418,8 +403,20 @@ ar <- function(time, by, p = 1) {
   .arima_term(time, by, p = p, d = 0L, q = 0L)
 }
 
-#' @rdname arma_aliases
+#' Moving-average alias for [arima()]
+#'
+#' Thin wrapper around [arima()] that fixes `p = 0` and `d = 0`.
+#' Equivalent to `arima(time, by, p = 0, d = 0, q = q)`.
+#'
+#' @inheritParams ar
+#' @param q Moving-average order. Defaults to `1`.
+#'
+#' @return An `enw_arima_term` interpretable by [construct_arima()].
+#' @family formulatools
 #' @export
+#' @examples
+#' ma(time)
+#' ma(time, location, q = 2)
 ma <- function(time, by, q = 1) {
   if (missing(time)) cli::cli_abort("`time` must be present")
   time <- deparse(substitute(time))
@@ -427,8 +424,23 @@ ma <- function(time, by, q = 1) {
   .arima_term(time, by, p = 0L, d = 0L, q = q)
 }
 
-#' @rdname arma_aliases
+#' ARMA alias for [arima()]
+#'
+#' Thin wrapper around [arima()] that fixes `d = 0`. Equivalent to
+#' `arima(time, by, p = p, d = 0, q = q)`. For an integrated
+#' (random-walk) series use [rw()] or
+#' `arima(time, by, p = 0, d = 1, q = 0)` directly.
+#'
+#' @inheritParams ar
+#' @param p Autoregressive order. Defaults to `1`.
+#' @param q Moving-average order. Defaults to `1`.
+#'
+#' @return An `enw_arima_term` interpretable by [construct_arima()].
+#' @family formulatools
 #' @export
+#' @examples
+#' arma(time)
+#' arma(time, location, p = 1, q = 1)
 arma <- function(time, by, p = 1, q = 1) {
   if (missing(time)) cli::cli_abort("`time` must be present")
   time <- deparse(substitute(time))

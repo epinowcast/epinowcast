@@ -486,6 +486,7 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
 # Used by `enw_expectation()`, `enw_reference()`, `enw_report()`, and
 # `enw_missing()` to keep their `inits` functions short and to keep
 # the per-module ARIMA boilerplate in one place.
+#' @importFrom stats runif
 .arima_inits <- function(data, priors, prefix, with_sd_sigma = FALSE) {
   init <- list()
   pT <- data[[paste0(prefix, "_arima_T")]]
