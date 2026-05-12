@@ -1,5 +1,11 @@
 # epinowcast 0.6.0.1000
 
+## Package
+
+- Lowered the minimum R version from 4.4.0 to 4.3.0 so users on R 4.3.x can install the package.
+  No code in the package relies on features introduced in R 4.4.
+  See #811 by @seabbs.
+
 ## Documentation
 
 - Added a temporal aggregation guide vignette covering the weekly timestep, daily-process / weekly-reporting (fitted and structural variants), and a daily benchmark, with weekly-scale CRPS comparison via `scoringutils`.
