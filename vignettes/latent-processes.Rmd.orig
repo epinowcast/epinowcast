@@ -1,6 +1,6 @@
 ---
-title: "Latent process options for the growth-rate model"
-description: "Random walks, group random slopes, and ARIMA(p, d, q) residuals — the time-series structures available in the formula interface for the growth rate."
+title: "Latent process and periodic options for the growth-rate model"
+description: "Random walks, ARIMA(p, d, q) residuals, and periodic effects — the time-series structures available in the formula interface for the growth rate."
 author: Epinowcast Team
 output:
   bookdown::html_vignette2:
@@ -12,7 +12,7 @@ bibliography: library.bib
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 link-citations: true
 vignette: >
-  %\VignetteIndexEntry{Latent process options for the growth-rate model}
+  %\VignetteIndexEntry{Latent process and periodic options for the growth-rate model}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -28,15 +28,21 @@ knitr::opts_chunk$set(
 ```
 
 The expectation module's `r` formula controls the latent log growth rate.
-Several options exist for giving it time-series structure; each is a different choice for how `r` is allowed to vary over time and across groups.
+Several options exist for giving it structure; each is a different choice for how `r` is allowed to vary over time and across groups.
 
-This vignette walks through five of them on the same small slice of the German COVID-19 hospitalisation data:
+The choices fall into two families.
+The first is **latent time-series structure** — how `r` correlates with itself over time:
 
 - **Random walk on weeks** via `rw(week)`. The growth rate has iid Gaussian increments per week; the cumulative sum of those increments is what enters the linear predictor.
 - **Independent per-week-and-group random effects** via `(1 | week:.group)`. Each (week, group) combination has its own random level drawn from a shared Gaussian, with no time-correlation structure across weeks.
-- **Day-of-week random effects** via `(1 | day_of_week)`. Each weekday draws its own offset from a shared Gaussian, capturing periodic within-week variation that repeats across weeks rather than drifting over time.
 - **ARIMA(p, d, q) residuals** via `arima(day, age_group, p, d, q)`. The growth rate is built up through a parameter-dependent kernel applied to unit-normal shocks, supporting arbitrary autoregressive and moving-average orders and integration. When `by` is supplied each group has its own innovation series; the AR/MA parameters and latent standard deviation are currently shared across groups.
-- **Pure moving-average residuals** via `ma(day, age_group, q = 1)`. A stationary short-memory variant of the same machinery: shocks influence the series for `q` steps and then drop out, with no autoregressive feedback.
+- **Pure moving-average residuals** via `ma(day, age_group, q = 7)`. A stationary short-memory variant of the same machinery: shocks influence the series for `q` steps and then drop out, with no autoregressive feedback. Taking `q = 7` lets the latent series carry one week of moving-average memory.
+
+The second is **periodic / calendar terms** — structure that repeats on a known cycle rather than drifting over time:
+
+- **Day-of-week random effects** via `(1 | day_of_week)`. Each weekday draws its own offset from a shared Gaussian, capturing periodic within-week variation that recurs every week.
+
+Latent and periodic terms compose freely in the same formula.
 
 The fits use `enw_pathfinder()` for fast variational inference so the vignette stays snappy at build time.
 For a real analysis switch to NUTS via `enw_sample()`.
@@ -121,28 +127,6 @@ nowcast_re <- epinowcast(
 plot(nowcast_re)
 ```
 
-# Day-of-week random effects
-
-`(1 | day_of_week)` gives every weekday its own offset drawn from a shared Gaussian.
-Unlike the random walk or the per-week random effects, the offsets are *periodic*: the same Monday offset enters every Monday, the same Tuesday offset enters every Tuesday, and so on.
-This is the natural choice when within-week reporting variation looks structural rather than drifting.
-The shared Gaussian pools information across weekdays, which is preferable to seven fixed effects whenever the dataset is short.
-
-```{r dow-fit, results = "hide"}
-nowcast_dow <- epinowcast(
-  pobs,
-  expectation = enw_expectation(
-    r = ~ 1 + (1 | day_of_week), data = pobs
-  ),
-  obs = enw_obs(family = "negbin", data = pobs),
-  fit = fit
-)
-```
-
-```{r dow-plot, fig.cap = "Nowcast under day-of-week random effects on the growth rate."}
-plot(nowcast_dow)
-```
-
 # ARIMA(p, d, q) residuals
 
 `arima(time, by, p, d, q)` adds a latent ARIMA(p, d, q) residual series to the linear predictor.
@@ -180,14 +164,15 @@ kable(arima_pars, digits = 3)
 # Pure moving-average residuals
 
 `ma(time, by, q)` is the convenience alias for `arima(time, by, p = 0, d = 0, q = q)`.
-It is stationary (no integration) and has only `q` steps of memory: a shock at day `t` influences the series only at days `t, t + 1, ..., t + q` and then drops out.
+It is stationary (no integration) and has only `q` steps of memory: a shock at day `t` influences the series for days `t, t + 1, ..., t + q` and then drops out.
 This is useful when you expect short-range correlated noise around a flat trend rather than persistent drift or AR feedback.
+Picking `q = 7` lets the noise window span one week, so a daily shock can decay across the following week without persisting indefinitely as it would under an AR component.
 
 ```{r ma-fit, results = "hide"}
 nowcast_ma <- epinowcast(
   pobs,
   expectation = enw_expectation(
-    r = ~ 1 + ma(day, age_group, q = 1),
+    r = ~ 1 + ma(day, age_group, q = 7),
     data = pobs
   ),
   obs = enw_obs(family = "negbin", data = pobs),
@@ -195,19 +180,52 @@ nowcast_ma <- epinowcast(
 )
 ```
 
-```{r ma-plot, fig.cap = "Nowcast under an MA(1) residual on day."}
+```{r ma-plot, fig.cap = "Nowcast under an MA(7) residual on day."}
 plot(nowcast_ma)
 ```
 
+Note that `ma(q = 7)` is *not* a periodic-by-weekday model: it gives correlated noise over a week's window, not a recurring weekly cycle.
+For genuinely periodic within-week variation use a day-of-week term (next section), which is what week-after-week reporting patterns usually look like.
+
+# Periodic terms
+
+Periodic terms repeat on a known cycle rather than drifting freely.
+The most common case in surveillance data is day-of-week reporting: weekends look different from weekdays in roughly the same way every week.
+
+## Day-of-week random effects
+
+`(1 | day_of_week)` gives every weekday its own offset drawn from a shared Gaussian.
+The same Monday offset enters every Monday, the same Tuesday offset enters every Tuesday, and so on — exactly periodic across weeks.
+The shared Gaussian pools information across the seven weekday levels, which is preferable to seven independent fixed effects whenever the dataset is short.
+Swap `(1 | day_of_week)` for `day_of_week` if you would rather have unpooled fixed effects.
+
+```{r dow-fit, results = "hide"}
+nowcast_dow <- epinowcast(
+  pobs,
+  expectation = enw_expectation(
+    r = ~ 1 + (1 | day_of_week), data = pobs
+  ),
+  obs = enw_obs(family = "negbin", data = pobs),
+  fit = fit
+)
+```
+
+```{r dow-plot, fig.cap = "Nowcast under day-of-week random effects on the growth rate."}
+plot(nowcast_dow)
+```
+
+Periodic and latent terms compose: `~ 1 + (1 | day_of_week) + arima(day, p = 1, d = 1)` puts a periodic day-of-week effect alongside an ARIMA(1, 1, 0) residual on the trend.
+
 # When to reach for which
 
-| Latent option | Formula example | Useful when |
-|---|---|---|
-| Random walk | `rw(week)` | The growth rate evolves smoothly week-to-week with no preferred direction; the standard non-stationary smoother. |
-| Independent random effects | `(1 \| week:.group)` | Weekly fluctuations look like noise around a stable mean rather than a drifting trend; no time correlation is imposed. |
-| Day-of-week random effects | `(1 \| day_of_week)` | Within-week variation is periodic — the same weekday offsets recur — and you want pooled rather than fixed weekday effects. |
-| ARIMA | `arima(day, by, p, d, q)` | You want explicit autocorrelated short-range structure on the residuals, e.g. `arima(p = 1, d = 0)` for stationary AR(1) deviations around a smooth trend, or `arima(p = 1, d = 1)` for AR(1) on the differences. |
-| Moving average | `ma(day, by, q)` | Stationary short-memory noise with finite influence: shocks decay to zero after `q` steps. Pair with a smooth trend for drift-free residuals. |
+| Option | Family | Formula example | Useful when |
+|---|---|---|---|
+| Random walk | Latent | `rw(week)` | The growth rate evolves smoothly week-to-week with no preferred direction; the standard non-stationary smoother. |
+| Independent week random effects | Latent | `(1 \| week:.group)` | Weekly fluctuations look like noise around a stable mean rather than a drifting trend; no time correlation is imposed. |
+| ARIMA | Latent | `arima(day, by, p, d, q)` | You want explicit autocorrelated short-range structure on the residuals, e.g. `arima(p = 1, d = 0)` for stationary AR(1) deviations around a smooth trend, or `arima(p = 1, d = 1)` for AR(1) on the differences. |
+| Moving average | Latent | `ma(day, by, q)` | Stationary short-memory noise with finite influence: shocks decay to zero after `q` steps. Pair with a smooth trend for drift-free residuals. |
+| Day-of-week random effects | Periodic | `(1 \| day_of_week)` | Within-week variation is structurally periodic — the same weekday offsets recur — and you want pooled rather than fixed weekday effects. |
 
-These options can be combined within the same formula. A common pattern is to mix a smooth trend with periodic and residual structure, e.g. `~ 1 + (1 | day_of_week) + arima(day, p = 1, d = 1)` for a day-of-week random effect alongside an ARIMA(1, 1, 0) residual.
+These options compose within the same formula.
+A typical surveillance pattern mixes one latent option for the trend with a periodic term for calendar effects, e.g. `~ 1 + (1 | day_of_week) + arima(day, p = 1, d = 1)`.
 The `by` argument on `arima()`, the aliases `ar()` / `ma()` / `arma()`, and `rw()` lets each group draw its own innovation series; the AR/MA parameters and latent standard deviation are currently shared across groups (per-group parameters are a planned extension).
