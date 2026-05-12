@@ -380,9 +380,6 @@
       $arima[[1]]$q
       [1] 0
       
-      $arima[[1]]$type
-      NULL
-      
       $arima[[1]]$T
       [1] 2
       
@@ -482,9 +479,6 @@
       
       $arima[[1]]$q
       [1] 0
-      
-      $arima[[1]]$type
-      NULL
       
       $arima[[1]]$T
       [1] 2
@@ -590,9 +584,6 @@
       
       $arima[[1]]$q
       [1] 0
-      
-      $arima[[1]]$type
-      NULL
       
       $arima[[1]]$T
       [1] 2
@@ -915,9 +906,6 @@
       
       $arima[[1]]$q
       [1] 0
-      
-      $arima[[1]]$type
-      NULL
       
       $arima[[1]]$T
       [1] 2

@@ -544,8 +544,8 @@ construct_rw <- function(rw, data) {
 #' term. Must contain the time and (if specified) grouping variable.
 #'
 #' @return A list with the following elements:
-#'   - `time`, `by`, `p`, `d`, `q`, `type`: passed through from the
-#'     [arima()] term.
+#'   - `time`, `by`, `p`, `d`, `q`: passed through from the [arima()]
+#'     term.
 #'   - `T`: number of distinct time points in the series.
 #'   - `G`: number of groups (1 if `by` is unspecified).
 #'   - `time_idx`: integer vector mapping each row of `data` to a
@@ -638,7 +638,6 @@ construct_arima <- function(arima, data) {
   list(
     time = arima$time, by = arima$by,
     p = arima$p, d = arima$d, q = arima$q,
-    type = arima$type,
     T = T_len, G = G,
     time_idx = time_idx, group_idx = group_idx,
     time_vals = time_vals, group_levels = group_levels,
@@ -1197,20 +1196,21 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # without paying per-snapshot cost.
   if (sparse && length(arima_specs) > 0) {
     arima_spec <- arima_specs[[1]]
-    joint_keys <- paste(
-      fixed$index, arima_spec$time_idx, arima_spec$group_idx,
-      sep = "__"
+    # Joint key over (covariate row, ARIMA time, ARIMA group) using a
+    # data.table group id; avoids round-tripping through string keys.
+    joint <- data.table::data.table(
+      cov = fixed$index,
+      t = arima_spec$time_idx,
+      g = arima_spec$group_idx
     )
-    unique_keys <- unique(joint_keys)
-    new_index <- match(joint_keys, unique_keys)
-    parts <- do.call(
-      rbind, strsplit(unique_keys, "__", fixed = TRUE)
-    )
-    cov_idx <- as.integer(parts[, 1])
-    fixed$design <- fixed$design[cov_idx, , drop = FALSE]
+    joint[, "uniq" := .GRP, by = c("cov", "t", "g")]
+    new_index <- joint[["uniq"]]
+    uniq <- unique(joint, by = c("cov", "t", "g"))
+    data.table::setorderv(uniq, "uniq")
+    fixed$design <- fixed$design[uniq[["cov"]], , drop = FALSE]
     fixed$index <- new_index
-    arima_spec$time_idx <- as.integer(parts[, 2])
-    arima_spec$group_idx <- as.integer(parts[, 3])
+    arima_spec$time_idx <- uniq[["t"]]
+    arima_spec$group_idx <- uniq[["g"]]
     arima_specs[[1]] <- arima_spec
   }
   # Extract fixed effects metadata
