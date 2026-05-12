@@ -289,7 +289,7 @@ transformed parameters{
     profile("transformed_delay_non_parametric_reference_time_hazards") {
     refnp_lh = combine_effects(
         refnp_int, refnp_beta, refnp_fnindex, refnp_fncol, refnp_fdesign,
-        refnp_sparse, refnp_beta_sd, refnp_rdesign, refnp_fintercept, sparse_design
+        refnp_sparse, refnp_beta_sd, refnp_rdesign, refnp_fintercept, refnp_use_sparse
       );
     }
   }
