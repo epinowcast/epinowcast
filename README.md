@@ -301,7 +301,7 @@ specification. Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/epinowcast/commits?author=sbfnk">sbfnk</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=Bisaloo">Bisaloo</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=pearsonca">pearsonca</a>,
-<a href="https://github.com/epinowcast/epinowcast/commits?author=choi-hannah">choi-hannah</a>,
+<a href="https://github.com/epinowcast/epinowcast/commits?author=choi-hannah-old">choi-hannah-old</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=medewitt">medewitt</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=jamesmbaazam">jamesmbaazam</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=pitmonticone">pitmonticone</a>,
