@@ -224,7 +224,7 @@ specification. Contributions of any kind are welcome!
 [sbfnk](https://github.com/epinowcast/epinowcast/commits?author=sbfnk),
 [Bisaloo](https://github.com/epinowcast/epinowcast/commits?author=Bisaloo),
 [pearsonca](https://github.com/epinowcast/epinowcast/commits?author=pearsonca),
-[choi-hannah](https://github.com/epinowcast/epinowcast/commits?author=choi-hannah),
+[choi-hannah-old](https://github.com/epinowcast/epinowcast/commits?author=choi-hannah-old),
 [medewitt](https://github.com/epinowcast/epinowcast/commits?author=medewitt),
 [jamesmbaazam](https://github.com/epinowcast/epinowcast/commits?author=jamesmbaazam),
 [pitmonticone](https://github.com/epinowcast/epinowcast/commits?author=pitmonticone),
