@@ -101,6 +101,31 @@ touchstone::benchmark_run(
 )
 
 touchstone::benchmark_run(
+  expr_before_benchmark = { source("touchstone/setup.R") },
+  latent_renewal_tier2 = { epinowcast(
+    data = pobs,
+    expectation = enw_expectation(
+      r = ~ 1 + rw(week),
+      generation_time = c(0.1, 0.4, 0.4, 0.1),
+      observation = ~ (1 | day_of_week),
+      latent_reporting_delay = 0.4 * c(0.05, 0.3, 0.6, 0.05),
+      data = pobs
+    ),
+    reference = enw_reference(~1, data = pobs),
+    report = enw_report(~(1 | day_of_week), data = pobs),
+    fit = enw_fit_opts(
+      save_warmup = FALSE, pp = FALSE,
+      chains = 4, iter_warmup = 1000, iter_sampling = 1000,
+      parallel_chains = 4, threads_per_chain = 2,
+      adapt_delta = 0.95
+    ),
+    obs = enw_obs(family = "negbin", data = pobs),
+    model = model
+  ) },
+  n = 3
+)
+
+touchstone::benchmark_run(
   expr_before_benchmark = { source("touchstone/multigroup-setup.R") },
   multi_group_latent_renewal_model = { epinowcast(
     data = pobs,
