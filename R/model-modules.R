@@ -217,7 +217,9 @@ enw_reference <- function(
           )))
         }
       }
-      init <- c(init, .arima_inits(data, priors, "refp", with_sd_sigma = TRUE))
+      init <- c(init, .arima_inits(
+        data, priors, "refp", with_sd_sigma = data$model_refp > 1
+      ))
       if (data$model_refnp > 0) {
         if (data$refnp_fintercept > 0) {
           init$refnp_int <- array(rnorm(

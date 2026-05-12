@@ -275,7 +275,8 @@ parameters {
   vector<lower=-1, upper=1>[refp_arima_p] refp_arima_pacf;
   vector[refp_arima_q] refp_arima_theta;
   array[refp_arima_present ? 1 : 0] real<lower=0> refp_arima_sigma;
-  array[refp_arima_present ? 1 : 0] real<lower=0> refp_arima_sd_sigma;
+  array[refp_arima_present && model_refp > 1 ? 1 : 0]
+    real<lower=0> refp_arima_sd_sigma;
   // Non-parametric reference model
   array[model_refnp && refnp_fintercept ? 1 : 0] real refnp_int;
   vector[model_refnp ? refnp_fncol : 0] refnp_beta;
