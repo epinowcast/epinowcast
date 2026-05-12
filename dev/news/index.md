@@ -2,6 +2,14 @@
 
 ## epinowcast 0.6.0.1000
 
+### Package
+
+- Lowered the minimum R version from 4.4.0 to 4.3.0 so users on R 4.3.x
+  can install the package. No code in the package relies on features
+  introduced in R 4.4. See
+  [\#811](https://github.com/epinowcast/epinowcast/issues/811) by
+  [@seabbs](https://github.com/seabbs).
+
 ### Documentation
 
 - Added a temporal aggregation guide vignette covering the weekly
