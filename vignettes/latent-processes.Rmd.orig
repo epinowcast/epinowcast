@@ -36,7 +36,7 @@ The first is **latent time-series structure** — how `r` correlates with itself
 - **Random walk on weeks** via `rw(week)`. The growth rate has iid Gaussian increments per week; the cumulative sum of those increments is what enters the linear predictor.
 - **Independent per-week-and-group random effects** via `(1 | week:.group)`. Each (week, group) combination has its own random level drawn from a shared Gaussian, with no time-correlation structure across weeks.
 - **ARIMA(p, d, q) residuals** via `arima(day, age_group, p, d, q)`. The growth rate is built up through a parameter-dependent kernel applied to unit-normal shocks, supporting arbitrary autoregressive and moving-average orders and integration. When `by` is supplied each group has its own innovation series; the AR/MA parameters and latent standard deviation are currently shared across groups.
-- **Pure moving-average residuals** via `ma(day, age_group, q = 7)`. A stationary short-memory variant of the same machinery: shocks influence the series for `q` steps and then drop out, with no autoregressive feedback. Taking `q = 7` lets the latent series carry one week of moving-average memory.
+- **Pure moving-average residuals** via `ma(day, age_group, q = 6)`. A stationary short-memory variant of the same machinery: a shock at day `t` influences the series at lags `0, 1, ..., q` and then drops out, with no autoregressive feedback. Taking `q = 6` gives a seven-day influence window (one week of moving-average memory).
 
 The second is **periodic / calendar terms** — structure that repeats on a known cycle rather than drifting over time:
 
@@ -93,7 +93,7 @@ fit <- enw_fit_opts(
 `rw(week)` adds one Gaussian increment per week; the cumulative sum of those increments is added to `r`.
 Mathematically this is equivalent to a (correlated) Gaussian prior over the per-week growth rates with a single shared standard deviation.
 
-```{r rw-fit, results = "hide"}
+```{r rw-fit, results = "hide", message = FALSE, warning = FALSE}
 nowcast_rw <- epinowcast(
   pobs,
   expectation = enw_expectation(r = ~ rw(week), data = pobs),
@@ -112,7 +112,7 @@ plot(nowcast_rw)
 Unlike the random walk, there is no time correlation across weeks; each week starts afresh.
 This is the natural choice when weekly fluctuations look like noise rather than drift.
 
-```{r re-fit, results = "hide"}
+```{r re-fit, results = "hide", message = FALSE, warning = FALSE}
 nowcast_re <- epinowcast(
   pobs,
   expectation = enw_expectation(
@@ -135,7 +135,7 @@ When `by` is supplied each group has its own column of unit-normal shocks; the A
 
 `arima(time, d = 1, p = 0, q = 0)` recovers the same model as `rw(time)`; setting `p > 0` or `q > 0` adds autoregressive or moving-average structure on top.
 
-```{r arima-fit, results = "hide"}
+```{r arima-fit, results = "hide", message = FALSE, warning = FALSE}
 nowcast_arima <- epinowcast(
   pobs,
   expectation = enw_expectation(
@@ -164,15 +164,15 @@ kable(arima_pars, digits = 3)
 # Pure moving-average residuals
 
 `ma(time, by, q)` is the convenience alias for `arima(time, by, p = 0, d = 0, q = q)`.
-It is stationary (no integration) and has only `q` steps of memory: a shock at day `t` influences the series for days `t, t + 1, ..., t + q` and then drops out.
-This is useful when you expect short-range correlated noise around a flat trend rather than persistent drift or AR feedback.
-Picking `q = 7` lets the noise window span one week, so a daily shock can decay across the following week without persisting indefinitely as it would under an AR component.
+It is stationary (no integration) and a shock at day `t` influences the series at lags `0, 1, ..., q` — a `q + 1` day window — before dropping out, with no AR feedback.
+This is useful when you expect short-range correlated noise around a flat trend rather than persistent drift.
+Picking `q = 6` gives a seven-day influence window, so a daily shock can decay across the rest of the week without persisting indefinitely as it would under an AR component.
 
-```{r ma-fit, results = "hide"}
+```{r ma-fit, results = "hide", message = FALSE, warning = FALSE}
 nowcast_ma <- epinowcast(
   pobs,
   expectation = enw_expectation(
-    r = ~ 1 + ma(day, age_group, q = 7),
+    r = ~ 1 + ma(day, age_group, q = 6),
     data = pobs
   ),
   obs = enw_obs(family = "negbin", data = pobs),
@@ -180,11 +180,11 @@ nowcast_ma <- epinowcast(
 )
 ```
 
-```{r ma-plot, fig.cap = "Nowcast under an MA(7) residual on day."}
+```{r ma-plot, fig.cap = "Nowcast under an MA(6) residual on day (seven-day influence window)."}
 plot(nowcast_ma)
 ```
 
-Note that `ma(q = 7)` is *not* a periodic-by-weekday model: it gives correlated noise over a week's window, not a recurring weekly cycle.
+Note that `ma(q = 6)` is *not* a periodic-by-weekday model: it gives correlated noise over a one-week window, not a recurring weekly cycle.
 For genuinely periodic within-week variation use a day-of-week term (next section), which is what week-after-week reporting patterns usually look like.
 
 # Periodic terms
@@ -199,7 +199,7 @@ The same Monday offset enters every Monday, the same Tuesday offset enters every
 The shared Gaussian pools information across the seven weekday levels, which is preferable to seven independent fixed effects whenever the dataset is short.
 Swap `(1 | day_of_week)` for `day_of_week` if you would rather have unpooled fixed effects.
 
-```{r dow-fit, results = "hide"}
+```{r dow-fit, results = "hide", message = FALSE, warning = FALSE}
 nowcast_dow <- epinowcast(
   pobs,
   expectation = enw_expectation(
