@@ -16,16 +16,19 @@ section below for a comprehensive explanation of the supported syntax.}
 A formula object with the ARIMA terms removed.
 }
 \description{
-This function removes ARIMA terms denoted using
-\code{\link[=arima]{arima()}} from a formula so that they can be processed on their own.
+This function removes ARIMA terms — \code{arima()}, \code{ar()},
+\code{ma()}, and \code{arma()} — from a formula so they can be processed on
+their own.
 }
 \examples{
 epinowcast:::remove_arima_terms(~ 1 + age_group + arima(week))
+epinowcast:::remove_arima_terms(~ 1 + age_group + ar(week, p = 2))
 }
 \seealso{
 Functions used to help convert formulas into model designs
 \code{\link{arima}()},
 \code{\link{arima_terms}()},
+\code{\link{arma_aliases}},
 \code{\link{as_string_formula}()},
 \code{\link{construct_arima}()},
 \code{\link{construct_re}()},

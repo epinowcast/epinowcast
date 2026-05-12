@@ -103,6 +103,13 @@ planned extension)
 \item \code{arima(time, d = 1, p = 0, q = 0)} is equivalent to \code{rw(time)}
 }
 
+Convenience aliases match \code{brms}'s in-formula vocabulary:
+\itemize{
+\item \code{ar(time, by, p)} is \code{arima(time, by, p = p, d = 0, q = 0)}
+\item \code{ma(time, by, q)} is \code{arima(time, by, p = 0, d = 0, q = q)}
+\item \code{arma(time, by, p, q)} is \code{arima(time, by, p = p, d = 0, q = q)}
+}
+
 These four types of effects can be combined in a single formula,
 for example: \code{~ 1 + age_group + (1 | location) + rw(week, location)}
 specifies fixed age effects, random location intercepts, and
@@ -184,6 +191,7 @@ doi:10.18637/jss.v067.i01
 Functions used to help convert formulas into model designs
 \code{\link{arima}()},
 \code{\link{arima_terms}()},
+\code{\link{arma_aliases}},
 \code{\link{as_string_formula}()},
 \code{\link{construct_arima}()},
 \code{\link{construct_re}()},

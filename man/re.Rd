@@ -30,6 +30,7 @@ re(form$random[[1]])
 Functions used to help convert formulas into model designs
 \code{\link{arima}()},
 \code{\link{arima_terms}()},
+\code{\link{arma_aliases}},
 \code{\link{as_string_formula}()},
 \code{\link{construct_arima}()},
 \code{\link{construct_re}()},

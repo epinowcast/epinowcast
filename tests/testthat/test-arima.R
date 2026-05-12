@@ -26,6 +26,45 @@ test_that("arima() returns an enw_arima_term with the expected fields", {
   expect_identical(b$q, 1L)
 })
 
+test_that("ar(), ma(), arma() aliases produce the right enw_arima_term", {
+  ar1 <- ar(week)
+  expect_s3_class(ar1, "enw_arima_term")
+  expect_identical(c(ar1$p, ar1$d, ar1$q), c(1L, 0L, 0L))
+
+  ar2 <- ar(week, location, p = 2)
+  expect_identical(ar2$by, "location")
+  expect_identical(c(ar2$p, ar2$d, ar2$q), c(2L, 0L, 0L))
+
+  ma1 <- ma(week, q = 2)
+  expect_identical(c(ma1$p, ma1$d, ma1$q), c(0L, 0L, 2L))
+
+  arma1 <- arma(week, location, p = 1, q = 1)
+  expect_identical(arma1$by, "location")
+  expect_identical(c(arma1$p, arma1$d, arma1$q), c(1L, 0L, 1L))
+})
+
+test_that("arima_terms() picks up ar/ma/arma alias calls", {
+  expect_identical(
+    arima_terms(~ 1 + age_group + ar(week, p = 2)),
+    "ar(week, p = 2)"
+  )
+  expect_identical(
+    arima_terms(~ 1 + ar(week) + ma(day) + arma(month, p = 1, q = 1)),
+    c("ar(week)", "ma(day)", "arma(month, p = 1, q = 1)")
+  )
+})
+
+test_that("remove_arima_terms() strips ar/ma/arma alias calls", {
+  expect_identical(
+    format(remove_arima_terms(~ 1 + age_group + ar(week, p = 2))),
+    "~1 + age_group"
+  )
+  expect_identical(
+    format(remove_arima_terms(~ 1 + ar(week) + ma(day))),
+    "~1"
+  )
+})
+
 test_that("arima() rejects invalid orders", {
   expect_error(arima(week, p = -1), "non-negative integer")
   expect_error(arima(week, d = 1.5), "non-negative integer")

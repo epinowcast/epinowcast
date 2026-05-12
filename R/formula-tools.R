@@ -174,8 +174,10 @@ remove_rw_terms <- function(formula) {
 
 #' Finds ARIMA terms in a formula object
 #'
-#' @description This function extracts ARIMA terms denoted using
-#' [arima()] from a formula so that they can be processed on their own.
+#' @description This function extracts ARIMA terms from a formula so that
+#' they can be processed on their own. Matches all four user-facing
+#' helpers that produce an `enw_arima_term`: [arima()], plus the
+#' convenience aliases [ar()], [ma()], and [arma()].
 #'
 #' @return A character vector containing the ARIMA terms identified in
 #' the supplied formula.
@@ -184,32 +186,37 @@ remove_rw_terms <- function(formula) {
 #' @family formulatools
 #' @examples
 #' epinowcast:::arima_terms(~ 1 + age_group + arima(week))
-#'
-#' epinowcast:::arima_terms(
-#'   ~ 1 + age_group + arima(week, location, p = 1, d = 1, q = 1)
-#' )
+#' epinowcast:::arima_terms(~ 1 + ar(week, p = 2))
+#' epinowcast:::arima_terms(~ 1 + arma(week, location, p = 1, q = 1))
 arima_terms <- function(formula) {
   trms <- attr(terms(formula), "term.labels")
-  match <- grepl("(^(arima)\\(.*\\))$", trms)
+  # Longer names first so the alternation matches `arima` and `arma`
+  # before falling back to `ar`/`ma`.
+  match <- grepl("^(arima|arma|ar|ma)\\(.*\\)$", trms)
   match <- match & !grepl("|", trms, fixed = TRUE)
   trms[match]
 }
 
 #' Remove ARIMA terms from a formula object
 #'
-#' @description This function removes ARIMA terms denoted using
-#' [arima()] from a formula so that they can be processed on their own.
+#' @description This function removes ARIMA terms — `arima()`, `ar()`,
+#' `ma()`, and `arma()` — from a formula so they can be processed on
+#' their own.
 #'
 #' @inheritParams split_formula_to_terms
 #' @return A formula object with the ARIMA terms removed.
 #' @family formulatools
 #' @examples
 #' epinowcast:::remove_arima_terms(~ 1 + age_group + arima(week))
+#' epinowcast:::remove_arima_terms(~ 1 + age_group + ar(week, p = 2))
 remove_arima_terms <- function(formula) {
   form <- as_string_formula(formula)
-  form <- gsub("arima\\(.*?\\) \\+ ", "", form)
-  form <- gsub("\\+ arima\\(.*?\\)", "", form)
-  form <- gsub("arima\\(.*?\\)", "", form)
+  # Longer names first to avoid `ar(` matching inside `arima(`.
+  for (fn in c("arima", "arma", "ar", "ma")) {
+    form <- gsub(paste0(fn, "\\(.*?\\) \\+ "), "", form)
+    form <- gsub(paste0("\\+ ", fn, "\\(.*?\\)"), "", form)
+    form <- gsub(paste0(fn, "\\(.*?\\)"), "", form)
+  }
 
   form <- tryCatch(
     {
@@ -365,14 +372,75 @@ rw <- function(time, by) {
 arima <- function(time, by, p = 1, d = 0, q = 0) {
   if (missing(time)) {
     cli::cli_abort("`time` must be present")
-  } else {
-    time <- deparse(substitute(time))
   }
-  if (missing(by)) {
-    by <- NULL
-  } else {
-    by <- deparse(substitute(by))
-  }
+  time <- deparse(substitute(time))
+  by <- if (missing(by)) NULL else deparse(substitute(by))
+  .arima_term(time, by, p, d, q)
+}
+
+#' Convenience aliases for common ARIMA(p, d, q) special cases.
+#'
+#' `ar()`, `ma()`, and `arma()` are thin wrappers around [arima()] that
+#' set the unused orders to zero. They exist so the in-formula syntax
+#' matches the common-case vocabulary (and matches `brms`'s in-formula
+#' `ar()` / `ma()` / `arma()` for users coming from there).
+#'
+#' Equivalences:
+#' - `ar(time, by, p)` = `arima(time, by, p = p, d = 0, q = 0)`
+#' - `ma(time, by, q)` = `arima(time, by, p = 0, d = 0, q = q)`
+#' - `arma(time, by, p, q)` = `arima(time, by, p = p, d = 0, q = q)`
+#'
+#' For an integrated (random-walk) series use [rw()] or
+#' `arima(time, by, p = 0, d = 1, q = 0)` directly.
+#'
+#' @param time Time variable for the latent series; numeric.
+#' @param by Optional grouping variable. Each group draws an
+#' independent shock series; AR/MA parameters and the latent standard
+#' deviation are shared across groups.
+#' @param p,q Orders. Defaults to `1`.
+#'
+#' @return An `enw_arima_term` interpretable by [construct_arima()].
+#' @name arma_aliases
+#' @family formulatools
+#' @examples
+#' ar(time)
+#' ar(time, location, p = 2)
+#' ma(time, location, q = 2)
+#' arma(time, location, p = 1, q = 1)
+NULL
+
+#' @rdname arma_aliases
+#' @export
+ar <- function(time, by, p = 1) {
+  if (missing(time)) cli::cli_abort("`time` must be present")
+  time <- deparse(substitute(time))
+  by <- if (missing(by)) NULL else deparse(substitute(by))
+  .arima_term(time, by, p = p, d = 0L, q = 0L)
+}
+
+#' @rdname arma_aliases
+#' @export
+ma <- function(time, by, q = 1) {
+  if (missing(time)) cli::cli_abort("`time` must be present")
+  time <- deparse(substitute(time))
+  by <- if (missing(by)) NULL else deparse(substitute(by))
+  .arima_term(time, by, p = 0L, d = 0L, q = q)
+}
+
+#' @rdname arma_aliases
+#' @export
+arma <- function(time, by, p = 1, q = 1) {
+  if (missing(time)) cli::cli_abort("`time` must be present")
+  time <- deparse(substitute(time))
+  by <- if (missing(by)) NULL else deparse(substitute(by))
+  .arima_term(time, by, p = p, d = 0L, q = q)
+}
+
+# Internal: build an `enw_arima_term` from already-deparsed `time`/`by`
+# strings and integer orders. Used by `arima()`, `ar()`, `ma()`,
+# `arma()`, and `rw()` so order validation and the degenerate-order
+# guard live in one place.
+.arima_term <- function(time, by, p, d, q) {
   .check_arima_order(p, "p")
   .check_arima_order(d, "d")
   .check_arima_order(q, "q")
@@ -950,6 +1018,11 @@ construct_re <- function(re, data) {
 #' and `sigma` shared across locations (per-group parameters are a
 #' planned extension)
 #' - `arima(time, d = 1, p = 0, q = 0)` is equivalent to `rw(time)`
+#'
+#' Convenience aliases match `brms`'s in-formula vocabulary:
+#' - `ar(time, by, p)` is `arima(time, by, p = p, d = 0, q = 0)`
+#' - `ma(time, by, q)` is `arima(time, by, p = 0, d = 0, q = q)`
+#' - `arma(time, by, p, q)` is `arima(time, by, p = p, d = 0, q = q)`
 #'
 #' These four types of effects can be combined in a single formula,
 #' for example: `~ 1 + age_group + (1 | location) + rw(week, location)`

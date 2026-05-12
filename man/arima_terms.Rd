@@ -17,19 +17,20 @@ A character vector containing the ARIMA terms identified in
 the supplied formula.
 }
 \description{
-This function extracts ARIMA terms denoted using
-\code{\link[=arima]{arima()}} from a formula so that they can be processed on their own.
+This function extracts ARIMA terms from a formula so that
+they can be processed on their own. Matches all four user-facing
+helpers that produce an \code{enw_arima_term}: \code{\link[=arima]{arima()}}, plus the
+convenience aliases \code{\link[=ar]{ar()}}, \code{\link[=ma]{ma()}}, and \code{\link[=arma]{arma()}}.
 }
 \examples{
 epinowcast:::arima_terms(~ 1 + age_group + arima(week))
-
-epinowcast:::arima_terms(
-  ~ 1 + age_group + arima(week, location, p = 1, d = 1, q = 1)
-)
+epinowcast:::arima_terms(~ 1 + ar(week, p = 2))
+epinowcast:::arima_terms(~ 1 + arma(week, location, p = 1, q = 1))
 }
 \seealso{
 Functions used to help convert formulas into model designs
 \code{\link{arima}()},
+\code{\link{arma_aliases}},
 \code{\link{as_string_formula}()},
 \code{\link{construct_arima}()},
 \code{\link{construct_re}()},

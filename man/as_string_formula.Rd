@@ -25,6 +25,7 @@ epinowcast:::as_string_formula(~ 1 + age_group)
 Functions used to help convert formulas into model designs
 \code{\link{arima}()},
 \code{\link{arima_terms}()},
+\code{\link{arma_aliases}},
 \code{\link{construct_arima}()},
 \code{\link{construct_re}()},
 \code{\link{construct_rw}()},
