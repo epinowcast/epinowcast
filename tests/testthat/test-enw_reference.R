@@ -61,7 +61,9 @@ test_that("enw_reference supports parametric models", {
       "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
       "refnp_int", "refnp_beta", "refnp_beta_sd",
       "refp_mean", "refp_sd",
-      "refp_arima_z", "refp_arima_sigma", "refp_arima_sd_sigma"
+      "refp_arima_pacf", "refp_arima_theta", "refp_arima_sigma",
+      "refp_arima_sd_sigma", "refp_arima_z",
+      "refnp_arima_pacf", "refnp_arima_theta", "refnp_arima_sigma"
     )
   )
   c(
@@ -69,7 +71,11 @@ test_that("enw_reference supports parametric models", {
     "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
     "refp_mean", "refp_sd"
   )
-  zero_length <- c("refnp_int", "refnp_beta", "refnp_beta_sd")
+  zero_length <- c(
+    "refnp_int", "refnp_beta", "refnp_beta_sd",
+    "refp_arima_pacf", "refp_arima_theta",
+    "refnp_arima_pacf", "refnp_arima_theta", "refnp_arima_sigma"
+  )
   expect_zero_length_or_not(zero_length, inits)
 
   default_ref <- enw_reference(data = pobs)
@@ -121,7 +127,9 @@ test_that("enw_reference supports non-parametric models", {
   zero_length <- c(
     "refp_mean_int", "refp_sd_int", "refp_mean_beta",
     "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
-    "refp_mean", "refp_sd", "refnp_beta_sd"
+    "refp_mean", "refp_sd", "refnp_beta_sd",
+    "refp_arima_pacf", "refp_arima_theta", "refp_arima_sigma",
+    "refp_arima_sd_sigma", "refnp_arima_pacf", "refnp_arima_theta"
   )
   expect_zero_length_or_not(zero_length, inits)
   # check that not having an intercept works as expected
@@ -156,7 +164,10 @@ test_that("Parametric and non-parametric models can be jointly specified", {
   inits <- ref$inits(ref$data, ref$priors)()
   zero_length <- c(
     "refp_mean_beta", "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
-    "refnp_int"
+    "refnp_int",
+    "refp_arima_pacf", "refp_arima_theta", "refp_arima_sigma",
+    "refp_arima_sd_sigma", "refnp_arima_pacf", "refnp_arima_theta",
+    "refnp_arima_sigma"
   )
   expect_zero_length_or_not(zero_length, inits)
 })

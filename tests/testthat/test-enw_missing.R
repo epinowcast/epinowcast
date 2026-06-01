@@ -10,7 +10,10 @@ test_that("enw_missing produces the expected model components", {
   miss <- enw_missing(~ 1 + (1 | day_of_week), data = pobs)
   expect_named(
     miss$inits(miss$data, miss$priors)(),
-    c("miss_int", "miss_beta", "miss_beta_sd")
+    c(
+      "miss_int", "miss_beta", "miss_beta_sd",
+      "miss_arima_pacf", "miss_arima_theta", "miss_arima_sigma"
+    )
   )
 })
 

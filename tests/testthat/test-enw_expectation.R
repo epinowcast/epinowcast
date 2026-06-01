@@ -13,7 +13,9 @@ test_that("enw_expectation produces the expected default model", {
     exp$inits(c(exp$data, obs$data), exp$priors)(),
     c(
       "expr_beta", "expr_beta_sd", "expr_lelatent_int", "expr_r_int",
-      "expl_beta", "expl_beta_sd"
+      "expl_beta", "expl_beta_sd",
+      "expr_arima_pacf", "expr_arima_theta", "expr_arima_sigma",
+      "expl_arima_pacf", "expl_arima_theta", "expl_arima_sigma"
     )
   )
 })
@@ -113,7 +115,10 @@ test_that(
       ),
       list(
         expr_beta = 3L, expr_beta_sd = 1L, expr_lelatent_int = c(2L, 3L),
-        expr_r_int = 1L, expl_beta = 6L, expl_beta_sd = 3L
+        expr_r_int = 1L, expl_beta = 6L, expl_beta_sd = 3L,
+        expr_arima_pacf = NULL, expr_arima_theta = NULL,
+        expr_arima_sigma = NULL, expl_arima_pacf = NULL,
+        expl_arima_theta = NULL, expl_arima_sigma = NULL
       )
     )
   }
