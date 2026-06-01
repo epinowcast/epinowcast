@@ -28,21 +28,22 @@ knitr::opts_chunk$set(
 ```
 
 The expectation module's `r` formula controls the latent log growth rate.
-Several options exist for giving it structure; each is a different choice for how `r` is allowed to vary over time and across groups.
+The options for giving it structure differ mainly in one way: how much the growth rate remembers its past.
+This vignette walks through them from most to least persistent.
 
-The choices fall into two families.
-The first is **latent time-series structure** — how `r` correlates with itself over time:
+The first three are time-series terms built from the same ARIMA(p, d, q) machinery; `rw()`, `ar()`, and the general `arima()` share one backend.
 
-- **Random walk on weeks** via `rw(week)`. The growth rate has iid Gaussian increments per week; the cumulative sum of those increments is what enters the linear predictor.
-- **Independent per-week-and-group random effects** via `(1 | week:.group)`. Each (week, group) combination has its own random level drawn from a shared Gaussian, with no time-correlation structure across weeks.
-- **ARIMA(p, d, q) residuals** via `arima(day, age_group, p, d, q)`. The growth rate is built up through a parameter-dependent kernel applied to unit-normal shocks, supporting arbitrary autoregressive and moving-average orders and integration. When `by` is supplied each group has its own innovation series; the AR/MA parameters and latent standard deviation are currently shared across groups.
-- **Pure moving-average residuals** via `ma(day, age_group, q = 6)`. A stationary short-memory variant of the same machinery: a shock at day `t` influences the series at lags `0, 1, ..., q` and then drops out, with no autoregressive feedback. Taking `q = 6` gives a seven-day influence window (one week of moving-average memory).
+- **Random walk** via `rw(week)`. The growth rate drifts: each step builds on the last with no pull back towards a mean. This is ARIMA(0, 1, 0).
+- **Integrated AR** via `arima(week, age_group, p = 1, d = 1)`. The same drift, but with autocorrelated increments, so the path is smoother than a plain random walk.
+- **Stationary AR** via `ar(day, age_group, p = 1)`. The growth rate reverts to a fixed mean, with autocorrelated departures that decay rather than accumulate. This is ARIMA(1, 0, 0).
 
-The second is **periodic / calendar terms** — structure that repeats on a known cycle rather than drifting over time:
+The last two impose no time correlation at all.
 
-- **Day-of-week random effects** via `(1 | day_of_week)`. Each weekday draws its own offset from a shared Gaussian, capturing periodic within-week variation that recurs every week.
+- **Independent per-(week, group) effects** via `(1 | week:.group)`. Each (week, group) cell is an independent draw from a shared Gaussian; the growth rate has no memory across weeks.
+- **Day-of-week effects** via `(1 | day_of_week)`. A fixed weekly pattern that repeats rather than drifting, capturing periodic within-week variation.
 
-Latent and periodic terms compose freely in the same formula.
+The moving-average aliases `ma()` and `arma()` add an MA component to the same machinery.
+MA structure is most useful as part of an ARMA model rather than on its own, so it is covered briefly at the end rather than as a standalone trend.
 
 The fits use short NUTS runs via `enw_sample()` so the diagnostics shown below are meaningful.
 The chains are deliberately short to keep the build time reasonable; a real analysis would run them for longer.
@@ -77,12 +78,11 @@ pobs <- suppressWarnings(
 )
 ```
 
-We also keep the eventually-observed counts for the same reference dates so each nowcast can be shown against the data that arrived later.
+We also keep the eventually-observed counts so each nowcast can be shown against the data that arrived later.
+The reference dates the nowcast actually estimates are the most recent, still-incomplete ones; we trim the comparison data to those dates once the first model is fit so the plotted points line up with the nowcast.
 
 ```{r latest}
-latest_obs <- enw_latest_data(nat_germany_hosp)[
-  reference_date %in% unique(retro$reference_date)
-]
+latest_obs <- enw_latest_data(nat_germany_hosp)
 ```
 
 A common fit configuration is reused across the models: two short NUTS chains, enough to read off convergence diagnostics without a long build.
@@ -93,14 +93,14 @@ fit <- enw_fit_opts(
   chains = 2, parallel_chains = 2,
   iter_warmup = 500, iter_sampling = 500,
   adapt_delta = 0.99, max_treedepth = 12,
-  refresh = 0, show_messages = FALSE
+  refresh = 0, show_messages = FALSE, seed = 12345
 )
 ```
 
 # Random walk on weeks
 
 `rw(week)` adds one Gaussian increment per week; the cumulative sum of those increments is added to `r`.
-Mathematically this is equivalent to a (correlated) Gaussian prior over the per-week growth rates with a single shared standard deviation.
+The growth rate drifts smoothly with no preferred direction and no mean to revert to, which makes the random walk the standard non-stationary smoother.
 
 ```{r rw-fit, results = "hide", message = FALSE, warning = FALSE}
 nowcast_rw <- epinowcast(
@@ -111,15 +111,81 @@ nowcast_rw <- epinowcast(
 )
 ```
 
+```{r trim-latest}
+nowcast_dates <- unique(summary(nowcast_rw)$reference_date)
+latest_obs <- latest_obs[reference_date %in% nowcast_dates]
+```
+
 ```{r rw-plot, fig.cap = "Nowcast under a random walk on weeks."}
 plot(nowcast_rw, latest_obs = latest_obs) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-# Independent per-(week, group) random effects
+# Integrated AR
+
+`arima(time, by, p, d, q)` adds a latent ARIMA(p, d, q) residual series to the linear predictor.
+Differencing is applied via the cumulative-sum operator and the ARMA part via a parameter-dependent Toeplitz kernel built from the impulse response; both compose with a single matrix multiplication onto unit-normal shocks.
+When `by` is supplied each group has its own column of unit-normal shocks; the AR/MA parameters and latent standard deviation are currently shared across groups.
+
+`arima(week, d = 1, p = 0, q = 0)` recovers `rw(week)`.
+Adding `p = 1` makes the random-walk increments autocorrelated, so the drift is smoother and more persistent than a plain random walk while remaining non-stationary.
+Here we model the trend at weekly resolution, matching `rw(week)`, so the only difference between the two is the autoregressive term.
+
+```{r arima-fit, results = "hide", message = FALSE, warning = FALSE}
+nowcast_arima <- epinowcast(
+  pobs,
+  expectation = enw_expectation(
+    r = ~ 1 + arima(week, age_group, p = 1, d = 1),
+    data = pobs
+  ),
+  obs = enw_obs(family = "negbin", data = pobs),
+  fit = fit
+)
+```
+
+```{r arima-plot, fig.cap = "Nowcast under an ARIMA(1, 1, 0) residual on week."}
+plot(nowcast_arima, latest_obs = latest_obs) +
+  facet_wrap(vars(age_group), scales = "free_y")
+```
+
+The ARIMA-specific posterior summaries are the partial autocorrelation `pacf` (the stationary AR parameterisation) and the latent standard deviation `sigma`:
+
+```{r arima-pars}
+arima_pars <- summary(nowcast_arima, type = "fit")[
+  grepl("expr_arima_(pacf|sigma)", variable),
+  .(variable, mean, q5, q95)
+]
+kable(arima_pars, digits = 3)
+```
+
+# Stationary AR
+
+`ar(time, by, p)` is the alias for `arima(time, by, p = p, d = 0, q = 0)`.
+With no differencing the growth rate is stationary: it fluctuates around a fixed mean and departures decay rather than accumulate.
+Contrast this with the integrated models above, where the growth rate is free to wander.
+Stationary AR is the right choice when growth is stable on average and you want to model autocorrelated departures from that level rather than a drifting trend.
+
+```{r ar-fit, results = "hide", message = FALSE, warning = FALSE}
+nowcast_ar <- epinowcast(
+  pobs,
+  expectation = enw_expectation(
+    r = ~ 1 + ar(day, age_group, p = 1),
+    data = pobs
+  ),
+  obs = enw_obs(family = "negbin", data = pobs),
+  fit = fit
+)
+```
+
+```{r ar-plot, fig.cap = "Nowcast under a stationary AR(1) residual on day."}
+plot(nowcast_ar, latest_obs = latest_obs) +
+  facet_wrap(vars(age_group), scales = "free_y")
+```
+
+# Independent per-(week, group) effects
 
 `(1 | week:.group)` adds a separate random level for every (week, group) cell, drawn from a shared Gaussian.
-Unlike the random walk, there is no time correlation across weeks; each week starts afresh.
+Unlike the time-series terms there is no correlation across weeks; each week is an independent draw.
 This is the natural choice when weekly fluctuations look like noise rather than drift.
 
 ```{r re-fit, results = "hide", message = FALSE, warning = FALSE}
@@ -138,77 +204,10 @@ plot(nowcast_re, latest_obs = latest_obs) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-# ARIMA(p, d, q) residuals
-
-`arima(time, by, p, d, q)` adds a latent ARIMA(p, d, q) residual series to the linear predictor.
-Differencing is applied via the cumulative-sum operator and the ARMA part via a parameter-dependent Toeplitz kernel built from the impulse response; both compose with a single matrix multiplication onto unit-normal shocks.
-When `by` is supplied each group has its own column of unit-normal shocks; the AR/MA parameters and latent standard deviation are currently shared across groups.
-
-`arima(time, d = 1, p = 0, q = 0)` recovers the same model as `rw(time)`; setting `p > 0` or `q > 0` adds autoregressive or moving-average structure on top.
-
-```{r arima-fit, results = "hide", message = FALSE, warning = FALSE}
-nowcast_arima <- epinowcast(
-  pobs,
-  expectation = enw_expectation(
-    r = ~ 1 + arima(day, age_group, p = 1, d = 1),
-    data = pobs
-  ),
-  obs = enw_obs(family = "negbin", data = pobs),
-  fit = fit
-)
-```
-
-```{r arima-plot, fig.cap = "Nowcast under an ARIMA(1, 1, 0) residual on day."}
-plot(nowcast_arima, latest_obs = latest_obs) +
-  facet_wrap(vars(age_group), scales = "free_y")
-```
-
-The ARIMA-specific posterior summaries:
-
-```{r arima-pars}
-arima_pars <- summary(nowcast_arima, type = "fit")[
-  grepl("expr_arima_(pacf|sigma)", variable),
-  .(variable, mean, q5, q95)
-]
-kable(arima_pars, digits = 3)
-```
-
-# Pure moving-average residuals
-
-`ma(time, by, q)` is the convenience alias for `arima(time, by, p = 0, d = 0, q = q)`.
-It is stationary (no integration) and a shock at day `t` influences the series at lags `0, 1, ..., q` — a `q + 1` day window — before dropping out, with no AR feedback.
-This is useful when you expect short-range correlated noise around a flat trend rather than persistent drift.
-Picking `q = 6` gives a seven-day influence window, so a daily shock can decay across the rest of the week without persisting indefinitely as it would under an AR component.
-
-```{r ma-fit, results = "hide", message = FALSE, warning = FALSE}
-nowcast_ma <- epinowcast(
-  pobs,
-  expectation = enw_expectation(
-    r = ~ 1 + ma(day, age_group, q = 6),
-    data = pobs
-  ),
-  obs = enw_obs(family = "negbin", data = pobs),
-  fit = fit
-)
-```
-
-```{r ma-plot, fig.cap = "Nowcast under an MA(6) residual on day (seven-day influence window)."}
-plot(nowcast_ma, latest_obs = latest_obs) +
-  facet_wrap(vars(age_group), scales = "free_y")
-```
-
-Note that `ma(q = 6)` is *not* a periodic-by-weekday model: it gives correlated noise over a one-week window, not a recurring weekly cycle.
-For genuinely periodic within-week variation use a day-of-week term (next section), which is what week-after-week reporting patterns usually look like.
-
-This higher-order moving-average model is the one term here that the short chains do not fully resolve (see the diagnostics below): without an enforced invertibility constraint the MA(q) likelihood is multimodal, so the chains can settle on different but observationally similar coefficient sets.
-Lowering `q` or running longer chains sharpens it; the [implementation notes](arima.html) cover the invertibility trade-off.
-
-# Periodic terms
+# Day-of-week effects
 
 Periodic terms repeat on a known cycle rather than drifting freely.
 The most common case in surveillance data is day-of-week reporting: weekends look different from weekdays in roughly the same way every week.
-
-## Day-of-week random effects
 
 `(1 | day_of_week)` gives every weekday its own offset drawn from a shared Gaussian.
 The same Monday offset enters every Monday, the same Tuesday offset enters every Tuesday, and so on — exactly periodic across weeks.
@@ -231,7 +230,17 @@ plot(nowcast_dow, latest_obs = latest_obs) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-Periodic and latent terms compose: `~ 1 + (1 | day_of_week) + arima(day, p = 1, d = 1)` puts a periodic day-of-week effect alongside an ARIMA(1, 1, 0) residual on the trend.
+# Moving-average components
+
+`ma(time, by, q)` and `arma(time, by, p, q)` expose the moving-average part of the same machinery: a shock at time `t` influences the series at lags `0, 1, ..., q` and then drops out.
+On its own a moving average sits on a flat mean, which is rarely a sensible model for a growth rate — there is no trend for the short-memory noise to sit on.
+MA structure is more useful as a *component* of an ARMA or ARIMA model, where it captures short-range correlation on top of an autoregressive trend, for example `arma(day, age_group, p = 1, q = 1)` or `arima(day, age_group, p = 1, d = 1, q = 1)`.
+
+Note also that a moving average is not a periodic-by-weekday model: it gives correlated noise over a `q + 1` step window, not a recurring weekly cycle.
+For genuinely periodic within-week variation use a day-of-week term.
+
+Higher-order moving averages are harder to fit: without an enforced invertibility constraint the MA(q) likelihood is multimodal, so chains can settle on different but observationally similar coefficient sets.
+The [implementation notes](arima.html) cover the invertibility trade-off.
 
 # Fit diagnostics
 
@@ -241,9 +250,9 @@ Values close to 1 for R-hat, bulk effective sample sizes in the hundreds, and ze
 ```{r diagnostics}
 fits <- list(
   "rw(week)" = nowcast_rw,
+  "arima(week, age_group, 1, 1, 0)" = nowcast_arima,
+  "ar(day, age_group, 1)" = nowcast_ar,
   "(1 | week:.group)" = nowcast_re,
-  "arima(day, age_group, 1, 1, 0)" = nowcast_arima,
-  "ma(day, age_group, 6)" = nowcast_ma,
   "(1 | day_of_week)" = nowcast_dow
 )
 diagnostics <- rbindlist(lapply(names(fits), function(model) {
@@ -261,14 +270,16 @@ kable(diagnostics)
 
 # When to reach for which
 
-| Option | Family | Formula example | Useful when |
+The five models trace a spectrum of how much the growth rate remembers its past, from full drift to none.
+
+| Option | Memory of the growth rate | Formula example | Useful when |
 |---|---|---|---|
-| Random walk | Latent | `rw(week)` | The growth rate evolves smoothly week-to-week with no preferred direction; the standard non-stationary smoother. |
-| Independent week random effects | Latent | `(1 \| week:.group)` | Weekly fluctuations look like noise around a stable mean rather than a drifting trend; no time correlation is imposed. |
-| ARIMA | Latent | `arima(day, by, p, d, q)` | You want explicit autocorrelated short-range structure on the residuals, e.g. `arima(p = 1, d = 0)` for stationary AR(1) deviations around a smooth trend, or `arima(p = 1, d = 1)` for AR(1) on the differences. |
-| Moving average | Latent | `ma(day, by, q)` | Stationary short-memory noise with finite influence: shocks decay to zero after `q` steps. Pair with a smooth trend for drift-free residuals. |
-| Day-of-week random effects | Periodic | `(1 \| day_of_week)` | Within-week variation is structurally periodic — the same weekday offsets recur — and you want pooled rather than fixed weekday effects. |
+| Random walk | Full drift, no mean | `rw(week)` | The growth rate evolves smoothly with no preferred direction; the standard non-stationary smoother. |
+| Integrated AR | Drift, smoother | `arima(week, by, p = 1, d = 1)` | You want a drifting trend but with autocorrelated, more persistent increments than a plain random walk. |
+| Stationary AR | Reverts to a mean | `ar(day, by, p = 1)` | Growth is stable on average and you want to model autocorrelated departures from that level rather than drift. |
+| Independent week effects | None | `(1 \| week:.group)` | Weekly fluctuations look like noise around a stable mean; no time correlation is imposed. |
+| Day-of-week effects | Fixed weekly cycle | `(1 \| day_of_week)` | Within-week variation is structurally periodic and you want pooled rather than fixed weekday effects. |
 
 These options compose within the same formula.
-A typical surveillance pattern mixes one latent option for the trend with a periodic term for calendar effects, e.g. `~ 1 + (1 | day_of_week) + arima(day, p = 1, d = 1)`.
+A typical surveillance pattern mixes one latent option for the trend with a periodic term for calendar effects, for example `~ 1 + (1 | day_of_week) + arima(week, p = 1, d = 1)`.
 The `by` argument on `arima()`, the aliases `ar()` / `ma()` / `arma()`, and `rw()` lets each group draw its own innovation series; the AR/MA parameters and latent standard deviation are currently shared across groups (per-group parameters are a planned extension).
