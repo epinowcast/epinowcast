@@ -17,12 +17,12 @@
  * the bare `combine_effects()` result, and `regression_priors_lp()`
  * skips the ARIMA prior block.
  *
- * These helpers are intended for modules whose predictor is at the
- * per-observation level (e.g. `expr`, `expl`, `refnp`, `miss`).
- * Modules whose predictor is sparse-row indexed (e.g. `refp`, `rep`)
- * call `combine_effects()` directly for now; see
- * `vignettes/arima.Rmd` for the constraint and the path to lifting
- * it.
+ * Every per-observation module routes through these helpers: `expr`,
+ * `expl`, `refnp`, and `miss` apply the ARIMA residual directly at the
+ * observation level, while the sparse-row modules `refp` and `rep`
+ * supply a `flat_idx` built from the joint (covariate row x ARIMA time
+ * x ARIMA group) dedup so the same gather works at sparse-row
+ * granularity. See `vignettes/arima.Rmd` for the joint-dedup scheme.
  */
 vector regression_predictor(
   array[] real intercept, vector beta, int nobs, int neffs,
