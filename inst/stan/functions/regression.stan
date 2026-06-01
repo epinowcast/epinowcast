@@ -36,6 +36,17 @@ vector regression_predictor(
   array[] real arima_sigma,
   array[] int arima_flat_idx
 ) {
+  // Short-circuit the no-ARIMA path (arima_present == 0): return
+  // combine_effects() directly so we skip materialising the
+  // intermediate `base` vector and the apply_arima_residual() call
+  // frame on every gradient evaluation. Behaviour is identical when an
+  // ARIMA term is present.
+  if (!arima_present) {
+    return combine_effects(
+      intercept, beta, nobs, neffs, fdesign, sparse, beta_sd, rdesign,
+      add_intercept, sparse_design
+    );
+  }
   vector[nobs] base = combine_effects(
     intercept, beta, nobs, neffs, fdesign, sparse, beta_sd, rdesign,
     add_intercept, sparse_design
