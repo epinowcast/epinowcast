@@ -230,6 +230,29 @@ plot(nowcast_dow, latest_obs = latest_obs) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
+# Combining latent and periodic terms
+
+Latent and periodic terms compose in the same formula, which is the usual surveillance model: a slowly evolving trend plus a repeating weekly pattern.
+Here an integrated AR term carries the trend at weekly resolution while a day-of-week effect captures the within-week reporting cycle.
+Each term is identified by what it explains — the trend by the latent series, the weekday structure by the periodic effect — so they can be read off separately in the fit.
+
+```{r combined-fit, results = "hide", message = FALSE, warning = FALSE}
+nowcast_combined <- epinowcast(
+  pobs,
+  expectation = enw_expectation(
+    r = ~ 1 + (1 | day_of_week) + arima(week, age_group, p = 1, d = 1),
+    data = pobs
+  ),
+  obs = enw_obs(family = "negbin", data = pobs),
+  fit = fit
+)
+```
+
+```{r combined-plot, fig.cap = "Nowcast combining a day-of-week effect with an ARIMA(1, 1, 0) trend on week."}
+plot(nowcast_combined, latest_obs = latest_obs) +
+  facet_wrap(vars(age_group), scales = "free_y")
+```
+
 # Moving-average components
 
 `ma(time, by, q)` and `arma(time, by, p, q)` expose the moving-average part of the same machinery: a shock at time `t` influences the series at lags `0, 1, ..., q` and then drops out.
@@ -253,7 +276,8 @@ fits <- list(
   "arima(week, age_group, 1, 1, 0)" = nowcast_arima,
   "ar(day, age_group, 1)" = nowcast_ar,
   "(1 | week:.group)" = nowcast_re,
-  "(1 | day_of_week)" = nowcast_dow
+  "(1 | day_of_week)" = nowcast_dow,
+  "(1 | day_of_week) + arima(week, ...)" = nowcast_combined
 )
 diagnostics <- rbindlist(lapply(names(fits), function(model) {
   fit_summary <- summary(fits[[model]], type = "fit")
@@ -283,3 +307,7 @@ The five models trace a spectrum of how much the growth rate remembers its past,
 These options compose within the same formula.
 A typical surveillance pattern mixes one latent option for the trend with a periodic term for calendar effects, for example `~ 1 + (1 | day_of_week) + arima(week, p = 1, d = 1)`.
 The `by` argument on `arima()`, the aliases `ar()` / `ma()` / `arma()`, and `rw()` lets each group draw its own innovation series; the AR/MA parameters and latent standard deviation are currently shared across groups (per-group parameters are a planned extension).
+
+These terms are not specific to the growth rate.
+The same `rw()`, `ar()`, `arima()`, and random-effect terms can be placed on any module's formula: an `arima()` term on the reference delay mean, for instance, models a reporting delay that drifts over time.
+See the [implementation notes](arima.html) for the full list of modules that accept them.
