@@ -312,10 +312,10 @@ nowcast_default
 #>   fit_args : list(7) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 500 | Max Rhat: 1.05 
+#>   Samples: 1,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 8 (118 at max, 23.6%) 
-#>   Run time: 17.1 secs
+#>   Max treedepth: 8 (1 at max, 0.1%) 
+#>   Run time: 16.1 secs
 ```
 
 
@@ -460,10 +460,10 @@ nowcast_lognormal
 #>   fit_args : list(7) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 1,000 | Max Rhat: 1.01 
-#>   Divergent transitions: 1 (0.1%) 
-#>   Max treedepth: 10 (3 at max, 0.3%) 
-#>   Run time: 68.1 secs
+#>   Samples: 500 | Max Rhat: 1.04 
+#>   Divergent transitions: 0 (0%) 
+#>   Max treedepth: 9 (461 at max, 92.2%) 
+#>   Run time: 72.9 secs
 ```
 
 
@@ -491,10 +491,10 @@ nowcast_np
 #>   fit_args : list(7) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 1,000 | Max Rhat: 1.01 
-#>   Divergent transitions: 3 (0.3%) 
-#>   Max treedepth: 9 (927 at max, 92.7%) 
-#>   Run time: 95 secs
+#>   Samples: 1,000 | Max Rhat: 1.02 
+#>   Divergent transitions: 2 (0.2%) 
+#>   Max treedepth: 9 (988 at max, 98.8%) 
+#>   Run time: 107.3 secs
 ```
 
 ## Comparing all models
@@ -565,24 +565,24 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #>     4:     2021-08-01  2021-08-22      1          77       DE       00+     714
 #>     5:     2021-08-01  2021-08-22      1          77       DE       00+     714
 #>    ---                                                                         
-#> 21996:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 21997:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 21998:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 21999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 22000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 10996:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 10997:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 10998:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 10999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 11000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
 #>                    <num> <num>         <num>  <int>      <int> <int>  <num>
-#>     1:                 1    21             0      1          1     1    734
-#>     2:                 1    21             0      1          2     2    728
-#>     3:                 1    21             0      1          3     3    733
-#>     4:                 1    21             0      1          4     4    730
-#>     5:                 1    21             0      1          5     5    731
+#>     1:                 1    21             0      1          1     1    732
+#>     2:                 1    21             0      1          2     2    733
+#>     3:                 1    21             0      1          3     3    731
+#>     4:                 1    21             0      1          4     4    727
+#>     5:                 1    21             0      1          5     5    732
 #>    ---                                                                     
-#> 21996:                 1     0             1      2        496   996   1815
-#> 21997:                 1     0             1      2        497   997   1803
-#> 21998:                 1     0             1      2        498   998   1736
-#> 21999:                 1     0             1      2        499   999   1921
-#> 22000:                 1     0             1      2        500  1000   1931
+#> 10996:                 1     0             1      1        496   496   1991
+#> 10997:                 1     0             1      1        497   497   1988
+#> 10998:                 1     0             1      1        498   498   1982
+#> 10999:                 1     0             1      1        499   499   1789
+#> 11000:                 1     0             1      1        500   500   1883
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
