@@ -36,8 +36,8 @@ The second is **periodic / calendar terms** — structure that repeats on a know
 
 Latent and periodic terms compose freely in the same formula.
 
-The fits use `enw_pathfinder()` for fast variational inference so the vignette stays snappy at build time.
-For a real analysis switch to NUTS via `enw_sample()`.
+The fits use short NUTS runs via `enw_sample()` so the diagnostics shown below are meaningful.
+The chains are deliberately short to keep the build time reasonable; a real analysis would run them for longer.
 
 # Setup
 
@@ -49,6 +49,7 @@ library(data.table)
 library(ggplot2) # nolint: unused_import_linter. Required by plot.epinowcast().
 #> Warning: package 'ggplot2' was built under R version 4.5.2
 library(knitr)
+#> Warning: package 'knitr' was built under R version 4.5.2
 ```
 
 
@@ -74,14 +75,24 @@ pobs <- suppressWarnings(
 )
 ```
 
-A common fit configuration is reused across the models.
-`enw_pathfinder()` is a fast approximate sampler that suits feature tours and exploration; for production fits use `enw_sample()` instead.
+We also keep the eventually-observed counts for the same reference dates so each nowcast can be shown against the data that arrived later.
+
+
+``` r
+latest_obs <- enw_latest_data(nat_germany_hosp)[
+  reference_date %in% unique(retro$reference_date)
+]
+```
+
+A common fit configuration is reused across the models: two short NUTS chains, enough to read off convergence diagnostics without a long build.
 
 
 ``` r
 fit <- enw_fit_opts(
-  sampler = enw_pathfinder,
-  num_paths = 4, single_path_draws = 50, draws = 200,
+  sampler = enw_sample,
+  chains = 2, parallel_chains = 2,
+  iter_warmup = 500, iter_sampling = 500,
+  adapt_delta = 0.99, max_treedepth = 12,
   refresh = 0, show_messages = FALSE
 )
 ```
@@ -103,7 +114,8 @@ nowcast_rw <- epinowcast(
 
 
 ``` r
-plot(nowcast_rw)
+plot(nowcast_rw, latest_obs = latest_obs) +
+  facet_wrap(vars(age_group), scales = "free_y")
 ```
 
 ![Nowcast under a random walk on weeks.](figures/latent-processes-rw-plot-1.png)
@@ -128,7 +140,8 @@ nowcast_re <- epinowcast(
 
 
 ``` r
-plot(nowcast_re)
+plot(nowcast_re, latest_obs = latest_obs) +
+  facet_wrap(vars(age_group), scales = "free_y")
 ```
 
 ![Nowcast under independent per-(week, group) random effects.](figures/latent-processes-re-plot-1.png)
@@ -156,7 +169,8 @@ nowcast_arima <- epinowcast(
 
 
 ``` r
-plot(nowcast_arima)
+plot(nowcast_arima, latest_obs = latest_obs) +
+  facet_wrap(vars(age_group), scales = "free_y")
 ```
 
 ![Nowcast under an ARIMA(1, 1, 0) residual on day.](figures/latent-processes-arima-plot-1.png)
@@ -169,15 +183,29 @@ arima_pars <- summary(nowcast_arima, type = "fit")[
   grepl("expr_arima_(pacf|sigma)", variable),
   .(variable, mean, q5, q95)
 ]
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
 kable(arima_pars, digits = 3)
 ```
 
 
 
-|variable            |  mean|    q5|   q95|
-|:-------------------|-----:|-----:|-----:|
-|expr_arima_pacf[1]  | 0.234| 0.202| 0.243|
-|expr_arima_sigma[1] | 0.012| 0.012| 0.013|
+|variable            |   mean|     q5|   q95|
+|:-------------------|------:|------:|-----:|
+|expr_arima_pacf[1]  | -0.351| -0.940| 0.493|
+|expr_arima_sigma[1] |  0.018|  0.005| 0.039|
 
 
 
@@ -203,13 +231,17 @@ nowcast_ma <- epinowcast(
 
 
 ``` r
-plot(nowcast_ma)
+plot(nowcast_ma, latest_obs = latest_obs) +
+  facet_wrap(vars(age_group), scales = "free_y")
 ```
 
 ![Nowcast under an MA(6) residual on day (seven-day influence window).](figures/latent-processes-ma-plot-1.png)
 
 Note that `ma(q = 6)` is *not* a periodic-by-weekday model: it gives correlated noise over a one-week window, not a recurring weekly cycle.
 For genuinely periodic within-week variation use a day-of-week term (next section), which is what week-after-week reporting patterns usually look like.
+
+This higher-order moving-average model is the one term here that the short chains do not fully resolve (see the diagnostics below): without an enforced invertibility constraint the MA(q) likelihood is multimodal, so the chains can settle on different but observationally similar coefficient sets.
+Lowering `q` or running longer chains sharpens it; the [implementation notes](arima.html) cover the invertibility trade-off.
 
 # Periodic terms
 
@@ -237,12 +269,68 @@ nowcast_dow <- epinowcast(
 
 
 ``` r
-plot(nowcast_dow)
+plot(nowcast_dow, latest_obs = latest_obs) +
+  facet_wrap(vars(age_group), scales = "free_y")
 ```
 
 ![Nowcast under day-of-week random effects on the growth rate.](figures/latent-processes-dow-plot-1.png)
 
 Periodic and latent terms compose: `~ 1 + (1 | day_of_week) + arima(day, p = 1, d = 1)` puts a periodic day-of-week effect alongside an ARIMA(1, 1, 0) residual on the trend.
+
+# Fit diagnostics
+
+Because these are NUTS fits we can read off standard convergence diagnostics for each model: the largest R-hat and smallest bulk effective sample size across all parameters, and the number of divergent transitions.
+Values close to 1 for R-hat, bulk effective sample sizes in the hundreds, and zero divergences indicate the short chains have converged; if not, lengthen the chains or raise `adapt_delta`.
+
+
+``` r
+fits <- list(
+  "rw(week)" = nowcast_rw,
+  "(1 | week:.group)" = nowcast_re,
+  "arima(day, age_group, 1, 1, 0)" = nowcast_arima,
+  "ma(day, age_group, 6)" = nowcast_ma,
+  "(1 | day_of_week)" = nowcast_dow
+)
+diagnostics <- rbindlist(lapply(names(fits), function(model) {
+  fit_summary <- summary(fits[[model]], type = "fit")
+  divergences <- fits[[model]]$fit[[1]]$diagnostic_summary()$num_divergent
+  data.table(
+    model = model,
+    max_rhat = round(max(fit_summary$rhat, na.rm = TRUE), 3),
+    min_ess_bulk = round(min(fit_summary$ess_bulk, na.rm = TRUE)),
+    divergences = sum(divergences)
+  )
+}))
+#> Warning: 2 of 1000 (0.0%) transitions ended with a divergence.
+#> See https://mc-stan.org/misc/warnings for details.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+kable(diagnostics)
+```
+
+
+
+|model                          | max_rhat| min_ess_bulk| divergences|
+|:------------------------------|--------:|------------:|-----------:|
+|rw(week)                       |    1.011|          291|           2|
+|(1 &#124; week:.group)         |    1.013|          161|           0|
+|arima(day, age_group, 1, 1, 0) |    1.015|          306|           0|
+|ma(day, age_group, 6)          |    1.191|            7|           0|
+|(1 &#124; day_of_week)         |    1.013|          194|           0|
+
+
 
 # When to reach for which
 

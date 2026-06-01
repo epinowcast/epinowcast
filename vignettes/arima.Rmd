@@ -95,7 +95,7 @@ Every such $r$ corresponds to exactly one stationary $\phi$ and vice versa, so s
 The map from $r$ to $\phi$ is the **Durbin-Levinson recursion** — the same recursion classically used to fit AR models from sample autocorrelations, run here in the forward direction [@barndorff].
 For $k = 1, \dots, p$, starting from $\phi_1^{(1)} = r_1$,
 
-$$\phi_k^{(k)} = r_k, \qquad \phi_j^{(k)} = \phi_j^{(k-1)} - r_k \phi_{k-j}^{(k-1)}, \quad j = 1, \dots, k-1,$$
+$$\phi_k^{(k)} = r_k, \quad \phi_j^{(k)} = \phi_j^{(k-1)} - r_k \phi_{k-j}^{(k-1)}, \quad j = 1, \dots, k-1,$$
 
 and the final coefficients are $\phi_j = \phi_j^{(p)}$.
 By construction all roots of $1 - \phi_1 z - \dots - \phi_p z^p$ lie outside the unit circle, which is exactly the stationarity condition.

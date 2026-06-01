@@ -34,6 +34,7 @@ cyclomatic
 dataconverters
 dedup
 deduplicate
+deduplication
 difftime
 discretisation
 Discretisation
@@ -47,6 +48,7 @@ enw
 epidemia
 EpiEstim
 EpiNow
+ess
 etc
 expr
 fdesign
@@ -170,6 +172,8 @@ Renviron
 Rhat
 RodrigoZepeda
 Rstudio
+reparameterisation
+rhat
 rumackaaron
 runtimes
 rw
