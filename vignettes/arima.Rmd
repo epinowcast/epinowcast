@@ -175,7 +175,7 @@ For per-observation modules (`sparse = FALSE`) the joint key is unique by constr
 - AR stationarity is enforced; MA invertibility is not (rarely a problem in practice).
 - Grouped series share AR/MA parameters and latent standard deviation across groups; per-group parameters are a planned extension. Until that lands `arima()` and `rw()` do not take a `type` argument.
 - The kernel is built dense ($T \times T$) every iteration. For very long series (thousands of time points) the autodiff cost grows as $O(T^2)$; in that regime a recursive form (computing $\epsilon$ via the ARMA filter directly) would be preferable.
-- When the parametric reference standard deviation is modelled (`model_refp > 1`), it shares the mean's ARIMA shocks and kernel but carries an independent scale (`refp_arima_sd_sigma`). The two residuals are therefore perfectly correlated up to that scale rather than driven by separate shock series. A separate sd process is a planned extension; time-varying sd is rarely the right model and an independent series would multiply the PMF cost again.
+- When the parametric reference standard deviation is modelled (`model_refp > 1`), it shares the ARIMA shocks and kernel of the mean but carries an independent scale (`refp_arima_sd_sigma`). The two residuals are therefore perfectly correlated up to that scale rather than driven by separate shock series. A separate sd process is a planned extension; time-varying sd is rarely the right model and an independent series would multiply the PMF cost again.
 
 # References
 
