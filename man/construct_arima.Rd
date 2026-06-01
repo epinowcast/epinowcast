@@ -15,8 +15,8 @@ term. Must contain the time and (if specified) grouping variable.}
 \value{
 A list with the following elements:
 \itemize{
-\item \code{time}, \code{by}, \code{p}, \code{d}, \code{q}, \code{type}: passed through from the
-\code{\link[=arima]{arima()}} term.
+\item \code{time}, \code{by}, \code{p}, \code{d}, \code{q}: passed through from the \code{\link[=arima]{arima()}}
+term.
 \item \code{T}: number of distinct time points in the series.
 \item \code{G}: number of groups (1 if \code{by} is unspecified).
 \item \code{time_idx}: integer vector mapping each row of \code{data} to a

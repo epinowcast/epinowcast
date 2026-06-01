@@ -217,8 +217,11 @@ enw_reference <- function(
           )))
         }
       }
+      # refp always declares `refp_arima_sd_sigma` (size 0 unless the
+      # parametric sd is modelled), so always declare its init default;
+      # the fill is gated on `model_refp > 1` inside `.arima_inits()`.
       init <- c(init, .arima_inits(
-        data, priors, "refp", with_sd_sigma = data$model_refp > 1
+        data, priors, "refp", with_sd_sigma = TRUE
       ))
       if (data$model_refnp > 0) {
         if (data$refnp_fintercept > 0) {

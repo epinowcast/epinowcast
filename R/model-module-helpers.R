@@ -488,37 +488,52 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
 # the per-module ARIMA boilerplate in one place.
 #' @importFrom stats runif
 .arima_inits <- function(data, priors, prefix, with_sd_sigma = FALSE) {
+  z_nm <- paste0(prefix, "_arima_z")
+  pacf_nm <- paste0(prefix, "_arima_pacf")
+  theta_nm <- paste0(prefix, "_arima_theta")
+  sigma_nm <- paste0(prefix, "_arima_sigma")
+  sd_sigma_nm <- paste0(prefix, "_arima_sd_sigma")
+
+  # Declare every vector-valued ARIMA parameter the module exposes with
+  # an empty default, then fill in real inits below when the term is
+  # present. This mirrors how the other module parameters are
+  # initialised (the `numeric(0)` defaults in the module `inits`
+  # functions) and stops cmdstanr warning about missing inits for them.
+  #
+  # `arima_z` is a matrix and is handled separately: an empty 0x0 matrix
+  # cannot be represented in cmdstanr's JSON (it serialises to `[]`,
+  # which Stan reads as dims (0) not (0, 0) and rejects at
+  # initialisation), so it is only supplied when genuinely sized.
   init <- list()
+  init[[pacf_nm]] <- numeric(0)
+  init[[theta_nm]] <- numeric(0)
+  init[[sigma_nm]] <- numeric(0)
+  if (with_sd_sigma) {
+    init[[sd_sigma_nm]] <- numeric(0)
+  }
+
   pT <- data[[paste0(prefix, "_arima_T")]]
   pG <- data[[paste0(prefix, "_arima_G")]]
   pp <- data[[paste0(prefix, "_arima_p")]]
   pq <- data[[paste0(prefix, "_arima_q")]]
   ppresent <- data[[paste0(prefix, "_arima_present")]]
   if (isTRUE(pT > 0 && pG > 0)) {
-    init[[paste0(prefix, "_arima_z")]] <- matrix(
-      rnorm(pT * pG, 0, 0.01), pT, pG
-    )
+    init[[z_nm]] <- matrix(rnorm(pT * pG, 0, 0.01), pT, pG)
   }
   if (isTRUE(pp > 0)) {
-    init[[paste0(prefix, "_arima_pacf")]] <- array(
-      runif(pp, -0.1, 0.1)
-    )
+    init[[pacf_nm]] <- array(runif(pp, -0.1, 0.1))
   }
   if (isTRUE(pq > 0)) {
-    init[[paste0(prefix, "_arima_theta")]] <- array(
-      rnorm(pq, 0, 0.01)
-    )
+    init[[theta_nm]] <- array(rnorm(pq, 0, 0.01))
   }
   if (isTRUE(ppresent > 0)) {
     sp <- priors[[paste0(prefix, "_arima_sigma_p")]]
-    init[[paste0(prefix, "_arima_sigma")]] <- array(
-      abs(rnorm(1, sp[1], sp[2] / 10))
-    )
-    if (with_sd_sigma) {
+    init[[sigma_nm]] <- array(abs(rnorm(1, sp[1], sp[2] / 10)))
+    # The sd-scale parameter is only sized 1 when the parametric sd is
+    # modelled (`model_refp > 1`); otherwise it stays the empty default.
+    if (with_sd_sigma && isTRUE(data$model_refp > 1)) {
       sd_p <- priors[[paste0(prefix, "_arima_sd_sigma_p")]]
-      init[[paste0(prefix, "_arima_sd_sigma")]] <- array(
-        abs(rnorm(1, sd_p[1], sd_p[2] / 10))
-      )
+      init[[sd_sigma_nm]] <- array(abs(rnorm(1, sd_p[1], sd_p[2] / 10)))
     }
   }
   init
