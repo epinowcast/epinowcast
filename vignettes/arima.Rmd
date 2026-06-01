@@ -55,7 +55,7 @@ $$K(\phi, \theta, d) = D^d \, T(\psi),$$
 where:
 
 - $\psi \in \mathbb{R}^T$ is the truncated impulse response of the ARMA(p, q) process with autoregressive coefficients $\phi$ and moving-average coefficients $\theta$.
-  It satisfies $\psi_1 = 1$ and the standard recursion
+  It satisfies $\psi_1 = 1$ and the standard ARMA recursion [@boxjenkins]
 
   $$\psi_k = \sum_{j=1}^{\min(p, k-1)} \phi_j \psi_{k-j} + \mathbb{1}\{k - 1 \le q\} \, \theta_{k-1}, \quad k = 2, \dots, T.$$
 
@@ -85,18 +85,24 @@ The Stan implementation of these steps lives in `inst/stan/functions/arima_kerne
 
 # Stationarity via partial autocorrelations
 
-A naive prior on $\phi$ does not enforce stationarity of the AR(p) process, and a non-stationary $\phi$ produces an impulse response that grows without bound, which destabilises sampling.
-We avoid this by parameterising the AR coefficients through partial autocorrelations $r_1, \dots, r_p \in (-1, 1)$, which are unconstrained on this interval and map bijectively to stationary $\phi$ via the Durbin-Levinson recursion[@barndorff].
+The autoregressive part is only well behaved if it is *stationary*.
+A stationary AR(p) process forgets its past, so its impulse response decays and the latent series stays bounded; a non-stationary one does the opposite, with an impulse response that grows without bound until the sampler diverges.
+Putting a prior directly on $\phi$ is awkward because the stationary region of $\phi$-space is an irregular shape that is hard to sample inside.
 
-For $k = 1, \dots, p$, define $\phi_k^{(k)} = r_k$ and
+We sidestep this with a standard reparameterisation.
+Instead of $\phi$ we work with the *partial autocorrelations* $r_1, \dots, r_p$, each free to range over $(-1, 1)$.
+Every such $r$ corresponds to exactly one stationary $\phi$ and vice versa, so sampling $r$ in the simple box $(-1, 1)^p$ stays in the stationary region by construction.
+The map from $r$ to $\phi$ is the **Durbin-Levinson recursion** — the same recursion classically used to fit AR models from sample autocorrelations, run here in the forward direction [@barndorff].
+For $k = 1, \dots, p$, starting from $\phi_1^{(1)} = r_1$,
 
-$$\phi_j^{(k)} = \phi_j^{(k-1)} - r_k \phi_{k-j}^{(k-1)}, \quad j = 1, \dots, k-1.$$
+$$\phi_k^{(k)} = r_k, \qquad \phi_j^{(k)} = \phi_j^{(k-1)} - r_k \phi_{k-j}^{(k-1)}, \quad j = 1, \dots, k-1,$$
 
-The final coefficients $\phi_j = \phi_j^{(p)}$ are guaranteed to satisfy the stationarity condition (all roots of $1 - \phi_1 z - \dots - \phi_p z^p$ outside the unit circle).
+and the final coefficients are $\phi_j = \phi_j^{(p)}$.
+By construction all roots of $1 - \phi_1 z - \dots - \phi_p z^p$ lie outside the unit circle, which is exactly the stationarity condition.
 This is the same approach `brms` and `rstanarm` use for AR(p) priors.
 
-In Stan we declare `vector<lower=-1, upper=1>[p] expr_arima_pacf` directly, then transform to $\phi$ via `pacf_to_phi(pacf)` inside transformed parameters / model block.
-The implicit uniform prior on each $r_k$ over $(-1, 1)$ is the default; users can override the bounds-induced prior via the priors mechanism if needed.
+In Stan we declare `vector<lower=-1, upper=1>[p] expr_arima_pacf` directly, then transform to $\phi$ via `pacf_to_phi(pacf)` inside the transformed parameters / model block.
+The bounds put an implicit uniform prior on each $r_k$ over $(-1, 1)$; override it through the priors mechanism if needed.
 
 MA invertibility is not enforced explicitly.
 For typical values it is rarely a sampling problem; if it becomes one for a specific use case, the same partial-autocorrelation transform applies symmetrically on $\theta$.
@@ -154,9 +160,9 @@ The half-normal prior on $\sigma$ is the most consequential of these in practice
 
 The Stan-side wiring uses two single entry points: `regression_predictor()` for the transform and `regression_priors_lp()` for the priors. Each module's Stan code calls these once instead of separately invoking `combine_effects()` and a bespoke ARIMA block, keeping the per-module boilerplate to a parameter declaration and one function call per side.
 
-# Joint sparse dedup
+# Joint sparse deduplication
 
-The modules that previously used `sparse = TRUE` on their fixed-effect design (`refp` and `rep`) need the ARIMA residual to vary at a *finer* granularity than their covariate dedup. The cheap composition is the **joint** dedup: deduplicate the design at the granularity of unique (covariate row × ARIMA time × ARIMA group) tuples rather than by covariate row alone.
+The modules that previously used `sparse = TRUE` on their fixed-effect design (`refp` and `rep`) need the ARIMA residual to vary at a *finer* granularity than their covariate deduplication. The cheap composition is the **joint** approach: deduplicate the design at the granularity of unique (covariate row × ARIMA time × ARIMA group) tuples rather than by covariate row alone.
 
 Concretely, `enw_formula()` now does the following when both `sparse = TRUE` and an `arima()` term are present:
 
@@ -167,7 +173,7 @@ Concretely, `enw_formula()` now does the following when both `sparse = TRUE` and
 
 Downstream code that loops over fdesign rows (e.g. `refp`'s per-row `discretised_logit_hazard()` PMF call) then runs over **joint tuples**, which is the smallest set of distinct parameter combinations that the data actually requires. Coarse-time ARIMA pays the natural cost: with weekly ARIMA on daily snapshots, the PMF count is `weeks × groups`, not `days × groups`.
 
-For per-observation modules (`sparse = FALSE`) the joint key is unique by construction, so the dedup is a no-op — the existing per-obs apply path is unchanged.
+For per-observation modules (`sparse = FALSE`) the joint key is unique by construction, so the deduplication is a no-op — the existing per-observation apply path is unchanged.
 
 # Limitations
 
@@ -178,6 +184,3 @@ For per-observation modules (`sparse = FALSE`) the joint key is unique by constr
 - When the parametric reference standard deviation is modelled (`model_refp > 1`), it shares the ARIMA shocks and kernel of the mean but carries an independent scale (`refp_arima_sd_sigma`). The two residuals are therefore perfectly correlated up to that scale rather than driven by separate shock series. A separate sd process is a planned extension; time-varying sd is rarely the right model and an independent series would multiply the PMF cost again.
 
 # References
-
-1. Barndorff-Nielsen O, Schou G. On the parametrization of autoregressive models by partial autocorrelations. *Journal of Multivariate Analysis*, 1973.
-2. Box GEP, Jenkins GM, Reinsel GC, Ljung GM. *Time Series Analysis: Forecasting and Control*. Wiley, 5th edition, 2015.

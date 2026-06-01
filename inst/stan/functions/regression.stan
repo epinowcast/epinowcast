@@ -21,8 +21,8 @@
  * `expl`, `refnp`, and `miss` apply the ARIMA residual directly at the
  * observation level, while the sparse-row modules `refp` and `rep`
  * supply a `flat_idx` built from the joint (covariate row x ARIMA time
- * x ARIMA group) dedup so the same gather works at sparse-row
- * granularity. See `vignettes/arima.Rmd` for the joint-dedup scheme.
+ * x ARIMA group) deduplication so the same gather works at sparse-row
+ * granularity. See `vignettes/arima.Rmd` for the joint scheme.
  */
 vector regression_predictor(
   array[] real intercept, vector beta, int nobs, int neffs,

@@ -1188,12 +1188,12 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     sparse = sparse
   )
 
-  # Joint sparse dedup: when an ARIMA term is supplied alongside a
-  # sparse design, deduplicate by the joint (covariate row × ARIMA
-  # time × ARIMA group) granularity rather than by covariate row
-  # alone. This lets downstream consumers that loop over fdesign rows
-  # (for example a per-row PMF call) benefit from coarse-time ARIMA
-  # without paying per-snapshot cost.
+  # Joint sparse deduplication: when an ARIMA term is supplied
+  # alongside a sparse design, deduplicate by the joint (covariate
+  # row × ARIMA time × ARIMA group) granularity rather than by
+  # covariate row alone. This lets downstream consumers that loop over
+  # fdesign rows (for example a per-row PMF call) benefit from
+  # coarse-time ARIMA without paying per-snapshot cost.
   if (sparse && length(arima_specs) > 0) {
     arima_spec <- arima_specs[[1]]
     # Joint key over (covariate row, ARIMA time, ARIMA group) using a
