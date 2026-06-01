@@ -136,3 +136,82 @@ test_that("pacf_to_phi() yields stationary AR(p) for p in 1..4", {
     expect_true(all(Mod(roots) > 1.0001))
   }
 })
+
+test_that("a small Stan model recovers known ARIMA parameters", {
+  skip_if_not_installed("cmdstanr")
+  # Simulate a latent series from known parameters using the same kernel,
+  # observe it with small noise, then fit a minimal model built from the
+  # package's ARIMA Stan functions and check the posteriors recover the
+  # generating values. This is the end-to-end correctness check the
+  # algebra tests above do not provide.
+  stan_dir <- system.file("stan", package = "epinowcast")
+  model_code <- paste(
+    "functions {",
+    "  #include functions/arima_kernel.stan",
+    "}",
+    "data {",
+    "  int<lower=1> T;",
+    "  vector[T] y;",
+    "  int<lower=0> p;",
+    "  int<lower=0> q;",
+    "  int<lower=0> d;",
+    "  real<lower=0> obs_sd;",
+    "}",
+    "parameters {",
+    "  vector<lower=-1, upper=1>[p] pacf;",
+    "  vector[q] theta;",
+    "  real<lower=0> sigma;",
+    "  vector[T] z;",
+    "}",
+    "transformed parameters {",
+    "  vector[p] phi = pacf_to_phi(pacf);",
+    "  vector[T] eps = sigma * arima_filter(to_matrix(z, T, 1), phi, theta, d)[, 1];", # nolint: line_length_linter.
+    "}",
+    "model {",
+    "  z ~ std_normal();",
+    "  theta ~ std_normal();",
+    "  sigma ~ normal(0, 1);",
+    "  y ~ normal(eps, obs_sd);",
+    "}",
+    sep = "\n"
+  )
+  mod <- cmdstanr::cmdstan_model(
+    cmdstanr::write_stan_file(model_code),
+    include_paths = stan_dir
+  )
+
+  obs_sd <- 0.05
+  simulate_y <- function(phi, theta, d, sigma, T, seed) {
+    set.seed(seed)
+    z <- rnorm(T)
+    eps <- sigma * as.numeric(arima_kernel_R(phi, theta, d, T) %*% z)
+    eps + rnorm(T, 0, obs_sd)
+  }
+  fit_recover <- function(y, p, q, d, seed) {
+    mod$sample(
+      data = list(
+        T = length(y), y = y, p = p, q = q, d = d, obs_sd = obs_sd
+      ),
+      chains = 2, parallel_chains = 2, iter_warmup = 500,
+      iter_sampling = 500, seed = seed, refresh = 0,
+      show_messages = FALSE, show_exceptions = FALSE
+    )
+  }
+
+  # Stationary AR(1): recover phi and sigma.
+  y_ar <- simulate_y(0.6, numeric(0), 0L, 0.4, 60L, seed = 1)
+  s_ar <- fit_recover(y_ar, p = 1L, q = 0L, d = 0L, seed = 1)$summary(
+    c("phi", "sigma")
+  )
+  phi_hat <- s_ar$mean[s_ar$variable == "phi[1]"]
+  sigma_hat <- s_ar$mean[s_ar$variable == "sigma"]
+  expect_lt(abs(phi_hat - 0.6), 0.25)
+  expect_lt(abs(sigma_hat - 0.4), 0.15)
+  expect_true(all(s_ar$rhat < 1.1))
+
+  # Integrated random walk (d = 1): recover sigma.
+  y_rw <- simulate_y(numeric(0), numeric(0), 1L, 0.3, 60L, seed = 1)
+  s_rw <- fit_recover(y_rw, p = 0L, q = 0L, d = 1L, seed = 1)$summary("sigma")
+  expect_lt(abs(s_rw$mean - 0.3), 0.15)
+  expect_true(all(s_rw$rhat < 1.1))
+})
