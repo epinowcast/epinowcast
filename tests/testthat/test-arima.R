@@ -68,6 +68,10 @@ test_that("remove_arima_terms() strips ar/ma/arma alias calls", {
 test_that("arima() rejects invalid orders", {
   expect_error(arima(week, p = -1), "non-negative integer")
   expect_error(arima(week, d = 1.5), "non-negative integer")
+  expect_error(arima(week, p = NA), "non-negative integer")
+  expect_error(arima(week, q = Inf), "non-negative integer")
+  expect_error(arima(week, p = c(1, 2)), "non-negative integer")
+  expect_error(arima(week, p = "x"), "non-negative integer")
   expect_error(arima(week, p = 0, d = 0, q = 0), "degenerate")
 })
 
@@ -167,10 +171,21 @@ test_that("enw_formula_as_data_list() ships the arima Stan data", {
   expect_identical(dl$ref_arima_p, 1L)
   expect_identical(dl$ref_arima_d, 1L)
   expect_identical(dl$ref_arima_q, 0L)
-  expect_identical(length(dl$ref_arima_flat_idx), nrow(data))
   expect_identical(dl$ref_arima_T, length(unique(data$week)))
   expect_identical(dl$ref_arima_G, length(unique(data$day_of_week)))
-  expect_identical(length(dl$ref_arima_flat_idx), nrow(data))
+
+  # flat_idx must be the column-major (T x G) index for each observation,
+  # (group_idx - 1) * T + time_idx, so the Stan-side gather picks the
+  # right latent cell. Check the values, not just the length.
+  spec <- construct_arima(arima(week, day_of_week, p = 1, d = 1), data)
+  expect_identical(
+    dl$ref_arima_flat_idx,
+    as.integer((spec$group_idx - 1L) * spec$T + spec$time_idx)
+  )
+  expect_true(all(
+    dl$ref_arima_flat_idx >= 1L &
+      dl$ref_arima_flat_idx <= dl$ref_arima_T * dl$ref_arima_G
+  ))
 })
 
 test_that("enw_formula_as_data_list() returns inert defaults without arima", {
@@ -196,6 +211,76 @@ test_that("enw_formula_as_data_list() rejects multiple arima terms", {
     ),
     "Only one"
   )
+})
+
+test_that("arima helpers require a time argument", {
+  expect_error(arima(), "`time` must be present")
+  expect_error(rw(), "`time` must be present")
+  expect_error(ar(), "`time` must be present")
+  expect_error(ma(), "`time` must be present")
+  expect_error(arma(), "`time` must be present")
+})
+
+test_that("parse_formula() rejects non-formula input", {
+  expect_error(parse_formula("a + b"), "must be a formula")
+})
+
+test_that("remove_rw_terms()/remove_arima_terms() fall back to ~1", {
+  # stripping the only term leaves an empty formula, which must degrade
+  # to an intercept-only formula rather than erroring.
+  expect_identical(format(remove_rw_terms(~ rw(week))), "~1")
+  expect_identical(format(remove_arima_terms(~ arima(week))), "~1")
+})
+
+test_that("construct_arima() rejects a term it did not build", {
+  expect_error(
+    construct_arima(list(time = "week", p = 1, d = 0, q = 0), data),
+    "constructed by"
+  )
+})
+
+test_that("construct_arima() errors on missing values or absent group", {
+  d_na_time <- data.table::copy(data)
+  d_na_time[1, week := NA]
+  expect_error(construct_arima(arima(week), d_na_time), "missing values")
+
+  expect_error(
+    construct_arima(arima(week, not_a_column), data), "not present"
+  )
+
+  d_na_by <- data.table::copy(data)
+  d_na_by[1, day_of_week := NA]
+  expect_error(
+    construct_arima(arima(week, day_of_week), d_na_by), "missing values"
+  )
+})
+
+test_that("construct_arima() ignores a grouping variable with one level", {
+  one_level <- data.table::copy(data)
+  one_level[, single := 1L]
+  expect_message(
+    spec <- construct_arima(arima(week, single), one_level),
+    "fewer than 2 levels"
+  )
+  expect_identical(spec$G, 1L)
+  expect_true(all(spec$group_idx == 1L))
+})
+
+test_that(".arima_inits() sizes AR, MA and sd-scale inits to the orders", {
+  data_list <- list(
+    refp_arima_T = 5L, refp_arima_G = 2L, refp_arima_p = 2L,
+    refp_arima_q = 1L, refp_arima_present = 1L, model_refp = 2L
+  )
+  priors <- list(
+    refp_arima_sigma_p = c(0, 1), refp_arima_sd_sigma_p = c(0, 1)
+  )
+  init <- .arima_inits(data_list, priors, "refp", with_sd_sigma = TRUE)
+  expect_length(init$refp_arima_pacf, 2L) # p = 2
+  expect_length(init$refp_arima_theta, 1L) # q = 1
+  expect_length(init$refp_arima_z, 10L) # T * G
+  expect_length(init$refp_arima_sigma, 1L)
+  expect_length(init$refp_arima_sd_sigma, 1L) # filled when model_refp > 1
+  expect_true(all(abs(init$refp_arima_pacf) < 1))
 })
 
 test_that(
