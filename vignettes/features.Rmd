@@ -136,7 +136,7 @@ Specify the generative model for the expected latent process (e.g., infections, 
 - `enw_expectation()`: Specify latent process model and observation modifiers
 - See `?enw_expectation` for details
 
-**Where to see it:** The [Rt estimation vignette](single-timeseries-rt-estimation.html) demonstrates renewal process models with generation times.
+**Where to see it:** The [latent processes vignette](latent-processes.html) compares random walks, ARIMA(p, d, q) residuals, stationary AR, and periodic terms on the growth rate, with the [ARIMA implementation notes](arima.html) covering the maths. The [Rt estimation vignette](single-timeseries-rt-estimation.html) demonstrates renewal process models with generation times.
 
 # Hierarchical Structure {#hierarchical}
 
