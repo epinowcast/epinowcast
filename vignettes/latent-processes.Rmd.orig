@@ -97,6 +97,13 @@ fit <- enw_fit_opts(
 )
 ```
 
+Older age groups tend to report more slowly, so a single shared delay distribution misfits the groups whose reporting differs from the average.
+We let the delay vary by age group with a shared random effect and reuse the same reference model for every fit, so the comparison stays focused on the growth-rate choice rather than the delay.
+
+```{r reference}
+reference_mod <- enw_reference(~ 1 + (1 | age_group), data = pobs)
+```
+
 # Random walk on weeks
 
 `rw(week)` adds one Gaussian increment per week; the cumulative sum of those increments is added to `r`.
@@ -106,6 +113,7 @@ The growth rate drifts smoothly with no preferred direction and no mean to rever
 nowcast_rw <- epinowcast(
   pobs,
   expectation = enw_expectation(r = ~ rw(week), data = pobs),
+  reference = reference_mod,
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
 )
@@ -138,6 +146,7 @@ nowcast_arima <- epinowcast(
     r = ~ 1 + arima(week, age_group, p = 1, d = 1),
     data = pobs
   ),
+  reference = reference_mod,
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
 )
@@ -172,6 +181,7 @@ nowcast_ar <- epinowcast(
     r = ~ 1 + ar(day, age_group, p = 1),
     data = pobs
   ),
+  reference = reference_mod,
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
 )
@@ -194,6 +204,7 @@ nowcast_re <- epinowcast(
   expectation = enw_expectation(
     r = ~ 1 + (1 | week:.group), data = pobs
   ),
+  reference = reference_mod,
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
 )
@@ -220,6 +231,7 @@ nowcast_dow <- epinowcast(
   expectation = enw_expectation(
     r = ~ 1 + (1 | day_of_week), data = pobs
   ),
+  reference = reference_mod,
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
 )
@@ -243,6 +255,7 @@ nowcast_combined <- epinowcast(
     r = ~ 1 + (1 | day_of_week) + arima(week, age_group, p = 1, d = 1),
     data = pobs
   ),
+  reference = reference_mod,
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
 )
@@ -267,8 +280,9 @@ The [implementation notes](arima.html) cover the invertibility trade-off.
 
 # Fit diagnostics
 
-Because these are NUTS fits we can read off standard convergence diagnostics for each model: the largest R-hat and smallest bulk effective sample size across all parameters, and the number of divergent transitions.
+Because these are NUTS fits we can read off standard convergence diagnostics for each model: the largest R-hat and smallest bulk effective sample size across all parameters, the number of divergent transitions, and the total sampler runtime.
 Values close to 1 for R-hat, bulk effective sample sizes in the hundreds, and zero divergences indicate the short chains have converged; if not, lengthen the chains or raise `adapt_delta`.
+The runtime column makes the accuracy-versus-cost trade-off explicit: the more flexible latent processes generally cost more to fit, so it is worth checking that the extra structure earns its keep.
 
 ```{r diagnostics}
 fits <- list(
@@ -286,7 +300,8 @@ diagnostics <- rbindlist(lapply(names(fits), function(model) {
     model = model,
     max_rhat = round(max(fit_summary$rhat, na.rm = TRUE), 3),
     min_ess_bulk = round(min(fit_summary$ess_bulk, na.rm = TRUE)),
-    divergences = sum(divergences)
+    divergences = sum(divergences),
+    runtime_s = round(fits[[model]]$fit[[1]]$time()$total)
   )
 }))
 kable(diagnostics)

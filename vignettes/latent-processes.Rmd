@@ -97,6 +97,14 @@ fit <- enw_fit_opts(
 )
 ```
 
+Older age groups tend to report more slowly, so a single shared delay distribution misfits the groups whose reporting differs from the average.
+We let the delay vary by age group with a shared random effect and reuse the same reference model for every fit, so the comparison stays focused on the growth-rate choice rather than the delay.
+
+
+``` r
+reference_mod <- enw_reference(~ 1 + (1 | age_group), data = pobs)
+```
+
 # Random walk on weeks
 
 `rw(week)` adds one Gaussian increment per week; the cumulative sum of those increments is added to `r`.
@@ -107,6 +115,7 @@ The growth rate drifts smoothly with no preferred direction and no mean to rever
 nowcast_rw <- epinowcast(
   pobs,
   expectation = enw_expectation(r = ~ rw(week), data = pobs),
+  reference = reference_mod,
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
 )
@@ -144,6 +153,7 @@ nowcast_arima <- epinowcast(
     r = ~ 1 + arima(week, age_group, p = 1, d = 1),
     data = pobs
   ),
+  reference = reference_mod,
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
 )
@@ -172,7 +182,7 @@ kable(arima_pars, digits = 3)
 
 |variable            |  mean|     q5|   q95|
 |:-------------------|-----:|------:|-----:|
-|expr_arima_pacf[1]  | 0.017| -0.859| 0.849|
+|expr_arima_pacf[1]  | 0.016| -0.829| 0.848|
 |expr_arima_sigma[1] | 0.030|  0.011| 0.057|
 
 
@@ -192,6 +202,7 @@ nowcast_ar <- epinowcast(
     r = ~ 1 + ar(day, age_group, p = 1),
     data = pobs
   ),
+  reference = reference_mod,
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
 )
@@ -218,6 +229,7 @@ nowcast_re <- epinowcast(
   expectation = enw_expectation(
     r = ~ 1 + (1 | week:.group), data = pobs
   ),
+  reference = reference_mod,
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
 )
@@ -248,6 +260,7 @@ nowcast_dow <- epinowcast(
   expectation = enw_expectation(
     r = ~ 1 + (1 | day_of_week), data = pobs
   ),
+  reference = reference_mod,
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
 )
@@ -275,6 +288,7 @@ nowcast_combined <- epinowcast(
     r = ~ 1 + (1 | day_of_week) + arima(week, age_group, p = 1, d = 1),
     data = pobs
   ),
+  reference = reference_mod,
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
 )
@@ -302,8 +316,9 @@ The [implementation notes](arima.html) cover the invertibility trade-off.
 
 # Fit diagnostics
 
-Because these are NUTS fits we can read off standard convergence diagnostics for each model: the largest R-hat and smallest bulk effective sample size across all parameters, and the number of divergent transitions.
+Because these are NUTS fits we can read off standard convergence diagnostics for each model: the largest R-hat and smallest bulk effective sample size across all parameters, the number of divergent transitions, and the total sampler runtime.
 Values close to 1 for R-hat, bulk effective sample sizes in the hundreds, and zero divergences indicate the short chains have converged; if not, lengthen the chains or raise `adapt_delta`.
+The runtime column makes the accuracy-versus-cost trade-off explicit: the more flexible latent processes generally cost more to fit, so it is worth checking that the extra structure earns its keep.
 
 
 ``` r
@@ -322,23 +337,32 @@ diagnostics <- rbindlist(lapply(names(fits), function(model) {
     model = model,
     max_rhat = round(max(fit_summary$rhat, na.rm = TRUE), 3),
     min_ess_bulk = round(min(fit_summary$ess_bulk, na.rm = TRUE)),
-    divergences = sum(divergences)
+    divergences = sum(divergences),
+    runtime_s = round(fits[[model]]$fit[[1]]$time()$total)
   )
 }))
 #> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: 1 of 1000 (0.0%) transitions ended with a divergence.
+#> See https://mc-stan.org/misc/warnings for details.
+#> Warning: 2 of 1000 (0.0%) transitions hit the maximum treedepth limit of 12.
+#> See https://mc-stan.org/misc/warnings for details.
 kable(diagnostics)
 ```
 
 
 
-|model                                     | max_rhat| min_ess_bulk| divergences|
-|:-----------------------------------------|--------:|------------:|-----------:|
-|rw(week)                                  |    1.025|          253|           0|
-|arima(week, age_group, 1, 1, 0)           |    1.010|          321|           0|
-|ar(day, age_group, 1)                     |    1.018|          129|           0|
-|(1 &#124; week:.group)                    |    1.015|          235|           0|
-|(1 &#124; day_of_week)                    |    1.011|          298|           0|
-|(1 &#124; day_of_week) + arima(week, ...) |    1.009|          280|           0|
+|model                                     | max_rhat| min_ess_bulk| divergences| runtime_s|
+|:-----------------------------------------|--------:|------------:|-----------:|---------:|
+|rw(week)                                  |    1.008|          190|           0|       128|
+|arima(week, age_group, 1, 1, 0)           |    1.012|          186|           0|       135|
+|ar(day, age_group, 1)                     |    1.013|          213|           0|       121|
+|(1 &#124; week:.group)                    |    1.020|          157|           1|       110|
+|(1 &#124; day_of_week)                    |    1.010|          214|           0|       395|
+|(1 &#124; day_of_week) + arima(week, ...) |    1.026|          197|           0|       399|
 
 
 
