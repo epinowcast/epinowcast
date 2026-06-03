@@ -50,7 +50,6 @@ library(data.table)
 library(ggplot2) # nolint: unused_import_linter. Required by plot.epinowcast().
 #> Warning: package 'ggplot2' was built under R version 4.5.2
 library(knitr)
-#> Warning: package 'knitr' was built under R version 4.5.2
 ```
 
 
@@ -76,12 +75,16 @@ pobs <- suppressWarnings(
 )
 ```
 
-We also keep the eventually-observed counts so each nowcast can be shown against the data that arrived later.
+`max_delay = 14` is shorter than the 28–40 days the other German-data vignettes use.
+It keeps the build fast but truncates the longer reporting tail, especially for the slower-reporting older age groups, so treat these nowcasts as an approximation chosen for illustration rather than a delay tuned to the data.
+
+We also build the nowcast target: the count at each reference date once `max_delay` (14) days of reports have accumulated.
+This is what the model is trying to predict, so we compare against it rather than the absolute latest snapshot, which would include later reports beyond the modelled delay window.
 The reference dates the nowcast actually estimates are the most recent, still-incomplete ones; we trim the comparison data to those dates once the first model is fit so the plotted points line up with the nowcast.
 
 
 ``` r
-latest_obs <- enw_latest_data(nat_germany_hosp)
+latest_obs <- enw_obs_at_delay(nat_germany_hosp, max_delay = 14)
 ```
 
 A common fit configuration is reused across the models: two short NUTS chains, enough to read off convergence diagnostics without a long build.
@@ -138,7 +141,7 @@ plot(nowcast_rw, latest_obs = latest_obs) +
 # Integrated AR
 
 `arima(time, by, p, d, q)` adds a latent ARIMA(p, d, q) residual series to the linear predictor.
-Differencing is applied via the cumulative-sum operator and the ARMA part via a parameter-dependent Toeplitz kernel built from the impulse response; both compose with a single matrix multiplication onto unit-normal shocks.
+Differencing is applied via the cumulative-sum operator and the ARMA part via a parameter-dependent [Toeplitz kernel](arima.html) built from the impulse response; both compose with a single matrix multiplication onto unit-normal shocks.
 When `by` is supplied each group has its own column of unit-normal shocks; the AR/MA parameters and latent standard deviation are currently shared across groups.
 
 `arima(week, d = 1, p = 0, q = 0)` recovers `rw(week)`.
@@ -180,10 +183,10 @@ kable(arima_pars, digits = 3)
 
 
 
-|variable            |  mean|     q5|   q95|
-|:-------------------|-----:|------:|-----:|
-|expr_arima_pacf[1]  | 0.016| -0.829| 0.848|
-|expr_arima_sigma[1] | 0.030|  0.011| 0.057|
+|variable            |   mean|     q5|   q95|
+|:-------------------|------:|------:|-----:|
+|expr_arima_pacf[1]  | -0.014| -0.852| 0.826|
+|expr_arima_sigma[1] |  0.029|  0.011| 0.055|
 
 
 
@@ -219,6 +222,7 @@ plot(nowcast_ar, latest_obs = latest_obs) +
 # Independent per-(week, group) effects
 
 `(1 | week:.group)` adds a separate random level for every (week, group) cell, drawn from a shared Gaussian.
+The `(1 | group)` notation follows the same random-effect convention as [`lme4`](https://cran.r-project.org/package=lme4) and [`brms`](https://paulbuerkner.com/brms/).
 Unlike the time-series terms there is no correlation across weeks; each week is an independent draw.
 This is the natural choice when weekly fluctuations look like noise rather than drift.
 
@@ -341,14 +345,7 @@ diagnostics <- rbindlist(lapply(names(fits), function(model) {
     runtime_s = round(fits[[model]]$fit[[1]]$time()$total)
   )
 }))
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: 1 of 1000 (0.0%) transitions ended with a divergence.
-#> See https://mc-stan.org/misc/warnings for details.
-#> Warning: 2 of 1000 (0.0%) transitions hit the maximum treedepth limit of 12.
+#> Warning: 1 of 1000 (0.0%) transitions hit the maximum treedepth limit of 12.
 #> See https://mc-stan.org/misc/warnings for details.
 kable(diagnostics)
 ```
@@ -357,12 +354,12 @@ kable(diagnostics)
 
 |model                                     | max_rhat| min_ess_bulk| divergences| runtime_s|
 |:-----------------------------------------|--------:|------------:|-----------:|---------:|
-|rw(week)                                  |    1.008|          190|           0|       128|
-|arima(week, age_group, 1, 1, 0)           |    1.012|          186|           0|       135|
-|ar(day, age_group, 1)                     |    1.013|          213|           0|       121|
-|(1 &#124; week:.group)                    |    1.020|          157|           1|       110|
-|(1 &#124; day_of_week)                    |    1.010|          214|           0|       395|
-|(1 &#124; day_of_week) + arima(week, ...) |    1.026|          197|           0|       399|
+|rw(week)                                  |    1.013|          169|           0|       106|
+|arima(week, age_group, 1, 1, 0)           |    1.015|          205|           0|        88|
+|ar(day, age_group, 1)                     |    1.016|          214|           0|        93|
+|(1 &#124; week:.group)                    |    1.014|          208|           0|        84|
+|(1 &#124; day_of_week)                    |    1.023|          166|           0|       231|
+|(1 &#124; day_of_week) + arima(week, ...) |    1.015|          183|           0|       295|
 
 
 
