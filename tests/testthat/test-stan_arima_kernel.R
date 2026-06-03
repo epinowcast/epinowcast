@@ -139,6 +139,14 @@ test_that("pacf_to_phi() yields stationary AR(p) for p in 1..4", {
 
 test_that("a small Stan model recovers known ARIMA parameters", {
   skip_if_not_installed("cmdstanr")
+  # covr instruments R, not Stan, so this end-to-end sampling fit adds no
+  # coverage the algebra tests above do not already provide. Skip it under
+  # covr where the extra sampler runs are prone to being killed for resource
+  # use, producing spurious failures.
+  skip_if(
+    identical(Sys.getenv("R_COVR"), "true"),
+    "Sampling recovery fit skipped under covr"
+  )
   # Simulate a latent series from known parameters using the same kernel,
   # observe it with small noise, then fit a minimal model built from the
   # package's ARIMA Stan functions and check the posteriors recover the
