@@ -1,6 +1,6 @@
 ---
 title: "ARIMA latent residuals: maths, priors, and usage"
-description: "The maths behind epinowcast's ARIMA(p, d, q) latent residuals, how to use them in any module's formula, and how to set their priors."
+description: "The maths behind the ARIMA(p, d, q) latent residuals in epinowcast, how to use them in any module's formula, and how to set their priors."
 author: Epinowcast Team
 pkgdown:
   as_is: true
@@ -46,7 +46,7 @@ Add a term to any module's formula with `arima()` or one of its aliases, which a
 
 - `rw(time)` — random walk, equal to `arima(time, p = 0, d = 1, q = 0)`.
 - `ar(time, p)` — stationary autoregression, equal to `arima(time, p, d = 0, q = 0)`.
-- `ma(time, q)` and `arma(time, p, q)` — moving-average and ARMA shorthands.
+- `ma(time, q)` and `arma(time, p, q)` — moving-average and ARMA aliases.
 - `arima(time, by, p, d, q)` — the general form.
 
 `time` is the column the series evolves over, and the optional `by` gives each group its own shocks under shared dynamics.
