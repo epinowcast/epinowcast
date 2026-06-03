@@ -188,12 +188,26 @@ test_that("a small Stan model recovers known ARIMA parameters", {
     eps + rnorm(T, 0, obs_sd)
   }
   fit_recover <- function(y, p, q, d, seed) {
+    # Start every chain from a stable point. With the default init range a
+    # chain can draw a large sigma, making sigma * cumsum(z) huge against the
+    # tight obs_sd likelihood; the gradient overflows and the chain fails to
+    # initialise (producing no output). Initialising z at zero and sigma near
+    # the prior scale keeps the d = 1 fit well behaved.
+    init <- function() {
+      list(
+        z = rep(0, length(y)),
+        sigma = 0.5,
+        pacf = rep(0, p),
+        theta = rep(0, q)
+      )
+    }
     mod$sample(
       data = list(
         T = length(y), y = y, p = p, q = q, d = d, obs_sd = obs_sd
       ),
-      chains = 2, parallel_chains = 2, iter_warmup = 500,
-      iter_sampling = 500, seed = seed, refresh = 0,
+      chains = 2, parallel_chains = 2, iter_warmup = 1000,
+      iter_sampling = 500, adapt_delta = 0.95, init = init,
+      seed = seed, refresh = 0,
       show_messages = FALSE, show_exceptions = FALSE
     )
   }
