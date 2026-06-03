@@ -733,22 +733,28 @@
       2:      expr_beta_sd         1
       3: expr_lelatent_int         1
       4:  expr_arima_sigma         1
-      5:      expl_beta_sd         1
-      6:  expl_arima_sigma         1
-                                                                             description
-      1:                                                Intercept of the log growth rate
-      2:                     Standard deviation of scaled pooled log growth rate effects
-      3:         Intercept for initial log observations (ordered by group and then time)
-      4:              Standard deviation of the ARIMA latent residual on log growth rate
-      5:                     Standard deviation of scaled pooled log growth rate effects
-      6: Standard deviation of the ARIMA latent residual on log latent-to-obs proportion
+      5:   expr_arima_pacf         1
+      6:      expl_beta_sd         1
+      7:  expl_arima_sigma         1
+      8:   expl_arima_pacf         1
+                                                                                                                                                                    description
+      1:                                                                                                                                       Intercept of the log growth rate
+      2:                                                                                                            Standard deviation of scaled pooled log growth rate effects
+      3:                                                                                                Intercept for initial log observations (ordered by group and then time)
+      4:                                                                                                     Standard deviation of the ARIMA latent residual on log growth rate
+      5:              Partial autocorrelations of the ARIMA latent residual on the log growth rate; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+      6:                                                                                                            Standard deviation of scaled pooled log growth rate effects
+      7:                                                                                        Standard deviation of the ARIMA latent residual on log latent-to-obs proportion
+      8: Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
                   distribution mean  sd
       1:                Normal  0.0 0.2
       2: Zero truncated normal  0.0 1.0
       3:                Normal  4.3 1.0
       4: Zero truncated normal  0.0 0.2
-      5: Zero truncated normal  0.0 1.0
-      6: Zero truncated normal  0.0 0.2
+      5:               Uniform  0.0 0.0
+      6: Zero truncated normal  0.0 1.0
+      7: Zero truncated normal  0.0 0.2
+      8:               Uniform  0.0 0.0
       
 
 # enw_expectation supports custom expectation models
@@ -1284,22 +1290,28 @@
       2:      expr_beta_sd         1
       3: expr_lelatent_int         1
       4:  expr_arima_sigma         1
-      5:      expl_beta_sd         1
-      6:  expl_arima_sigma         1
-                                                                             description
-      1:                                                Intercept of the log growth rate
-      2:                     Standard deviation of scaled pooled log growth rate effects
-      3:         Intercept for initial log observations (ordered by group and then time)
-      4:              Standard deviation of the ARIMA latent residual on log growth rate
-      5:                     Standard deviation of scaled pooled log growth rate effects
-      6: Standard deviation of the ARIMA latent residual on log latent-to-obs proportion
+      5:   expr_arima_pacf         1
+      6:      expl_beta_sd         1
+      7:  expl_arima_sigma         1
+      8:   expl_arima_pacf         1
+                                                                                                                                                                    description
+      1:                                                                                                                                       Intercept of the log growth rate
+      2:                                                                                                            Standard deviation of scaled pooled log growth rate effects
+      3:                                                                                                Intercept for initial log observations (ordered by group and then time)
+      4:                                                                                                     Standard deviation of the ARIMA latent residual on log growth rate
+      5:              Partial autocorrelations of the ARIMA latent residual on the log growth rate; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+      6:                                                                                                            Standard deviation of scaled pooled log growth rate effects
+      7:                                                                                        Standard deviation of the ARIMA latent residual on log latent-to-obs proportion
+      8: Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
                   distribution mean  sd
       1:                Normal  0.0 0.2
       2: Zero truncated normal  0.0 1.0
       3:                Normal  4.3 1.0
       4: Zero truncated normal  0.0 0.2
-      5: Zero truncated normal  0.0 1.0
-      6: Zero truncated normal  0.0 0.2
+      5:               Uniform  0.0 0.0
+      6: Zero truncated normal  0.0 1.0
+      7: Zero truncated normal  0.0 0.2
+      8:               Uniform  0.0 0.0
       
 
 # enw_expectation works as expected when multiple timeseries are present
@@ -1664,20 +1676,24 @@
        7: expr_lelatent_int         5
        8: expr_lelatent_int         6
        9:  expr_arima_sigma         1
-      10:      expl_beta_sd         1
-      11:  expl_arima_sigma         1
-                                                                              description
-       1:                                                Intercept of the log growth rate
-       2:                     Standard deviation of scaled pooled log growth rate effects
-       3:         Intercept for initial log observations (ordered by group and then time)
-       4:         Intercept for initial log observations (ordered by group and then time)
-       5:         Intercept for initial log observations (ordered by group and then time)
-       6:         Intercept for initial log observations (ordered by group and then time)
-       7:         Intercept for initial log observations (ordered by group and then time)
-       8:         Intercept for initial log observations (ordered by group and then time)
-       9:              Standard deviation of the ARIMA latent residual on log growth rate
-      10:                     Standard deviation of scaled pooled log growth rate effects
-      11: Standard deviation of the ARIMA latent residual on log latent-to-obs proportion
+      10:   expr_arima_pacf         1
+      11:      expl_beta_sd         1
+      12:  expl_arima_sigma         1
+      13:   expl_arima_pacf         1
+                                                                                                                                                                     description
+       1:                                                                                                                                       Intercept of the log growth rate
+       2:                                                                                                            Standard deviation of scaled pooled log growth rate effects
+       3:                                                                                                Intercept for initial log observations (ordered by group and then time)
+       4:                                                                                                Intercept for initial log observations (ordered by group and then time)
+       5:                                                                                                Intercept for initial log observations (ordered by group and then time)
+       6:                                                                                                Intercept for initial log observations (ordered by group and then time)
+       7:                                                                                                Intercept for initial log observations (ordered by group and then time)
+       8:                                                                                                Intercept for initial log observations (ordered by group and then time)
+       9:                                                                                                     Standard deviation of the ARIMA latent residual on log growth rate
+      10:              Partial autocorrelations of the ARIMA latent residual on the log growth rate; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+      11:                                                                                                            Standard deviation of scaled pooled log growth rate effects
+      12:                                                                                        Standard deviation of the ARIMA latent residual on log latent-to-obs proportion
+      13: Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
                    distribution mean  sd
        1:                Normal  0.0 0.2
        2: Zero truncated normal  0.0 1.0
@@ -1688,7 +1704,9 @@
        7:                Normal  2.8 1.0
        8:                Normal  2.8 1.0
        9: Zero truncated normal  0.0 0.2
-      10: Zero truncated normal  0.0 1.0
-      11: Zero truncated normal  0.0 0.2
+      10:               Uniform  0.0 0.0
+      11: Zero truncated normal  0.0 1.0
+      12: Zero truncated normal  0.0 0.2
+      13:               Uniform  0.0 0.0
       
 

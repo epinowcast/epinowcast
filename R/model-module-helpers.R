@@ -486,6 +486,20 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
 # Used by `enw_expectation()`, `enw_reference()`, `enw_report()`, and
 # `enw_missing()` to keep their `inits` functions short and to keep
 # the per-module ARIMA boilerplate in one place.
+# Standard description for an ARIMA partial-autocorrelation prior.
+#
+# The AR coefficients are parameterised through partial autocorrelations
+# constrained to (-1, 1), which are Uniform by default. Supplying a
+# positive standard deviation switches to a Normal(mean, sd) prior
+# truncated to (-1, 1), shared across the AR order and any groups.
+.arima_pacf_prior_description <- function(context) {
+  paste0(
+    "Partial autocorrelations of the ARIMA latent residual on the ",
+    context, "; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) ",
+    "truncated to (-1, 1)"
+  )
+}
+
 #' @importFrom stats runif
 .arima_inits <- function(data, priors, prefix, with_sd_sigma = FALSE) {
   z_nm <- paste0(prefix, "_arima_z")

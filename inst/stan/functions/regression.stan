@@ -62,13 +62,21 @@ vector regression_predictor(
 void regression_priors_lp(
   vector beta, vector beta_sd, array[,] real beta_sd_p,
   int fixed, int random,
-  int arima_present, int arima_q,
-  matrix arima_z, vector arima_theta,
-  array[] real arima_sigma, array[,] real arima_sigma_p
+  int arima_present, int arima_p, int arima_q,
+  matrix arima_z, vector arima_pacf, vector arima_theta,
+  array[] real arima_sigma, array[,] real arima_sigma_p,
+  array[,] real arima_pacf_p
 ) {
   effect_priors_lp(beta, beta_sd, beta_sd_p, fixed, random);
   if (arima_present) {
     to_vector(arima_z) ~ std_normal();
+    // Partial autocorrelations are Uniform(-1, 1) by default via their
+    // parameter bounds. A positive prior sd switches to a Normal(mean, sd)
+    // truncated to (-1, 1); the truncation constant is fixed by the bounds
+    // and so is dropped. A non-positive sd leaves the Uniform default.
+    if (arima_p > 0 && arima_pacf_p[2, 1] > 0) {
+      arima_pacf ~ normal(arima_pacf_p[1, 1], arima_pacf_p[2, 1]);
+    }
     if (arima_q > 0) {
       arima_theta ~ std_normal();
     }

@@ -76,6 +76,7 @@ data {
   int<lower=0> expr_arima_n_obs;
   array[expr_arima_n_obs] int<lower=1> expr_arima_flat_idx;
   array[2, 1] real expr_arima_sigma_p;
+  array[2, 1] real expr_arima_pacf_p;
   // ---- Latent case submodule ----
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
   // Partial PMF of the latent delay distribution as a convolution matrix
@@ -100,6 +101,7 @@ data {
   int<lower=0> expl_arima_n_obs;
   array[expl_arima_n_obs] int<lower=1> expl_arima_flat_idx;
   array[2, 1] real expl_arima_sigma_p;
+  array[2, 1] real expl_arima_pacf_p;
 
   // Reference time model
   // Parametric reference model
@@ -129,6 +131,7 @@ data {
   int<lower=0> refp_arima_n_obs;
   array[refp_arima_n_obs] int<lower=1> refp_arima_flat_idx;
   array[2, 1] real refp_arima_sigma_p;     // mean scale prior
+  array[2, 1] real refp_arima_pacf_p;
   array[2, 1] real refp_arima_sd_sigma_p;  // sd scale prior
   // Non-parametric reference model
   int model_refnp;
@@ -150,6 +153,7 @@ data {
   int<lower=0> refnp_arima_n_obs;
   array[refnp_arima_n_obs] int<lower=1> refnp_arima_flat_idx;
   array[2, 1] real refnp_arima_sigma_p;
+  array[2, 1] real refnp_arima_pacf_p;
 
   // Reporting time model
   int model_rep;
@@ -172,6 +176,7 @@ data {
   int<lower=0> rep_arima_n_obs;
   array[rep_arima_n_obs] int<lower=1> rep_arima_flat_idx;
   array[2, 1] real rep_arima_sigma_p;
+  array[2, 1] real rep_arima_pacf_p;
   // Reporting probability aggregation: precomputed indices for log_sum_exp
   int rep_agg_p;
   array[rep_agg_p ? g : 0, rep_agg_p ? t : 0, rep_agg_p ? dmax : 0] int rep_agg_n_selected;
@@ -210,6 +215,7 @@ data {
   int<lower=0> miss_arima_n_obs;
   array[miss_arima_n_obs] int<lower=1> miss_arima_flat_idx;
   array[2, 1] real miss_arima_sigma_p;
+  array[2, 1] real miss_arima_pacf_p;
 
   // Observation model
   int model_obs; // control parameter for the observation model
@@ -474,15 +480,17 @@ model {
   // growth rate effect + ARIMA priors
   regression_priors_lp(
     expr_beta, expr_beta_sd, expr_beta_sd_p, expr_fncol, expr_rncol,
-    expr_arima_present, expr_arima_q,
-    expr_arima_z, expr_arima_theta, expr_arima_sigma, expr_arima_sigma_p
+    expr_arima_present, expr_arima_p, expr_arima_q,
+    expr_arima_z, expr_arima_pacf, expr_arima_theta,
+    expr_arima_sigma, expr_arima_sigma_p, expr_arima_pacf_p
   );
   // ---- Latent case submodule ----
   // latent-to-obs proportion effect + ARIMA priors
   regression_priors_lp(
     expl_beta, expl_beta_sd, expl_beta_sd_p, expl_fncol, expl_rncol,
-    expl_arima_present, expl_arima_q,
-    expl_arima_z, expl_arima_theta, expl_arima_sigma, expl_arima_sigma_p
+    expl_arima_present, expl_arima_p, expl_arima_q,
+    expl_arima_z, expl_arima_pacf, expl_arima_theta,
+    expl_arima_sigma, expl_arima_sigma_p, expl_arima_pacf_p
   );
   
   // Reference model
@@ -495,8 +503,9 @@ model {
     regression_priors_lp(
       refp_mean_beta, refp_mean_beta_sd, refp_mean_beta_sd_p,
       refp_fncol, refp_rncol,
-      refp_arima_present, refp_arima_q,
-      refp_arima_z, refp_arima_theta, refp_arima_sigma, refp_arima_sigma_p
+      refp_arima_present, refp_arima_p, refp_arima_q,
+      refp_arima_z, refp_arima_pacf, refp_arima_theta,
+      refp_arima_sigma, refp_arima_sigma_p, refp_arima_pacf_p
     );
     if (model_refp > 1) {
       effect_priors_lp(
@@ -521,17 +530,18 @@ model {
     }
     regression_priors_lp(
       refnp_beta, refnp_beta_sd, refnp_beta_sd_p, refnp_fncol, refnp_rncol,
-      refnp_arima_present, refnp_arima_q,
-      refnp_arima_z, refnp_arima_theta, refnp_arima_sigma,
-      refnp_arima_sigma_p
+      refnp_arima_present, refnp_arima_p, refnp_arima_q,
+      refnp_arima_z, refnp_arima_pacf, refnp_arima_theta,
+      refnp_arima_sigma, refnp_arima_sigma_p, refnp_arima_pacf_p
     );
   }
 
   // Report model
   regression_priors_lp(
     rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol,
-    rep_arima_present, rep_arima_q,
-    rep_arima_z, rep_arima_theta, rep_arima_sigma, rep_arima_sigma_p
+    rep_arima_present, rep_arima_p, rep_arima_q,
+    rep_arima_z, rep_arima_pacf, rep_arima_theta,
+    rep_arima_sigma, rep_arima_sigma_p, rep_arima_pacf_p
   );
   
   // Missing reference date model
@@ -539,8 +549,9 @@ model {
     miss_int ~ normal(miss_int_p[1], miss_int_p[2]);
     regression_priors_lp(
       miss_beta, miss_beta_sd, miss_beta_sd_p, miss_fncol, miss_rncol,
-      miss_arima_present, miss_arima_q,
-      miss_arima_z, miss_arima_theta, miss_arima_sigma, miss_arima_sigma_p
+      miss_arima_present, miss_arima_p, miss_arima_q,
+      miss_arima_z, miss_arima_pacf, miss_arima_theta,
+      miss_arima_sigma, miss_arima_sigma_p, miss_arima_pacf_p
     );
   }
   

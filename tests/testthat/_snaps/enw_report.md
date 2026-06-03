@@ -115,11 +115,14 @@
                 variable
       1:     rep_beta_sd
       2: rep_arima_sigma
-                                                                          description
-      1:                      Standard deviation of scaled pooled report date effects
-      2: Standard deviation of the ARIMA latent residual on report-time logit hazards
+      3:  rep_arima_pacf
+                                                                                                                                                                 description
+      1:                                                                                                             Standard deviation of scaled pooled report date effects
+      2:                                                                                        Standard deviation of the ARIMA latent residual on report-time logit hazards
+      3: Partial autocorrelations of the ARIMA latent residual on the report-time logit hazards; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
                   distribution mean  sd
       1: Zero truncated normal    0 1.0
       2: Zero truncated normal    0 0.2
+      3:               Uniform    0 0.0
       
 

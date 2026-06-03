@@ -168,14 +168,17 @@
       1:         miss_int
       2:     miss_beta_sd
       3: miss_arima_sigma
-                                                                                   description
-      1:               Intercept on the logit scale for the proportion missing reference dates
-      2:              Standard deviation of scaled pooled logit missing reference date effects
-      3: Standard deviation of the ARIMA latent residual on missing-reference logit proportion
+      4:  miss_arima_pacf
+                                                                                                                                                                          description
+      1:                                                                                                      Intercept on the logit scale for the proportion missing reference dates
+      2:                                                                                                     Standard deviation of scaled pooled logit missing reference date effects
+      3:                                                                                        Standard deviation of the ARIMA latent residual on missing-reference logit proportion
+      4: Partial autocorrelations of the ARIMA latent residual on the missing-reference logit proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
                   distribution mean  sd
       1:                Normal    0 1.0
       2: Zero truncated normal    0 1.0
       3: Zero truncated normal    0 0.2
+      4:               Uniform    0 0.0
       
 
 # enw_missing returns an empty model when required
@@ -261,13 +264,16 @@
       1:         miss_int
       2:     miss_beta_sd
       3: miss_arima_sigma
-                                                                                   description
-      1:               Intercept on the logit scale for the proportion missing reference dates
-      2:              Standard deviation of scaled pooled logit missing reference date effects
-      3: Standard deviation of the ARIMA latent residual on missing-reference logit proportion
+      4:  miss_arima_pacf
+                                                                                                                                                                          description
+      1:                                                                                                      Intercept on the logit scale for the proportion missing reference dates
+      2:                                                                                                     Standard deviation of scaled pooled logit missing reference date effects
+      3:                                                                                        Standard deviation of the ARIMA latent residual on missing-reference logit proportion
+      4: Partial autocorrelations of the ARIMA latent residual on the missing-reference logit proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
                   distribution mean  sd
       1:                Normal    0 1.0
       2: Zero truncated normal    0 1.0
       3: Zero truncated normal    0 0.2
+      4:               Uniform    0 0.0
       
 
