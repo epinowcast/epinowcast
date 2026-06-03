@@ -1,6 +1,6 @@
 ---
-title: "ARIMA latent residuals: implementation notes"
-description: "How epinowcast implements ARIMA(p, d, q) latent residuals on top of any module's linear predictor — the maths, the parameterisation, and the trade-offs."
+title: "ARIMA latent residuals: maths, priors, and usage"
+description: "The maths behind epinowcast's ARIMA(p, d, q) latent residuals, how to use them in any module's formula, and how to set their priors."
 author: Epinowcast Team
 pkgdown:
   as_is: true
@@ -8,7 +8,7 @@ bibliography: library.bib
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 link-citations: true
 vignette: >
-  %\VignetteIndexEntry{ARIMA latent residuals: implementation notes}
+  %\VignetteIndexEntry{ARIMA latent residuals: maths, priors, and usage}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -23,9 +23,9 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-This vignette describes how `epinowcast` implements ARIMA(p, d, q) latent residual terms on top of the linear predictor of any module that supports them.
-The goal is to make the maths, the parameterisation, and the trade-offs explicit for anyone reading the Stan code or extending the implementation.
-For usage examples and a comparison to `rw()` and lme4-style random effects, see the [latent processes vignette](latent-processes.html).
+This vignette covers the maths behind `epinowcast`'s ARIMA(p, d, q) latent residual terms, how to use them in any module's formula, and how to set their priors.
+It explains the kernel construction, the stationarity parameterisation, and the regularisation choices, with the trade-offs made explicit.
+For worked usage and a comparison to `rw()` and lme4-style random effects, see the [latent processes vignette](latent-processes.html).
 For the full model definition see the [model vignette](model.html).
 
 # What an ARIMA term does
@@ -39,6 +39,18 @@ where $X_i \beta$ are the fixed effects, $Z_i b$ the random effects (including a
 The residual evolves over the time axis declared in `arima(...)`; each observation just looks up the value at its own (time, group) index.
 
 This is the same construction `brms` uses for `cor_arma`-style residual correlation on non-Gaussian likelihoods: a latent Gaussian residual added to the linear predictor, with ARMA structure imposed on its prior.
+
+# Using ARIMA terms in a formula
+
+Add a term to any module's formula with `arima()` or one of its aliases, which all build the same backend term:
+
+- `rw(time)` — random walk, equal to `arima(time, p = 0, d = 1, q = 0)`.
+- `ar(time, p)` — stationary autoregression, equal to `arima(time, p, d = 0, q = 0)`.
+- `ma(time, q)` and `arma(time, p, q)` — moving-average and ARMA shorthands.
+- `arima(time, by, p, d, q)` — the general form.
+
+`time` is the column the series evolves over, and the optional `by` gives each group its own shocks under shared dynamics.
+The [latent processes vignette](latent-processes.html) works through these on the growth rate and compares them to `rw()` and lme4-style random effects; the [Priors](#priors) section below covers tuning their regularisation.
 
 # The kernel decomposition
 
@@ -107,19 +119,8 @@ The bounds put an implicit uniform prior on each $r_k$ over $(-1, 1)$; override 
 MA invertibility is not enforced explicitly.
 For typical values it is rarely a sampling problem; if it becomes one for a specific use case, the same partial-autocorrelation transform applies symmetrically on $\theta$.
 
-# Per-observation lookup
-
-The kernel produces $\epsilon \in \mathbb{R}^{T \times G}$ but observations live in a flat vector indexed by $i = 1, \dots, n$.
-Each observation $i$ knows its time index $t_i \in \{1, \dots, T\}$ and group index $g_i \in \{1, \dots, G\}$, both shipped from R as `time_idx` and `group_idx`.
-The contribution to the linear predictor is added in a tight loop:
-
-```stan
-for (i in 1:expr_arima_n_obs) {
-  r[i] += expr_arima_eps[expr_arima_time_idx[i], expr_arima_group_idx[i]];
-}
-```
-
-The loop body is a single matrix lookup and an add; the loop length is bounded by the number of metadata rows in the relevant module (typically a few hundred), so the cost is negligible compared to the kernel construction.
+The kernel produces $\epsilon \in \mathbb{R}^{T \times G}$, but observations live in a flat vector.
+Each observation carries its own time and group index, so the contribution to the linear predictor is a single matrix lookup per observation — negligible next to building the kernel.
 
 # Group structure: dependent vs independent
 
@@ -138,42 +139,38 @@ The factorisation makes several familiar models special cases of the same code p
 
 The `arima_kernel_matrix()` function is unit-tested against these cases against `stats::ARMAtoMA` and direct R reference recursions; see `tests/testthat/test-stan_arima_kernel.R`.
 
-# Priors
+# Priors {#priors}
 
-The default priors are deliberately weak and easy to override through the standard `priors` argument of the relevant module:
+The default priors are deliberately weak.
+The latent scale $\sigma$ and the partial autocorrelations $r_k$ can both be overridden through the standard `priors` argument of the relevant module; the shocks and the MA terms are fixed.
 
 - $z_{t,g} \sim \mathcal{N}(0, 1)$ — fixed by the non-centred parameterisation; not user-tunable.
-- $\sigma \sim \mathcal{N}_+(0, 0.2)$ (half-normal) — controls how strongly the latent series can deviate from zero.
-- $r_k \sim \mathrm{Uniform}(-1, 1)$ — implicit from the parameter bounds; weakly informative.
+- $\sigma \sim \mathcal{N}_+(0, 0.2)$ (half-normal) — controls how strongly the latent series can deviate from zero. Set through the `<prefix>_arima_sigma` prior.
+- $r_k \sim \mathrm{Uniform}(-1, 1)$ — the default, implicit from the parameter bounds. Set through the `<prefix>_arima_pacf` prior: a positive standard deviation switches to a $\mathcal{N}(\mu, s)$ prior truncated to $(-1, 1)$, shrinking the autocorrelations toward $\mu$. A standard deviation of zero keeps the uniform default.
 - $\theta_l \sim \mathcal{N}(0, 1)$ when MA terms are present — weakly informative.
 
-The half-normal prior on $\sigma$ is the most consequential of these in practice; tighten it if the latent residual is competing with the rest of the linear predictor for variance.
+Here `<prefix>` is the module the term sits on (`expr` for the growth rate, `refp` for the parametric reference mean, and so on; see [Where you can use it](#where)).
+For example, to shrink the growth-rate AR term toward weak autocorrelation rather than leaving it uniform:
 
-# Where it is wired
+```{r}
+library(epinowcast)
+pacf_prior <- data.frame(variable = "expr_arima_pacf", mean = 0, sd = 0.3)
+# epinowcast(..., priors = pacf_prior)
+```
 
-`arima()` is wired into every module that takes a formula:
+The half-normal prior on $\sigma$ is the most consequential in practice; tighten it if the latent residual is competing with the rest of the linear predictor for variance.
+A tighter `pacf` prior is the lever for discouraging the near-unit-root AR behaviour that the uniform default permits.
 
-- `enw_expectation()` — both the growth rate `r` and the latent-to-obs `observation` formulas.
-- `enw_reference()` — both the parametric mean (`refp_mean`) and the non-parametric (`refnp`) formulas.
-- `enw_report()` (`rep`).
-- `enw_missing()` (`miss`).
+# Where you can use it {#where}
 
-The Stan-side wiring uses two single entry points: `regression_predictor()` for the transform and `regression_priors_lp()` for the priors. Each module's Stan code calls these once instead of separately invoking `combine_effects()` and a bespoke ARIMA block, keeping the per-module boilerplate to a parameter declaration and one function call per side.
+`arima()` and its aliases work on every module that takes a formula, each with its own prior prefix:
 
-# Joint sparse deduplication
+- `enw_expectation()` — the growth rate (`expr`) and the latent-to-obs proportion (`expl`).
+- `enw_reference()` — the parametric mean (`refp`) and the non-parametric logit hazards (`refnp`).
+- `enw_report()` — report-date logit hazards (`rep`).
+- `enw_missing()` — the missing-reference proportion (`miss`).
 
-The modules that previously used `sparse = TRUE` on their fixed-effect design (`refp` and `rep`) need the ARIMA residual to vary at a *finer* granularity than their covariate deduplication. The cheap composition is the **joint** approach: deduplicate the design at the granularity of unique (covariate row × ARIMA time × ARIMA group) tuples rather than by covariate row alone.
-
-Concretely, `enw_formula()` now does the following when both `sparse = TRUE` and an `arima()` term are present:
-
-1. Build the standard sparse fixed-effect design (unique covariate rows + per-observation findex).
-2. For each observation, form a joint key `(covariate_row, arima_time, arima_group)`.
-3. Take unique joint keys; map each observation to its joint-tuple index.
-4. Expand the fixed-effect design to one row per joint tuple (covariate columns repeat across the time/group axis), and update the ARIMA term's `time_idx` / `group_idx` to live at the joint-tuple granularity.
-
-Downstream code that loops over fdesign rows (e.g. `refp`'s per-row `discretised_logit_hazard()` PMF call) then runs over **joint tuples**, which is the smallest set of distinct parameter combinations that the data actually requires. Coarse-time ARIMA pays the natural cost: with weekly ARIMA on daily snapshots, the PMF count is `weeks × groups`, not `days × groups`.
-
-For per-observation modules (`sparse = FALSE`) the joint key is unique by construction, so the deduplication is a no-op — the existing per-observation apply path is unchanged.
+Putting an `arima()` term on the reference delay mean, for instance, models a reporting delay that drifts over time, while an `arima()` on the growth rate models the epidemic trend itself.
 
 # Limitations
 
@@ -181,6 +178,6 @@ For per-observation modules (`sparse = FALSE`) the joint key is unique by constr
 - AR stationarity is enforced; MA invertibility is not (rarely a problem in practice).
 - Grouped series share AR/MA parameters and latent standard deviation across groups; per-group parameters are a planned extension. Until that lands `arima()` and `rw()` do not take a `type` argument.
 - The kernel is built dense ($T \times T$) every iteration. For very long series (thousands of time points) the autodiff cost grows as $O(T^2)$; in that regime a recursive form (computing $\epsilon$ via the ARMA filter directly) would be preferable.
-- When the parametric reference standard deviation is modelled (`model_refp > 1`), it shares the ARIMA shocks and kernel of the mean but carries an independent scale (`refp_arima_sd_sigma`). The two residuals are therefore perfectly correlated up to that scale rather than driven by separate shock series. A separate sd process is a planned extension; time-varying sd is rarely the right model and an independent series would multiply the PMF cost again.
+- When the parametric reference standard deviation is modelled (`model_refp > 1`), it shares the ARIMA shocks and kernel of the mean but carries an independent scale (`refp_arima_sd_sigma`). The two residuals are therefore perfectly correlated up to that scale rather than driven by separate shock series. A separate sd process is a planned extension.
 
 # References
