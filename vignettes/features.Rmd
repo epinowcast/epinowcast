@@ -126,8 +126,8 @@ Specify the generative model for the expected latent process (e.g., infections, 
 |------------|-----------------|----------------|---------|
 | Daily random effects | Flexible day-to-day changes | `~0 + (1 | day:.group)` (default) | Most flexible |
 | Weekly random walk | Smooth week-to-week trends | `~1 + rw(week, by = .group)` | Smoother estimates |
-| Stationary AR | Autocorrelation reverting to a mean | `~1 + ar(week, by = .group, p = 1)` | Mean-reverting trend |
-| ARIMA residual | General time-series structure | `~1 + arima(week, by = .group, p = 1, d = 1)` | Flexible trend and autocorrelation |
+| Stationary AR | Mean-reverting; stationary by construction | `~1 + ar(week, by = .group, p = 1)` | Departures decay to the mean |
+| ARIMA residual | Trend and autocorrelation; `d` sets the integration order | `~1 + arima(week, by = .group, p = 1, d = 1)` | `d` >= 1 gives non-stationary drift |
 | Growth rate | Exponential growth/decline | `generation_time = 1` (default) | Simple trend |
 | Renewal process | Epidemic dynamics | `generation_time = c(0.2, 0.5, 0.3)` | [Rt estimation vignette](single-timeseries-rt-estimation.html) |
 | Fixed effects | Covariates (e.g., interventions) | `~1 + intervention + ...` | Include predictors |
