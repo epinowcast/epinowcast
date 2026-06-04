@@ -265,6 +265,12 @@ enw_uncertain <- function(distribution = c(
   if (length(sd) != 2) {
     cli::cli_abort("{.arg sd} must be a numeric vector of length 2")
   }
+  if (distribution == "exponential" && !missing(sd)) {
+    cli::cli_warn(paste0(
+      "The exponential distribution has no scale parameter; the supplied ",
+      "{.arg sd} prior will be ignored (sigma is fixed to 0)."
+    ))
+  }
   dist_id <- data.table::fcase(
     distribution == "exponential", 1L,
     distribution == "lognormal", 2L,

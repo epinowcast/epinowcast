@@ -58,3 +58,14 @@ test_that("enw_uncertain supplies sensible default priors", {
   expect_length(spec$mean_p, 2)
   expect_length(spec$sd_p, 2)
 })
+
+test_that("enw_uncertain warns when sd is supplied for the exponential", {
+  expect_warning(
+    enw_uncertain(distribution = "exponential", sd = c(1, 1), max = 6),
+    "exponential"
+  )
+  # No warning when sd is left at its default.
+  expect_no_warning(
+    enw_uncertain(distribution = "exponential", max = 6)
+  )
+})
