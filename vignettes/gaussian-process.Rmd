@@ -135,7 +135,7 @@ The smoother kernels (squared exponential, higher Matérn order) place less powe
 
 When `by` is supplied each group has its own column of standard-normal spectral weights $\eta_{\cdot, g}$, but the length scale $\rho$ and magnitude $\alpha$ are shared across groups.
 The basis matrix $\Phi$ is built once and applied to each group's weight column in turn, so every group's realisation is an independent draw from a Gaussian process with common hyperparameters.
-Per-group hyperparameters (each group with its own $\rho$ and $\alpha$) are a planned extension; until that lands `gp()` does not take a `type` argument.
+The length scale $\rho$ and magnitude $\alpha$ are shared across groups, and `gp()` does not take a `type` argument.
 
 The latent process produces $f \in \mathbb{R}^{T \times G}$, but observations live in a flat vector.
 Each observation carries its own time and group index, so the contribution to the linear predictor is a single matrix lookup per observation — negligible next to building the spectral densities.
@@ -201,9 +201,9 @@ Putting a `gp()` term on the reference delay mean, for instance, models a report
 
 # Limitations
 
-- One Gaussian process term per formula. The R side aborts if multiple are supplied; lifting this requires the Stan side to gain a vector of latent processes rather than a single one.
-- Grouped series share the length scale and magnitude across groups; per-group hyperparameters are a planned extension. Until that lands `gp()` does not take a `type` argument.
+- One Gaussian process term per formula. The R side aborts if multiple are supplied.
+- Grouped series share the length scale and magnitude across groups, and `gp()` does not take a `type` argument.
 - The approximation accuracy is controlled by `basis_prop`; too few basis functions oversmooth short-length-scale structure, while too many slow the fit. The `EpiNow2` default of $b = 0.2$ is a reasonable starting point but may need raising for processes with fast variation.
-- When the parametric reference standard deviation is modelled (`model_refp > 1`), it shares the Gaussian process basis, length scale, and spectral weights of the mean but carries an independent magnitude (`refp_gp_sd_alpha`). The two latent processes are therefore perfectly correlated up to that magnitude rather than driven by separate weights. A separate sd process is a planned extension.
+- When the parametric reference standard deviation is modelled (`model_refp > 1`), it shares the Gaussian process basis, length scale, and spectral weights of the mean but carries an independent magnitude (`refp_gp_sd_alpha`). The two latent processes are therefore perfectly correlated up to that magnitude rather than driven by separate weights.
 
 # References

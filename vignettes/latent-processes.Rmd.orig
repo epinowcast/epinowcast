@@ -33,10 +33,10 @@ This vignette walks through them from most to least persistent.
 
 The first three are time-series terms built from the same ARIMA(p, d, q) machinery; `rw()`, `ar()`, and the general `arima()` share one backend.
 
-- **Random walk** via `rw(week)`. The growth rate drifts: each step builds on the last with no pull back towards a mean. This is ARIMA(0, 1, 0).
+- **Random walk** via `rw(week, age_group)`. The growth rate drifts: each step builds on the last with no pull back towards a mean. This is ARIMA(0, 1, 0).
 - **Integrated AR** via `arima(week, age_group, p = 1, d = 1)`. The same drift, but with autocorrelated increments, so the path is smoother than a plain random walk.
 - **Stationary AR** via `ar(day, age_group, p = 1)`. The growth rate reverts to a fixed mean, with autocorrelated departures that decay rather than accumulate. This is ARIMA(1, 0, 0).
-- **Gaussian process** via `gp(week)`. A smooth function of time with a length scale that controls how quickly the growth rate can change; a flexible non-parametric smoother.
+- **Gaussian process** via `gp(week, age_group)`. A smooth function of time with a length scale that controls how quickly the growth rate can change; a flexible non-parametric smoother.
 
 The last two impose no time correlation at all.
 
@@ -117,7 +117,7 @@ The growth rate drifts smoothly with no preferred direction and no mean to rever
 ```{r rw-fit, results = "hide", message = FALSE, warning = FALSE}
 nowcast_rw <- epinowcast(
   pobs,
-  expectation = enw_expectation(r = ~ rw(week), data = pobs),
+  expectation = enw_expectation(r = ~ rw(week, age_group), data = pobs),
   reference = reference_mod,
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
@@ -214,7 +214,7 @@ The [Gaussian process implementation notes](gaussian-process.html) cover the spe
 nowcast_gp <- epinowcast(
   pobs,
   expectation = enw_expectation(
-    r = ~ 1 + gp(week),
+    r = ~ 1 + gp(week, age_group),
     data = pobs
   ),
   reference = reference_mod,
@@ -333,10 +333,10 @@ The runtime column makes the accuracy-versus-cost trade-off explicit: the more f
 
 ```{r diagnostics}
 fits <- list(
-  "rw(week)" = nowcast_rw,
+  "rw(week, age_group)" = nowcast_rw,
   "arima(week, age_group, 1, 1, 0)" = nowcast_arima,
   "ar(day, age_group, 1)" = nowcast_ar,
-  "gp(week)" = nowcast_gp,
+  "gp(week, age_group)" = nowcast_gp,
   "(1 | week:.group)" = nowcast_re,
   "(1 | day_of_week)" = nowcast_dow,
   "(1 | day_of_week) + arima(week, ...)" = nowcast_combined
@@ -361,10 +361,10 @@ The five models trace a spectrum of how much the growth rate remembers its past,
 
 | Option | Memory of the growth rate | Formula example | Useful when |
 |---|---|---|---|
-| Random walk | Full drift, no mean | `rw(week)` | The growth rate evolves smoothly with no preferred direction; the standard non-stationary smoother. |
+| Random walk | Full drift, no mean | `rw(week, by)` | The growth rate evolves smoothly with no preferred direction; the standard non-stationary smoother. |
 | Integrated AR | Drift, smoother | `arima(week, by, p = 1, d = 1)` | You want a drifting trend but with autocorrelated, more persistent increments than a plain random walk. |
 | Stationary AR | Reverts to a mean | `ar(day, by, p = 1)` | Growth is stable on average and you want to model autocorrelated departures from that level rather than drift. |
-| Gaussian process | Smooth, learned length scale | `gp(week)` | You want a flexible non-parametric smoother whose smoothness is learned from the data rather than fixed by the differencing order. |
+| Gaussian process | Smooth, learned length scale | `gp(week, by)` | You want a flexible non-parametric smoother whose smoothness is learned from the data rather than fixed by the differencing order. |
 | Independent week effects | None | `(1 \| week:.group)` | Weekly fluctuations look like noise around a stable mean; no time correlation is imposed. |
 | Day-of-week effects | Fixed weekly cycle | `(1 \| day_of_week)` | Within-week variation is structurally periodic and you want pooled rather than fixed weekday effects. |
 
