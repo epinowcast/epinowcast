@@ -122,10 +122,11 @@ array[] vector log_expected_latent_from_r(
           if (use_pop == 2 || i > nht) {
             // Scale transmission by the remaining susceptible fraction and
             // deplete the pool by the modelled new cases. The floor prevents
-            // instability as the susceptible pool approaches zero.
+            // instability as the susceptible pool approaches zero. A small
+            // positive floor on new cases keeps the subsequent log() finite.
             real susceptible = fmax(pop_floor, pop[k] - cum_cases);
             real adj = 1 - exp(-local_R[i] * infectiousness / susceptible);
-            exp_obs[r_seed + i] = susceptible * fmax(0, adj);
+            exp_obs[r_seed + i] = fmax(1e-8, susceptible * adj);
           } else {
             exp_obs[r_seed + i] = local_R[i] * infectiousness;
           }

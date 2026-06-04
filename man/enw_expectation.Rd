@@ -9,6 +9,11 @@ enw_expectation(
   generation_time = 1,
   observation = ~1,
   latent_reporting_delay = 1,
+  population = NULL,
+  population_period = c("all", "forecast"),
+  population_floor = 1,
+  population_uncertain = FALSE,
+  population_cv = 0.1,
   data,
   ...
 )
@@ -48,6 +53,42 @@ ascertainment etc. A list of PMFs can be provided to allow for time-varying
 PMFs. This should be the same length as the modelled time period plus the
 length of the generation time if supplied.}
 
+\item{population}{Optional initial susceptible population size used to adjust
+the renewal process for susceptible depletion. Defaults to \code{NULL}, meaning no
+adjustment is applied and the unadjusted renewal equation is used (this is the
+default and is backwards compatible). When a positive numeric value is
+supplied, the effective reproduction number bends down as the susceptible
+pool is depleted by modelled latent cases: at each step transmission is scaled
+by the remaining susceptible fraction \code{S_t / population}, where \code{S_t} is the
+initial susceptible population minus cumulative modelled latent cases. The
+adjustment only applies to the renewal path (i.e. when \code{generation_time} has
+length greater than 1); it is ignored for the daily growth rate model
+(\code{generation_time = 1}). The adjustment assumes a single well-mixed
+population with no waning of immunity and no births or deaths, so the
+susceptible pool is only ever depleted. Adapted from the implementation in
+\code{EpiNow2} (\code{rt_opts(pop = ...)}, MIT licence).}
+
+\item{population_period}{Character string, either \code{"all"} (the default) or
+\code{"forecast"}. Controls when the susceptible-depletion adjustment is applied.
+\code{"all"} applies it to every modelled time point, whilst \code{"forecast"} only
+applies it to the right-truncated nowcast horizon (the most recent time
+points). Ignored when \code{population} is \code{NULL}.}
+
+\item{population_floor}{Numeric, defaulting to 1. Minimum susceptible
+population used as a numerical-stability floor when adjusting for depletion.
+This prevents division by zero / instability as the susceptible pool
+approaches zero. Ignored when \code{population} is \code{NULL}.}
+
+\item{population_uncertain}{Logical, defaulting to \code{FALSE}. If \code{TRUE}, the
+initial susceptible population is treated as an estimated (fitted) parameter
+rather than a fixed value. In this case \code{population} is used as the mean of a
+LogNormal prior with coefficient of variation \code{population_cv}. Ignored when
+\code{population} is \code{NULL}.}
+
+\item{population_cv}{Numeric, defaulting to 0.1. Coefficient of variation
+(on the natural scale) of the LogNormal prior on the initial susceptible
+population when \code{population_uncertain} is \code{TRUE}. Ignored otherwise.}
+
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
 \item{...}{Additional parameters passed to \code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}}. The
@@ -64,6 +105,12 @@ Expectation model module
 }
 \examples{
 enw_expectation(data = enw_example("preprocessed"))
+
+# Renewal model with a fixed initial susceptible population
+enw_expectation(
+  generation_time = c(0.2, 0.5, 0.3), population = 100000,
+  data = enw_example("preprocessed")
+)
 }
 \seealso{
 Model modules

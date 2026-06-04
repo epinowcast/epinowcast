@@ -136,7 +136,9 @@ test_that("enw_expectation defaults to no susceptible-depletion adjustment", {
   expect_identical(expectation$data$expr_pop_floor, 1)
   expect_length(expectation$data$expr_pop_fixed, pobs$groups[[1]])
   expect_true(all(expectation$data$expr_pop_fixed == 0))
-  expect_false("expr_pop" %in% expectation$priors$variable)
+  # The population prior is always supplied as data but only used when the
+  # population is estimated.
+  expect_true("expr_pop" %in% expectation$priors$variable)
 })
 
 test_that("enw_expectation accepts a fixed population for depletion", {
@@ -146,7 +148,6 @@ test_that("enw_expectation accepts a fixed population for depletion", {
   expect_identical(expectation$data$expr_pop_use, 2L)
   expect_identical(expectation$data$expr_pop_uncertain, 0L)
   expect_true(all(expectation$data$expr_pop_fixed == 1000))
-  expect_false("expr_pop" %in% expectation$priors$variable)
 })
 
 test_that("enw_expectation restricts depletion to the forecast period", {
