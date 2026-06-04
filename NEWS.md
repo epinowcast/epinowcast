@@ -2,10 +2,10 @@
 
 ## Model
 
-- The fixed-effects design and integrated (`d >= 1`) `arima()` residuals are now centred against the module intercept, decorrelating the intercept from the slopes and from the latent drift to improve sampling geometry.
-  For modules with a free intercept (`expr`, `refp` mean, `refnp`, `miss`) the design is centred on its observation-weighted column means, as `brms` does by default, and the integrated residual is mean-centred per group.
-  The sampled intercept (`<prefix>_int_c`) is on the centred scale; the original-scale intercept the prior applies to is recovered as `<prefix>_int` by undoing both the design and latent centring (a unit-Jacobian shift, so the prior keeps its meaning, as in EpiNow2's reproduction-number centring).
-  This leaves the posterior unchanged for the design (and for a single group on the latent) and, for several groups, preserves the shared level while re-expressing per-group deviations.
+- The fixed-effects design and shared integrated (`d >= 1`) `arima()` residuals are now centred against the module intercept, decorrelating the intercept from the slopes and from the latent drift to improve sampling geometry.
+  For modules with a free intercept (`expr`, `refp` mean, `refnp`, `miss`) the design is centred on its observation-weighted column means, as `brms` does by default, and a single shared integrated residual is mean-centred.
+  The sampled intercept (`<prefix>_int_c`) is on the centred scale; the original-scale intercept the prior applies to is recovered as `<prefix>_int` by undoing both the design and latent centring (a unit-Jacobian shift, so the prior keeps its meaning and the posterior is unchanged, as in EpiNow2's reproduction-number centring).
+  Grouped latents (`arima(time, group, ...)`, `G > 1`) are left un-centred so each group keeps its own level and drift, which is the point of grouping; the design centring still applies.
   On a weekly random-walk growth model the centred form samples roughly twice as fast at the `adapt_delta` these models use (it is sharper, so benefits from `adapt_delta >= 0.95`).
   Modules without a free intercept (`expl`, `rep`) and the log-link `refp` standard deviation are left uncentred.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).

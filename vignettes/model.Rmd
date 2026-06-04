@@ -204,7 +204,7 @@ Taking the growth rate as an example,
 where $r_0^{c}$ is the sampled (centred) intercept.
 The original-scale intercept reported to the user is recovered as $r_0 = r_0^{c} - \bar X_r \beta_{f,r}$, and the user's prior is placed on $r_0$.
 The shift is additive, so the change of variables has unit Jacobian, the posterior is unchanged, and the prior keeps its meaning; this is the parameterisation `brms` uses for population-level intercepts by default.
-The same centring is applied to the integrated drift of any autoregressive term (see the ARIMA vignette), and modules without a free intercept are left uncentred.
+The same centring is applied to the integrated drift of a shared autoregressive term (see the ARIMA vignette); grouped autoregressive terms and modules without a free intercept are left uncentred.
 
 # Observation model and nowcast
 
