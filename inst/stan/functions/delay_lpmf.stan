@@ -57,7 +57,7 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
       // conditioning on the known total instead of the Poisson obs model.
       profile("model_likelihood_delay_multinomial") {
       tar = delay_multinomial_snaps(
-        start, end, obs, log_exp_obs, n[1], sl, csl
+        start, end, obs, log_exp_obs, n[1], obs_lookup, nsl, cnsl
       );
       }
     } else {
@@ -205,7 +205,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
     profile("model_likelihood_delay_multinomial") {
     if (nc[3]) {
       tar = delay_multinomial_snaps(
-        i_start, i_end, obs, log_exp_obs, n[1], sl, csl
+        i_start, i_end, obs, log_exp_obs, n[1], obs_lookup, nsl, cnsl
       );
     }
     }

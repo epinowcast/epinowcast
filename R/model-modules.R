@@ -842,21 +842,21 @@ enw_missing <- function(formula = ~1, data) {
 #'
 #' @param delay_only Logical, defaults to `FALSE`. If `TRUE`, fit only the
 #' reporting-delay distribution conditional on the known per-reference-date
-#' totals, treating those totals as fixed truth (issues #775 and #776). The
-#' latent process and per-cell observation model are bypassed and replaced by
-#' a (truncated) multinomial likelihood over the reported cells of each
-#' reference date (Kalbfleisch & Lawless, 1989; Hoehle & an der Heiden,
-#' 2014). The known totals are taken from the latest available data: when
-#' these are the final retrospective totals this is the multinomial of #775,
-#' and when they are running totals observed only up to some horizon the
-#' renormalisation over the observed delay range gives the truncated
-#' multinomial of #776. Supply a minimal expectation, e.g.
-#' `expectation = enw_expectation(~1, data = data)`; in delay-only mode its
-#' expected observations are overridden by the known totals so the latent
-#' process is inert (it does not affect the delay estimate). This mode is for
-#' delay estimation, not nowcasting (no posterior nowcast is produced; refit
-#' with the full model for a nowcast). Not compatible with an
-#' `observation_indicator` or with the missing reference model.
+#' totals, treating those totals as fixed truth. The latent process and
+#' per-cell observation model are replaced by a (truncated) multinomial over
+#' the reported cells of each reference date. With final retrospective totals
+#' this is the plain multinomial; with running totals observed up to some
+#' horizon the renormalisation over the observed delay range gives the
+#' truncated multinomial. An `observation_indicator` is supported and
+#' renormalises over the observed delay slots. Supply a minimal expectation,
+#' e.g. `expectation = enw_expectation(~1, data = data)`; in delay-only mode
+#' its expected observations are overridden by the known totals, so the latent
+#' process is inert. This mode estimates delays and does not nowcast (refit
+#' with the full model for a nowcast). Not compatible with the missing
+#' reference model. See the delay estimation vignette for a worked example.
+#' Based on the conditional delay likelihood of Kalbfleisch and Lawless
+#' (\doi{10.1002/sim.4780081004}) and Höhle and an der Heiden
+#' (\doi{10.1111/biom.12194}).
 #'
 #' @param data Output from [enw_preprocess_data()].
 #'
@@ -865,21 +865,11 @@ enw_missing <- function(formula = ~1, data) {
 #' @export
 #' @examples
 #' enw_obs(data = enw_example("preprocessed"))
-#' # Delay-only model conditional on known totals (issues #775, #776)
+#' # Delay-only model conditional on known totals
 #' enw_obs(delay_only = TRUE, data = enw_example("preprocessed"))
 enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
                     observation_indicator = NULL, delay_only = FALSE, data) {
   family <- match.arg(family)
-
-  if (delay_only && !is.null(observation_indicator)) {
-    cli::cli_abort(
-      paste0(
-        "{.arg delay_only} is not compatible with an ",
-        "{.arg observation_indicator}: the delay-only likelihood uses every ",
-        "reported cell of each reference date."
-      )
-    )
-  }
 
   # copy new confirm for processing
   new_confirm <- coerce_dt(
@@ -950,12 +940,8 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
     family == "negbin1d", 2
   )
 
-  # Delay-only model (issues #775, #776). When enabled the reporting-delay
-  # distribution is fit conditional on the known per-reference-date totals
-  # via a (truncated) multinomial likelihood; the latent process and per-cell
-  # observation model are bypassed. The known totals are taken from the
-  # latest available data and supplied to Stan on the log scale as the
-  # expected total by reference date.
+  # Delay-only model: fit the delay distribution conditional on the known
+  # totals (supplied as log totals by reference date) via a multinomial.
   proc_data$model_delay_only <- as.integer(delay_only)
   proc_data$dlo_ltotal <- delay_only_ltotal(data, delay_only)
 

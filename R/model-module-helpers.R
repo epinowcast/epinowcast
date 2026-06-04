@@ -94,11 +94,14 @@ latest_obs_as_matrix <- function(latest) {
 
 #' Known per-reference-date totals for the delay-only model
 #'
-#' Builds the `dlo_ltotal` data entry for the delay-only model (issues #775
-#' and #776). The known totals are the latest available `confirm` value for
-#' each reference date and group, taken as fixed truth and supplied to Stan
-#' on the log scale. The Stan layout is `array[g] vector[t]`, which cmdstanr
-#' expects as a `g` by `t` matrix.
+#' Builds the `dlo_ltotal` data entry for the delay-only model. The known
+#' totals are the latest available `confirm` per reference date and group,
+#' supplied to Stan on the log scale as a `g` by `t` matrix (cmdstanr's layout
+#' for `array[g] vector[t]`). The log total is only an offset on the expected
+#' cells and cancels in the multinomial likelihood, so reference dates with no
+#' observed cells (a non-positive or missing latest total, e.g. the most recent
+#' dates under an observation indicator) are floored to 1 (log 0); such dates
+#' contribute nothing to the likelihood.
 #'
 #' @param data Output from [enw_preprocess_data()].
 #'
@@ -116,23 +119,10 @@ delay_only_ltotal <- function(data, delay_only) {
   # latest_obs_as_matrix returns reference dates (t) by group (g); transpose
   # to the array[g] vector[t] layout cmdstanr expects.
   totals <- t(latest_obs_as_matrix(data$latest[[1]]))
-  if (!all(is.finite(totals))) {
-    cli::cli_abort(
-      paste0(
-        "All known totals must be finite for the delay-only model; found a ",
-        "missing or non-finite total. This usually means the latest available ",
-        "data has gaps in its reference dates."
-      )
-    )
-  }
-  if (any(totals <= 0)) {
-    cli::cli_abort(
-      paste0(
-        "All known totals must be strictly positive for the delay-only ",
-        "model; found a total of zero or less."
-      )
-    )
-  }
+  # Floor non-positive / missing totals to 1 so the (cancelling) offset stays
+  # finite; these snapshots have no observations and drop out of the
+  # likelihood.
+  totals[!is.finite(totals) | totals <= 0] <- 1
   log(totals)
 }
 

@@ -17,11 +17,14 @@ A \code{g} by \code{t} matrix of log totals (or \code{g} by \code{0} when not in
 delay-only mode).
 }
 \description{
-Builds the \code{dlo_ltotal} data entry for the delay-only model (issues #775
-and #776). The known totals are the latest available \code{confirm} value for
-each reference date and group, taken as fixed truth and supplied to Stan
-on the log scale. The Stan layout is \verb{array[g] vector[t]}, which cmdstanr
-expects as a \code{g} by \code{t} matrix.
+Builds the \code{dlo_ltotal} data entry for the delay-only model. The known
+totals are the latest available \code{confirm} per reference date and group,
+supplied to Stan on the log scale as a \code{g} by \code{t} matrix (cmdstanr's layout
+for \verb{array[g] vector[t]}). The log total is only an offset on the expected
+cells and cancels in the multinomial likelihood, so reference dates with no
+observed cells (a non-positive or missing latest total, e.g. the most recent
+dates under an observation indicator) are floored to 1 (log 0); such dates
+contribute nothing to the likelihood.
 }
 \seealso{
 Helper functions for model modules

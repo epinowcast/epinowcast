@@ -30,21 +30,21 @@ then the variable will be name \code{.observed}. Default is \code{NULL}.}
 
 \item{delay_only}{Logical, defaults to \code{FALSE}. If \code{TRUE}, fit only the
 reporting-delay distribution conditional on the known per-reference-date
-totals, treating those totals as fixed truth (issues #775 and #776). The
-latent process and per-cell observation model are bypassed and replaced by
-a (truncated) multinomial likelihood over the reported cells of each
-reference date (Kalbfleisch & Lawless, 1989; Hoehle & an der Heiden,
-2014). The known totals are taken from the latest available data: when
-these are the final retrospective totals this is the multinomial of #775,
-and when they are running totals observed only up to some horizon the
-renormalisation over the observed delay range gives the truncated
-multinomial of #776. Supply a minimal expectation, e.g.
-\code{expectation = enw_expectation(~1, data = data)}; in delay-only mode its
-expected observations are overridden by the known totals so the latent
-process is inert (it does not affect the delay estimate). This mode is for
-delay estimation, not nowcasting (no posterior nowcast is produced; refit
-with the full model for a nowcast). Not compatible with an
-\code{observation_indicator} or with the missing reference model.}
+totals, treating those totals as fixed truth. The latent process and
+per-cell observation model are replaced by a (truncated) multinomial over
+the reported cells of each reference date. With final retrospective totals
+this is the plain multinomial; with running totals observed up to some
+horizon the renormalisation over the observed delay range gives the
+truncated multinomial. An \code{observation_indicator} is supported and
+renormalises over the observed delay slots. Supply a minimal expectation,
+e.g. \code{expectation = enw_expectation(~1, data = data)}; in delay-only mode
+its expected observations are overridden by the known totals, so the latent
+process is inert. This mode estimates delays and does not nowcast (refit
+with the full model for a nowcast). Not compatible with the missing
+reference model. See the delay estimation vignette for a worked example.
+Based on the conditional delay likelihood of Kalbfleisch and Lawless
+(\doi{10.1002/sim.4780081004}) and Höhle and an der Heiden
+(\doi{10.1111/biom.12194}).}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }
@@ -56,7 +56,7 @@ Setup observation model and data
 }
 \examples{
 enw_obs(data = enw_example("preprocessed"))
-# Delay-only model conditional on known totals (issues #775, #776)
+# Delay-only model conditional on known totals
 enw_obs(delay_only = TRUE, data = enw_example("preprocessed"))
 }
 \seealso{
