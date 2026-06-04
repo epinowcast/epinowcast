@@ -498,11 +498,16 @@ transformed parameters{
   );
   // Initial susceptible population per group: either each group's estimated
   // value or its supplied fixed value (groups are treated independently).
-  vector[g] expr_pop = expr_pop_uncertain ? expr_pop_est : expr_pop_fixed;
-  exp_llatent = log_expected_latent_from_r(
-    expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
-    expr_ft, g, expr_pop, expr_pop_use, expr_pop_floor
-  );
+  // Declared in a local block so it is not written to the posterior output
+  // (keeps the saved variable set unchanged when the adjustment is off).
+  {
+    vector[g] expr_pop =
+      expr_pop_uncertain ? expr_pop_est : expr_pop_fixed;
+    exp_llatent = log_expected_latent_from_r(
+      expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
+      expr_ft, g, expr_pop, expr_pop_use, expr_pop_floor
+    );
+  }
   // Get latent-to-obs proportions and map expected latent cases to expected observations
   if (expl_obs) {
     expl_prop = regression_predictor(
