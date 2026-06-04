@@ -121,6 +121,22 @@ touchstone::benchmark_run(
 )
 
 touchstone::benchmark_run(
+  expr_before_benchmark = { source("touchstone/setup.R") },
+  gp_growth_rate_model = { epinowcast(
+    data = pobs,
+    expectation = enw_expectation(r = ~ 1 + gp(week), data = pobs),
+    fit = enw_fit_opts(
+      save_warmup = FALSE, pp = FALSE,
+      chains = 2, iter_warmup = 500, iter_sampling = 500,
+      parallel_chains = 2
+    ),
+    obs = enw_obs(family = "poisson", data = pobs),
+    model = model
+  ) },
+  n = 3
+)
+
+touchstone::benchmark_run(
   expr_before_benchmark = { source("touchstone/multigroup-setup.R") },
   multi_group_latent_renewal_model = { epinowcast(
     data = pobs,
