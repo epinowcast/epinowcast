@@ -10,7 +10,7 @@
  * this package.
  *
  * The approximation follows:
- *  - Riutart-Mayol et al. (2023), doi:10.1007/s11222-022-10167-2
+ *  - Riutort-Mayol et al. (2023), doi:10.1007/s11222-022-10167-2
  *  - https://avehtari.github.io/casestudies/Motorcycle/motorcycle_gpcourse.html
  *
  * A latent series f over T time points is approximated as
