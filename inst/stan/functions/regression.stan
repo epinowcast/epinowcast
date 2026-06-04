@@ -85,3 +85,23 @@ void regression_priors_lp(
     ) T[0, ];
   }
 }
+
+/**
+ * Priors for an approximate Gaussian process latent term.
+ *
+ * The spectral coefficients `eta` get a unit-normal (non-centred)
+ * prior. The length scale `rho` gets a log-normal prior and the
+ * magnitude `alpha` a half-normal prior, with each prior (mean, sd)
+ * supplied as data. Inert when `gp_present == 0`.
+ */
+void gp_priors_lp(
+  int gp_present, matrix gp_eta,
+  array[] real gp_rho, array[] real gp_alpha,
+  array[,] real gp_rho_p, array[,] real gp_alpha_p
+) {
+  if (gp_present) {
+    to_vector(gp_eta) ~ std_normal();
+    gp_rho[1] ~ lognormal(gp_rho_p[1, 1], gp_rho_p[2, 1]);
+    gp_alpha[1] ~ normal(gp_alpha_p[1, 1], gp_alpha_p[2, 1]) T[0, ];
+  }
+}

@@ -526,7 +526,7 @@ arma <- function(time, by, p = 1, q = 1) {
 # threshold without changing its public behaviour.
 .check_arima_order <- function(value, name) {
   if (!is.numeric(value) || length(value) != 1L || is.na(value) ||
-      !is.finite(value) || value < 0 || value != as.integer(value)) {
+    !is.finite(value) || value < 0 || value != as.integer(value)) {
     cli::cli_abort("`{name}` must be a non-negative integer scalar.")
   }
   invisible(NULL)
@@ -592,17 +592,22 @@ gp <- function(time, by, kernel = c(
   kernel <- rlang::arg_match(kernel)
   .check_gp_basis_prop(basis_prop)
   if (!is.numeric(boundary_scale) || length(boundary_scale) != 1L ||
-        !is.finite(boundary_scale) || boundary_scale <= 0) {
+    !is.finite(boundary_scale) || boundary_scale <= 0) {
     cli::cli_abort("`boundary_scale` must be a positive numeric scalar.")
   }
   # Map the user-facing kernel name to the Stan-side gp_type / nu that
   # the EpiNow2-derived `update_gp()` switch expects. gp_type: 0 = SE,
   # 1 = periodic, 2 = Matern; nu selects the Matern order.
   gp_type <- switch(kernel,
-    se = 0L, periodic = 1L, 2L
+    se = 0L,
+    periodic = 1L,
+    2L
   )
   nu <- switch(kernel,
-    ou = 0.5, matern32 = 1.5, matern52 = 2.5, 1.5
+    ou = 0.5,
+    matern32 = 1.5,
+    matern52 = 2.5,
+    1.5
   )
   out <- list(
     time = time, by = by, kernel = kernel,
@@ -617,7 +622,7 @@ gp <- function(time, by, kernel = c(
 # in (0, 1].
 .check_gp_basis_prop <- function(value) {
   if (!is.numeric(value) || length(value) != 1L || is.na(value) ||
-        !is.finite(value) || value <= 0 || value > 1) {
+    !is.finite(value) || value <= 0 || value > 1) {
     cli::cli_abort("`basis_prop` must be a numeric scalar in (0, 1].")
   }
   invisible(NULL)
@@ -749,8 +754,11 @@ construct_arima <- function(arima, data) {
         "Grouping variable `{arima$by}` contains missing values."
       )
     }
-    group_levels <- if (is.factor(by_vals)) levels(droplevels(by_vals)) else
+    group_levels <- if (is.factor(by_vals)) {
+      levels(droplevels(by_vals))
+    } else {
       sort(unique(by_vals))
+    }
     G <- length(group_levels)
     if (G < 2) {
       cli::cli_inform(paste0(
@@ -1052,7 +1060,8 @@ re <- function(formula) {
 #' @noRd
 .add_pooling_single_interaction <- function(effects, k) {
   enw_add_pooling_effect(
-    effects, var_name = gsub(":", "__", k, fixed = TRUE),
+    effects,
+    var_name = gsub(":", "__", k, fixed = TRUE),
     finder_fn = function(effect, pattern) {
       grepl(pattern[1], effect) &
         grepl(pattern[2], effect, fixed = TRUE) &
@@ -1073,7 +1082,8 @@ re <- function(formula) {
 #' @noRd
 .add_pooling_single_no_interaction <- function(effects, k) {
   enw_add_pooling_effect(
-    effects, var_name = k,
+    effects,
+    var_name = k,
     finder_fn = function(effect, pattern) {
       grepl(pattern, effect) & !grepl(":", effect, fixed = TRUE)
     },
@@ -1109,7 +1119,8 @@ re <- function(formula) {
 #' @noRd
 .add_pooling_multi_no_interaction <- function(effects, k) {
   enw_add_pooling_effect(
-    effects, var_name = paste(k, collapse = "__"),
+    effects,
+    var_name = paste(k, collapse = "__"),
     finder_fn = function(effect, pattern) {
       grepl(pattern[1], effect) & grepl(pattern[2], effect)
     },
@@ -1389,12 +1400,13 @@ construct_re <- function(re, data) {
 #' )
 #' obs <- enw_filter_reference_dates(obs, include_days = 40)
 #' pobs <- enw_preprocess_data(
-#'   obs, by = c("age_group", "location"), max_delay = 20
-#'   )
+#'   obs,
+#'   by = c("age_group", "location"), max_delay = 20
+#' )
 #' data <- pobs$metareference[[1]]
 #'
 #' # Intercept only
-#' enw_formula(~ 1, data)
+#' enw_formula(~1, data)
 #'
 #' # Fixed effect
 #' enw_formula(~ 1 + age_group, data)
@@ -1546,7 +1558,8 @@ enw_formula <- function(formula, data, sparse = TRUE) {
       paste0(
         "~ 0 + ",
         paste(
-          paste0("`", colnames(metadata)[-1], "`"), collapse = " + "
+          paste0("`", colnames(metadata)[-1], "`"),
+          collapse = " + "
         )
       )
     )

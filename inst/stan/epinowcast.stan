@@ -3,6 +3,7 @@ functions {
 #include functions/combine_effects.stan
 #include functions/effects_priors_lp.stan
 #include functions/arima_kernel.stan
+#include functions/gaussian_process.stan
 #include functions/regression.stan
 #include functions/log_expected_latent_from_r.stan
 #include functions/log_expected_obs_from_latent.stan
@@ -77,6 +78,19 @@ data {
   array[expr_arima_n_obs] int<lower=1> expr_arima_flat_idx;
   array[2, 1] real expr_arima_sigma_p;
   array[2, 1] real expr_arima_pacf_p;
+  // Gaussian process latent term on growth rate
+  int<lower=0, upper=1> expr_gp_present;
+  int<lower=0> expr_gp_T;
+  int<lower=0> expr_gp_G;
+  int<lower=0> expr_gp_M;
+  int<lower=0> expr_gp_type;
+  real<lower=0> expr_gp_nu;
+  real<lower=0> expr_gp_L;
+  int<lower=0> expr_gp_n_obs;
+  matrix[expr_gp_T, expr_gp_type == 1 ? 2 * expr_gp_M : expr_gp_M] expr_gp_PHI;
+  array[expr_gp_n_obs] int<lower=1> expr_gp_flat_idx;
+  array[2, 1] real expr_gp_rho_p;
+  array[2, 1] real expr_gp_alpha_p;
   // ---- Latent case submodule ----
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
   // Partial PMF of the latent delay distribution as a convolution matrix
@@ -102,6 +116,19 @@ data {
   array[expl_arima_n_obs] int<lower=1> expl_arima_flat_idx;
   array[2, 1] real expl_arima_sigma_p;
   array[2, 1] real expl_arima_pacf_p;
+  // Gaussian process latent term on log latent-to-obs proportion
+  int<lower=0, upper=1> expl_gp_present;
+  int<lower=0> expl_gp_T;
+  int<lower=0> expl_gp_G;
+  int<lower=0> expl_gp_M;
+  int<lower=0> expl_gp_type;
+  real<lower=0> expl_gp_nu;
+  real<lower=0> expl_gp_L;
+  int<lower=0> expl_gp_n_obs;
+  matrix[expl_gp_T, expl_gp_type == 1 ? 2 * expl_gp_M : expl_gp_M] expl_gp_PHI;
+  array[expl_gp_n_obs] int<lower=1> expl_gp_flat_idx;
+  array[2, 1] real expl_gp_rho_p;
+  array[2, 1] real expl_gp_alpha_p;
 
   // Reference time model
   // Parametric reference model
@@ -258,6 +285,10 @@ parameters {
   vector<lower=-1, upper=1>[expr_arima_p] expr_arima_pacf;
   vector[expr_arima_q] expr_arima_theta;
   array[expr_arima_present ? 1 : 0] real<lower=0> expr_arima_sigma;
+  // Growth rate Gaussian process parameters
+  matrix[expr_gp_type == 1 ? 2 * expr_gp_M : expr_gp_M, expr_gp_G] expr_gp_eta;
+  array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_rho;
+  array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_alpha;
   // ---- Latent case submodule ----
   vector[expl_fncol] expl_beta;
   vector<lower=0>[expl_rncol] expl_beta_sd;
@@ -266,6 +297,10 @@ parameters {
   vector<lower=-1, upper=1>[expl_arima_p] expl_arima_pacf;
   vector[expl_arima_q] expl_arima_theta;
   array[expl_arima_present ? 1 : 0] real<lower=0> expl_arima_sigma;
+  // Latent-to-obs proportion Gaussian process parameters
+  matrix[expl_gp_type == 1 ? 2 * expl_gp_M : expl_gp_M, expl_gp_G] expl_gp_eta;
+  array[expl_gp_present ? 1 : 0] real<lower=0> expl_gp_rho;
+  array[expl_gp_present ? 1 : 0] real<lower=0> expl_gp_alpha;
 
   // Reference model
   // Parametric reference model
@@ -351,6 +386,11 @@ transformed parameters{
     expr_arima_z, expr_arima_pacf, expr_arima_theta, expr_arima_sigma,
     expr_arima_flat_idx
   );
+  r = apply_gp_term(
+    r, expr_gp_present, expr_gp_T, expr_gp_G, expr_gp_M, expr_gp_L,
+    expr_gp_type, expr_gp_nu, expr_gp_PHI, expr_gp_eta,
+    expr_gp_rho, expr_gp_alpha, expr_gp_flat_idx
+  );
   exp_llatent = log_expected_latent_from_r(
     expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
     expr_ft, g
@@ -364,6 +404,11 @@ transformed parameters{
       expl_arima_p, expl_arima_d, expl_arima_q, expl_arima_n_obs,
       expl_arima_z, expl_arima_pacf, expl_arima_theta, expl_arima_sigma,
       expl_arima_flat_idx
+    );
+    expl_prop = apply_gp_term(
+      expl_prop, expl_gp_present, expl_gp_T, expl_gp_G, expl_gp_M, expl_gp_L,
+      expl_gp_type, expl_gp_nu, expl_gp_PHI, expl_gp_eta,
+      expl_gp_rho, expl_gp_alpha, expl_gp_flat_idx
     );
     exp_lobs = log_expected_obs_from_latent(
       exp_llatent, expl_lrd_n, expl_lrd_sparse.1, expl_lrd_sparse.2,
@@ -484,6 +529,10 @@ model {
     expr_arima_z, expr_arima_pacf, expr_arima_theta,
     expr_arima_sigma, expr_arima_sigma_p, expr_arima_pacf_p
   );
+  gp_priors_lp(
+    expr_gp_present, expr_gp_eta, expr_gp_rho, expr_gp_alpha,
+    expr_gp_rho_p, expr_gp_alpha_p
+  );
   // ---- Latent case submodule ----
   // latent-to-obs proportion effect + ARIMA priors
   regression_priors_lp(
@@ -491,6 +540,10 @@ model {
     expl_arima_present, expl_arima_p, expl_arima_q,
     expl_arima_z, expl_arima_pacf, expl_arima_theta,
     expl_arima_sigma, expl_arima_sigma_p, expl_arima_pacf_p
+  );
+  gp_priors_lp(
+    expl_gp_present, expl_gp_eta, expl_gp_rho, expl_gp_alpha,
+    expl_gp_rho_p, expl_gp_alpha_p
   );
   
   // Reference model

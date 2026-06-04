@@ -6,7 +6,8 @@ obs <- enw_filter_report_dates(
 )
 obs <- enw_filter_reference_dates(obs, include_days = 60)
 pobs <- suppressWarnings(enw_preprocess_data(
-  obs, by = c("age_group", "location"), max_delay = 14
+  obs,
+  by = c("age_group", "location"), max_delay = 14
 ))
 data <- pobs$metareference[[1]]
 

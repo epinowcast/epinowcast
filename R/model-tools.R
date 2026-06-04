@@ -76,8 +76,9 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
         )
       )
     }
-    fintercept <-  as.numeric(any(grepl(
-      "(Intercept)", colnames(formula$fixed$design), fixed = TRUE
+    fintercept <- as.numeric(any(grepl(
+      "(Intercept)", colnames(formula$fixed$design),
+      fixed = TRUE
     )))
     data$fintercept <- fintercept
     data$fnrow <- nrow(formula$fixed$design)
@@ -208,29 +209,34 @@ enw_priors_as_data_list <- function(priors) {
 #'
 #' # Update priors from a previous model fit
 #' default_priors <- enw_reference(
-#'  distribution = "lognormal",
-#'  data = enw_example("preprocessed"),
+#'   distribution = "lognormal",
+#'   data = enw_example("preprocessed"),
 #' )$priors
 #' print(default_priors)
 #'
 #' fit_priors <- summary(
-#'  enw_example("nowcast"), type = "fit",
-#'  variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
+#'   enw_example("nowcast"),
+#'   type = "fit",
+#'   variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
 #' )
 #' fit_priors
 #'
 #' enw_replace_priors(default_priors, fit_priors)
 enw_replace_priors <- function(priors, custom_priors) {
   custom_priors <- coerce_dt(
-    custom_priors, select = c("variable", "mean", "sd")
+    custom_priors,
+    select = c("variable", "mean", "sd")
   )[
     ,
-    .(variable = gsub("\\[([^]]*)\\]", "", variable),
-      mean = as.numeric(mean), sd = as.numeric(sd))
+    .(
+      variable = gsub("\\[([^]]*)\\]", "", variable),
+      mean = as.numeric(mean), sd = as.numeric(sd)
+    )
   ]
   variables <- custom_priors$variable
   priors <- coerce_dt(
-    priors, required_cols = "variable"
+    priors,
+    required_cols = "variable"
   )[!(variable %in% variables)]
   priors <- rbind(priors, custom_priors, fill = TRUE)
   priors[]
@@ -271,8 +277,7 @@ remove_profiling <- function(s) {
 #'
 #' @family modeltools
 write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
-                                        target_dir = epinowcast::enw_get_cache()
-                                        ) {
+                                        target_dir = epinowcast::enw_get_cache()) {
   check_cmdstanr()
   # remove profiling from main .stan file
   code_main_model <- paste(readLines(stan_file, warn = FALSE), collapse = "\n")
@@ -354,18 +359,18 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' pobs <- enw_example("preprocessed")
 #'
 #' nowcast <- epinowcast(pobs,
-#'  expectation = enw_expectation(~1, data = pobs),
-#'  fit = enw_fit_opts(enw_sample, pp = TRUE),
-#'  obs = enw_obs(family = "poisson", data = pobs),
+#'   expectation = enw_expectation(~1, data = pobs),
+#'   fit = enw_fit_opts(enw_sample, pp = TRUE),
+#'   obs = enw_obs(family = "poisson", data = pobs),
 #' )
 #'
 #' summary(nowcast)
 #'
 #' # Use pathfinder initialization
 #' nowcast_pathfinder <- epinowcast(pobs,
-#'  expectation = enw_expectation(~1, data = pobs),
-#'  fit = enw_fit_opts(enw_sample, pp = TRUE, init_method = "pathfinder"),
-#'  obs = enw_obs(family = "poisson", data = pobs),
+#'   expectation = enw_expectation(~1, data = pobs),
+#'   fit = enw_fit_opts(enw_sample, pp = TRUE, init_method = "pathfinder"),
+#'   obs = enw_obs(family = "poisson", data = pobs),
 #' )
 #'
 #' summary(nowcast_pathfinder)
@@ -474,9 +479,9 @@ update_inits <- function(data, model, init,
 #' pobs <- enw_example("preprocessed")
 #'
 #' nowcast <- epinowcast(pobs,
-#'  expectation = enw_expectation(~1, data = pobs),
-#'  fit = enw_fit_opts(enw_pathfinder, pp = TRUE),
-#'  obs = enw_obs(family = "poisson", data = pobs),
+#'   expectation = enw_expectation(~1, data = pobs),
+#'   fit = enw_fit_opts(enw_pathfinder, pp = TRUE),
+#'   obs = enw_obs(family = "poisson", data = pobs),
 #' )
 #'
 #' summary(nowcast)
@@ -650,7 +655,7 @@ enw_stan_to_r <- function(
   if (any(files %in% overloaded_fns)) {
     cli::cli_warn(c(
       "The following functions are overloaded and cannot be exposed: ",
-       toString(overloaded_fns)
+      toString(overloaded_fns)
     ))
     files <- files[!files %in% overloaded_fns]
   }
@@ -715,14 +720,13 @@ enw_stan_to_r <- function(
 #' \dontrun{
 #' # Use the package cache in R >= 4.0
 #' if (R.version.string >= "4.0.0") {
-#'  enw_set_cache(
-#'    tools::R_user_dir(package = "epinowcast", "cache"), type = "all"
-#'  )
-#'}
-#'
-#'}
+#'   enw_set_cache(
+#'     tools::R_user_dir(package = "epinowcast", "cache"),
+#'     type = "all"
+#'   )
+#' }
+#' }
 enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
-
   type <- rlang::arg_match(type, multiple = TRUE)
 
   if (!is.character(path)) {
