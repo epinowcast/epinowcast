@@ -94,17 +94,11 @@ data {
   array[2, 1] real expr_gp_rho_p;
   array[2, 1] real expr_gp_alpha_p;
   // ---- Susceptible-depletion (population) adjustment ----
-  // Switch: 0 = none; 1 = apply adjustment. When on, the adjusted recursion is
-  // always run for the whole post-seed series (see log_expected_latent_from_r).
-  int<lower=0, upper=1> expr_pop_use;
-  // Is the initial susceptible population estimated (1) or fixed (0)?
-  int<lower=0, upper=1> expr_pop_uncertain;
-  // Fixed initial susceptible population (per group). Used when not estimated.
-  vector<lower=0>[g] expr_pop_fixed;
-  // Numerical-stability floor for the susceptible pool
-  real<lower=0> expr_pop_floor;
-  // Per-group LogNormal prior for the estimated population (row 1 = log median
-  // per group, row 2 = shared log sd). Each group draws an independent value.
+  int<lower=0, upper=1> expr_pop_use; // 0 = off, 1 = on
+  int<lower=0, upper=1> expr_pop_uncertain; // population estimated (1) or fixed
+  vector<lower=0>[g] expr_pop_fixed; // fixed population (per group)
+  real<lower=0> expr_pop_floor; // rate-denominator floor
+  // Per-group LogNormal prior (row 1 = log median per group, row 2 = log sd)
   array[2, g] real expr_pop_p;
   // ---- Latent case submodule ----
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
@@ -372,8 +366,7 @@ parameters {
   matrix[expr_gp_type == 1 ? 2 * expr_gp_M : expr_gp_M, expr_gp_G] expr_gp_eta;
   array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_rho;
   array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_alpha;
-  // Estimated initial susceptible population (when uncertain), one independent
-  // value per group with a shared LogNormal prior.
+  // Estimated population per group (when uncertain)
   vector<lower=0>[expr_pop_uncertain ? g : 0] expr_pop_est;
   // ---- Latent case submodule ----
   vector[expl_fncol] expl_beta;
@@ -496,10 +489,7 @@ transformed parameters{
     expr_gp_type, expr_gp_nu, expr_gp_d, expr_gp_PHI, expr_gp_eta,
     expr_gp_rho, expr_gp_alpha, expr_gp_flat_idx
   );
-  // Initial susceptible population per group: either each group's estimated
-  // value or its supplied fixed value (groups are treated independently).
-  // Declared in a local block so it is not written to the posterior output
-  // (keeps the saved variable set unchanged when the adjustment is off).
+  // Population per group (local block: keep it out of the saved output).
   {
     vector[g] expr_pop =
       expr_pop_uncertain ? expr_pop_est : expr_pop_fixed;
@@ -659,9 +649,8 @@ model {
     expr_gp_present, expr_gp_eta, expr_gp_rho, expr_gp_alpha,
     expr_gp_rho_p, expr_gp_alpha_p
   );
-  // initial susceptible population (when estimated): independent LogNormal
-  // prior per group, with a per-group log median (expr_pop_p[1]) and shared
-  // log sd (expr_pop_p[2])
+  // Per-group LogNormal prior on the estimated population
+
   if (expr_pop_uncertain) {
     expr_pop_est ~ lognormal(expr_pop_p[1], expr_pop_p[2]);
   }

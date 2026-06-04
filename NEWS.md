@@ -10,11 +10,8 @@
   See #824.
 - Added an optional susceptible-depletion (population) adjustment to the renewal expectation model via the new `population`, `population_floor`, `population_uncertain`, and `population_cv` arguments to `enw_expectation()`.
   When a population size is supplied the effective reproduction number bends down as the susceptible pool is depleted by modelled latent cases, scaling transmission by the remaining susceptible fraction.
-  The population can be fixed or fitted (uncertain) via a LogNormal prior, and is per-group: groups are treated as independent well-mixed populations (a single value is recycled across groups with a warning, or a length-`groups` vector sets group-specific values).
-  When fitted, each group's initial susceptible population is estimated independently from its own LogNormal prior whose median equals that group's supplied value.
-  The adjusted recursion is always applied to the whole modelled series so the susceptible pool stays internally consistent; a forecast-only adjustment mode could be a future extension.
+  The population can be fixed or fitted via a LogNormal prior, and is per-group: groups are treated as independent well-mixed populations (a single value is recycled across groups with a warning, or a length-`groups` vector sets group-specific values).
   The adjustment is opt-in and applies to the renewal path only; the renewal logic is adapted from `EpiNow2` (`rt_opts(pop = ...)`, MIT licence).
-  A hierarchical hyper-prior linking per-group populations is a possible future extension.
   See #826.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.

@@ -52,46 +52,27 @@ ascertainment etc. A list of PMFs can be provided to allow for time-varying
 PMFs. This should be the same length as the modelled time period plus the
 length of the generation time if supplied.}
 
-\item{population}{Optional initial susceptible population size used to adjust
-the renewal process for susceptible depletion. Defaults to \code{NULL}, meaning no
-adjustment is applied and the unadjusted renewal equation is used (the
-default and backwards compatible). When a positive numeric value is
-supplied, the effective reproduction number bends down as the susceptible
-pool is depleted by modelled latent cases. At each step transmission is
-scaled by the remaining susceptible fraction \code{S_t / population}, where
-\code{S_t} is the initial susceptible population minus cumulative modelled latent
-cases. May be a single value (the same initial susceptible population for
-every group, with an explicit warning when more than one group is present)
-or a numeric vector with one value per group. Groups are treated as
-independent well-mixed populations. When the adjustment is enabled the
-bounded susceptible-depletion recursion is always applied to the whole
-modelled (post-seed) series so the susceptible pool stays internally
-consistent; the adjustment cannot be restricted to part of the series (a
-forecast-only mode could be a future extension). The adjustment only applies
-to the renewal path (i.e. when \code{generation_time} has length greater than 1);
-it is ignored for the daily growth rate model (\code{generation_time = 1}). The
-adjustment assumes a single well-mixed population per group with no waning of
-immunity and no births or deaths, so the susceptible pool is only ever
-depleted. Adapted from the implementation in \code{EpiNow2}
-(\code{rt_opts(pop = ...)}, MIT licence).}
+\item{population}{Optional initial susceptible population for the
+susceptible-depletion adjustment of the renewal process. Defaults to \code{NULL}
+(no adjustment). When supplied, transmission is scaled by the remaining
+susceptible fraction so \code{Rt} bends down as the pool depletes. A single
+value is recycled across groups (with a warning) or a length-\code{groups} vector
+sets per-group values; groups are independent well-mixed populations. Only
+used on the renewal path (\code{length(generation_time) > 1}). Adapted from
+\code{EpiNow2::rt_opts(pop = ...)}.}
 
 \item{population_floor}{Numeric, defaulting to 1. Minimum susceptible
-population used as a numerical-stability floor when adjusting for depletion.
-This prevents division by zero / instability as the susceptible pool
-approaches zero. Ignored when \code{population} is \code{NULL}. This is distinct from a
-small fixed internal floor applied to adjusted new cases for log-scale
-stability (see \code{\link[=enw_expectation]{enw_expectation()}} Stan implementation notes).}
+population used as a numerical-stability floor on the transmission-rate
+denominator. Ignored when \code{population} is \code{NULL}.}
 
 \item{population_uncertain}{Logical, defaulting to \code{FALSE}. If \code{TRUE}, the
-initial susceptible population is treated as an estimated (fitted) parameter
-rather than a fixed value, fitted independently per group from a per-group
-LogNormal prior whose median equals that group's supplied \code{population} value
-and whose coefficient of variation is \code{population_cv}. Ignored when
-\code{population} is \code{NULL}.}
+population is estimated, fitted independently per group from a per-group
+LogNormal prior with median equal to that group's \code{population} value and
+coefficient of variation \code{population_cv}. Ignored when \code{population} is
+\code{NULL}.}
 
-\item{population_cv}{Numeric, defaulting to 0.1. Coefficient of variation
-(on the natural scale) of the LogNormal prior on the initial susceptible
-population when \code{population_uncertain} is \code{TRUE}. Ignored otherwise.}
+\item{population_cv}{Numeric, defaulting to 0.1. Coefficient of variation of
+the LogNormal population prior when \code{population_uncertain} is \code{TRUE}.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
@@ -109,12 +90,6 @@ Expectation model module
 }
 \examples{
 enw_expectation(data = enw_example("preprocessed"))
-
-# Renewal model with a fixed initial susceptible population
-enw_expectation(
-  generation_time = c(0.2, 0.5, 0.3), population = 100000,
-  data = enw_example("preprocessed")
-)
 }
 \seealso{
 Model modules
