@@ -64,6 +64,22 @@ test_that("enw_secondary() disabled by default produces an inactive module", {
   expect_identical(secondary$data$model_sec, 0L)
 })
 
+test_that("enw_secondary() disabled and active data lists are shape-symmetric", {
+  pobs <- enw_example("preprocessed")
+  disabled <- enw_secondary(secondary = ~0, data = pobs)
+  active <- enw_secondary(data = pobs)
+  # Both branches must emit the same keys so the joint Stan block can declare
+  # them unconditionally (see #835)
+  expect_identical(
+    sort(names(disabled$data)), sort(names(active$data))
+  )
+  # Disabled values are empty/zero
+  expect_identical(disabled$data$model_sec_scale, 0L)
+  expect_identical(disabled$data$sec_t, 0L)
+  expect_identical(disabled$data$sec_g, 0L)
+  expect_identical(dim(disabled$data$sec_primary), c(0L, 0L))
+})
+
 test_that("enw_secondary() builds a convolution delay of the requested size", {
   delay <- c(0.1, 0.3, 0.4, 0.2)
   secondary <- enw_secondary(
@@ -71,6 +87,31 @@ test_that("enw_secondary() builds a convolution delay of the requested size", {
   )
   expect_identical(secondary$data$sec_delay_n, length(delay))
   expect_true(secondary$data$model_sec == 1L)
+})
+
+test_that("enw_secondary() accepts a time-varying (list of PMFs) delay", {
+  pobs <- enw_example("preprocessed")
+  t <- pobs$time[[1]]
+  # A list of valid PMFs, one per modelled time point
+  delay <- rep(list(c(0.2, 0.5, 0.3)), t)
+  expect_no_error(
+    secondary <- enw_secondary(delay = delay, data = pobs)
+  )
+  expect_identical(secondary$data$sec_delay_n, 3L)
+  expect_identical(secondary$data$model_sec, 1L)
+})
+
+test_that("enw_secondary() rejects a delay PMF that does not sum to one", {
+  expect_error(
+    enw_secondary(delay = c(0.2, 0.2), data = enw_example("preprocessed")),
+    "sum to 1"
+  )
+})
+
+test_that("enw_secondary() omits the sd prior when scale has no random effects", {
+  secondary <- enw_secondary(scale = ~1, data = enw_example("preprocessed"))
+  expect_false("sec_beta_sd" %in% secondary$priors$variable)
+  expect_true("sec_scale_int" %in% secondary$priors$variable)
 })
 
 test_that("enw_secondary() convolution recovers a known secondary series", {

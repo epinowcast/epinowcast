@@ -23,9 +23,11 @@ primary observation to the corresponding secondary observation. Defaults to
 for time-varying delays, as in \code{\link[=enw_expectation]{enw_expectation()}}.}
 
 \item{scale}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}}) describing the
-log-scale multiplicative scaling (ascertainment) applied to the convolved
-primary series when producing the secondary expectation. Defaults to \code{~1}
-(a single scaling intercept). Set to \code{~0} to fix the scaling at one.}
+log-scale multiplicative scaling (ascertainment) to be applied to the
+convolved primary series by the forthcoming joint likelihood. This module
+exposes the corresponding scaling design matrix; the scaling itself is not
+yet applied. Defaults to \code{~1} (a single scaling intercept). Set to \code{~0} to
+omit the scaling design.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
@@ -40,26 +42,25 @@ can be used to sample from a tightened version of the prior distribution.
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Builds the data required to model a secondary observation as a function of a
-primary observed (or nowcast) series. The secondary outcome is a delayed,
-scaled convolution of the primary series, optionally accumulated over time
-for prevalence-type targets (e.g. bed occupancy). This brings the
+primary observed (or nowcast) series. The intended secondary outcome is a
+delayed, scaled convolution of the primary series, optionally accumulated
+over time for prevalence-type targets (e.g. bed occupancy). This brings the
 \code{EpiNow2::estimate_secondary()} modelling pattern into the \code{epinowcast}
 joint-modelling framework so that the primary series can itself be a nowcast
 and uncertainty propagates end to end.
 }
 \details{
-The expected secondary value at time \code{t} is built from the primary
-series \code{p} via a convolution with \code{delay} and a (possibly time-varying)
-multiplicative scaling on the log scale set by \code{scale}, then combined
-according to the target options in \code{secondary} (see \code{\link[=enw_secondary_opts]{enw_secondary_opts()}}).
-For incidence targets this reduces to a scaled convolution; for prevalence
-targets contributions accumulate and decay over time.
-
-This module produces the R-side data interface and is the first part of
-joint primary/secondary nowcasting (see issue #825). The Stan-side joint
-likelihood that fits the secondary observations simultaneously with the
-primary nowcast is under development; see the package NEWS and the issue for
-the current status and the design decisions taken here.
+This module currently builds the R-side data interface only: the
+delay convolution matrix (via \code{\link[=convolution_matrix]{convolution_matrix()}}), a scaling design
+matrix from \code{scale}, the target options from \code{secondary}, and the primary
+series. It does not yet apply the scaling or fit the secondary observations;
+the Stan-side joint likelihood that consumes this data, applies the scaling,
+and fits the secondary observations simultaneously with the primary nowcast
+is under development (see issue #825 and the package NEWS for the current
+status and the design decisions taken here). The Stan
+\code{calculate_secondary()} function that combines the convolved and scaled
+primary terms into incidence or prevalence targets is included and tested
+independently.
 }
 \examples{
 # Default (incidence) secondary model

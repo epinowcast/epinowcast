@@ -1039,25 +1039,24 @@ enw_secondary_opts <- function(type = c("incidence", "prevalence"),
 #'
 #' @description `r lifecycle::badge("experimental")`
 #' Builds the data required to model a secondary observation as a function of a
-#' primary observed (or nowcast) series. The secondary outcome is a delayed,
-#' scaled convolution of the primary series, optionally accumulated over time
-#' for prevalence-type targets (e.g. bed occupancy). This brings the
+#' primary observed (or nowcast) series. The intended secondary outcome is a
+#' delayed, scaled convolution of the primary series, optionally accumulated
+#' over time for prevalence-type targets (e.g. bed occupancy). This brings the
 #' `EpiNow2::estimate_secondary()` modelling pattern into the `epinowcast`
 #' joint-modelling framework so that the primary series can itself be a nowcast
 #' and uncertainty propagates end to end.
 #'
-#' @details The expected secondary value at time `t` is built from the primary
-#' series `p` via a convolution with `delay` and a (possibly time-varying)
-#' multiplicative scaling on the log scale set by `scale`, then combined
-#' according to the target options in `secondary` (see [enw_secondary_opts()]).
-#' For incidence targets this reduces to a scaled convolution; for prevalence
-#' targets contributions accumulate and decay over time.
-#'
-#' This module produces the R-side data interface and is the first part of
-#' joint primary/secondary nowcasting (see issue #825). The Stan-side joint
-#' likelihood that fits the secondary observations simultaneously with the
-#' primary nowcast is under development; see the package NEWS and the issue for
-#' the current status and the design decisions taken here.
+#' @details This module currently builds the R-side data interface only: the
+#' delay convolution matrix (via [convolution_matrix()]), a scaling design
+#' matrix from `scale`, the target options from `secondary`, and the primary
+#' series. It does not yet apply the scaling or fit the secondary observations;
+#' the Stan-side joint likelihood that consumes this data, applies the scaling,
+#' and fits the secondary observations simultaneously with the primary nowcast
+#' is under development (see issue #825 and the package NEWS for the current
+#' status and the design decisions taken here). The Stan
+#' `calculate_secondary()` function that combines the convolved and scaled
+#' primary terms into incidence or prevalence targets is included and tested
+#' independently.
 #'
 #' @param secondary Either a call to [enw_secondary_opts()] specifying the
 #' secondary target structure, or `~0` to disable the secondary model (the
@@ -1069,9 +1068,11 @@ enw_secondary_opts <- function(type = c("incidence", "prevalence"),
 #' for time-varying delays, as in [enw_expectation()].
 #'
 #' @param scale A formula (as implemented in [enw_formula()]) describing the
-#' log-scale multiplicative scaling (ascertainment) applied to the convolved
-#' primary series when producing the secondary expectation. Defaults to `~1`
-#' (a single scaling intercept). Set to `~0` to fix the scaling at one.
+#' log-scale multiplicative scaling (ascertainment) to be applied to the
+#' convolved primary series by the forthcoming joint likelihood. This module
+#' exposes the corresponding scaling design matrix; the scaling itself is not
+#' yet applied. Defaults to `~1` (a single scaling intercept). Set to `~0` to
+#' omit the scaling design.
 #'
 #' @param data Output from [enw_preprocess_data()].
 #'
@@ -1096,10 +1097,13 @@ enw_secondary_opts <- function(type = c("incidence", "prevalence"),
 #' )
 enw_secondary <- function(secondary = enw_secondary_opts(), delay = 1,
                           scale = ~1, data, ...) {
-  # Disabled model: ship an empty, Stan-compatible data list
+  # Disabled model: ship a Stan-compatible data list that is shape-symmetric
+  # with the active branch (same keys, empty/zero values) so the forthcoming
+  # joint Stan block can declare these as data unconditionally (see #835).
   if (!is.list(secondary) && as_string_formula(secondary) == "~0") {
     data_list <- enw_formula_as_data_list(prefix = "sec", drop_intercept = TRUE)
     data_list$model_sec <- 0L
+    data_list$model_sec_scale <- 0L
     data_list$sec_cumulative <- 0L
     data_list$sec_historic <- 0L
     data_list$sec_primary_hist_additive <- 0L
@@ -1107,6 +1111,9 @@ enw_secondary <- function(secondary = enw_secondary_opts(), delay = 1,
     data_list$sec_primary_current_additive <- 0L
     data_list$sec_delay_n <- 1L
     data_list$sec_delay <- matrix(numeric(0), nrow = 0, ncol = 0)
+    data_list$sec_t <- 0L
+    data_list$sec_g <- 0L
+    data_list$sec_primary <- matrix(numeric(0), nrow = 0, ncol = 0)
     out <- list(
       formula = list(scale = "~0"),
       data = data_list,
@@ -1140,12 +1147,16 @@ enw_secondary <- function(secondary = enw_secondary_opts(), delay = 1,
     )
   }
 
-  if (abs(sum(unlist(delay)) - 1) > 1e-3 &&
-    !(length(delay) == 1 && delay == 1)) {
-    cli::cli_abort("The secondary `delay` distribution must sum to 1.")
-  }
-  if (as_string_formula(scale) == "~0") {
-    scale <- ~0
+  # Validate each delay PMF separately so genuine time-varying (list of PMFs)
+  # delays are accepted, mirroring `enw_expectation()`.
+  delays_to_check <- if (is.list(delay)) delay else list(delay)
+  delay_sums_ok <- vapply(
+    delays_to_check,
+    function(d) length(d) == 1 && isTRUE(d == 1) || abs(sum(d) - 1) <= 1e-3,
+    logical(1)
+  )
+  if (!all(delay_sums_ok)) {
+    cli::cli_abort("Each secondary `delay` distribution must sum to 1.")
   }
 
   # Number of modelled time points (per group) and the primary series matrix.
@@ -1160,8 +1171,9 @@ enw_secondary <- function(secondary = enw_secondary_opts(), delay = 1,
   # Convolution matrix mapping primary events to secondary events
   sec_delay <- convolution_matrix(delay, t, include_partial = FALSE)
 
-  # Scaling (ascertainment) formula
-  if (as_string_formula(scale) == "~0") {
+  # Scaling (ascertainment) design matrix
+  scale_disabled <- as_string_formula(scale) == "~0"
+  if (scale_disabled) {
     scale_data <- enw_formula_as_data_list(
       prefix = "sec", drop_intercept = TRUE
     )
@@ -1188,19 +1200,34 @@ enw_secondary <- function(secondary = enw_secondary_opts(), delay = 1,
   data_list$sec_g <- n_groups
   data_list$sec_primary <- primary_matrix
 
+  # Build priors: the scaling intercept only when scaling is active, and the
+  # random-effect sd only when the scaling formula has random effects, matching
+  # `enw_expectation()`.
+  priors <- data.table::data.table(
+    variable = character(0), description = character(0),
+    distribution = character(0), mean = numeric(0), sd = numeric(0)
+  )
+  if (model_scale > 0) {
+    priors <- rbind(priors, data.table::data.table(
+      variable = "sec_scale_int",
+      description = "Log-scale intercept of the primary-to-secondary scaling",
+      distribution = "Normal", mean = 0, sd = 1
+    ))
+  }
+  if (data_list$sec_rncol > 0) {
+    priors <- rbind(priors, data.table::data.table(
+      variable = "sec_beta_sd",
+      description = paste(
+        "Standard deviation of scaled pooled secondary scaling effects"
+      ),
+      distribution = "Zero truncated normal", mean = 0, sd = 1
+    ))
+  }
+
   out <- list()
   out$formula <- list(scale = scale_formula)
   out$data <- data_list
-  out$priors <- data.table::data.table(
-    variable = c("sec_scale_int", "sec_beta_sd"),
-    description = c(
-      "Log-scale intercept of the primary-to-secondary scaling",
-      "Standard deviation of scaled pooled secondary scaling effects"
-    ),
-    distribution = c("Normal", "Zero truncated normal"),
-    mean = c(0, 0),
-    sd = c(1, 1)
-  )
+  out$priors <- priors
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
     fn <- function() {
