@@ -8,9 +8,10 @@
  * matching the `EpiNow2` secondary parameterisation.
  *
  * The convolution of the primary series is supplied pre-computed (as a sparse
- * matrix-vector product done by the caller) so the only per-time work here is
- * the optional cumulative accumulation; the scaled current term and the
- * convolution are otherwise vectorised by the caller.
+ * matrix-vector product done by the caller). The incidence (non-cumulative)
+ * path is fully vectorised; the prevalence (cumulative) path follows the
+ * sequential EpiNow2 per-element ordering exactly, clamping the subtractive
+ * historic term at 0 before adding the current term.
  *
  * @param scaled_reports Vector of scaled current primary reports (natural
  *   scale), already multiplied by the ascertainment scaling.
@@ -42,9 +43,10 @@
  * @return A vector of expected secondary reports (natural scale).
  *
  * @note Adapted from `EpiNow2`
- *   (https://github.com/epiforecasts/EpiNow2, MIT licensed). The accumulation
- *   recursion is inherently sequential; all other terms are vectorised by the
- *   caller before this function is called.
+ *   (https://github.com/epiforecasts/EpiNow2, MIT licensed), reproducing its
+ *   per-element combination ordering for the cumulative path (subtractive
+ *   historic clamped at 0 before the current term; additive 1e-6 at the end).
+ *   The incidence path is the algebraic equivalent vectorised over time.
  */
 vector calculate_secondary(
   vector scaled_reports, vector conv_reports, array[] int obs,
@@ -52,30 +54,52 @@ vector calculate_secondary(
   int current, int primary_current_additive, int predict
 ) {
   int t = num_elements(scaled_reports);
-  vector[t] secondary_reports;
-
-  // Combine the historic (convolved) and current (scaled) primary terms in a
-  // single vectorised pass; signs follow the additive/subtractive switches.
-  vector[t] increment = rep_vector(0.0, t);
-  if (historic) {
-    increment += primary_hist_additive ? conv_reports : -conv_reports;
-  }
-  if (current) {
-    increment += primary_current_additive ? scaled_reports : -scaled_reports;
-  }
+  vector[t] secondary_reports = rep_vector(0.0, t);
 
   if (!cumulative) {
-    // Incidence target: no accumulation, just floor at a small positive value
-    secondary_reports = fmax(rep_vector(1e-6, t), increment);
+    // Incidence target: no carry-forward, so each element starts from 0 and
+    // the historic / current terms vectorise. The subtractive-historic clamp
+    // at 0 (before the current term) and the additive 1e-6 at the end exactly
+    // match the per-element EpiNow2 logic when there is no accumulation.
+    if (historic) {
+      secondary_reports = primary_hist_additive
+        ? conv_reports
+        : fmax(rep_vector(0.0, t), -conv_reports);
+    }
+    if (current) {
+      secondary_reports += primary_current_additive
+        ? scaled_reports
+        : -scaled_reports;
+    }
+    secondary_reports += 1e-6;
     return secondary_reports;
   }
 
-  // Prevalence target: accumulate contributions, seeding the prediction window
-  // from observed data. This recursion is inherently sequential.
-  secondary_reports[1] = fmax(1e-6, increment[1]);
-  for (i in 2:t) {
-    real prev = i > predict ? secondary_reports[i - 1] : obs[i - 1];
-    secondary_reports[i] = fmax(1e-6, prev + increment[i]);
+  // Prevalence / cumulative target: accumulate contributions, seeding the
+  // prediction window from observed data. This recursion is inherently
+  // sequential and reproduces the EpiNow2 ordering exactly: clamp the
+  // subtractive historic (outflow) term at 0 BEFORE adding the current
+  // (inflow) term, then add 1e-6 at the end (allowing a negative result when
+  // the current term is subtractive).
+  for (i in 1:t) {
+    if (i > 1) {
+      secondary_reports[i] = i > predict ? secondary_reports[i - 1] : obs[i - 1];
+    }
+    if (historic) {
+      if (primary_hist_additive) {
+        secondary_reports[i] += conv_reports[i];
+      } else {
+        secondary_reports[i] = fmax(0, secondary_reports[i] - conv_reports[i]);
+      }
+    }
+    if (current) {
+      if (primary_current_additive) {
+        secondary_reports[i] += scaled_reports[i];
+      } else {
+        secondary_reports[i] -= scaled_reports[i];
+      }
+    }
+    secondary_reports[i] += 1e-6;
   }
   return secondary_reports;
 }
