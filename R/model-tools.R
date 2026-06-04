@@ -277,7 +277,8 @@ remove_profiling <- function(s) {
 #'
 #' @family modeltools
 write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
-                                        target_dir = epinowcast::enw_get_cache()) {
+                                        target_dir = epinowcast::enw_get_cache()
+                                        ) {
   check_cmdstanr()
   # remove profiling from main .stan file
   code_main_model <- paste(readLines(stan_file, warn = FALSE), collapse = "\n")

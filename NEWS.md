@@ -2,6 +2,10 @@
 
 ## Model
 
+- Added a `gp()` formula helper that places an approximate Gaussian process on the latent expectation process (the growth rate or the latent-to-obs proportion).
+  It uses a Hilbert-space reduced-rank (spectral) approximation with selectable kernels (Matern 3/2 default, Matern 5/2, Ornstein-Uhlenbeck, squared exponential, periodic) and a `basis_prop` accuracy-speed control.
+  The Stan implementation is adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2, MIT licensed).
+  See #824.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
 
