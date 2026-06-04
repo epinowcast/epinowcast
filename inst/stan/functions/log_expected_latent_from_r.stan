@@ -47,17 +47,16 @@ vector extract_group_rates(vector r, array[] int r_g, int k, int r_t) {
  * remaining susceptible fraction and the susceptible pool is depleted by
  * modelled new latent cases each step.
  *
- * @param use_pop Susceptible-depletion adjustment mode. 0 = no adjustment
- * (default, unadjusted renewal equation); 1 = apply the adjustment only to
- * the forecast period (post-seed time points after `nht`); 2 = apply the
- * adjustment to all modelled (post-seed) time points.
+ * @param use_pop Susceptible-depletion adjustment switch. 0 = no adjustment
+ * (default, unadjusted renewal equation); > 0 = apply the susceptible-depletion
+ * adjustment. When enabled the adjusted bounded-exponential recursion is run
+ * for the whole post-seed series so the susceptible pool stays internally
+ * consistent (see note). The specific positive value carries the user-facing
+ * `population_period` choice but does not change the recursion.
  *
  * @param pop_floor Minimum susceptible population used as a numerical-stability
  * floor, preventing instability as the susceptible pool approaches zero. Only
  * used when `use_pop > 0`.
- *
- * @param nht Number of non-forecast (in-data) post-seed time points. Used with
- * `use_pop == 1` to restrict the adjustment to the forecast horizon.
  *
  * @return An array of vectors containing log-transformed expected latent
  * values for each group and time period.
@@ -79,17 +78,36 @@ vector extract_group_rates(vector r, array[] int r_g, int k, int r_t) {
  *                  stable than performing the renewal equation directly in log
  *                  space.
  *
+ * When `use_pop > 0` the adjusted bounded-exponential recursion is applied to
+ * every post-seed time point (not just a forecast window). This keeps the
+ * cumulative-case / susceptible-pool trajectory internally consistent: gating
+ * the adjustment on only part of the series would let larger unadjusted
+ * in-data incidence over-deplete the pool, biasing the reproduction number
+ * downwards in the remainder. The per-group `pop[k]` is each group's own
+ * initial susceptible population (groups are treated independently).
+ *
+ * Two numerical floors are used and are distinct:
+ *   - `pop_floor` is the user-facing minimum susceptible population (see the
+ *     `population_floor` argument of `enw_expectation()`); it bounds the
+ *     denominator of the susceptible fraction.
+ *   - a small fixed `1e-8` floor is applied to the adjusted new cases. This is
+ *     load-bearing: as the pool nears exhaustion the bounded-exponential term
+ *     can return (numerically) zero, and the subsequent `log()` would be
+ *     `-inf`; the floor pins incidence at a tiny positive value so the
+ *     log-scale latent series stays finite. It is not user-configurable and is
+ *     unrelated to `pop_floor`.
+ *
  * The susceptible-depletion adjustment is adapted from EpiNow2
  * (epiforecasts/EpiNow2, MIT licence, (c) 2020 EpiForecasts), specifically the
  * `generate_infections()` renewal step in
  * `inst/stan/functions/infections.stan`. It assumes a single well-mixed
- * population with no waning of immunity and no births or deaths, so the
- * susceptible pool is only ever depleted by modelled new latent cases.
+ * population per group with no waning of immunity and no births or deaths, so
+ * the susceptible pool is only ever depleted by modelled new latent cases.
  */
 array[] vector log_expected_latent_from_r(
   matrix lexp_latent_int, vector r, array[] int r_g, int r_t,
   int r_seed, int gt_n, vector lrgt, int t, int g,
-  vector pop, int use_pop, real pop_floor, int nht
+  vector pop, int use_pop, real pop_floor
 ) {
   array[g] vector[t] exp_lobs;
 
@@ -112,24 +130,22 @@ array[] vector log_expected_latent_from_r(
       exp_obs[1:r_seed] = exp(lexp_latent_int[1:r_seed, k]);
       if (use_pop) {
         // Cumulative latent cases (including seeded cases) consumed from the
-        // susceptible pool. Adapted from EpiNow2's generate_infections().
+        // susceptible pool. Adapted from EpiNow2's generate_infections(). The
+        // adjusted recursion is applied throughout so the pool trajectory is
+        // internally consistent (see function note).
         real cum_cases = sum(exp_obs[1:r_seed]);
         for (i in 1:r_t) {
           // Infectiousness: convolution of recent cases with generation time
           real infectiousness = dot_product(
             segment(exp_obs, r_seed + i - gt_n, gt_n), rgt
           );
-          if (use_pop == 2 || i > nht) {
-            // Scale transmission by the remaining susceptible fraction and
-            // deplete the pool by the modelled new cases. The floor prevents
-            // instability as the susceptible pool approaches zero. A small
-            // positive floor on new cases keeps the subsequent log() finite.
-            real susceptible = fmax(pop_floor, pop[k] - cum_cases);
-            real adj = 1 - exp(-local_R[i] * infectiousness / susceptible);
-            exp_obs[r_seed + i] = fmax(1e-8, susceptible * adj);
-          } else {
-            exp_obs[r_seed + i] = local_R[i] * infectiousness;
-          }
+          // Scale transmission by the remaining susceptible fraction and
+          // deplete the pool by the modelled new cases. `pop_floor` bounds the
+          // denominator; the fixed 1e-8 floor keeps the subsequent log()
+          // finite near pool exhaustion (see note).
+          real susceptible = fmax(pop_floor, pop[k] - cum_cases);
+          real adj = 1 - exp(-local_R[i] * infectiousness / susceptible);
+          exp_obs[r_seed + i] = fmax(1e-8, susceptible * adj);
           cum_cases += exp_obs[r_seed + i];
         }
       } else {

@@ -94,7 +94,9 @@ data {
   array[2, 1] real expr_gp_rho_p;
   array[2, 1] real expr_gp_alpha_p;
   // ---- Susceptible-depletion (population) adjustment ----
-  // Mode: 0 = none; 1 = forecast period only; 2 = all post-seed time points
+  // Switch: 0 = none; > 0 = apply adjustment (1 = "forecast", 2 = "all"; the
+  // value records population_period but the adjusted recursion is run for the
+  // whole post-seed series in either case, see log_expected_latent_from_r).
   int<lower=0, upper=2> expr_pop_use;
   // Is the initial susceptible population estimated (1) or fixed (0)?
   int<lower=0, upper=1> expr_pop_uncertain;
@@ -102,9 +104,8 @@ data {
   vector<lower=0>[g] expr_pop_fixed;
   // Numerical-stability floor for the susceptible pool
   real<lower=0> expr_pop_floor;
-  // Number of non-forecast post-seed time points (for expr_pop_use == 1)
-  int<lower=0> expr_pop_nht;
-  // LogNormal prior (log mean, log sd) for the estimated population
+  // LogNormal prior (log median, log sd) for the estimated population. Shared
+  // across groups but each group draws an independent value (see parameters).
   array[2, 1] real expr_pop_p;
   // ---- Latent case submodule ----
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
@@ -372,9 +373,9 @@ parameters {
   matrix[expr_gp_type == 1 ? 2 * expr_gp_M : expr_gp_M, expr_gp_G] expr_gp_eta;
   array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_rho;
   array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_alpha;
-  // Estimated initial susceptible population (when uncertain). Shared across
-  // groups; applied per group via expr_pop below.
-  array[expr_pop_uncertain ? 1 : 0] real<lower=0> expr_pop_est;
+  // Estimated initial susceptible population (when uncertain), one independent
+  // value per group with a shared LogNormal prior.
+  vector<lower=0>[expr_pop_uncertain ? g : 0] expr_pop_est;
   // ---- Latent case submodule ----
   vector[expl_fncol] expl_beta;
   vector<lower=0>[expl_rncol] expl_beta_sd;
@@ -496,13 +497,12 @@ transformed parameters{
     expr_gp_type, expr_gp_nu, expr_gp_d, expr_gp_PHI, expr_gp_eta,
     expr_gp_rho, expr_gp_alpha, expr_gp_flat_idx
   );
-  // Initial susceptible population per group: either the estimated value
-  // (broadcast across groups) or the supplied fixed value.
-  vector[g] expr_pop = expr_pop_uncertain ?
-    rep_vector(expr_pop_est[1], g) : expr_pop_fixed;
+  // Initial susceptible population per group: either each group's estimated
+  // value or its supplied fixed value (groups are treated independently).
+  vector[g] expr_pop = expr_pop_uncertain ? expr_pop_est : expr_pop_fixed;
   exp_llatent = log_expected_latent_from_r(
     expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
-    expr_ft, g, expr_pop, expr_pop_use, expr_pop_floor, expr_pop_nht
+    expr_ft, g, expr_pop, expr_pop_use, expr_pop_floor
   );
   // Get latent-to-obs proportions and map expected latent cases to expected observations
   if (expl_obs) {
@@ -655,10 +655,10 @@ model {
     expr_gp_present, expr_gp_eta, expr_gp_rho, expr_gp_alpha,
     expr_gp_rho_p, expr_gp_alpha_p
   );
-  // initial susceptible population (when estimated): LogNormal prior with
-  // parameters given on the log scale (log mean, log sd)
+  // initial susceptible population (when estimated): independent LogNormal
+  // prior per group, parameters on the log scale (log median, log sd)
   if (expr_pop_uncertain) {
-    expr_pop_est[1] ~ lognormal(expr_pop_p[1, 1], expr_pop_p[2, 1]);
+    expr_pop_est ~ lognormal(expr_pop_p[1, 1], expr_pop_p[2, 1]);
   }
   // ---- Latent case submodule ----
   // latent-to-obs proportion effect + ARIMA priors
