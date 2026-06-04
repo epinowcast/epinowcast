@@ -45,7 +45,7 @@ test_that("delay_multinomial_lpmf() is invariant to the total offset", {
 })
 
 test_that("delay_multinomial_lpmf() truncates by renormalising cells", {
-  # Truncated multinomial (#776): only the first three delays observed.
+  # Truncated multinomial: only the first three delays observed.
   # Renormalising over the observed cells divides by F(2), matching the
   # truncated multinomial with probs p_d / F(T - t).
   pmf <- c(0.4, 0.3, 0.2, 0.1)

@@ -1,6 +1,6 @@
-# Tests for the delay-only model (issues #775, #776). The delay-only
-# likelihood fits the reporting-delay distribution conditional on known
-# per-reference-date totals via a (truncated) multinomial.
+# Tests for the delay-only model: fitting the reporting-delay distribution
+# conditional on known per-reference-date totals via a (truncated)
+# multinomial.
 
 # Discretised lognormal delay PMF matching the package's double-censored
 # scheme (max_strat = 2 in discretised_logit_hazard.stan). Simulating from
@@ -24,7 +24,7 @@ disc_lognormal_pmf <- function(meanlog, sdlog, dmax) {
 # Build a full reporting triangle from a known delay PMF and a constant
 # known total per reference date. `truncate = TRUE` keeps only reports up
 # to the most recent reference date, so recent reference dates only observe
-# early delays and their known totals are partial running totals (#776).
+# early delays and their known totals are partial running totals.
 simulate_delay_triangle <- function(meanlog = 1.6, sdlog = 0.5,
                                     max_delay = 15, n_dates = 60,
                                     total = 2000, truncate = FALSE) {
@@ -72,34 +72,32 @@ test_that("delay_only enw_obs() sets the expected data entries", {
   expect_identical(ncol(o0$data$dlo_ltotal), 0L)
 })
 
-test_that("delay_only is incompatible with an observation indicator", {
-  pobs <- enw_example("preprocessed")
-  expect_error(
-    enw_obs(
-      delay_only = TRUE, observation_indicator = ".observed", data = pobs
-    ),
-    "not compatible"
+test_that("delay_only supports an observation indicator", {
+  sim <- simulate_delay_triangle(
+    meanlog = 1.6, sdlog = 0.5, max_delay = 10, n_dates = 20, total = 2000
   )
+  comp <- enw_complete_dates(sim$obs, flag_observation = TRUE)
+  pobs <- enw_preprocess_data(comp, max_delay = 10)
+  o <- enw_obs(
+    delay_only = TRUE, observation_indicator = ".observed", data = pobs
+  )
+  expect_identical(o$data$model_delay_only, 1L)
 })
 
-test_that("delay_only rejects non-positive totals", {
+test_that("delay_only floors non-positive / missing totals to log 0", {
+  # The log total is only an offset on the expected cells and cancels in the
+  # multinomial, so reference dates with no observed total (e.g. recent dates
+  # under an observation indicator) are floored to 1 (log 0) rather than
+  # erroring; they contribute nothing to the likelihood.
   pobs <- enw_example("preprocessed")
   bad <- data.table::copy(pobs)
   bad$latest[[1]] <- data.table::copy(pobs$latest[[1]])
   bad$latest[[1]][1, confirm := 0]
-  expect_error(
-    enw_obs(delay_only = TRUE, data = bad), "strictly positive"
-  )
-})
-
-test_that("delay_only rejects missing or non-finite totals", {
-  pobs <- enw_example("preprocessed")
-  bad <- data.table::copy(pobs)
-  bad$latest[[1]] <- data.table::copy(pobs$latest[[1]])
-  bad$latest[[1]][1, confirm := NA_real_]
-  expect_error(
-    enw_obs(delay_only = TRUE, data = bad), "finite"
-  )
+  bad$latest[[1]][2, confirm := NA_real_]
+  ltotal <- enw_obs(delay_only = TRUE, data = bad)$data$dlo_ltotal
+  expect_true(all(is.finite(ltotal)))
+  expect_equal(unname(ltotal[1, 1]), 0)
+  expect_equal(unname(ltotal[1, 2]), 0)
 })
 
 test_that("delay_only is incompatible with the missing reference model", {
@@ -116,7 +114,7 @@ test_that("delay_only is incompatible with the missing reference model", {
   expect_error(check_modules_compatible(modules), "missing reference model")
 })
 
-test_that("delay_only recovers a known delay distribution (#775)", {
+test_that("delay_only recovers a known delay distribution", {
   skip_on_cran()
   skip_on_local()
   model <- enw_model()
@@ -139,14 +137,14 @@ test_that("delay_only recovers a known delay distribution (#775)", {
   )
 })
 
-test_that("delay_only recovers a known delay from truncated totals (#776)", {
+test_that("delay_only recovers a known delay from truncated totals", {
   skip_on_cran()
   skip_on_local()
   model <- enw_model()
 
   # Truncated triangle: recent reference dates only observe early delays, so
-  # their totals are partial running totals (#776). Recovery relies on the
-  # truncated multinomial renormalising over the observed delay range.
+  # their totals are partial running totals. Recovery relies on the truncated
+  # multinomial renormalising over the observed delay range.
   sim <- simulate_delay_triangle(
     meanlog = 1.6, sdlog = 0.5, max_delay = 15, n_dates = 60, total = 2000,
     truncate = TRUE
@@ -200,4 +198,56 @@ test_that("delay_only with nowcast = TRUE produces coherent output", {
   log_lik <- nowcast$fit[[1]]$draws("log_lik", format = "matrix")
   expect_true(all(is.finite(log_lik)))
   expect_true(any(log_lik != 0))
+  # The delay is still recovered with nowcast = TRUE
+  fit_pars <- nowcast$fit[[1]]$summary(c("refp_mean_int", "refp_sd_int"))
+  expect_equal(
+    fit_pars$mean[fit_pars$variable == "refp_mean_int[1]"], 1.6,
+    tolerance = 0.05
+  )
+  expect_equal(
+    fit_pars$mean[fit_pars$variable == "refp_sd_int[1]"], 0.5,
+    tolerance = 0.05
+  )
+})
+
+test_that("delay_only recovers a known delay with an observation indicator", {
+  skip_on_cran()
+  skip_on_local()
+  model <- enw_model()
+
+  # Mask interior delay cells (an observation indicator) and confirm the
+  # multinomial renormalises over the observed delays to recover the delay.
+  sim <- simulate_delay_triangle(
+    meanlog = 1.6, sdlog = 0.5, max_delay = 10, n_dates = 50, total = 2000
+  )
+  comp <- enw_complete_dates(sim$obs, flag_observation = TRUE)
+  comp[, .observed :=
+    .observed & !(as.integer(report_date - reference_date) %in% c(3L, 6L))]
+  pobs <- enw_preprocess_data(comp, max_delay = 10)
+  nowcast <- suppressWarnings(suppressMessages(epinowcast(
+    pobs,
+    expectation = enw_expectation(~1, data = pobs),
+    reference = enw_reference(~1, data = pobs),
+    obs = enw_obs(
+      family = "poisson", delay_only = TRUE,
+      observation_indicator = ".observed", data = pobs
+    ),
+    fit = enw_fit_opts(
+      sampler = silent_enw_sample, nowcast = FALSE, pp = FALSE,
+      chains = 2, iter_warmup = 500, iter_sampling = 500,
+      show_messages = FALSE, refresh = 0, seed = 8675309
+    ),
+    model = model
+  )))
+
+  expect_lt(nowcast$max_rhat, 1.05)
+  fit_pars <- nowcast$fit[[1]]$summary(c("refp_mean_int", "refp_sd_int"))
+  expect_equal(
+    fit_pars$mean[fit_pars$variable == "refp_mean_int[1]"], 1.6,
+    tolerance = 0.05
+  )
+  expect_equal(
+    fit_pars$mean[fit_pars$variable == "refp_sd_int[1]"], 0.5,
+    tolerance = 0.05
+  )
 })
