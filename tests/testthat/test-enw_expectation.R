@@ -150,33 +150,71 @@ test_that("enw_expectation accepts a fixed population for depletion", {
   expect_true(all(expectation$data$expr_pop_fixed == 1000))
 })
 
-test_that("enw_expectation restricts depletion to the forecast period", {
+test_that("enw_expectation records the population_period choice", {
   expectation <- enw_expectation(
     generation_time = c(0.2, 0.5, 0.3), population = 1000,
     population_period = "forecast", data = pobs
   )
+  # population_period is recorded via expr_pop_use but does not change the
+  # (always fully adjusted) recursion; no separate horizon (nht) is passed.
   expect_identical(expectation$data$expr_pop_use, 1L)
-  expect_gte(expectation$data$expr_pop_nht, 0L)
-  expect_lte(expectation$data$expr_pop_nht, expectation$data$expr_t)
+  expect_false("expr_pop_nht" %in% names(expectation$data))
 })
 
 test_that("enw_expectation supports an uncertain (fitted) population", {
+  population <- 1000
+  population_cv <- 0.1
   expectation <- enw_expectation(
-    generation_time = c(0.2, 0.5, 0.3), population = 1000,
-    population_uncertain = TRUE, data = pobs
+    generation_time = c(0.2, 0.5, 0.3), population = population,
+    population_uncertain = TRUE, population_cv = population_cv, data = pobs
   )
   expect_identical(expectation$data$expr_pop_use, 2L)
   expect_identical(expectation$data$expr_pop_uncertain, 1L)
   expect_true("expr_pop" %in% expectation$priors$variable)
   pop_prior <- expectation$priors[variable == "expr_pop"]
   expect_identical(pop_prior$distribution, "Log normal")
-  # LogNormal log-mean recovers the supplied population on the natural scale
-  expect_equal(exp(pop_prior$mean), 1000, tolerance = 1e-6)
+  # LogNormal log-median recovers the supplied population on the natural scale
+  expect_equal(exp(pop_prior$mean), population, tolerance = 1e-6)
+  # CV -> sdlog derivation is sqrt(log1p(cv^2))
+  expect_equal(pop_prior$sd, sqrt(log1p(population_cv^2)), tolerance = 1e-12)
+  # Inits are one independent value per group
   pop_init <- expectation$inits(
     c(expectation$data, list(g = pobs$groups[[1]])), expectation$priors
   )()$expr_pop_est
-  expect_length(pop_init, 1L)
-  expect_gt(pop_init, 0)
+  expect_length(pop_init, pobs$groups[[1]])
+  expect_true(all(pop_init > 0))
+})
+
+test_that("enw_expectation accepts per-group fixed populations", {
+  nat_germany_hosp <- germany_covid19_hosp[location == "DE"][
+    age_group %in% c("00+", "80+")
+  ]
+  nat_germany_hosp <- enw_filter_report_dates(
+    nat_germany_hosp,
+    latest_date = "2021-10-01"
+  )
+  nat_germany_hosp <- enw_complete_dates(
+    nat_germany_hosp,
+    by = c("location", "age_group")
+  )
+  multi_pobs <- suppressWarnings(enw_preprocess_data(
+    enw_filter_reference_dates(nat_germany_hosp, include_days = 10),
+    by = "age_group", max_delay = 10
+  ))
+  expectation <- enw_expectation(
+    r = ~ 1 + (1 | .group), generation_time = c(0.2, 0.5, 0.3),
+    population = c(1000, 2000), data = multi_pobs
+  )
+  expect_length(expectation$data$expr_pop_fixed, multi_pobs$groups[[1]])
+  expect_identical(expectation$data$expr_pop_fixed, c(1000, 2000))
+  # A scalar with multiple groups recycles with a warning.
+  expect_warning(
+    enw_expectation(
+      r = ~ 1 + (1 | .group), generation_time = c(0.2, 0.5, 0.3),
+      population = 1500, data = multi_pobs
+    ),
+    "recycling"
+  )
 })
 
 test_that("enw_expectation validates population arguments", {
@@ -184,6 +222,7 @@ test_that("enw_expectation validates population arguments", {
     enw_expectation(population = -1, data = pobs),
     "population"
   )
+  # Length 2 vector with a single group is invalid.
   expect_error(
     enw_expectation(population = c(1, 2), data = pobs),
     "population"
@@ -197,5 +236,19 @@ test_that("enw_expectation validates population arguments", {
       population_uncertain = TRUE, population = NULL, data = pobs
     ),
     "population"
+  )
+})
+
+test_that("enw_expectation warns when population is set without a renewal", {
+  expect_warning(
+    enw_expectation(population = 1000, data = pobs),
+    "ignored for the daily growth rate model"
+  )
+  # The uncertain request is also flagged as dropped in this case.
+  expect_warning(
+    enw_expectation(
+      population = 1000, population_uncertain = TRUE, data = pobs
+    ),
+    "uncertain"
   )
 })
