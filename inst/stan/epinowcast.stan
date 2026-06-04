@@ -109,6 +109,11 @@ data {
   int<lower=0, upper=4> expl_lrd_dist;
   array[2, 1] real expl_lrd_mean_p;
   array[2, 1] real expl_lrd_sd_p;
+  // For an uncertain delay, maps each nonzero of the convolution matrix (CSR
+  // row-major order, matching the precomputed sparse pattern) to the PMF index
+  // supplying its value. Length 1 placeholder when the delay is fixed.
+  int expl_lrd_w_n;
+  array[expl_lrd_w_n] int<lower=1> expl_lrd_w_idx;
   // Model for latent-to-obs proportion. Currently, 0 = none
   // --> proportion of latent cases that will become observations
   // --> e.g.: infection fatality rate for death data
@@ -371,12 +376,20 @@ parameters {
   matrix[expr_gp_type == 1 ? 2 * expr_gp_M : expr_gp_M, expr_gp_G] expr_gp_eta;
   array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_rho;
   array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_alpha;
-  // Uncertain generation time parameters (sampled and discretised in-model)
-  array[expr_gt_dist ? 1 : 0] real expr_gt_mean;
+  // Uncertain generation time parameters (sampled and discretised in-model).
+  // Centred on the prior via offset/multiplier (as for the parametric
+  // reference mean) for better conditioning and to keep proposals near the
+  // prior, avoiding overflow of exp(mu) in the discretisation.
+  array[expr_gt_dist ? 1 : 0] real<
+    offset = expr_gt_mean_p[1, 1], multiplier = expr_gt_mean_p[2, 1]
+  > expr_gt_mean;
   array[expr_gt_dist > 1 ? 1 : 0] real<lower=1e-3> expr_gt_sd;
   // ---- Latent case submodule ----
-  // Uncertain latent reporting delay parameters
-  array[expl_lrd_dist ? 1 : 0] real expl_lrd_mean;
+  // Uncertain latent reporting delay parameters (centred on the prior, see
+  // the generation time parameters above).
+  array[expl_lrd_dist ? 1 : 0] real<
+    offset = expl_lrd_mean_p[1, 1], multiplier = expl_lrd_mean_p[2, 1]
+  > expl_lrd_mean;
   array[expl_lrd_dist > 1 ? 1 : 0] real<lower=1e-3> expl_lrd_sd;
   vector[expl_fncol] expl_beta;
   vector<lower=0>[expl_rncol] expl_beta_sd;
@@ -487,8 +500,13 @@ transformed parameters{
   // Generation time log PMF (reversed). Fixed from data, or rebuilt in-model
   // from sampled parameters using the parametric reference discretisation.
   vector[expr_gt_n] expr_lrgt_use;
-  // Latent reporting delay PMF (forward order). Only built when uncertain.
-  vector[expl_lrd_dist ? expl_lrd_n : 0] expl_lrd_pmf_use;
+  // Latent reporting delay convolution weights (the nonzero values of the
+  // convolution matrix, in CSR order). For a fixed PMF these are precomputed
+  // in transformed data; for an uncertain PMF they are rebuilt per sample. The
+  // sparsity pattern (column indices and row pointers) is identical in both
+  // cases, so only the real-valued weights vary and the integer parts are
+  // reused from `expl_lrd_sparse`.
+  vector[num_elements(expl_lrd_sparse.1)] expl_lrd_w;
 
   // Expectation model
   profile("transformed_expected_final_observations") {
@@ -506,9 +524,15 @@ transformed parameters{
   }
   if (expl_lrd_dist) {
     real lrd_sigma = expl_lrd_dist > 1 ? expl_lrd_sd[1] : 0;
-    expl_lrd_pmf_use = exp(discretised_logit_hazard(
+    vector[expl_lrd_n] lrd_pmf = exp(discretised_logit_hazard(
       expl_lrd_mean[1], lrd_sigma, expl_lrd_n, expl_lrd_dist, 2, 1
     ));
+    // Fill the CSR weights from the sampled PMF using the precomputed
+    // pattern-to-PMF index map (value-stable, so the nonzero count matches
+    // expl_lrd_sparse even if the PMF tail underflows to zero).
+    expl_lrd_w = lrd_pmf[expl_lrd_w_idx];
+  } else {
+    expl_lrd_w = expl_lrd_sparse.1;
   }
   // Get log growth rates and map to expected latent cases
   r = regression_predictor(
@@ -539,16 +563,10 @@ transformed parameters{
       expl_gp_type, expl_gp_nu, expl_gp_d, expl_gp_PHI, expl_gp_eta,
       expl_gp_rho, expl_gp_alpha, expl_gp_flat_idx
     );
-    if (expl_lrd_dist) {
-      exp_lobs = log_expected_obs_from_latent_pmf(
-        exp_llatent, expl_lrd_pmf_use, expl_lrd_n, t, g, expl_prop
-      );
-    } else {
-      exp_lobs = log_expected_obs_from_latent(
-        exp_llatent, expl_lrd_n, expl_lrd_sparse.1, expl_lrd_sparse.2,
-        expl_lrd_sparse.3, t, g, expl_prop
-      );
-    }
+    exp_lobs = log_expected_obs_from_latent(
+      exp_llatent, expl_lrd_n, expl_lrd_w, expl_lrd_sparse.2,
+      expl_lrd_sparse.3, t, g, expl_prop
+    );
   } else {
     exp_lobs = exp_llatent; // assume latent cases and obs are identical
   }
