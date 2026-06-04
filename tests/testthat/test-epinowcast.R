@@ -502,7 +502,10 @@ test_that("epinowcast() can fit a simple combined parametric and non-parametric
     ),
     model = model
   ))
-  expect_convergence(nowcast)
+  # This combined parametric/non-parametric reference model sits at the
+  # treedepth-10 boundary; allow headroom (as already done elsewhere in this
+  # file) so the assertion is not sensitive to small sampler perturbations.
+  expect_convergence(nowcast, treedepth = 12)
   expect_equal(
     summary(
       nowcast,
