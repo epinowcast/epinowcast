@@ -8,9 +8,11 @@
   An integer `d` argument (matching `arima()`'s `d`) integrates the process `d` times: `d = 0` is stationary (the default, like EpiNow2's `gp_on = "R0"`), `d = 1` gives a smoothly drifting trend (like EpiNow2's default `gp_on = "R_t-1"`), and `d >= 2` integrates further, anchoring the first `d` values to zero so the level and slope are carried by the fixed effects.
   The Stan implementation is adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2, MIT licensed).
   See #824.
-- Added an experimental secondary observation model (`enw_secondary()` with `enw_secondary_opts()`) for modelling a secondary outcome as a delayed, scaled convolution of a primary series, covering both incidence targets (e.g. cases to deaths) and prevalence targets (e.g. bed occupancy).
-  This is the first part of joint primary/secondary nowcasting (#825): `enw_secondary()` builds the R-side data interface (delay convolution matrix, scaling design matrix, and target options), and the Stan `calculate_secondary()` function (adapted from `EpiNow2`, MIT licensed) combines the convolved and scaled primary terms following EpiNow2's per-element ordering for the prevalence path.
-  The Stan-side joint likelihood that applies the scaling and fits the secondary observations simultaneously with the primary nowcast is still under development (#835).
+- Added an experimental secondary observation model (`enw_secondary()` with `enw_secondary_opts()`) for jointly modelling a secondary outcome as a delayed, scaled convolution of the primary series, covering both incidence targets (e.g. cases to deaths) and prevalence targets (e.g. bed occupancy).
+  The secondary outcome is fitted simultaneously with the primary nowcast inside `epinowcast()` via a new `secondary` argument, so primary nowcast uncertainty propagates into the secondary estimate.
+  The scaling (ascertainment) is specified through the formula interface (`scale`), the delay as a probability mass function, the target structure through `enw_secondary_opts()`, and the observation likelihood through `family`, matching the other model modules.
+  The Stan `calculate_secondary()` function is adapted from `EpiNow2` (MIT licensed).
+  Right-truncation and an independent reporting-delay nowcast of the secondary series itself remain to be added (#835).
   See #825 by @seabbs.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.

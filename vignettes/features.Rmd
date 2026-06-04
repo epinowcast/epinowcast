@@ -28,6 +28,7 @@ For function-specific details, see `?function_name`.
 | **Mixed delay models** | Parametric + non-parametric delays | [Delay modelling](#delay-modelling) |
 | **Report date effects** | Day-of-week patterns, structural reporting | [Report date effects](#report-date-effects) |
 | **Latent process models** | Growth rates, renewal processes | [Latent models](#latent-models) |
+| **Secondary observations** | Joint primary -> secondary models (e.g. deaths from cases, bed occupancy from admissions) | [Secondary observations](#secondary-observations) |
 | **Hierarchical effects** | Random effects, random walks | [Hierarchical structure](#hierarchical) |
 | **Missing data handling** | Missing reference dates | [Missing data](#missing-data) |
 | **Retrospective Rt** | Rt estimation from finalised counts without delay modelling | [Rt estimation vignette](single-timeseries-rt-estimation.html) |
@@ -139,6 +140,37 @@ Specify the generative model for the expected latent process (e.g., infections, 
 - See `?enw_expectation` for details
 
 **Where to see it:** The [latent processes vignette](latent-processes.html) compares random walks, ARIMA(p, d, q) residuals, stationary AR, and periodic terms on the growth rate, with the [ARIMA reference](arima.html) covering the maths, priors, and usage. The [Rt estimation vignette](single-timeseries-rt-estimation.html) demonstrates renewal process models with generation times.
+
+# Secondary Observations {#secondary-observations}
+
+Model a secondary outcome as a function of the primary series, fitted jointly so the primary nowcast uncertainty propagates into the secondary estimate.
+The expected secondary value is a delayed, scaled convolution of the primary expectation, combined into an incidence or a prevalence target.
+
+| Target | Use case | How to specify | Example |
+|--------|----------|----------------|---------|
+| Incidence | Delayed counts (e.g. deaths from cases) | `enw_secondary_opts("incidence")` | Scaled convolution of the primary series |
+| Prevalence | Accumulating counts (e.g. bed occupancy) | `enw_secondary_opts("prevalence")` | Inflow accumulated, outflow removed over time |
+| Scaling | Ascertainment / case fatality ratio | `scale = ~1` (or any formula) | Formula interface, as for other modules |
+| Delay | Primary-to-secondary reporting delay | `delay = c(0.2, 0.5, 0.3)` | Probability mass function |
+| Observation family | Count likelihood | `family = "poisson"` / `"negbin"` | Matches `enw_obs()` |
+
+**Key functions:**
+
+- `enw_secondary()`: Specify the secondary observation model and supply secondary counts via `obs`
+- `enw_secondary_opts()`: Choose the incidence or prevalence target
+- Pass the configured module to `epinowcast(..., secondary = ...)`
+
+```r
+secondary <- enw_secondary(
+  secondary = enw_secondary_opts("incidence"),
+  obs = deaths, scale = ~1, delay = c(0.2, 0.5, 0.3),
+  family = "poisson", data = pobs
+)
+nowcast <- epinowcast(pobs, secondary = secondary)
+```
+
+The scaling is specified through the formula interface, so it can vary by covariates or group exactly as the other modules' effects do (e.g. `scale = ~ 1 + (1 | .group)`).
+Right-truncation and an independent reporting-delay nowcast of the secondary series itself are not yet supported; the primary series retains its full nowcasting model.
 
 # Hierarchical Structure {#hierarchical}
 
