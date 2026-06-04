@@ -542,12 +542,22 @@ arma <- function(time, by, p = 1, q = 1) {
 #' is added to the linear predictor. As with [arima()], arguments are
 #' not evaluated; they are passed by name for use in model construction.
 #'
+#' Like [arima()] and [rw()], a `gp()` term works on every module that
+#' takes a formula, each with its own prior prefix:
+#' - [enw_expectation()] — the growth rate (`expr`) and the latent-to-obs
+#'   proportion (`expl`).
+#' - [enw_reference()] — the parametric delay mean (`refp`) and the
+#'   non-parametric logit hazards (`refnp`).
+#' - [enw_report()] — report-date logit hazards (`rep`).
+#' - [enw_missing()] — the missing-reference proportion (`miss`).
+#'
 #' At most one `gp()` term is currently supported per formula (the
 #' multiple-term example shown for [gp_terms()] only illustrates term
 #' detection, not a supported model). The default `alpha` (magnitude)
 #' and length-scale priors are inherited from `EpiNow2` and are set on
-#' `EpiNow2`'s scale; on `epinowcast`'s log-growth-rate scale they may
-#' need tuning with [enw_replace_priors()].
+#' `EpiNow2`'s scale; on a given module's scale (for example the log
+#' growth rate or a logit hazard) they may need tuning with
+#' [enw_replace_priors()].
 #'
 #' @section Reference:
 #' The Stan implementation of the approximate Gaussian process is
@@ -1521,39 +1531,41 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # covariate row alone. This lets downstream consumers that loop over
   # fdesign rows (for example a per-row PMF call) benefit from
   # coarse-time ARIMA without paying per-snapshot cost.
-  if (sparse && length(arima_specs) > 0) {
-    arima_spec <- arima_specs[[1]]
-    # Joint key over (covariate row, ARIMA time, ARIMA group) using a
-    # data.table group id; avoids round-tripping through string keys.
-    joint <- data.table::data.table(
-      cov = fixed$index,
-      t = arima_spec$time_idx,
-      g = arima_spec$group_idx
-    )
-    joint[, "uniq" := .GRP, by = c("cov", "t", "g")]
+  # Both ARIMA and GP terms gather a per-observation latent value from a
+  # (time x group) matrix using a column-major `flat_idx`. Under a sparse
+  # design the fdesign rows are deduplicated, so the latent gather has to
+  # be keyed at the joint (covariate row x time x group) granularity for
+  # every latent term that is present. Build a single joint key over all
+  # present terms' time/group columns so the deduplicated `fixed$index`
+  # stays aligned for ARIMA and GP simultaneously, then remap each term's
+  # `time_idx`/`group_idx` onto the deduplicated rows.
+  if (sparse && (length(arima_specs) > 0 || length(gp_specs) > 0)) {
+    joint <- data.table::data.table(cov = fixed$index)
+    key_cols <- "cov"
+    if (length(arima_specs) > 0) {
+      joint[, "at" := arima_specs[[1]]$time_idx]
+      joint[, "ag" := arima_specs[[1]]$group_idx]
+      key_cols <- c(key_cols, "at", "ag")
+    }
+    if (length(gp_specs) > 0) {
+      joint[, "gt" := gp_specs[[1]]$time_idx]
+      joint[, "gg" := gp_specs[[1]]$group_idx]
+      key_cols <- c(key_cols, "gt", "gg")
+    }
+    joint[, "uniq" := .GRP, by = key_cols]
     new_index <- joint[["uniq"]]
-    uniq <- unique(joint, by = c("cov", "t", "g"))
+    uniq <- unique(joint, by = key_cols)
     data.table::setorderv(uniq, "uniq")
     fixed$design <- fixed$design[uniq[["cov"]], , drop = FALSE]
     fixed$index <- new_index
-    arima_spec$time_idx <- uniq[["t"]]
-    arima_spec$group_idx <- uniq[["g"]]
-    arima_specs[[1]] <- arima_spec
-  }
-  # Gaussian process terms are dense-only for now. They are wired into
-  # the `expr`/`expl` latent-process submodules, which always build
-  # their design with `sparse = FALSE`. Unlike the ARIMA path above, the
-  # GP per-observation `flat_idx` is not remapped to the joint
-  # sparse-dedup granularity, so a `gp()` term on a sparse design would
-  # gather the latent process against the wrong rows. Guard against that
-  # silent mis-gather until GP is extended to the sparse-row modules.
-  if (sparse && length(gp_specs) > 0) {
-    cli::cli_abort(paste(
-      "`gp()` terms are not supported with a sparse design matrix.",
-      "Gaussian process terms are currently only wired into the dense",
-      "expectation submodules. Set `sparse = FALSE` or use `rw()` /",
-      "`arima()` for sparse-design modules."
-    ))
+    if (length(arima_specs) > 0) {
+      arima_specs[[1]]$time_idx <- uniq[["at"]]
+      arima_specs[[1]]$group_idx <- uniq[["ag"]]
+    }
+    if (length(gp_specs) > 0) {
+      gp_specs[[1]]$time_idx <- uniq[["gt"]]
+      gp_specs[[1]]$group_idx <- uniq[["gg"]]
+    }
   }
   # Extract fixed effects metadata
   metadata <- enw_effects_metadata(fixed$design)

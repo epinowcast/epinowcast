@@ -582,12 +582,16 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
 # prefix. Mirrors `.arima_inits()`: declares empty defaults for the
 # spectral coefficients (`<prefix>_gp_eta`), length scale
 # (`<prefix>_gp_rho`) and magnitude (`<prefix>_gp_alpha`), then fills
-# them when the term is present and genuinely sized.
+# them when the term is present and genuinely sized. When `with_sd_alpha`
+# is `TRUE` (the parametric reference, which shares a GP between the mean
+# and sd) the second magnitude `<prefix>_gp_sd_alpha` is also declared
+# and filled when `model_refp > 1`, mirroring the ARIMA `sd_sigma`.
 #' @importFrom stats rlnorm
-.gp_inits <- function(data, priors, prefix) {
+.gp_inits <- function(data, priors, prefix, with_sd_alpha = FALSE) {
   eta_nm <- paste0(prefix, "_gp_eta")
   rho_nm <- paste0(prefix, "_gp_rho")
   alpha_nm <- paste0(prefix, "_gp_alpha")
+  sd_alpha_nm <- paste0(prefix, "_gp_sd_alpha")
 
   # rho/alpha are length-1 arrays sized 0 when the term is absent, so an
   # empty default is safe. `gp_eta` is a matrix; like `arima_z` an empty
@@ -596,6 +600,9 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
   init <- list()
   init[[rho_nm]] <- numeric(0)
   init[[alpha_nm]] <- numeric(0)
+  if (with_sd_alpha) {
+    init[[sd_alpha_nm]] <- numeric(0)
+  }
 
   present <- data[[paste0(prefix, "_gp_present")]]
   if (!isTRUE(present > 0)) {
@@ -614,5 +621,11 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
   init[[rho_nm]] <- array(rlnorm(1, rho_p[1], rho_p[2] / 10))
   alpha_p <- priors[[paste0(prefix, "_gp_alpha_p")]]
   init[[alpha_nm]] <- array(abs(rnorm(1, alpha_p[1], alpha_p[2] / 10 + 1e-3)))
+  if (with_sd_alpha && isTRUE(data$model_refp > 1)) {
+    sd_alpha_p <- priors[[paste0(prefix, "_gp_sd_alpha_p")]]
+    init[[sd_alpha_nm]] <- array(abs(
+      rnorm(1, sd_alpha_p[1], sd_alpha_p[2] / 10 + 1e-3)
+    ))
+  }
   init
 }

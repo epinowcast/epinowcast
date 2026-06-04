@@ -51,12 +51,24 @@ optionally a grouping variable \code{by}) whose value at each observation
 is added to the linear predictor. As with \code{\link[=arima]{arima()}}, arguments are
 not evaluated; they are passed by name for use in model construction.
 
+Like \code{\link[=arima]{arima()}} and \code{\link[=rw]{rw()}}, a \code{gp()} term works on every module that
+takes a formula, each with its own prior prefix:
+\itemize{
+\item \code{\link[=enw_expectation]{enw_expectation()}} — the growth rate (\code{expr}) and the latent-to-obs
+proportion (\code{expl}).
+\item \code{\link[=enw_reference]{enw_reference()}} — the parametric delay mean (\code{refp}) and the
+non-parametric logit hazards (\code{refnp}).
+\item \code{\link[=enw_report]{enw_report()}} — report-date logit hazards (\code{rep}).
+\item \code{\link[=enw_missing]{enw_missing()}} — the missing-reference proportion (\code{miss}).
+}
+
 At most one \code{gp()} term is currently supported per formula (the
 multiple-term example shown for \code{\link[=gp_terms]{gp_terms()}} only illustrates term
 detection, not a supported model). The default \code{alpha} (magnitude)
 and length-scale priors are inherited from \code{EpiNow2} and are set on
-\code{EpiNow2}'s scale; on \code{epinowcast}'s log-growth-rate scale they may
-need tuning with \code{\link[=enw_replace_priors]{enw_replace_priors()}}.
+\code{EpiNow2}'s scale; on a given module's scale (for example the log
+growth rate or a logit hazard) they may need tuning with
+\code{\link[=enw_replace_priors]{enw_replace_priors()}}.
 }
 \section{Reference}{
 
