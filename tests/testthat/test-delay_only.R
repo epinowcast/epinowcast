@@ -155,3 +155,39 @@ test_that("delay_only recovers a known delay from truncated totals (#776)", {
     tolerance = 0.05
   )
 })
+
+test_that("delay_only with nowcast = TRUE produces coherent output", {
+  skip_on_cran()
+  skip_on_local()
+  model <- enw_model()
+
+  # Delay-only mode is for delay estimation, not nowcasting. With the default
+  # nowcast = TRUE the cast / posterior-prediction block must be skipped so no
+  # incoherent per-cell nowcast is drawn from the unused observation model.
+  # Only the pointwise log likelihood (the delay-only multinomial) is produced.
+  sim <- simulate_delay_triangle(
+    meanlog = 1.6, sdlog = 0.5, max_delay = 10, n_dates = 40, total = 2000
+  )
+  pobs <- enw_preprocess_data(sim$obs, max_delay = 10)
+  nowcast <- suppressWarnings(suppressMessages(epinowcast(
+    pobs,
+    expectation = enw_expectation(~1, data = pobs),
+    reference = enw_reference(~1, data = pobs),
+    obs = enw_obs(family = "poisson", delay_only = TRUE, data = pobs),
+    fit = enw_fit_opts(
+      sampler = silent_enw_sample, nowcast = TRUE, pp = TRUE,
+      output_loglik = TRUE, chains = 2, iter_warmup = 300, iter_sampling = 300,
+      show_messages = FALSE, refresh = 0
+    ),
+    model = model
+  )))
+
+  stan_vars <- nowcast$fit[[1]]$metadata()$stan_variables
+  # No per-cell nowcast / posterior-prediction arrays are produced
+  expect_false("pp_inf_obs" %in% stan_vars)
+  expect_false("pp_obs" %in% stan_vars)
+  # The pointwise log likelihood uses the delay-only multinomial
+  log_lik <- nowcast$fit[[1]]$draws("log_lik", format = "matrix")
+  expect_true(all(is.finite(log_lik)))
+  expect_true(any(log_lik != 0))
+})

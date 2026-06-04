@@ -514,9 +514,13 @@ transformed parameters{
   } else {
     exp_lobs = exp_llatent; // assume latent cases and obs are identical
   }
-  // Delay-only mode: use the supplied known totals as the expected total by
-  // reference date. The multinomial likelihood is invariant to this offset
-  // (it cancels in renormalisation) but it is used for posterior prediction.
+  // Delay-only mode (issues #775, #776): use the supplied known totals as the
+  // expected total by reference date. The (truncated) multinomial likelihood
+  // is invariant to this offset (it cancels in renormalisation). This mode
+  // estimates the reporting-delay distribution conditional on the known
+  // totals; it does not produce a nowcast (the cast / posterior-prediction
+  // block in generated quantities is skipped), so refit with the full model
+  // if a nowcast is required.
   if (model_delay_only) {
     exp_lobs = dlo_ltotal;
   }
@@ -797,10 +801,40 @@ model {
 
 
 generated quantities {
-  array[pp ? sum(sl) : 0] int pp_obs;
-  array[pp ? miss_obs : 0] int pp_miss_ref;
+  // In delay-only mode the cast / posterior-prediction arrays carry no
+  // meaningful content (see below), so they are sized to zero regardless of
+  // the cast / pp flags. Only log_lik (the delay-only multinomial) is
+  // produced when requested.
+  array[pp && !model_delay_only ? sum(sl) : 0] int pp_obs;
+  array[pp && !model_delay_only ? miss_obs : 0] int pp_miss_ref;
   vector[ologlik ? s : 0] log_lik;
-  array[cast ? min(dmax, t) : 0, cast ? g : 0] int pp_inf_obs;
+  array[cast && !model_delay_only ? min(dmax, t) : 0,
+        cast && !model_delay_only ? g : 0] int pp_inf_obs;
+  // Delay-only mode (issues #775, #776) is for estimating the reporting-delay
+  // distribution conditional on known totals, not for nowcasting. The cast /
+  // posterior-prediction reconstruction below draws from the per-cell
+  // observation model that the delay-only likelihood never uses (and would
+  // extrapolate total / F(T - t) for truncated reference dates), so it is
+  // skipped. The pointwise log likelihood, if requested, uses the same
+  // (truncated) multinomial as the model block. For a nowcast, refit with the
+  // full model.
+  if (model_delay_only) {
+    if (ologlik) {
+      array[3] int dlo_n;
+      vector[csl[s]] dlo_lexp = expected_obs_from_snaps(
+        1, s, exp_lobs, rep_findex, srdlh, refp_lh, refp_findex, model_refp,
+        rep_fncol, ref_as_p, sl, csl, sg, st, csl[s], refnp_lh, model_refnp,
+        sdmax, csdmax, rep_agg_p, rep_agg_n_selected, rep_agg_selected_idx
+      );
+      for (i in 1:s) {
+        dlo_n = filt_obs_indexes(i, i, csl, sl);
+        log_lik[i] = delay_multinomial_lpmf(
+          segment(flat_obs, dlo_n[1], sl[i]) |
+            segment(dlo_lexp, dlo_n[1], sl[i])
+        );
+      }
+    }
+  } else {
   profile("generated_total") {
   if (cast) {
     vector[csdmax[s]] log_exp_obs_all;
@@ -919,6 +953,7 @@ generated quantities {
       }
     }
     }
+  }
   }
   }
 }

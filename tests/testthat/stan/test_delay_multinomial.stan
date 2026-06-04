@@ -1,4 +1,5 @@
 functions {
+#include functions/filt_obs_indexes.stan
 #include functions/delay_multinomial_lpmf.stan
 }
 data {
