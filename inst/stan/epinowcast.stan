@@ -19,6 +19,8 @@ functions {
 #include functions/apply_missing_reference_effects.stan
 #include functions/log_expected_by_report.stan
 #include functions/delay_lpmf.stan
+#include functions/calculate_secondary.stan
+#include functions/secondary_expected_obs.stan
 }
 
 data {
@@ -318,6 +320,33 @@ data {
   int model_obs; // control parameter for the observation model
   array[2, 1] real sqrt_phi_p; // 1/sqrt (overdispersion)
 
+  // Secondary observation model
+  int model_sec; // should a secondary observation be modelled?
+  int model_sec_scale; // is the primary-to-secondary scaling modelled?
+  // Secondary target switches (see calculate_secondary)
+  int sec_cumulative;
+  int sec_historic;
+  int sec_primary_hist_additive;
+  int sec_current;
+  int sec_primary_current_additive;
+  int sec_predict; // cumulative seeding horizon
+  // Secondary delay as a sparse convolution matrix (t x t)
+  int sec_delay_n;
+  matrix[model_sec ? t : 0, model_sec ? t : 0] sec_delay;
+  // Observed secondary counts by reference date and group
+  array[model_sec ? t : 0, model_sec ? g : 0] int sec_obs;
+  array[model_sec ? t : 0, model_sec ? g : 0] int sec_obs_lookup;
+  int sec_model_obs; // secondary observation family
+  array[2, 1] real sec_sqrt_phi_p;
+  // Scaling (ascertainment) design, formula-based as for other modules
+  int sec_fnindex;
+  int sec_fncol;
+  int sec_rncol;
+  matrix[sec_fnindex, sec_fncol] sec_fdesign;
+  matrix[sec_fncol, sec_rncol + 1] sec_rdesign;
+  array[2, 1] real sec_scale_int_p;
+  array[2, 1] real sec_beta_sd_p;
+
   // Control parameters
   int debug; // should debug information be shown?
   int likelihood; // should the likelihood be included?
@@ -341,6 +370,13 @@ transformed data{
   int ll_aggregation = likelihood_aggregation + model_miss;
   // Construct sparse matrix components
   #include /chunks/sparse_design.stan
+  // Sparse secondary delay convolution matrix
+  int sec_delay_nonzero = model_sec ? num_nonzero(sec_delay) : 0;
+  tuple(vector[sec_delay_nonzero], array[sec_delay_nonzero] int,
+        array[model_sec ? t + 1 : 1] int) sec_delay_sparse;
+  if (model_sec && sec_delay_nonzero > 0) {
+    sec_delay_sparse = csr_extract(sec_delay);
+  }
 }
 
 parameters {
@@ -440,6 +476,12 @@ parameters {
 
   // Observation model
   array[model_obs > 0 ? 1 : 0] real<lower=0> sqrt_phi; // overdispersion
+
+  // Secondary observation model
+  array[model_sec && model_sec_scale ? 1 : 0] real sec_scale_int;
+  vector[model_sec ? sec_fncol : 0] sec_beta;
+  vector<lower=0>[model_sec ? sec_rncol : 0] sec_beta_sd;
+  array[model_sec && sec_model_obs > 0 ? 1 : 0] real<lower=0> sec_sqrt_phi;
 }
 
 transformed parameters{
@@ -465,6 +507,11 @@ transformed parameters{
 
   // Observation model
   array[model_obs > 0 ? 1 : 0] real phi; // Transformed overdispersion
+
+  // Secondary observation model
+  vector[model_sec ? sec_fnindex : 0] sec_lscale; // log scaling by ref date
+  array[model_sec ? g : 0] vector[model_sec ? t : 0] exp_lsec; // log exp sec
+  array[model_sec && sec_model_obs > 0 ? 1 : 0] real sec_phi;
 
   // Expectation model
   profile("transformed_expected_final_observations") {
@@ -604,7 +651,29 @@ transformed parameters{
     profile("transformed_delay_missing_effects") {
     phi = inv_square(sqrt_phi);
   }
-  } 
+  }
+
+  // Secondary observation model
+  if (model_sec) {
+    profile("transformed_secondary") {
+    sec_lscale = regression_predictor(
+      sec_scale_int, sec_beta, sec_fnindex, sec_fncol, sec_fdesign,
+      sec_sparse, sec_beta_sd, sec_rdesign, model_sec_scale, sparse_design,
+      0, 0, 0, 0, 0, 0, 0,
+      rep_matrix(0.0, 0, 0), rep_vector(0.0, 0), rep_vector(0.0, 0),
+      {0.0}, {0}
+    );
+    exp_lsec = secondary_expected_obs(
+      exp_lobs, sec_delay_n, sec_delay_sparse.1, sec_delay_sparse.2,
+      sec_delay_sparse.3, sec_lscale, sec_obs, t, g, sec_cumulative,
+      sec_historic, sec_primary_hist_additive, sec_current,
+      sec_primary_current_additive, sec_predict
+    );
+    if (sec_model_obs > 0) {
+      sec_phi = inv_square(sec_sqrt_phi);
+    }
+    }
+  }
   // debug issues in truncated data if/when they appear
   if (debug) {
 #include /chunks/debug.stan
@@ -737,10 +806,23 @@ model {
   
   // Observation model
   // overdispersion (1/sqrt)
-  if (model_obs) {   
-    sqrt_phi[1] ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,]; 
+  if (model_obs) {
+    sqrt_phi[1] ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,];
   }
-  
+
+  // Secondary observation model
+  if (model_sec) {
+    if (model_sec_scale) {
+      sec_scale_int[1] ~ normal(sec_scale_int_p[1], sec_scale_int_p[2]);
+    }
+    effect_priors_lp(
+      sec_beta, sec_beta_sd, sec_beta_sd_p, sec_fncol, sec_rncol
+    );
+    if (sec_model_obs > 0) {
+      sec_sqrt_phi[1] ~ normal(sec_sqrt_phi_p[1], sec_sqrt_phi_p[2]) T[0,];
+    }
+  }
+
   }
 
   // Log-Likelihood either by snapshot or group depending on settings/model
@@ -775,6 +857,20 @@ model {
         rep_agg_selected_idx
       );
     }
+    // Secondary observation likelihood (by reference date, where observed)
+    if (model_sec) {
+      profile("model_secondary_likelihood") {
+      for (k in 1:g) {
+        for (i in 1:t) {
+          if (sec_obs_lookup[i, k]) {
+            target += obs_lpmf(
+              sec_obs[i, k] | exp_lsec[k][i], sec_phi, sec_model_obs
+            );
+          }
+        }
+      }
+      }
+    }
   }
   }
 }
@@ -785,6 +881,18 @@ generated quantities {
   array[pp ? miss_obs : 0] int pp_miss_ref;
   vector[ologlik ? s : 0] log_lik;
   array[cast ? min(dmax, t) : 0, cast ? g : 0] int pp_inf_obs;
+  // Expected and predicted secondary observations by reference date and group
+  array[model_sec ? t : 0, model_sec ? g : 0] real exp_sec;
+  array[model_sec ? t : 0, model_sec ? g : 0] int pp_sec;
+  if (model_sec) {
+    for (k in 1:g) {
+      array[t] int pp_sec_k = obs_rng(exp_lsec[k], sec_phi, sec_model_obs);
+      for (i in 1:t) {
+        exp_sec[i, k] = exp(exp_lsec[k][i]);
+        pp_sec[i, k] = pp_sec_k[i];
+      }
+    }
+  }
   profile("generated_total") {
   if (cast) {
     vector[csdmax[s]] log_exp_obs_all;
