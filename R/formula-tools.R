@@ -542,6 +542,13 @@ arma <- function(time, by, p = 1, q = 1) {
 #' is added to the linear predictor. As with [arima()], arguments are
 #' not evaluated; they are passed by name for use in model construction.
 #'
+#' At most one `gp()` term is currently supported per formula (the
+#' multiple-term example shown for [gp_terms()] only illustrates term
+#' detection, not a supported model). The default `alpha` (magnitude)
+#' and length-scale priors are inherited from `EpiNow2` and are set on
+#' `EpiNow2`'s scale; on `epinowcast`'s log-growth-rate scale they may
+#' need tuning with [enw_replace_priors()].
+#'
 #' @section Reference:
 #' The Stan implementation of the approximate Gaussian process is
 #' adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2,
@@ -569,7 +576,9 @@ arma <- function(time, by, p = 1, q = 1) {
 #'
 #' @param boundary_scale Numeric, defaults to `1.5`. Boundary factor
 #' `L` of the Hilbert-space approximation; the process is approximated
-#' on the interval scaled by this factor.
+#' on the interval scaled by this factor. This has no effect when
+#' `kernel = "periodic"`, which uses a fundamental-frequency basis
+#' rather than the boundary-scaled basis.
 #'
 #' @return A list of class `enw_gp_term` describing the Gaussian
 #' process term, interpretable by [construct_gp()].
@@ -1530,6 +1539,21 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     arima_spec$time_idx <- uniq[["t"]]
     arima_spec$group_idx <- uniq[["g"]]
     arima_specs[[1]] <- arima_spec
+  }
+  # Gaussian process terms are dense-only for now. They are wired into
+  # the `expr`/`expl` latent-process submodules, which always build
+  # their design with `sparse = FALSE`. Unlike the ARIMA path above, the
+  # GP per-observation `flat_idx` is not remapped to the joint
+  # sparse-dedup granularity, so a `gp()` term on a sparse design would
+  # gather the latent process against the wrong rows. Guard against that
+  # silent mis-gather until GP is extended to the sparse-row modules.
+  if (sparse && length(gp_specs) > 0) {
+    cli::cli_abort(paste(
+      "`gp()` terms are not supported with a sparse design matrix.",
+      "Gaussian process terms are currently only wired into the dense",
+      "expectation submodules. Set `sparse = FALSE` or use `rw()` /",
+      "`arima()` for sparse-design modules."
+    ))
   }
   # Extract fixed effects metadata
   metadata <- enw_effects_metadata(fixed$design)

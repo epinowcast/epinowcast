@@ -34,7 +34,9 @@ default). The number of basis functions is
 
 \item{boundary_scale}{Numeric, defaults to \code{1.5}. Boundary factor
 \code{L} of the Hilbert-space approximation; the process is approximated
-on the interval scaled by this factor.}
+on the interval scaled by this factor. This has no effect when
+\code{kernel = "periodic"}, which uses a fundamental-frequency basis
+rather than the boundary-scaled basis.}
 }
 \value{
 A list of class \code{enw_gp_term} describing the Gaussian
@@ -48,6 +50,13 @@ model construction functions in the \code{epinowcast} package such as
 optionally a grouping variable \code{by}) whose value at each observation
 is added to the linear predictor. As with \code{\link[=arima]{arima()}}, arguments are
 not evaluated; they are passed by name for use in model construction.
+
+At most one \code{gp()} term is currently supported per formula (the
+multiple-term example shown for \code{\link[=gp_terms]{gp_terms()}} only illustrates term
+detection, not a supported model). The default \code{alpha} (magnitude)
+and length-scale priors are inherited from \code{EpiNow2} and are set on
+\code{EpiNow2}'s scale; on \code{epinowcast}'s log-growth-rate scale they may
+need tuning with \code{\link[=enw_replace_priors]{enw_replace_priors()}}.
 }
 \section{Reference}{
 
