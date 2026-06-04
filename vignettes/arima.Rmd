@@ -172,10 +172,13 @@ Here `<prefix>` is the module the term sits on (`expr` for the growth rate, `ref
 For example, to shrink the growth-rate AR term toward weak autocorrelation rather than leaving it uniform:
 
 ```{r}
-library(epinowcast)
-pacf_prior <- data.frame(variable = "expr_arima_pacf", mean = 0, sd = 0.3)
-# epinowcast(..., priors = pacf_prior)
+pacf_prior <- data.frame(
+  variable = "expr_arima_pacf", mean = 0, sd = 0.3,
+  stringsAsFactors = FALSE
+)
 ```
+
+Pass the result to `epinowcast()` through its `priors` argument.
 
 The half-normal prior on $\sigma$ is the most consequential in practice; tighten it if the latent residual is competing with the rest of the linear predictor for variance.
 A tighter `pacf` prior is the lever for discouraging the near-unit-root AR behaviour that the uniform default permits.
