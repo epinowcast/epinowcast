@@ -100,10 +100,14 @@ check_module <- function(module) {
 #' @importFrom cli cli_warn
 #' @family check
 check_modules_compatible <- function(modules) {
-  if (
-    isTRUE(modules[[5]]$data$model_delay_only == 1) &&
-      modules[[4]]$data$model_miss
-  ) {
+  # NULL-safe extraction: `modules` elements may be bare placeholders (e.g. in
+  # unit tests) rather than module lists, so guard the nested access.
+  obs_data <- if (is.list(modules[[5]])) modules[[5]][["data"]] else NULL
+  delay_only <- isTRUE(obs_data[["model_delay_only"]] == 1)
+  miss_data <- if (is.list(modules[[4]])) modules[[4]][["data"]] else NULL
+  model_miss <- isTRUE(miss_data[["model_miss"]] > 0)
+
+  if (delay_only && model_miss) {
     cli::cli_abort(
       paste0(
         "The delay-only model (set via `delay_only` in `enw_obs`) is not ",
