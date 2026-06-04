@@ -5,7 +5,7 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Articles"><meta property="og:image" content="https://package.epinowcast.org/reference/figures/README-nowcast-1.png"><meta property="og:image:alt" content="An R package for flexible hierarchical nowcasting"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@seabbs"><meta name="twitter:site" content="@seabbs"><meta name="robots" content="noindex"></head><body>
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Articles"><meta property="og:image" content="https://package.epinowcast.org/reference/figures/README-nowcast-1.png"><meta property="og:image:alt" content="An R package for flexible hierarchical nowcasting"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@seabbs"><meta name="twitter:site" content="@seabbs"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -60,7 +60,9 @@
       <h3>All vignettes</h3>
       <div class="section-desc"></div>
 
-      <dl><dt><a href="distributions.html">Discretised distributions</a></dt>
+      <dl><dt><a href="arima.html">ARIMA latent residuals: maths, priors, and usage</a></dt>
+        <dd><p>The maths behind the ARIMA(p, d, q) latent residuals in epinowcast, how to use them in any module’s formula, and how to set their priors.</p>
+        </dd><dt><a href="distributions.html">Discretised distributions</a></dt>
         <dd><p>Distributions and their discretisation in epinowcast</p>
         </dd><dt><a href="epinowcast.html">Getting Started with Epinowcast: Nowcasting</a></dt>
         <dd><p>A quick start example demonstrating use of epinowcast to nowcast hospital admissions.</p>
@@ -70,6 +72,8 @@
         <dd><p>A case study exploring hierarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany.</p>
         </dd><dt><a href="inference-methods.html">Comparing Inference Methods</a></dt>
         <dd><p>A comparison of NUTS sampling, pathfinder approximate inference, and pathfinder-initialised NUTS across two model specifications.</p>
+        </dd><dt><a href="latent-processes.html">Latent process and periodic options for the growth-rate model</a></dt>
+        <dd><p>Random walks, ARIMA(p, d, q) residuals, and periodic effects — the time-series structures available in the formula interface for the growth rate.</p>
         </dd><dt><a href="model.html">Model definition and implementation</a></dt>
         <dd><p>Model formulation and implementation details</p>
         </dd><dt><a href="package-use-cases.html">Case studies</a></dt>

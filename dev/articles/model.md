@@ -150,7 +150,14 @@ This model is specified via the `r` argument of
 (see
 [`?enw_expectation`](https://package.epinowcast.org/dev/reference/enw_expectation.md)).
 For example, `enw_expectation(r = ~ 1 + rw(week))` implements a weekly
-random walk for the log reproduction number as described above.
+random walk for the log reproduction number as described above. ARIMA(p,
+d, q) latent residuals are also supported through the
+[`arima()`](https://package.epinowcast.org/dev/reference/arima.md)
+formula helper; see the [latent processes
+vignette](https://package.epinowcast.org/dev/articles/latent-processes.md)
+for usage and the [ARIMA implementation
+notes](https://package.epinowcast.org/dev/articles/arima.md) for the
+maths and parameterisation choices.
 
 ### Latent infections/notifications
 

@@ -110,6 +110,30 @@ enw_report(data = enw_example("preprocessed"))
 #> attr(,"assign")
 #> [1] 0
 #> 
+#> $data$rep_arima_present
+#> [1] 0
+#> 
+#> $data$rep_arima_T
+#> [1] 0
+#> 
+#> $data$rep_arima_G
+#> [1] 0
+#> 
+#> $data$rep_arima_p
+#> [1] 0
+#> 
+#> $data$rep_arima_d
+#> [1] 0
+#> 
+#> $data$rep_arima_q
+#> [1] 0
+#> 
+#> $data$rep_arima_n_obs
+#> [1] 0
+#> 
+#> $data$rep_arima_flat_idx
+#> integer(0)
+#> 
 #> $data$rep_agg_p
 #> [1] 0
 #> 
@@ -131,12 +155,21 @@ enw_report(data = enw_example("preprocessed"))
 #> 
 #> 
 #> $priors
-#>       variable                                             description
-#>         <char>                                                  <char>
-#> 1: rep_beta_sd Standard deviation of scaled pooled report date effects
+#>           variable
+#>             <char>
+#> 1:     rep_beta_sd
+#> 2: rep_arima_sigma
+#> 3:  rep_arima_pacf
+#>                                                                                                                                                            description
+#>                                                                                                                                                                 <char>
+#> 1:                                                                                                             Standard deviation of scaled pooled report date effects
+#> 2:                                                                                        Standard deviation of the ARIMA latent residual on report-time logit hazards
+#> 3: Partial autocorrelations of the ARIMA latent residual on the report-time logit hazards; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
 #>             distribution  mean    sd
 #>                   <char> <num> <num>
-#> 1: Zero truncated normal     0     1
+#> 1: Zero truncated normal     0   1.0
+#> 2: Zero truncated normal     0   0.2
+#> 3:               Uniform     0   0.0
 #> 
 #> $inits
 #> function (data, priors) 
@@ -151,12 +184,13 @@ enw_report(data = enw_example("preprocessed"))
 #>             init$rep_beta_sd <- array(abs(rnorm(data$rep_rncol, 
 #>                 priors$rep_beta_sd_p[1], priors$rep_beta_sd_p[2]/10)))
 #>         }
+#>         init <- c(init, .arima_inits(data, priors, "rep"))
 #>         init
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x55af49abcd68>
-#> <environment: 0x55af49aa6818>
+#> <bytecode: 0x55df2cce7ac0>
+#> <environment: 0x55df2cce3708>
 #> 
 
 if (FALSE) { # \dontrun{

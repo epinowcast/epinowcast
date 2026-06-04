@@ -542,6 +542,30 @@ enw_expectation(data = enw_example("preprocessed"))
 #> attr(,"assign")
 #> [1] 1 2
 #> 
+#> $data$expr_arima_present
+#> [1] 0
+#> 
+#> $data$expr_arima_T
+#> [1] 0
+#> 
+#> $data$expr_arima_G
+#> [1] 0
+#> 
+#> $data$expr_arima_p
+#> [1] 0
+#> 
+#> $data$expr_arima_d
+#> [1] 0
+#> 
+#> $data$expr_arima_q
+#> [1] 0
+#> 
+#> $data$expr_arima_n_obs
+#> [1] 0
+#> 
+#> $data$expr_arima_flat_idx
+#> integer(0)
+#> 
 #> $data$expl_lrd_n
 #> [1] 1
 #> 
@@ -781,6 +805,30 @@ enw_expectation(data = enw_example("preprocessed"))
 #> attr(,"assign")
 #> [1] 0
 #> 
+#> $data$expl_arima_present
+#> [1] 0
+#> 
+#> $data$expl_arima_T
+#> [1] 0
+#> 
+#> $data$expl_arima_G
+#> [1] 0
+#> 
+#> $data$expl_arima_p
+#> [1] 0
+#> 
+#> $data$expl_arima_d
+#> [1] 0
+#> 
+#> $data$expl_arima_q
+#> [1] 0
+#> 
+#> $data$expl_arima_n_obs
+#> [1] 0
+#> 
+#> $data$expl_arima_flat_idx
+#> integer(0)
+#> 
 #> 
 #> $priors
 #>             variable dimension
@@ -788,19 +836,31 @@ enw_expectation(data = enw_example("preprocessed"))
 #> 1:        expr_r_int         1
 #> 2:      expr_beta_sd         1
 #> 3: expr_lelatent_int         1
-#> 4:      expl_beta_sd         1
-#>                                                                description
-#>                                                                     <char>
-#> 1:                                        Intercept of the log growth rate
-#> 2:             Standard deviation of scaled pooled log growth rate effects
-#> 3: Intercept for initial log observations (ordered by group and then time)
-#> 4:             Standard deviation of scaled pooled log growth rate effects
+#> 4:  expr_arima_sigma         1
+#> 5:   expr_arima_pacf         1
+#> 6:      expl_beta_sd         1
+#> 7:  expl_arima_sigma         1
+#> 8:   expl_arima_pacf         1
+#>                                                                                                                                                               description
+#>                                                                                                                                                                    <char>
+#> 1:                                                                                                                                       Intercept of the log growth rate
+#> 2:                                                                                                            Standard deviation of scaled pooled log growth rate effects
+#> 3:                                                                                                Intercept for initial log observations (ordered by group and then time)
+#> 4:                                                                                                     Standard deviation of the ARIMA latent residual on log growth rate
+#> 5:              Partial autocorrelations of the ARIMA latent residual on the log growth rate; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+#> 6:                                                                                                            Standard deviation of scaled pooled log growth rate effects
+#> 7:                                                                                        Standard deviation of the ARIMA latent residual on log latent-to-obs proportion
+#> 8: Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
 #>             distribution  mean    sd
 #>                   <char> <num> <num>
 #> 1:                Normal   0.0   0.2
 #> 2: Zero truncated normal   0.0   1.0
 #> 3:                Normal   4.3   1.0
-#> 4: Zero truncated normal   0.0   1.0
+#> 4: Zero truncated normal   0.0   0.2
+#> 5:               Uniform   0.0   0.0
+#> 6: Zero truncated normal   0.0   1.0
+#> 7: Zero truncated normal   0.0   0.2
+#> 8:               Uniform   0.0   0.0
 #> 
 #> $inits
 #> function (data, priors) 
@@ -826,10 +886,12 @@ enw_expectation(data = enw_example("preprocessed"))
 #>             init$expr_r_int <- array(rnorm(1, priors$expr_r_int_p[1], 
 #>                 priors$expr_r_int_p[2] * 0.1))
 #>         }
+#>         init <- c(init, .arima_inits(data, priors, "expr"))
 #>         if (data$expl_fncol > 0) {
 #>             init$expl_beta <- array(rnorm(data$expl_fncol, 0, 
 #>                 0.01))
 #>         }
+#>         init <- c(init, .arima_inits(data, priors, "expl"))
 #>         if (data$expl_rncol > 0) {
 #>             init$expl_beta_sd <- array(abs(rnorm(data$expl_rncol, 
 #>                 priors$expl_beta_sd_p[1], priors$expl_beta_sd_p[2]/10)))
@@ -838,7 +900,7 @@ enw_expectation(data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x55af434349a8>
-#> <environment: 0x55af43428190>
+#> <bytecode: 0x55df26831580>
+#> <environment: 0x55df2681f9d8>
 #> 
 ```

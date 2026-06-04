@@ -48,6 +48,21 @@ A list defining the model formula. This includes:
 - `prefix_rncol`: The number of columns (i.e random effects) in the
   random effect design matrix (minus 1 as the intercept is dropped).
 
+- `prefix_arima_present`: `1` if the formula contains an
+  [`arima()`](https://package.epinowcast.org/dev/reference/arima.md)
+  term, `0` otherwise.
+
+- `prefix_arima_T`, `prefix_arima_G`: ARIMA series length and group
+  count.
+
+- `prefix_arima_p`, `prefix_arima_d`, `prefix_arima_q`: ARIMA orders.
+
+- `prefix_arima_flat_idx`: per-observation column-major index into a
+  `(T x G)` ARIMA residual matrix, used by Stan to gather residuals with
+  `to_vector(eps)[flat_idx]`.
+
+- `prefix_arima_n_obs`: length of the lookup vectors.
+
 ## See also
 
 Functions used to help convert models into the format required for stan
@@ -100,6 +115,30 @@ enw_formula_as_data_list(f, "mtcars")
 #> attr(,"assign")
 #> [1] 1 2
 #> 
+#> $mtcars_arima_present
+#> [1] 0
+#> 
+#> $mtcars_arima_T
+#> [1] 0
+#> 
+#> $mtcars_arima_G
+#> [1] 0
+#> 
+#> $mtcars_arima_p
+#> [1] 0
+#> 
+#> $mtcars_arima_d
+#> [1] 0
+#> 
+#> $mtcars_arima_q
+#> [1] 0
+#> 
+#> $mtcars_arima_n_obs
+#> [1] 0
+#> 
+#> $mtcars_arima_flat_idx
+#> integer(0)
+#> 
 
 # A missing formula produces the default list
 enw_formula_as_data_list(prefix = "missing")
@@ -126,5 +165,29 @@ enw_formula_as_data_list(prefix = "missing")
 #> 
 #> $missing_rdesign
 #> numeric(0)
+#> 
+#> $missing_arima_present
+#> [1] 0
+#> 
+#> $missing_arima_T
+#> [1] 0
+#> 
+#> $missing_arima_G
+#> [1] 0
+#> 
+#> $missing_arima_p
+#> [1] 0
+#> 
+#> $missing_arima_d
+#> [1] 0
+#> 
+#> $missing_arima_q
+#> [1] 0
+#> 
+#> $missing_arima_n_obs
+#> [1] 0
+#> 
+#> $missing_arima_flat_idx
+#> integer(0)
 #> 
 ```

@@ -5,7 +5,7 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Parse a formula into components — parse_formula"><meta name="description" content="This function uses a series internal functions
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Parse a formula into components — parse_formula"><meta name="description" content="This function uses a series internal functions
 to break an input formula into its component parts each of which
 can then be handled separately. Currently supported components are
 fixed effects, lme4 style random effects, and random walks
@@ -95,6 +95,7 @@ section below for a comprehensive explanation of the supported syntax.</p></dd>
     <p>A list of formula components. These currently include:</p><ul><li><p><code>fixed</code>: A character vector of fixed effect terms</p></li>
 <li><p><code>random</code>: A list of of <a href="https://rdrr.io/pkg/lme4/man/lme4-package.html" class="external-link">lme4</a> style random effects</p></li>
 <li><p><code>rw</code>: A character vector of <code><a href="rw.html">rw()</a></code> random walk terms.</p></li>
+<li><p><code>arima</code>: A character vector of <code><a href="arima.html">arima()</a></code> ARIMA(p, d, q) terms.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a></h2>
@@ -107,12 +108,19 @@ the <code>epidemia</code> package (https://github.com/ImperialCollegeLondon/epid
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Functions used to help convert formulas into model designs
+<code><a href="ar.html">ar()</a></code>,
+<code><a href="arima.html">arima()</a></code>,
+<code><a href="arima_terms.html">arima_terms()</a></code>,
+<code><a href="arma.html">arma()</a></code>,
 <code><a href="as_string_formula.html">as_string_formula()</a></code>,
+<code><a href="construct_arima.html">construct_arima()</a></code>,
 <code><a href="construct_re.html">construct_re()</a></code>,
 <code><a href="construct_rw.html">construct_rw()</a></code>,
 <code><a href="enw_formula.html">enw_formula()</a></code>,
 <code><a href="enw_manual_formula.html">enw_manual_formula()</a></code>,
+<code><a href="ma.html">ma()</a></code>,
 <code><a href="re.html">re()</a></code>,
+<code><a href="remove_arima_terms.html">remove_arima_terms()</a></code>,
 <code><a href="remove_rw_terms.html">remove_rw_terms()</a></code>,
 <code><a href="rw.html">rw()</a></code>,
 <code><a href="rw_terms.html">rw_terms()</a></code>,
@@ -131,6 +139,9 @@ the <code>epidemia</code> package (https://github.com/ImperialCollegeLondon/epid
 <span class="r-out co"><span class="r-pr">#&gt;</span> $rw</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $arima</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">parse_formula</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age_group</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">location</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed</span>
@@ -142,6 +153,9 @@ the <code>epidemia</code> package (https://github.com/ImperialCollegeLondon/epid
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $rw</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $arima</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
@@ -157,6 +171,9 @@ the <code>epidemia</code> package (https://github.com/ImperialCollegeLondon/epid
 <span class="r-out co"><span class="r-pr">#&gt;</span> $rw</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $arima</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">parse_formula</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="rw.html">rw</a></span><span class="op">(</span><span class="va">week</span>, <span class="va">location</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed</span>
@@ -169,6 +186,9 @@ the <code>epidemia</code> package (https://github.com/ImperialCollegeLondon/epid
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $rw</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "rw(week, location)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $arima</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>

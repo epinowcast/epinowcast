@@ -150,6 +150,8 @@ infections, hospitalisations).
 |----|----|----|----|
 | Daily random effects | Flexible day-to-day changes | `~0 + (1 | day:.group)` (default) | Most flexible |
 | Weekly random walk | Smooth week-to-week trends | `~1 + rw(week, by = .group)` | Smoother estimates |
+| Stationary AR | Mean-reverting; stationary by construction | `~1 + ar(week, by = .group, p = 1)` | Departures decay to the mean |
+| ARIMA residual | Trend and autocorrelation; `d` sets the integration order | `~1 + arima(week, by = .group, p = 1, d = 1)` | `d` \>= 1 gives non-stationary drift |
 | Growth rate | Exponential growth/decline | `generation_time = 1` (default) | Simple trend |
 | Renewal process | Epidemic dynamics | `generation_time = c(0.2, 0.5, 0.3)` | [Rt estimation vignette](https://package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.md) |
 | Fixed effects | Covariates (e.g., interventions) | `~1 + intervention + ...` | Include predictors |
@@ -163,7 +165,12 @@ infections, hospitalisations).
   [`?enw_expectation`](https://package.epinowcast.org/dev/reference/enw_expectation.md)
   for details
 
-**Where to see it:** The [Rt estimation
+**Where to see it:** The [latent processes
+vignette](https://package.epinowcast.org/dev/articles/latent-processes.md)
+compares random walks, ARIMA(p, d, q) residuals, stationary AR, and
+periodic terms on the growth rate, with the [ARIMA
+reference](https://package.epinowcast.org/dev/articles/arima.md)
+covering the maths, priors, and usage. The [Rt estimation
 vignette](https://package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.md)
 demonstrates renewal process models with generation times.
 
@@ -177,6 +184,7 @@ Build hierarchical models using the formula interface.
 | Random slopes | Group-specific effects | `~x + (x | group)` | Effect varies by group |
 | Random walks | Temporal smoothing | `~rw(time)` | Smooth trends over time |
 | Grouped random walks | Group-specific trends | `~rw(time, by = group)` | Different trends per group |
+| AR / ARIMA terms | Autocorrelated or integrated trends | `~ar(time, p = 1)`, `~arima(time, p, d, q)` | Persistence beyond a random walk |
 | Sparse design | Memory efficient | `sparse = TRUE` in [`enw_formula()`](https://package.epinowcast.org/dev/reference/enw_formula.md) | Large sparse matrices |
 
 **Key functions:**
@@ -185,6 +193,9 @@ Build hierarchical models using the formula interface.
   Unified formula interface
 - [`rw()`](https://package.epinowcast.org/dev/reference/rw.md): Random
   walk helper
+- [`ar()`](https://package.epinowcast.org/dev/reference/ar.md),
+  [`arima()`](https://package.epinowcast.org/dev/reference/arima.md):
+  Autoregressive and ARIMA latent residual helpers
 - See
   [`?enw_formula`](https://package.epinowcast.org/dev/reference/enw_formula.md)
   for syntax details

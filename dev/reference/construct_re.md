@@ -33,12 +33,19 @@ effect was not a factor it will have been converted into one.
 ## See also
 
 Functions used to help convert formulas into model designs
+[`ar()`](https://package.epinowcast.org/dev/reference/ar.md),
+[`arima()`](https://package.epinowcast.org/dev/reference/arima.md),
+[`arima_terms()`](https://package.epinowcast.org/dev/reference/arima_terms.md),
+[`arma()`](https://package.epinowcast.org/dev/reference/arma.md),
 [`as_string_formula()`](https://package.epinowcast.org/dev/reference/as_string_formula.md),
+[`construct_arima()`](https://package.epinowcast.org/dev/reference/construct_arima.md),
 [`construct_rw()`](https://package.epinowcast.org/dev/reference/construct_rw.md),
 [`enw_formula()`](https://package.epinowcast.org/dev/reference/enw_formula.md),
 [`enw_manual_formula()`](https://package.epinowcast.org/dev/reference/enw_manual_formula.md),
+[`ma()`](https://package.epinowcast.org/dev/reference/ma.md),
 [`parse_formula()`](https://package.epinowcast.org/dev/reference/parse_formula.md),
 [`re()`](https://package.epinowcast.org/dev/reference/re.md),
+[`remove_arima_terms()`](https://package.epinowcast.org/dev/reference/remove_arima_terms.md),
 [`remove_rw_terms()`](https://package.epinowcast.org/dev/reference/remove_rw_terms.md),
 [`rw()`](https://package.epinowcast.org/dev/reference/rw.md),
 [`rw_terms()`](https://package.epinowcast.org/dev/reference/rw_terms.md),

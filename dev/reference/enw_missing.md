@@ -122,6 +122,30 @@ enw_missing(data = enw_example("preprocessed"))
 #> attr(,"assign")
 #> [1] 0
 #> 
+#> $data$miss_arima_present
+#> [1] 0
+#> 
+#> $data$miss_arima_T
+#> [1] 0
+#> 
+#> $data$miss_arima_G
+#> [1] 0
+#> 
+#> $data$miss_arima_p
+#> [1] 0
+#> 
+#> $data$miss_arima_d
+#> [1] 0
+#> 
+#> $data$miss_arima_q
+#> [1] 0
+#> 
+#> $data$miss_arima_n_obs
+#> [1] 0
+#> 
+#> $data$miss_arima_flat_idx
+#> integer(0)
+#> 
 #> $data$miss_st
 #> [1] 21
 #> 
@@ -185,18 +209,24 @@ enw_missing(data = enw_example("preprocessed"))
 #> 
 #> 
 #> $priors
-#>        variable
-#>          <char>
-#> 1:     miss_int
-#> 2: miss_beta_sd
-#>                                                                         description
-#>                                                                              <char>
-#> 1:          Intercept on the logit scale for the proportion missing reference dates
-#> 2: Standard deviation of scaled pooled logit missing reference date\n       effects
+#>            variable
+#>              <char>
+#> 1:         miss_int
+#> 2:     miss_beta_sd
+#> 3: miss_arima_sigma
+#> 4:  miss_arima_pacf
+#>                                                                                                                                                                     description
+#>                                                                                                                                                                          <char>
+#> 1:                                                                                                      Intercept on the logit scale for the proportion missing reference dates
+#> 2:                                                                                                     Standard deviation of scaled pooled logit missing reference date effects
+#> 3:                                                                                        Standard deviation of the ARIMA latent residual on missing-reference logit proportion
+#> 4: Partial autocorrelations of the ARIMA latent residual on the missing-reference logit proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
 #>             distribution  mean    sd
 #>                   <char> <num> <num>
-#> 1:                Normal     0     1
-#> 2: Zero truncated normal     0     1
+#> 1:                Normal     0   1.0
+#> 2: Zero truncated normal     0   1.0
+#> 3: Zero truncated normal     0   0.2
+#> 4:               Uniform     0   0.0
 #> 
 #> $inits
 #> function (data, priors) 
@@ -217,12 +247,13 @@ enw_missing(data = enw_example("preprocessed"))
 #>                   priors$miss_beta_sd_p[1], priors$miss_beta_sd_p[2]/10)))
 #>             }
 #>         }
+#>         init <- c(init, .arima_inits(data, priors, "miss"))
 #>         init
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x55af46960528>
-#> <environment: 0x55af4525f158>
+#> <bytecode: 0x55df21ce52f8>
+#> <environment: 0x55df21ce8418>
 #> 
 
 # No missingness model specified
@@ -255,6 +286,30 @@ enw_missing(~0, data = enw_example("preprocessed"))
 #> $data$miss_rdesign
 #> numeric(0)
 #> 
+#> $data$miss_arima_present
+#> [1] 0
+#> 
+#> $data$miss_arima_T
+#> [1] 0
+#> 
+#> $data$miss_arima_G
+#> [1] 0
+#> 
+#> $data$miss_arima_p
+#> [1] 0
+#> 
+#> $data$miss_arima_d
+#> [1] 0
+#> 
+#> $data$miss_arima_q
+#> [1] 0
+#> 
+#> $data$miss_arima_n_obs
+#> [1] 0
+#> 
+#> $data$miss_arima_flat_idx
+#> integer(0)
+#> 
 #> $data$missing_reference
 #> numeric(0)
 #> 
@@ -275,18 +330,24 @@ enw_missing(~0, data = enw_example("preprocessed"))
 #> 
 #> 
 #> $priors
-#>        variable
-#>          <char>
-#> 1:     miss_int
-#> 2: miss_beta_sd
-#>                                                                         description
-#>                                                                              <char>
-#> 1:          Intercept on the logit scale for the proportion missing reference dates
-#> 2: Standard deviation of scaled pooled logit missing reference date\n       effects
+#>            variable
+#>              <char>
+#> 1:         miss_int
+#> 2:     miss_beta_sd
+#> 3: miss_arima_sigma
+#> 4:  miss_arima_pacf
+#>                                                                                                                                                                     description
+#>                                                                                                                                                                          <char>
+#> 1:                                                                                                      Intercept on the logit scale for the proportion missing reference dates
+#> 2:                                                                                                     Standard deviation of scaled pooled logit missing reference date effects
+#> 3:                                                                                        Standard deviation of the ARIMA latent residual on missing-reference logit proportion
+#> 4: Partial autocorrelations of the ARIMA latent residual on the missing-reference logit proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
 #>             distribution  mean    sd
 #>                   <char> <num> <num>
-#> 1:                Normal     0     1
-#> 2: Zero truncated normal     0     1
+#> 1:                Normal     0   1.0
+#> 2: Zero truncated normal     0   1.0
+#> 3: Zero truncated normal     0   0.2
+#> 4:               Uniform     0   0.0
 #> 
 #> $inits
 #> function (data, priors) 
@@ -307,11 +368,12 @@ enw_missing(~0, data = enw_example("preprocessed"))
 #>                   priors$miss_beta_sd_p[1], priors$miss_beta_sd_p[2]/10)))
 #>             }
 #>         }
+#>         init <- c(init, .arima_inits(data, priors, "miss"))
 #>         init
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x55af46960528>
-#> <environment: 0x55af45581368>
+#> <bytecode: 0x55df21ce52f8>
+#> <environment: 0x55df2c36aed8>
 #> 
 ```

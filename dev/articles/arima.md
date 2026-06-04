@@ -1,0 +1,303 @@
+# ARIMA latent residuals: maths, priors, and usage
+
+## Introduction
+
+This vignette covers the maths behind `epinowcast`’s ARIMA(p, d, q)
+latent residual terms, how to use them in any module’s formula, and how
+to set their priors. It explains the kernel construction, the
+stationarity parameterisation, and the regularisation choices, with the
+trade-offs made explicit. For worked usage and a comparison to
+[`rw()`](https://package.epinowcast.org/dev/reference/rw.md) and
+lme4-style random effects, see the [latent processes
+vignette](https://package.epinowcast.org/dev/articles/latent-processes.md).
+For the full model definition see the [model
+vignette](https://package.epinowcast.org/dev/articles/model.md).
+
+## What an ARIMA term does
+
+An `arima(time, by, p, d, q)` term in a formula declares a latent
+residual series that is added to the relevant linear predictor at every
+observation. Writing the linear predictor of a module as \\\eta_i\\ for
+observation \\i\\ at time \\t_i\\ and group \\g_i\\:
+
+\\\eta_i = X_i \beta + Z_i b + \epsilon\_{t_i, g_i},\\
+
+where \\X_i \beta\\ are the fixed effects, \\Z_i b\\ the random effects
+(including any
+[`rw()`](https://package.epinowcast.org/dev/reference/rw.md)
+contributions, which are handled through the design matrix), and
+\\\epsilon\_{t_i, g_i}\\ is the value of the ARIMA latent series for
+time \\t_i\\ and group \\g_i\\. The residual evolves over the time axis
+declared in `arima(...)`; each observation just looks up the value at
+its own (time, group) index.
+
+This is the same construction `brms` uses for `cor_arma`-style residual
+correlation on non-Gaussian likelihoods: a latent Gaussian residual
+added to the linear predictor, with ARMA structure imposed on its prior.
+
+## Using ARIMA terms in a formula
+
+Add a term to any module’s formula with
+[`arima()`](https://package.epinowcast.org/dev/reference/arima.md) or
+one of its aliases, which all build the same backend term:
+
+- `rw(time)` — random walk, equal to `arima(time, p = 0, d = 1, q = 0)`.
+- `ar(time, p)` — stationary autoregression, equal to
+  `arima(time, p, d = 0, q = 0)`.
+- `ma(time, q)` and `arma(time, p, q)` — moving-average and ARMA
+  aliases.
+- `arima(time, by, p, d, q)` — the general form.
+
+`time` is the column the series evolves over, and the optional `by`
+gives each group its own shocks under shared dynamics. The [latent
+processes
+vignette](https://package.epinowcast.org/dev/articles/latent-processes.md)
+works through these on the growth rate and compares them to
+[`rw()`](https://package.epinowcast.org/dev/reference/rw.md) and
+lme4-style random effects; the [Priors](#priors) section below covers
+tuning their regularisation.
+
+## The kernel decomposition
+
+Let \\T\\ be the number of time points in the series and \\G\\ the
+number of groups. The ARIMA latent is built from a \\T \times G\\ matrix
+of unit-normal shocks \\z\\ via
+
+\\\epsilon = \sigma \\ K(\phi, \theta, d) \\ z,\\
+
+where \\\sigma\\ is the latent standard deviation and \\K\\ is a \\T
+\times T\\ lower-triangular kernel that encodes the ARIMA structure. The
+kernel factorises as
+
+\\K(\phi, \theta, d) = D^d \\ T(\psi),\\
+
+where:
+
+- \\\psi \in \mathbb{R}^T\\ is the truncated impulse response of the
+  ARMA(p, q) process with autoregressive coefficients \\\phi\\ and
+  moving-average coefficients \\\theta\\. It satisfies \\\psi_1 = 1\\
+  and the standard ARMA recursion^(\[[1](#ref-boxjenkins)\])
+
+  \\\psi_k = \sum\_{j=1}^{\min(p, k-1)} \phi_j \psi\_{k-j} +
+  \mathbb{1}\\k - 1 \le q\\ \\ \theta\_{k-1}, \quad k = 2, \dots, T.\\
+
+- \\T(\psi) \in \mathbb{R}^{T \times T}\\ is the lower-triangular
+  Toeplitz matrix with first column \\\psi\\. Multiplying \\T(\psi) z\\
+  applies the ARMA filter to the shocks: each entry \\(T(\psi) z)\_t =
+  \sum\_{k=1}^{t} \psi\_{t-k+1} z_k\\.
+
+- \\D \in \mathbb{R}^{T \times T}\\ is the lower-triangular
+  cumulative-sum operator, with ones on and below the diagonal. \\D^d\\
+  integrates \\d\\ times. \\D^0 = I\\ leaves the ARMA series unchanged;
+  \\D^1\\ produces an integrated series of order one; higher \\d\\
+  generalise.
+
+Two properties of this factorisation are useful:
+
+- **\\D^d\\ is data-only.** It can be precomputed and does not
+  contribute to the autodiff graph in Stan.
+- **\\T(\psi)\\ is parameter-dependent.** It is rebuilt every gradient
+  evaluation, but it is built once globally and applied to all shocks in
+  a single matrix multiplication.
+
+Composing the two and applying once to shocks gives the full ARIMA(p, d,
+q) latent:
+
+``` text
+psi  <- arma_impulse(phi, theta, T)        # impulse response, length T
+T_K  <- lower_toeplitz(psi)                # T x T ARMA kernel
+D_d  <- cumulative_op(T, d)                # T x T integration operator
+K    <- D_d * T_K                          # T x T composed kernel
+eps  <- sigma * K * z                      # T x G latent
+```
+
+The Stan implementation of these steps lives in
+`inst/stan/functions/arima_kernel.stan`.
+
+## Stationarity via partial autocorrelations
+
+The autoregressive part is only well behaved if it is *stationary*. A
+stationary AR(p) process forgets its past, so its impulse response
+decays and the latent series stays bounded; a non-stationary one does
+the opposite, with an impulse response that grows without bound until
+the sampler diverges. Putting a prior directly on \\\phi\\ is awkward
+because the stationary region of \\\phi\\-space is an irregular shape
+that is hard to sample inside.
+
+We sidestep this with a standard reparameterisation. Instead of \\\phi\\
+we work with the *partial autocorrelations* \\r_1, \dots, r_p\\, each
+free to range over \\(-1, 1)\\. Every such \\r\\ corresponds to exactly
+one stationary \\\phi\\ and vice versa, so sampling \\r\\ in the simple
+box \\(-1, 1)^p\\ stays in the stationary region by construction. The
+map from \\r\\ to \\\phi\\ is the **Durbin-Levinson recursion** — the
+same recursion classically used to fit AR models from sample
+autocorrelations, run here in the forward
+direction^(\[[2](#ref-barndorff)\]). For \\k = 1, \dots, p\\, starting
+from \\\phi_1^{(1)} = r_1\\,
+
+\\\phi_k^{(k)} = r_k, \quad \phi_j^{(k)} = \phi_j^{(k-1)} - r_k
+\phi\_{k-j}^{(k-1)}, \quad j = 1, \dots, k-1,\\
+
+and the final coefficients are \\\phi_j = \phi_j^{(p)}\\. By
+construction all roots of \\1 - \phi_1 z - \dots - \phi_p z^p\\ lie
+outside the unit circle, which is exactly the stationarity condition.
+This is the same approach `brms` and `rstanarm` use for AR(p) priors.
+
+In Stan we declare `vector<lower=-1, upper=1>[p] expr_arima_pacf`
+directly, then transform to \\\phi\\ via `pacf_to_phi(pacf)` inside the
+transformed parameters / model block. The bounds put an implicit uniform
+prior on each \\r_k\\ over \\(-1, 1)\\; override it through the priors
+mechanism if needed.
+
+MA invertibility is not enforced explicitly. For typical values it is
+rarely a sampling problem; if it becomes one for a specific use case,
+the same partial-autocorrelation transform applies symmetrically on
+\\\theta\\.
+
+The kernel produces \\\epsilon \in \mathbb{R}^{T \times G}\\, but
+observations live in a flat vector. Each observation carries its own
+time and group index, so the contribution to the linear predictor is a
+single matrix lookup per observation — negligible next to building the
+kernel.
+
+## Group structure: dependent vs independent
+
+When `by` is supplied each group has its own column of unit-normal
+shocks `z[, g]`, but the AR/MA parameters \\\phi\\, \\\theta\\, and the
+latent standard deviation \\\sigma\\ are shared across groups. The
+kernel \\K\\ is built once and applied to each column of the \\T \times
+G\\ shock matrix in one matrix multiplication, with each group’s series
+being driven by its own innovations under a common dynamic. Per-group
+parameters (each group with its own \\\phi\\, \\\theta\\, and
+\\\sigma\\) are a planned extension that would loop over \\g\\ building
+per-group \\K_g\\; until that lands the helpers do not expose a `type`
+argument.
+
+## Special cases
+
+The factorisation makes several familiar models special cases of the
+same code path:
+
+- `arima(time, p = 0, d = 0, q = 0)` is degenerate and rejected by the
+  constructor.
+- `arima(time, p = 0, d = 1, q = 0)` reduces to a random walk: \\\psi =
+  (1, 0, 0, \dots)\\, so \\T(\psi) = I\\ and \\K = D\\ is the
+  cumulative-sum operator. **`rw(time)` is now a thin user-facing
+  wrapper that constructs exactly this term**; both go through the same
+  backend and produce identical posteriors. The pure-differencing case
+  (no AR or MA structure) is detected in `arima_filter()` and
+  short-circuited to a per-column `cumulative_sum()` so the kernel is
+  never materialised — the cost is \\O(T G)\\ per evaluation, the same
+  as the previous bespoke random-walk implementation.
+- `arima(time, p = 1, d = 0, q = 0)` is a stationary AR(1): \\\psi_k =
+  \phi^{k-1}\\, \\T(\psi)\\ is the standard AR(1) Toeplitz, \\K =
+  T(\psi)\\.
+- `arima(time, p = 0, d = 1, q = 1)` is an integrated MA(1) (the
+  random-walk-with-correlated-shocks model commonly seen in
+  epidemiology).
+
+The `arima_kernel_matrix()` function is unit-tested against these cases
+against [`stats::ARMAtoMA`](https://rdrr.io/r/stats/ARMAtoMA.html) and
+direct R reference recursions; see
+`tests/testthat/test-stan_arima_kernel.R`.
+
+## Priors
+
+The default priors are deliberately weak. The latent scale \\\sigma\\
+and the partial autocorrelations \\r_k\\ can both be overridden through
+the standard `priors` argument of the relevant module; the shocks and
+the MA terms are fixed.
+
+- \\z\_{t,g} \sim \mathcal{N}(0, 1)\\ — fixed by the non-centred
+  parameterisation; not user-tunable.
+- \\\sigma \sim \mathcal{N}\_+(0, 0.2)\\ (half-normal) — controls how
+  strongly the latent series can deviate from zero. Set through the
+  `<prefix>_arima_sigma` prior.
+- \\r_k \sim \mathrm{Uniform}(-1, 1)\\ — the default, implicit from the
+  parameter bounds. Set through the `<prefix>_arima_pacf` prior: a
+  positive standard deviation switches to a \\\mathcal{N}(\mu, s)\\
+  prior truncated to \\(-1, 1)\\, shrinking the autocorrelations toward
+  \\\mu\\. A standard deviation of zero keeps the uniform default.
+- \\\theta_l \sim \mathcal{N}(0, 1)\\ when MA terms are present — weakly
+  informative.
+
+Here `<prefix>` is the module the term sits on (`expr` for the growth
+rate, `refp` for the parametric reference mean, and so on; see [Where
+you can use it](#where)). For example, to shrink the growth-rate AR term
+toward weak autocorrelation rather than leaving it uniform:
+
+Code
+
+``` r
+
+library(epinowcast)
+pacf_prior <- data.frame(variable = "expr_arima_pacf", mean = 0, sd = 0.3)
+# epinowcast(..., priors = pacf_prior)
+```
+
+The half-normal prior on \\\sigma\\ is the most consequential in
+practice; tighten it if the latent residual is competing with the rest
+of the linear predictor for variance. A tighter `pacf` prior is the
+lever for discouraging the near-unit-root AR behaviour that the uniform
+default permits.
+
+## Where you can use it
+
+[`arima()`](https://package.epinowcast.org/dev/reference/arima.md) and
+its aliases work on every module that takes a formula, each with its own
+prior prefix:
+
+- [`enw_expectation()`](https://package.epinowcast.org/dev/reference/enw_expectation.md)
+  — the growth rate (`expr`) and the latent-to-obs proportion (`expl`).
+- [`enw_reference()`](https://package.epinowcast.org/dev/reference/enw_reference.md)
+  — the parametric mean (`refp`) and the non-parametric logit hazards
+  (`refnp`).
+- [`enw_report()`](https://package.epinowcast.org/dev/reference/enw_report.md)
+  — report-date logit hazards (`rep`).
+- [`enw_missing()`](https://package.epinowcast.org/dev/reference/enw_missing.md)
+  — the missing-reference proportion (`miss`).
+
+Putting an
+[`arima()`](https://package.epinowcast.org/dev/reference/arima.md) term
+on the reference delay mean, for instance, models a reporting delay that
+drifts over time, while an
+[`arima()`](https://package.epinowcast.org/dev/reference/arima.md) on
+the growth rate models the epidemic trend itself.
+
+## Limitations
+
+- One ARIMA term per formula. The R side aborts if multiple are
+  supplied; lifting this requires the Stan side to gain a vector of
+  latent series rather than a single one.
+- AR stationarity is enforced; MA invertibility is not (rarely a problem
+  in practice).
+- Grouped series share AR/MA parameters and latent standard deviation
+  across groups; per-group parameters are a planned extension. Until
+  that lands
+  [`arima()`](https://package.epinowcast.org/dev/reference/arima.md) and
+  [`rw()`](https://package.epinowcast.org/dev/reference/rw.md) do not
+  take a `type` argument.
+- The kernel is built dense (\\T \times T\\) every iteration. For very
+  long series (thousands of time points) the autodiff cost grows as
+  \\O(T^2)\\; in that regime a recursive form (computing \\\epsilon\\
+  via the ARMA filter directly) would be preferable.
+- When the parametric reference standard deviation is modelled
+  (`model_refp > 1`), it shares the ARIMA shocks and kernel of the mean
+  but carries an independent scale (`refp_arima_sd_sigma`). The two
+  residuals are therefore perfectly correlated up to that scale rather
+  than driven by separate shock series. A separate sd process is a
+  planned extension.
+
+## References
+
+1\.
+
+Box, G. E. P., Jenkins, G. M., Reinsel, G. C., & Ljung, G. M. (2015).
+*Time series analysis: Forecasting and control* (5th ed.). Wiley.
+
+2\.
+
+Barndorff-Nielsen, O. E., & Schou, G. (1973). On the parametrization of
+autoregressive models by partial autocorrelations. *Journal of
+Multivariate Analysis*, *3*(4), 408–419.
+<https://doi.org/10.1016/0047-259X(73)90030-4>

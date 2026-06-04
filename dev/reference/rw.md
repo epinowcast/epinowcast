@@ -1,15 +1,19 @@
 # Adds random walks with Gaussian steps to the model.
 
-A call to `rw()` can be used in the 'formula' argument of model
+A call to `rw()` can be used in the `formula` argument of model
 construction functions in the `epinowcast` package such as
 [`enw_formula()`](https://package.epinowcast.org/dev/reference/enw_formula.md).
-Does not evaluate arguments but instead simply passes information for
-use in model construction.
+Mathematically a Gaussian random walk is exactly an ARIMA(0, 1, 0)
+process; `rw(time, by, type)` is now a thin wrapper over
+[`arima()`](https://package.epinowcast.org/dev/reference/arima.md) with
+`p = 0`, `d = 1`, `q = 0`. It is kept as a user-facing convenience
+because random walks are the most common time-series structure in
+`epinowcast` formulas.
 
 ## Usage
 
 ``` r
-rw(time, by, type = c("independent", "dependent"))
+rw(time, by)
 ```
 
 ## Arguments
@@ -22,30 +26,38 @@ rw(time, by, type = c("independent", "dependent"))
 
   Defines the grouping parameter used for the random walk. If not
   specified no grouping is used. Currently this is limited to a single
-  variable.
-
-- type:
-
-  Character string, how standard deviation of grouped random walks is
-  estimated: "independent", or "dependent" across groups; enforced by
-  [`base::match.arg()`](https://rdrr.io/r/base/match.arg.html).
+  variable. Each group draws an independent shock series; the latent
+  standard deviation is shared across groups (per-group standard
+  deviations are a planned extension).
 
 ## Value
 
-A list defining the time frame, group, and type with class "enw_rw_term"
-that can be interpreted by
-[`construct_rw()`](https://package.epinowcast.org/dev/reference/construct_rw.md).
+A list of class `enw_arima_term` (with `p = 0`, `d = 1`, `q = 0`) that
+can be interpreted by
+[`construct_arima()`](https://package.epinowcast.org/dev/reference/construct_arima.md).
+
+## Details
+
+Does not evaluate arguments but instead simply passes information for
+use in model construction.
 
 ## See also
 
 Functions used to help convert formulas into model designs
+[`ar()`](https://package.epinowcast.org/dev/reference/ar.md),
+[`arima()`](https://package.epinowcast.org/dev/reference/arima.md),
+[`arima_terms()`](https://package.epinowcast.org/dev/reference/arima_terms.md),
+[`arma()`](https://package.epinowcast.org/dev/reference/arma.md),
 [`as_string_formula()`](https://package.epinowcast.org/dev/reference/as_string_formula.md),
+[`construct_arima()`](https://package.epinowcast.org/dev/reference/construct_arima.md),
 [`construct_re()`](https://package.epinowcast.org/dev/reference/construct_re.md),
 [`construct_rw()`](https://package.epinowcast.org/dev/reference/construct_rw.md),
 [`enw_formula()`](https://package.epinowcast.org/dev/reference/enw_formula.md),
 [`enw_manual_formula()`](https://package.epinowcast.org/dev/reference/enw_manual_formula.md),
+[`ma()`](https://package.epinowcast.org/dev/reference/ma.md),
 [`parse_formula()`](https://package.epinowcast.org/dev/reference/parse_formula.md),
 [`re()`](https://package.epinowcast.org/dev/reference/re.md),
+[`remove_arima_terms()`](https://package.epinowcast.org/dev/reference/remove_arima_terms.md),
 [`remove_rw_terms()`](https://package.epinowcast.org/dev/reference/remove_rw_terms.md),
 [`rw_terms()`](https://package.epinowcast.org/dev/reference/rw_terms.md),
 [`split_formula_to_terms()`](https://package.epinowcast.org/dev/reference/split_formula_to_terms.md)
@@ -60,11 +72,17 @@ rw(time)
 #> $by
 #> NULL
 #> 
-#> $type
-#> [1] "independent"
+#> $p
+#> [1] 0
+#> 
+#> $d
+#> [1] 1
+#> 
+#> $q
+#> [1] 0
 #> 
 #> attr(,"class")
-#> [1] "enw_rw_term"
+#> [1] "enw_arima_term"
 
 rw(time, location)
 #> $time
@@ -73,22 +91,34 @@ rw(time, location)
 #> $by
 #> [1] "location"
 #> 
-#> $type
-#> [1] "independent"
+#> $p
+#> [1] 0
+#> 
+#> $d
+#> [1] 1
+#> 
+#> $q
+#> [1] 0
 #> 
 #> attr(,"class")
-#> [1] "enw_rw_term"
+#> [1] "enw_arima_term"
 
-rw(time, location, type = "dependent")
+rw(time, location)
 #> $time
 #> [1] "time"
 #> 
 #> $by
 #> [1] "location"
 #> 
-#> $type
-#> [1] "dependent"
+#> $p
+#> [1] 0
+#> 
+#> $d
+#> [1] 1
+#> 
+#> $q
+#> [1] 0
 #> 
 #> attr(,"class")
-#> [1] "enw_rw_term"
+#> [1] "enw_arima_term"
 ```

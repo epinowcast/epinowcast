@@ -18,8 +18,8 @@
     }
   };
 </script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Model Features Summary">
 <meta name="description" content="Quick reference to package capabilities">
@@ -484,6 +484,20 @@ infections, hospitalisations).</p>
 <td>Smoother estimates</td>
 </tr>
 <tr class="odd">
+<td>Stationary AR</td>
+<td>Mean-reverting; stationary by construction</td>
+<td><code>~1 + ar(week, by = .group, p = 1)</code></td>
+<td>Departures decay to the mean</td>
+</tr>
+<tr class="even">
+<td>ARIMA residual</td>
+<td>Trend and autocorrelation; <code>d</code> sets the integration
+order</td>
+<td><code>~1 + arima(week, by = .group, p = 1, d = 1)</code></td>
+<td>
+<code>d</code> &gt;= 1 gives non-stationary drift</td>
+</tr>
+<tr class="odd">
 <td>Growth rate</td>
 <td>Exponential growth/decline</td>
 <td>
@@ -518,7 +532,10 @@ vignette</a></td>
 observation modifiers</li>
 <li>See <code><a href="../reference/enw_expectation.html">?enw_expectation</a></code> for details</li>
 </ul>
-<p><strong>Where to see it:</strong> The <a href="single-timeseries-rt-estimation.html">Rt estimation vignette</a>
+<p><strong>Where to see it:</strong> The <a href="latent-processes.html">latent processes vignette</a> compares
+random walks, ARIMA(p, d, q) residuals, stationary AR, and periodic
+terms on the growth rate, with the <a href="arima.html">ARIMA
+reference</a> covering the maths, priors, and usage. The <a href="single-timeseries-rt-estimation.html">Rt estimation vignette</a>
 demonstrates renewal process models with generation times.</p>
 </div>
 <div class="section level2">
@@ -564,6 +581,15 @@ demonstrates renewal process models with generation times.</p>
 <td>Different trends per group</td>
 </tr>
 <tr class="odd">
+<td>AR / ARIMA terms</td>
+<td>Autocorrelated or integrated trends</td>
+<td>
+<code>~ar(time, p = 1)</code>,
+<code>~arima(time, p, d, q)</code>
+</td>
+<td>Persistence beyond a random walk</td>
+</tr>
+<tr class="even">
 <td>Sparse design</td>
 <td>Memory efficient</td>
 <td>
@@ -579,6 +605,9 @@ demonstrates renewal process models with generation times.</p>
 <code><a href="../reference/enw_formula.html">enw_formula()</a></code>: Unified formula interface</li>
 <li>
 <code><a href="../reference/rw.html">rw()</a></code>: Random walk helper</li>
+<li>
+<code><a href="../reference/ar.html">ar()</a></code>, <code><a href="../reference/arima.html">arima()</a></code>: Autoregressive and ARIMA
+latent residual helpers</li>
 <li>See <code><a href="../reference/enw_formula.html">?enw_formula</a></code> for syntax details</li>
 </ul>
 <p><strong>Where to see it:</strong> The <a href="germany-age-stratified-nowcasting.html">Germany case study</a>

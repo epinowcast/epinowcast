@@ -2,6 +2,12 @@
 
 ### All vignettes
 
+- [ARIMA latent residuals: maths, priors, and
+  usage](https://package.epinowcast.org/dev/articles/arima.md):
+
+  The maths behind the ARIMA(p, d, q) latent residuals in epinowcast,
+  how to use them in any module’s formula, and how to set their priors.
+
 - [Discretised
   distributions](https://package.epinowcast.org/dev/articles/distributions.md):
 
@@ -30,6 +36,13 @@
 
   A comparison of NUTS sampling, pathfinder approximate inference, and
   pathfinder-initialised NUTS across two model specifications.
+
+- [Latent process and periodic options for the growth-rate
+  model](https://package.epinowcast.org/dev/articles/latent-processes.md):
+
+  Random walks, ARIMA(p, d, q) residuals, and periodic effects — the
+  time-series structures available in the formula interface for the
+  growth rate.
 
 - [Model definition and
   implementation](https://package.epinowcast.org/dev/articles/model.md):

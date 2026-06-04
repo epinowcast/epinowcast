@@ -1,12 +1,14 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://package.epinowcast.org/dev/LICENSE-text.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/LICENSE.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/articles/arima.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/distributions.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/epinowcast.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/features.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/germany-age-stratified-nowcasting.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/index.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/inference-methods.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/articles/latent-processes.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/model.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/package-use-cases.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/preprocess-visualisation.html</loc></url>
@@ -18,6 +20,10 @@
 <url><loc>https://package.epinowcast.org/dev/news/index.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/add_max_observed_delay.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/add_pmfs.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/ar.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/arima.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/arima_terms.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/arma.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/as_forecast_sample.epinowcast.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/as_string_formula.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/build_ord_obs.html</loc></url>
@@ -39,6 +45,7 @@
 <url><loc>https://package.epinowcast.org/dev/reference/check_timestep_by_group.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/coerce_date.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/coerce_dt.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/construct_arima.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/construct_re.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/construct_rw.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/convolution_matrix.html</loc></url>
@@ -143,6 +150,7 @@
 <url><loc>https://package.epinowcast.org/dev/reference/index.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/is.Date.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/latest_obs_as_matrix.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/ma.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/parse_formula.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/plot.enw_preprocess_data.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/plot.epinowcast.html</loc></url>
@@ -150,6 +158,7 @@
 <url><loc>https://package.epinowcast.org/dev/reference/print.epinowcast.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/print.summary.enw_preprocess_data.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/re.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/remove_arima_terms.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/remove_profiling.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/remove_rw_terms.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/rw.html</loc></url>

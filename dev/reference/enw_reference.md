@@ -122,6 +122,30 @@ enw_reference(
 #> attr(,"assign")
 #> [1] 0
 #> 
+#> $data$refp_arima_present
+#> [1] 0
+#> 
+#> $data$refp_arima_T
+#> [1] 0
+#> 
+#> $data$refp_arima_G
+#> [1] 0
+#> 
+#> $data$refp_arima_p
+#> [1] 0
+#> 
+#> $data$refp_arima_d
+#> [1] 0
+#> 
+#> $data$refp_arima_q
+#> [1] 0
+#> 
+#> $data$refp_arima_n_obs
+#> [1] 0
+#> 
+#> $data$refp_arima_flat_idx
+#> integer(0)
+#> 
 #> $data$model_refp
 #> [1] 2
 #> 
@@ -995,35 +1019,74 @@ enw_reference(
 #> attr(,"assign")
 #> [1] 0
 #> 
+#> $data$refnp_arima_present
+#> [1] 0
+#> 
+#> $data$refnp_arima_T
+#> [1] 0
+#> 
+#> $data$refnp_arima_G
+#> [1] 0
+#> 
+#> $data$refnp_arima_p
+#> [1] 0
+#> 
+#> $data$refnp_arima_d
+#> [1] 0
+#> 
+#> $data$refnp_arima_q
+#> [1] 0
+#> 
+#> $data$refnp_arima_n_obs
+#> [1] 0
+#> 
+#> $data$refnp_arima_flat_idx
+#> integer(0)
+#> 
 #> $data$model_refnp
 #> [1] 0
 #> 
 #> 
 #> $priors
-#>             variable
-#>               <char>
-#> 1:     refp_mean_int
-#> 2:       refp_sd_int
-#> 3: refp_mean_beta_sd
-#> 4:   refp_sd_beta_sd
-#> 5:         refnp_int
-#> 6:     refnp_beta_sd
-#>                                                       description
-#>                                                            <char>
-#> 1:         Log mean intercept for parametric reference date delay
-#> 2: Log standard deviation for the parametric reference date delay
-#> 3:    Standard deviation of scaled pooled parametric mean effects
-#> 4:      Standard deviation of scaled pooled parametric sd effects
-#> 5:              Intercept for non-parametric reference date delay
-#> 6:     Standard deviation of scaled pooled non-parametric effects
-#>             distribution  mean    sd
-#>                   <char> <num> <num>
-#> 1:                Normal   1.0     1
-#> 2: Zero truncated normal   0.5     1
-#> 3: Zero truncated normal   0.0     1
-#> 4: Zero truncated normal   0.0     1
-#> 5:                Normal   0.0     1
-#> 6: Zero truncated normal   0.0     1
+#>                variable
+#>                  <char>
+#>  1:       refp_mean_int
+#>  2:         refp_sd_int
+#>  3:   refp_mean_beta_sd
+#>  4:     refp_sd_beta_sd
+#>  5:    refp_arima_sigma
+#>  6: refp_arima_sd_sigma
+#>  7:     refp_arima_pacf
+#>  8:           refnp_int
+#>  9:       refnp_beta_sd
+#> 10:   refnp_arima_sigma
+#> 11:    refnp_arima_pacf
+#>                                                                                                                                                            description
+#>                                                                                                                                                                 <char>
+#>  1:                                                                                                             Log mean intercept for parametric reference date delay
+#>  2:                                                                                                     Log standard deviation for the parametric reference date delay
+#>  3:                                                                                                        Standard deviation of scaled pooled parametric mean effects
+#>  4:                                                                                                          Standard deviation of scaled pooled parametric sd effects
+#>  5:                                                                                                Scale of the ARIMA latent residual on the parametric reference mean
+#>  6:                                                                                                  Scale of the ARIMA latent residual on the parametric reference sd
+#>  7:     Partial autocorrelations of the ARIMA latent residual on the parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+#>  8:                                                                                                                  Intercept for non-parametric reference date delay
+#>  9:                                                                                                         Standard deviation of scaled pooled non-parametric effects
+#> 10:                                                                          Standard deviation of the ARIMA latent residual on non-parametric reference logit hazards
+#> 11: Partial autocorrelations of the ARIMA latent residual on the non-parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+#>              distribution  mean    sd
+#>                    <char> <num> <num>
+#>  1:                Normal   1.0   1.0
+#>  2: Zero truncated normal   0.5   1.0
+#>  3: Zero truncated normal   0.0   1.0
+#>  4: Zero truncated normal   0.0   1.0
+#>  5: Zero truncated normal   0.0   0.2
+#>  6: Zero truncated normal   0.0   0.2
+#>  7:               Uniform   0.0   0.0
+#>  8:                Normal   0.0   1.0
+#>  9: Zero truncated normal   0.0   1.0
+#> 10: Zero truncated normal   0.0   0.2
+#> 11:               Uniform   0.0   0.0
 #> 
 #> $inits
 #> function (data, priors) 
@@ -1061,6 +1124,7 @@ enw_reference(
 #>                   priors$refp_sd_beta_sd_p[1], priors$refp_sd_beta_sd_p[2]/10)))
 #>             }
 #>         }
+#>         init <- c(init, .arima_inits(data, priors, "refp", with_sd_sigma = TRUE))
 #>         if (data$model_refnp > 0) {
 #>             if (data$refnp_fintercept > 0) {
 #>                 init$refnp_int <- array(rnorm(1, priors$refnp_int_p[1], 
@@ -1075,12 +1139,13 @@ enw_reference(
 #>                   priors$refnp_beta_sd_p[1], priors$refnp_beta_sd_p[2]/10)))
 #>             }
 #>         }
+#>         init <- c(init, .arima_inits(data, priors, "refnp"))
 #>         init
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x55af542466f0>
-#> <environment: 0x55af54238df0>
+#> <bytecode: 0x55df3338b300>
+#> <environment: 0x55df333791b0>
 #> 
 
 # Non-parametric model with a random effect per delay
@@ -1125,6 +1190,30 @@ enw_reference(
 #>      (Intercept)
 #> attr(,"assign")
 #> [1] 0
+#> 
+#> $data$refp_arima_present
+#> [1] 0
+#> 
+#> $data$refp_arima_T
+#> [1] 0
+#> 
+#> $data$refp_arima_G
+#> [1] 0
+#> 
+#> $data$refp_arima_p
+#> [1] 0
+#> 
+#> $data$refp_arima_d
+#> [1] 0
+#> 
+#> $data$refp_arima_q
+#> [1] 0
+#> 
+#> $data$refp_arima_n_obs
+#> [1] 0
+#> 
+#> $data$refp_arima_flat_idx
+#> integer(0)
 #> 
 #> $data$model_refp
 #> [1] 0
@@ -3621,35 +3710,74 @@ enw_reference(
 #> attr(,"assign")
 #> [1] 1 2
 #> 
+#> $data$refnp_arima_present
+#> [1] 0
+#> 
+#> $data$refnp_arima_T
+#> [1] 0
+#> 
+#> $data$refnp_arima_G
+#> [1] 0
+#> 
+#> $data$refnp_arima_p
+#> [1] 0
+#> 
+#> $data$refnp_arima_d
+#> [1] 0
+#> 
+#> $data$refnp_arima_q
+#> [1] 0
+#> 
+#> $data$refnp_arima_n_obs
+#> [1] 0
+#> 
+#> $data$refnp_arima_flat_idx
+#> integer(0)
+#> 
 #> $data$model_refnp
 #> [1] 1
 #> 
 #> 
 #> $priors
-#>             variable
-#>               <char>
-#> 1:     refp_mean_int
-#> 2:       refp_sd_int
-#> 3: refp_mean_beta_sd
-#> 4:   refp_sd_beta_sd
-#> 5:         refnp_int
-#> 6:     refnp_beta_sd
-#>                                                       description
-#>                                                            <char>
-#> 1:         Log mean intercept for parametric reference date delay
-#> 2: Log standard deviation for the parametric reference date delay
-#> 3:    Standard deviation of scaled pooled parametric mean effects
-#> 4:      Standard deviation of scaled pooled parametric sd effects
-#> 5:              Intercept for non-parametric reference date delay
-#> 6:     Standard deviation of scaled pooled non-parametric effects
-#>             distribution  mean    sd
-#>                   <char> <num> <num>
-#> 1:                Normal   1.0     1
-#> 2: Zero truncated normal   0.5     1
-#> 3: Zero truncated normal   0.0     1
-#> 4: Zero truncated normal   0.0     1
-#> 5:                Normal   0.0     1
-#> 6: Zero truncated normal   0.0     1
+#>                variable
+#>                  <char>
+#>  1:       refp_mean_int
+#>  2:         refp_sd_int
+#>  3:   refp_mean_beta_sd
+#>  4:     refp_sd_beta_sd
+#>  5:    refp_arima_sigma
+#>  6: refp_arima_sd_sigma
+#>  7:     refp_arima_pacf
+#>  8:           refnp_int
+#>  9:       refnp_beta_sd
+#> 10:   refnp_arima_sigma
+#> 11:    refnp_arima_pacf
+#>                                                                                                                                                            description
+#>                                                                                                                                                                 <char>
+#>  1:                                                                                                             Log mean intercept for parametric reference date delay
+#>  2:                                                                                                     Log standard deviation for the parametric reference date delay
+#>  3:                                                                                                        Standard deviation of scaled pooled parametric mean effects
+#>  4:                                                                                                          Standard deviation of scaled pooled parametric sd effects
+#>  5:                                                                                                Scale of the ARIMA latent residual on the parametric reference mean
+#>  6:                                                                                                  Scale of the ARIMA latent residual on the parametric reference sd
+#>  7:     Partial autocorrelations of the ARIMA latent residual on the parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+#>  8:                                                                                                                  Intercept for non-parametric reference date delay
+#>  9:                                                                                                         Standard deviation of scaled pooled non-parametric effects
+#> 10:                                                                          Standard deviation of the ARIMA latent residual on non-parametric reference logit hazards
+#> 11: Partial autocorrelations of the ARIMA latent residual on the non-parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+#>              distribution  mean    sd
+#>                    <char> <num> <num>
+#>  1:                Normal   1.0   1.0
+#>  2: Zero truncated normal   0.5   1.0
+#>  3: Zero truncated normal   0.0   1.0
+#>  4: Zero truncated normal   0.0   1.0
+#>  5: Zero truncated normal   0.0   0.2
+#>  6: Zero truncated normal   0.0   0.2
+#>  7:               Uniform   0.0   0.0
+#>  8:                Normal   0.0   1.0
+#>  9: Zero truncated normal   0.0   1.0
+#> 10: Zero truncated normal   0.0   0.2
+#> 11:               Uniform   0.0   0.0
 #> 
 #> $inits
 #> function (data, priors) 
@@ -3687,6 +3815,7 @@ enw_reference(
 #>                   priors$refp_sd_beta_sd_p[1], priors$refp_sd_beta_sd_p[2]/10)))
 #>             }
 #>         }
+#>         init <- c(init, .arima_inits(data, priors, "refp", with_sd_sigma = TRUE))
 #>         if (data$model_refnp > 0) {
 #>             if (data$refnp_fintercept > 0) {
 #>                 init$refnp_int <- array(rnorm(1, priors$refnp_int_p[1], 
@@ -3701,12 +3830,13 @@ enw_reference(
 #>                   priors$refnp_beta_sd_p[1], priors$refnp_beta_sd_p[2]/10)))
 #>             }
 #>         }
+#>         init <- c(init, .arima_inits(data, priors, "refnp"))
 #>         init
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x55af542466f0>
-#> <environment: 0x55af53e08b78>
+#> <bytecode: 0x55df3338b300>
+#> <environment: 0x55df32f1f938>
 #> 
 
 # Combined parametric and non-parametric model
@@ -3750,6 +3880,30 @@ enw_reference(
 #>      (Intercept)
 #> attr(,"assign")
 #> [1] 0
+#> 
+#> $data$refp_arima_present
+#> [1] 0
+#> 
+#> $data$refp_arima_T
+#> [1] 0
+#> 
+#> $data$refp_arima_G
+#> [1] 0
+#> 
+#> $data$refp_arima_p
+#> [1] 0
+#> 
+#> $data$refp_arima_d
+#> [1] 0
+#> 
+#> $data$refp_arima_q
+#> [1] 0
+#> 
+#> $data$refp_arima_n_obs
+#> [1] 0
+#> 
+#> $data$refp_arima_flat_idx
+#> integer(0)
 #> 
 #> $data$model_refp
 #> [1] 2
@@ -4638,35 +4792,74 @@ enw_reference(
 #> attr(,"assign")
 #> [1] 1 2
 #> 
+#> $data$refnp_arima_present
+#> [1] 0
+#> 
+#> $data$refnp_arima_T
+#> [1] 0
+#> 
+#> $data$refnp_arima_G
+#> [1] 0
+#> 
+#> $data$refnp_arima_p
+#> [1] 0
+#> 
+#> $data$refnp_arima_d
+#> [1] 0
+#> 
+#> $data$refnp_arima_q
+#> [1] 0
+#> 
+#> $data$refnp_arima_n_obs
+#> [1] 0
+#> 
+#> $data$refnp_arima_flat_idx
+#> integer(0)
+#> 
 #> $data$model_refnp
 #> [1] 1
 #> 
 #> 
 #> $priors
-#>             variable
-#>               <char>
-#> 1:     refp_mean_int
-#> 2:       refp_sd_int
-#> 3: refp_mean_beta_sd
-#> 4:   refp_sd_beta_sd
-#> 5:         refnp_int
-#> 6:     refnp_beta_sd
-#>                                                       description
-#>                                                            <char>
-#> 1:         Log mean intercept for parametric reference date delay
-#> 2: Log standard deviation for the parametric reference date delay
-#> 3:    Standard deviation of scaled pooled parametric mean effects
-#> 4:      Standard deviation of scaled pooled parametric sd effects
-#> 5:              Intercept for non-parametric reference date delay
-#> 6:     Standard deviation of scaled pooled non-parametric effects
-#>             distribution  mean    sd
-#>                   <char> <num> <num>
-#> 1:                Normal   1.0     1
-#> 2: Zero truncated normal   0.5     1
-#> 3: Zero truncated normal   0.0     1
-#> 4: Zero truncated normal   0.0     1
-#> 5:                Normal   0.0     1
-#> 6: Zero truncated normal   0.0     1
+#>                variable
+#>                  <char>
+#>  1:       refp_mean_int
+#>  2:         refp_sd_int
+#>  3:   refp_mean_beta_sd
+#>  4:     refp_sd_beta_sd
+#>  5:    refp_arima_sigma
+#>  6: refp_arima_sd_sigma
+#>  7:     refp_arima_pacf
+#>  8:           refnp_int
+#>  9:       refnp_beta_sd
+#> 10:   refnp_arima_sigma
+#> 11:    refnp_arima_pacf
+#>                                                                                                                                                            description
+#>                                                                                                                                                                 <char>
+#>  1:                                                                                                             Log mean intercept for parametric reference date delay
+#>  2:                                                                                                     Log standard deviation for the parametric reference date delay
+#>  3:                                                                                                        Standard deviation of scaled pooled parametric mean effects
+#>  4:                                                                                                          Standard deviation of scaled pooled parametric sd effects
+#>  5:                                                                                                Scale of the ARIMA latent residual on the parametric reference mean
+#>  6:                                                                                                  Scale of the ARIMA latent residual on the parametric reference sd
+#>  7:     Partial autocorrelations of the ARIMA latent residual on the parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+#>  8:                                                                                                                  Intercept for non-parametric reference date delay
+#>  9:                                                                                                         Standard deviation of scaled pooled non-parametric effects
+#> 10:                                                                          Standard deviation of the ARIMA latent residual on non-parametric reference logit hazards
+#> 11: Partial autocorrelations of the ARIMA latent residual on the non-parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+#>              distribution  mean    sd
+#>                    <char> <num> <num>
+#>  1:                Normal   1.0   1.0
+#>  2: Zero truncated normal   0.5   1.0
+#>  3: Zero truncated normal   0.0   1.0
+#>  4: Zero truncated normal   0.0   1.0
+#>  5: Zero truncated normal   0.0   0.2
+#>  6: Zero truncated normal   0.0   0.2
+#>  7:               Uniform   0.0   0.0
+#>  8:                Normal   0.0   1.0
+#>  9: Zero truncated normal   0.0   1.0
+#> 10: Zero truncated normal   0.0   0.2
+#> 11:               Uniform   0.0   0.0
 #> 
 #> $inits
 #> function (data, priors) 
@@ -4704,6 +4897,7 @@ enw_reference(
 #>                   priors$refp_sd_beta_sd_p[1], priors$refp_sd_beta_sd_p[2]/10)))
 #>             }
 #>         }
+#>         init <- c(init, .arima_inits(data, priors, "refp", with_sd_sigma = TRUE))
 #>         if (data$model_refnp > 0) {
 #>             if (data$refnp_fintercept > 0) {
 #>                 init$refnp_int <- array(rnorm(1, priors$refnp_int_p[1], 
@@ -4718,11 +4912,12 @@ enw_reference(
 #>                   priors$refnp_beta_sd_p[1], priors$refnp_beta_sd_p[2]/10)))
 #>             }
 #>         }
+#>         init <- c(init, .arima_inits(data, priors, "refnp"))
 #>         init
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x55af542466f0>
-#> <environment: 0x55af534bc370>
+#> <bytecode: 0x55df3338b300>
+#> <environment: 0x55df2e623848>
 #> 
 ```
