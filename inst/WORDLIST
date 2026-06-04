@@ -44,6 +44,7 @@ discretisation
 Discretisation
 discretised
 Discretised
+discretises
 doi
 dplyr
 dss
@@ -179,12 +180,14 @@ Precompute
 precomputes
 precomputing
 predictives
+primarycensored
 PSIS
 qquad
 rceil
 readibility
 refp
 Reinsel
+renormalising
 Renviron
 reparameterisation
 rhat
@@ -232,6 +235,7 @@ unmodelled
 unpooled
 unsets
 Vehtari
+vendored
 Vscode
 WardBrian
 Wolffram

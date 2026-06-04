@@ -18,6 +18,18 @@
 #' distribution to use. Current options are: "none", "lognormal", "gamma",
 #' "exponential", and "loglogistic", with the default being "lognormal".
 #'
+#' @param discretisation A character string describing how the parametric
+#' delay distribution is discretised. The default, "logit_hazard", uses the
+#' uniform-interval approximation implemented in `discretised_logit_hazard()`.
+#' The "primarycensored" option uses the double interval censoring
+#' discretisation vendored from the
+#' [primarycensored](https://primarycensored.epinowcast.org) package, which
+#' more exactly accounts for primary event censoring, secondary interval
+#' censoring, and right truncation. The "primarycensored" option currently
+#' supports the "exponential", "lognormal" and "gamma" distributions only; it
+#' is not available for "loglogistic". See `vignette("distributions")` for
+#' details on the two approaches.
+#'
 #' @param non_parametric A formula (as implemented in [enw_formula()])
 #' describing the non-parametric logit hazard model. This can use features
 #' defined by reference date and by delay. It draws on a linked `data.frame`
@@ -60,8 +72,10 @@
 enw_reference <- function(
   parametric = ~1,
   distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
+  discretisation = c("logit_hazard", "primarycensored"),
   non_parametric = ~0, data
 ) {
+  discretisation <- match.arg(discretisation)
   # When max_delay = 1 (no delays), reject non-trivial delay models
   if (data$max_delay[[1]] == 1 &&
     (as_string_formula(parametric) != "~0" ||
@@ -93,6 +107,8 @@ enw_reference <- function(
     model_refnp <- 1
   }
 
+  .check_reference_discretisation(discretisation, distribution)
+
   distribution <- data.table::fcase(
     distribution == "none", 0,
     distribution == "exponential", 1,
@@ -112,6 +128,7 @@ enw_reference <- function(
     prefix = "refp", drop_intercept = TRUE
   )
   pdata$model_refp <- distribution
+  pdata$refp_pcens <- as.integer(discretisation == "primarycensored")
 
   # Define non-parametric model
   metanp <- merge(

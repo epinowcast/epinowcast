@@ -8,6 +8,8 @@ functions {
 #include functions/log_expected_latent_from_r.stan
 #include functions/log_expected_obs_from_latent.stan
 #include functions/discretised_logit_hazard.stan
+#include functions/primarycensored.stan
+#include functions/primarycensored_pmf.stan
 #include functions/hazard.stan
 #include functions/expected_obs.stan
 #include functions/combine_logit_hazards.stan
@@ -137,6 +139,10 @@ data {
   // Reference time model
   // Parametric reference model
   int model_refp;
+  // Discretisation method for the parametric reference delay: 0 uses the
+  // uniform-interval logit hazard approximation (discretised_logit_hazard),
+  // 1 uses the vendored primarycensored double interval censoring approach.
+  int refp_pcens;
   int refp_fnrow;
   array[s] int refp_findex;
   int refp_fncol;
@@ -545,9 +551,15 @@ transformed parameters{
     // effects)
     profile("transformed_delay_reference_time_hazards") {
     for (i in 1:refp_fnrow) {
-      refp_lh[, i] = discretised_logit_hazard(
-        refp_mean[i], refp_sd[i], dmax, model_refp, 2, ref_as_p
-      );
+      if (refp_pcens) {
+        refp_lh[, i] = discretised_pcens_logit_hazard(
+          refp_mean[i], refp_sd[i], dmax, model_refp, ref_as_p
+        );
+      } else {
+        refp_lh[, i] = discretised_logit_hazard(
+          refp_mean[i], refp_sd[i], dmax, model_refp, 2, ref_as_p
+        );
+      }
     }
     }
   }

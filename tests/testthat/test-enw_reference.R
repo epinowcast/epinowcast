@@ -105,6 +105,41 @@ test_that("enw_reference supports parametric models", {
   )
 })
 
+test_that("enw_reference supports the primarycensored discretisation", {
+  default_ref <- enw_reference(data = pobs)
+  expect_identical(default_ref$data$refp_pcens, 0L)
+
+  pcens_ref <- enw_reference(
+    distribution = "lognormal", discretisation = "primarycensored",
+    data = pobs
+  )
+  expect_identical(pcens_ref$data$refp_pcens, 1L)
+  expect_identical(pcens_ref$data$model_refp, 2)
+
+  for (dist in c("exponential", "lognormal", "gamma")) {
+    ref <- enw_reference(
+      distribution = dist, discretisation = "primarycensored", data = pobs
+    )
+    expect_identical(ref$data$refp_pcens, 1L)
+  }
+})
+
+test_that("enw_reference rejects unsupported primarycensored distributions", {
+  expect_error(
+    enw_reference(
+      distribution = "loglogistic", discretisation = "primarycensored",
+      data = pobs
+    ),
+    "does not support"
+  )
+})
+
+test_that("enw_reference validates the discretisation argument", {
+  expect_error(
+    enw_reference(discretisation = "not_a_method", data = pobs)
+  )
+})
+
 test_that("enw_reference supports non-parametric models", {
   ref_snapshot <- enw_reference(
     parametric = ~0,

@@ -1,3 +1,26 @@
+# Validate the reference delay discretisation against the chosen distribution.
+#
+# The primarycensored discretisation only supports the distributions for which
+# the vendored primarycensored Stan functions are available (exponential,
+# lognormal and gamma). This helper aborts with an informative message when an
+# unsupported combination is requested. Kept separate from `enw_reference()` to
+# limit its cyclomatic complexity.
+.check_reference_discretisation <- function(discretisation, distribution) {
+  unsupported <- "loglogistic"
+  if (discretisation == "primarycensored" &&
+    distribution %in% unsupported) {
+    cli::cli_abort(
+      paste0(
+        "The {.val primarycensored} discretisation does not support the ",
+        "{.val {distribution}} distribution. Use {.val exponential}, ",
+        "{.val lognormal} or {.val gamma}, or set ",
+        "{.code discretisation = \"logit_hazard\"}."
+      )
+    )
+  }
+  invisible(TRUE)
+}
+
 #' Identify report dates with complete (i.e up to the maximum delay) reference
 #' dates
 #'
