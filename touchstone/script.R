@@ -144,5 +144,43 @@ touchstone::benchmark_run(
   n = 3
 )
 
+# Latent-dominated growth-rate models (no renewal), where the intercept
+# centring of the integrated random-walk drift has the most effect. The
+# shared and grouped variants together show the centring helps and that a
+# grouped latent (each group its own series) still benefits.
+touchstone::benchmark_run(
+  expr_before_benchmark = { source("touchstone/setup.R") },
+  rw_growth_model = { epinowcast(
+    data = pobs,
+    expectation = enw_expectation(r = ~ 1 + rw(week), data = pobs),
+    fit = enw_fit_opts(
+      save_warmup = FALSE, pp = FALSE,
+      chains = 2, iter_warmup = 500, iter_sampling = 500,
+      parallel_chains = 2
+    ),
+    obs = enw_obs(family = "negbin", data = pobs),
+    model = model
+  ) },
+  n = 3
+)
+
+touchstone::benchmark_run(
+  expr_before_benchmark = { source("touchstone/multigroup-setup.R") },
+  multi_group_rw_growth_model = { epinowcast(
+    data = pobs,
+    expectation = enw_expectation(
+      r = ~ 1 + rw(week, by = .group), data = pobs
+    ),
+    fit = enw_fit_opts(
+      save_warmup = FALSE, pp = FALSE,
+      chains = 2, iter_warmup = 500, iter_sampling = 500,
+      parallel_chains = 2
+    ),
+    obs = enw_obs(family = "negbin", data = pobs),
+    model = model
+  ) },
+  n = 3
+)
+
 # create artifacts used downstream in the GitHub Action.
 touchstone::benchmark_analyze()

@@ -97,25 +97,16 @@ The Stan implementation of these steps lives in `inst/stan/functions/arima_kerne
 
 # Centring the integrated residual
 
-When the residual is integrated ($d \ge 1$) the cumulative-sum operator $D^d$ gives $\epsilon$ a free overall level: the first shock propagates through the cumulative sum and shifts the whole path, so the level of $\epsilon$ trades off against the intercept $\alpha$ of the linear predictor.
-This is a ridge in the joint posterior and slows sampling, the same way an un-centred design matrix correlates an intercept with its slopes.
+When the residual is integrated ($d \ge 1$) the cumulative-sum operator $D^d$ gives $\epsilon$ a free overall level: the first shock propagates through the cumulative sum and shifts the whole path.
+That level trades off against the module intercept, so it is removed and recovered into the intercept exactly as for the fixed-effect design — the general device, and why it leaves the posterior unchanged, is described in the [model vignette](model.html).
 
-When the module has a free intercept and the latent is a single shared series ($G = 1$), the residual is mean-centred,
+The term-specific part is which mean is removed.
+Only the grand mean over time and groups is subtracted,
 
-$$\tilde\epsilon = \epsilon - \frac{1}{T} \sum_{t=1}^{T} \epsilon_{t},$$
+$$\tilde\epsilon_{t, g} = \epsilon_{t, g} - \bar m, \qquad \bar m = \frac{1}{T G} \sum_{g=1}^{G} \sum_{t=1}^{T} \epsilon_{t, g},$$
 
-so it is a pure mean-zero deviation and the intercept owns the level.
-To keep the prior on the original-scale intercept, the removed level is recovered into it,
-
-$$\alpha = \alpha_c - \bar m, \qquad \bar m = \frac{1}{T} \sum_{t=1}^{T} \epsilon_{t},$$
-
-where $\alpha_c$ is the sampled (centred) intercept and the user's prior is placed on $\alpha$.
-The shift is additive, so the change of variables has unit Jacobian, the prior keeps its meaning, and the posterior is unchanged: this is an exact reparameterisation.
-This mirrors how `brms` centres its population-level design matrix and how EpiNow2 centres the cumulative Gaussian process for the reproduction number, and on a weekly random-walk growth model it roughly halves the sampling time at the `adapt_delta` these models use.
-
-A **grouped** latent ($G > 1$, e.g. `arima(week, age_group)`) is left un-centred.
-The whole point of grouping is to give each group its own series, including its own level and drift; a single shared intercept cannot absorb $G$ distinct levels, so centring there would pull the groups toward a common level rather than reparameterise them.
-The intercept centring of the fixed-effects design (see the model vignette) still applies in either case.
+which is the single level direction that competes with the shared intercept.
+Each group keeps its own level relative to $\bar m$, so a grouped latent ($G > 1$, e.g. `arima(week, age_group)`) still gives each group its own level and drift, and the reparameterisation is exact for any number of groups.
 
 # Stationarity via partial autocorrelations
 

@@ -193,24 +193,22 @@ matrix arima_filter(matrix Z, vector phi, vector theta, int d) {
  * level via a unit-Jacobian shift), this offset is subtracted from the
  * sampled intercept so the recovered intercept absorbs the level.
  *
- * Centring is only applied to a single shared series (G == 1), where it is
- * an exact reparameterisation. With a per-group latent (G > 1) the shared
- * scalar intercept cannot absorb G distinct levels without re-expressing
- * the per-group differences, so centring is skipped there and this returns
- * 0. See `vignettes/arima.Rmd`.
+ * Only the grand mean (averaged over time and groups) is removed -- this
+ * is the single level direction that competes with the shared intercept.
+ * Each group keeps its own level relative to that grand mean, so the
+ * reparameterisation is exact for any number of groups: a grouped latent
+ * still gives each group its own level and drift. See `vignettes/model.Rmd`.
  *
- * Returns 0 unless the term is present, centring is on, d >= 1, and G == 1.
+ * Returns 0 unless the term is present, centring is on, and d >= 1.
  */
 real arima_latent_mean_offset(int present, int centre, int T, int G,
                               int p, int d, int q,
                               matrix z, vector pacf, vector theta,
                               array[] real sigma) {
-  if (!present || !centre || d < 1 || G != 1) return 0.0;
+  if (!present || !centre || d < 1) return 0.0;
   vector[p] phi = pacf_to_phi(pacf);
   matrix[T, G] eps = sigma[1] * arima_filter(z, phi, theta, d);
-  real m = 0.0;
-  for (gg in 1:G) m += mean(eps[, gg]);
-  return m / G;
+  return mean(to_vector(eps));
 }
 
 vector apply_arima_residual(vector base, int n_obs,
@@ -224,17 +222,18 @@ vector apply_arima_residual(vector base, int n_obs,
   matrix[T, G] eps = sigma[1] * arima_filter(z, phi, theta, d);
   // Integration (d >= 1) gives the residual a free overall level: the
   // first shock propagates through the cumulative sum and shifts the
-  // whole path, so the residual level trades off against the intercept
-  // (a ridge in the joint posterior that slows HMC). When an intercept
-  // is present to carry the level, mean-centre the series so the residual
-  // becomes a pure mean-zero deviation. This mirrors brms's design-matrix
-  // centring and EpiNow2's `gp -= mean(gp)`.
+  // whole path, so the level of the residual trades off against the
+  // intercept (a ridge in the joint posterior that slows HMC). When an
+  // intercept is present to carry the level, remove the grand mean (over
+  // time and groups) so the intercept owns it. This mirrors brms's
+  // design-matrix centring and EpiNow2's `gp -= mean(gp)`.
   //
-  // Only applied to a single shared series (G == 1). A per-group latent
-  // (G > 1) is meant to give each group its own level and drift, which the
-  // shared scalar intercept cannot absorb, so those series are left as-is.
-  if (centre && d >= 1 && G == 1) {
-    eps[, 1] = eps[, 1] - mean(eps[, 1]);
+  // Only the grand mean is removed -- the single level direction that
+  // competes with the shared intercept. Each group keeps its own level
+  // relative to that grand mean, so this is exact for any number of groups
+  // and a grouped latent still gives each group its own level and drift.
+  if (centre && d >= 1) {
+    eps = eps - mean(to_vector(eps));
   }
   // Vectorised gather: flat_idx is precomputed in transformed data
   // as (group_idx - 1) * T + time_idx, so to_vector(eps) (column-
