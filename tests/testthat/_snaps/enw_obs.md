@@ -107,6 +107,13 @@
       $data$model_obs
       [1] 1
       
+      $data$model_delay_only
+      [1] 0
+      
+      $data$dlo_ltotal
+          
+      [1,]
+      
       
       $priors
          variable                                              description
@@ -225,6 +232,13 @@
       
       $data$model_obs
       [1] 1
+      
+      $data$model_delay_only
+      [1] 0
+      
+      $data$dlo_ltotal
+          
+      [1,]
       
       
       $priors

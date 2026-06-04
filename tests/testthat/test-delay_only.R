@@ -26,8 +26,8 @@ disc_lognormal_pmf <- function(meanlog, sdlog, dmax) {
 # to the most recent reference date, so recent reference dates only observe
 # early delays and their known totals are partial running totals (#776).
 simulate_delay_triangle <- function(meanlog = 1.6, sdlog = 0.5,
-                                     max_delay = 15, n_dates = 60,
-                                     total = 2000, truncate = FALSE) {
+                                    max_delay = 15, n_dates = 60,
+                                    total = 2000, truncate = FALSE) {
   pmf <- disc_lognormal_pmf(meanlog, sdlog, max_delay)
   counts <- round(total * pmf)
   dates <- as.Date("2021-01-01") + 0:(n_dates - 1)
