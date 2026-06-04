@@ -67,6 +67,13 @@ data {
   array[2, g * expr_r_seed] real expr_lelatent_int_p; 
   array[2, 1] real expr_r_int_p;
   array[2, 1] real expr_beta_sd_p;
+  // Override the modelled growth rate with supplied values. Used by the
+  // simulate and forecast modes to inject a known or new latent-process
+  // trajectory while reusing the generated-quantities machinery. When
+  // expr_r_override is 0 (the default) the regression-derived growth rate
+  // is used and expr_r_override_value is ignored (length 0).
+  int<lower=0, upper=1> expr_r_override;
+  vector[expr_r_override ? expr_t * g : 0] expr_r_override_value;
   // ARIMA(p, d, q) latent residual on growth rate
   int<lower=0, upper=1> expr_arima_present;
   int<lower=0> expr_arima_T;
@@ -469,17 +476,22 @@ transformed parameters{
   // Expectation model
   profile("transformed_expected_final_observations") {
   // Get log growth rates and map to expected latent cases
-  r = regression_predictor(
-    expr_r_int, expr_beta, expr_fnindex, expr_fncol, expr_fdesign,
-    expr_sparse, expr_beta_sd, expr_rdesign, expr_fintercept, sparse_design,
-    expr_arima_present, expr_arima_T, expr_arima_G,
-    expr_arima_p, expr_arima_d, expr_arima_q, expr_arima_n_obs,
-    expr_arima_z, expr_arima_pacf, expr_arima_theta, expr_arima_sigma,
-    expr_arima_flat_idx,
-    expr_gp_present, expr_gp_T, expr_gp_G, expr_gp_M, expr_gp_L,
-    expr_gp_type, expr_gp_nu, expr_gp_d, expr_gp_PHI, expr_gp_eta,
-    expr_gp_rho, expr_gp_alpha, expr_gp_flat_idx
-  );
+  if (expr_r_override) {
+    // Inject a supplied growth rate trajectory (simulate / forecast modes)
+    r = expr_r_override_value;
+  } else {
+    r = regression_predictor(
+      expr_r_int, expr_beta, expr_fnindex, expr_fncol, expr_fdesign,
+      expr_sparse, expr_beta_sd, expr_rdesign, expr_fintercept, sparse_design,
+      expr_arima_present, expr_arima_T, expr_arima_G,
+      expr_arima_p, expr_arima_d, expr_arima_q, expr_arima_n_obs,
+      expr_arima_z, expr_arima_pacf, expr_arima_theta, expr_arima_sigma,
+      expr_arima_flat_idx,
+      expr_gp_present, expr_gp_T, expr_gp_G, expr_gp_M, expr_gp_L,
+      expr_gp_type, expr_gp_nu, expr_gp_d, expr_gp_PHI, expr_gp_eta,
+      expr_gp_rho, expr_gp_alpha, expr_gp_flat_idx
+    );
+  }
   exp_llatent = log_expected_latent_from_r(
     expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
     expr_ft, g
