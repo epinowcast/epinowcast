@@ -72,3 +72,49 @@ array[] vector log_expected_obs_from_latent(
   }
   return(exp_lobs);
 }
+
+/**
+ * Compute log expected observations from latent values using an in-model PMF
+ *
+ * Variant of `log_expected_obs_from_latent` used when the latent reporting
+ * delay is uncertain and its PMF is rebuilt for each posterior sample (and so
+ * cannot be precomputed into a sparse convolution matrix in transformed data).
+ * The convolution is performed directly using the supplied PMF. The PMF maps
+ * delays 0 to (rd_n - 1), so observation at reference time s (1-indexed over
+ * the latent series of length ft = t + rd_n - 1) is the dot product of the
+ * preceding rd_n latent values with the reversed PMF.
+ *
+ * @param exp_llatent Array of vectors of log latent expected values (length
+ * ft per group).
+ *
+ * @param pmf Latent reporting delay PMF (forward order, delays 0:(rd_n-1)).
+ *
+ * @param rd_n Length of the reporting delay PMF.
+ *
+ * @param t Number of modelled reference time points.
+ *
+ * @param g Number of groups.
+ *
+ * @param latent_obs_prop Vector of log latent-to-obs proportions.
+ *
+ * @return An array of vectors of log expected observations per group.
+ */
+array[] vector log_expected_obs_from_latent_pmf(
+  array[] vector exp_llatent, vector pmf, int rd_n, int t, int g,
+  vector latent_obs_prop
+) {
+  array[g] vector[t] exp_lobs;
+  int ft = t + rd_n - 1;
+  vector[rd_n] rpmf = reverse(pmf);
+  for (k in 1:g) {
+    vector[ft] latent = exp(exp_llatent[k]);
+    vector[t] obs;
+    for (s in 1:t) {
+      // reference time s corresponds to latent index s + rd_n - 1; convolve
+      // the preceding rd_n latent values with the reversed delay PMF.
+      obs[s] = dot_product(segment(latent, s, rd_n), rpmf);
+    }
+    exp_lobs[k] = log(obs) + segment(latent_obs_prop, (k-1) * t + 1, t);
+  }
+  return(exp_lobs);
+}
