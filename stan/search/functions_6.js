@@ -8,5 +8,6 @@ var searchData=
   ['log_5fexpected_5fobs_5ffrom_5flatent_5',['log_expected_obs_from_latent',['../log__expected__obs__from__latent_8stan.html#a371632efee35396bab7afc7fb05c6cab',1,'log_expected_obs_from_latent.stan']]],
   ['log_5fhazard_5fto_5flogit_5fhazard_6',['log_hazard_to_logit_hazard',['../discretised__logit__hazard_8stan.html#acbffe4a50f7fe04889eb84ff12b28465',1,'discretised_logit_hazard.stan']]],
   ['loglogistic_5flcdf_7',['loglogistic_lcdf',['../discretised__logit__hazard_8stan.html#a523a7a17eab96dcdd5637336795e2410',1,'discretised_logit_hazard.stan']]],
-  ['lprob_5fto_5funiform_5fdouble_5fcensored_5flog_5fhazard_8',['lprob_to_uniform_double_censored_log_hazard',['../discretised__logit__hazard_8stan.html#a8b4225ccb5a12fc1ac249dcd33c38380',1,'discretised_logit_hazard.stan']]]
+  ['lower_5ftoeplitz_8',['lower_toeplitz',['../arima__kernel_8stan.html#a43ba2e310df5c2c3006d416b1a73e158',1,'arima_kernel.stan']]],
+  ['lprob_5fto_5funiform_5fdouble_5fcensored_5flog_5fhazard_9',['lprob_to_uniform_double_censored_log_hazard',['../discretised__logit__hazard_8stan.html#a8b4225ccb5a12fc1ac249dcd33c38380',1,'discretised_logit_hazard.stan']]]
 ];

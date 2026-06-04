@@ -2,6 +2,7 @@ var dir_35baea09d55bebfe17654fdf4bf061ce =
 [
     [ "allocate_observed_obs.stan", "allocate__observed__obs_8stan.html", "allocate__observed__obs_8stan" ],
     [ "apply_missing_reference_effects.stan", "apply__missing__reference__effects_8stan.html", "apply__missing__reference__effects_8stan" ],
+    [ "arima_kernel.stan", "arima__kernel_8stan.html", "arima__kernel_8stan" ],
     [ "combine_effects.stan", "combine__effects_8stan.html", "combine__effects_8stan" ],
     [ "combine_logit_hazards.stan", "combine__logit__hazards_8stan.html", "combine__logit__hazards_8stan" ],
     [ "common_params.stan", "common__params_8stan.html", null ],
@@ -17,6 +18,7 @@ var dir_35baea09d55bebfe17654fdf4bf061ce =
     [ "log_expected_obs_from_latent.stan", "log__expected__obs__from__latent_8stan.html", "log__expected__obs__from__latent_8stan" ],
     [ "obs_lpmf.stan", "obs__lpmf_8stan.html", "obs__lpmf_8stan" ],
     [ "obs_rng.stan", "obs__rng_8stan.html", "obs__rng_8stan" ],
+    [ "regression.stan", "regression_8stan.html", "regression_8stan" ],
     [ "utils.stan", "utils_8stan.html", "utils_8stan" ],
     [ "zero_truncated_normal.stan", "zero__truncated__normal_8stan.html", "zero__truncated__normal_8stan" ]
 ];
