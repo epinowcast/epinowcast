@@ -443,6 +443,9 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
       n = x$max,
       dist = x$dist_id,
       lrev = rep(0, x$max),
+      # The in-model PMF is normalised (discretised_logit_hazard uses
+      # max_strat = 2, so it sums to 1); any ascertainment rescaling is handled
+      # by the latent-to-obs proportion (`observation`) submodule.
       scale = 1,
       mean_p = x$mean_p,
       sd_p = x$sd_p
@@ -458,6 +461,37 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
     mean_p = c(1, 1),
     sd_p = c(0.5, 1)
   )
+}
+
+#' Map convolution-matrix nonzeros to PMF indices
+#'
+#' Internal helper used by [enw_expectation()] for uncertain latent reporting
+#' delays. The latent delay convolution matrix has a fixed sparsity pattern
+#' (depending only on the delay length and number of time points); only the
+#' nonzero values change when the PMF is rebuilt per posterior sample. This
+#' returns, for each nonzero element in compressed sparse row (CSR, row-major)
+#' order, the index of the PMF entry that supplies its value, so that the CSR
+#' weights can be rebuilt in-model from a sampled PMF while reusing the
+#' precomputed integer sparsity pattern. Using a value-stable index map (rather
+#' than re-extracting the sampled matrix) keeps the nonzero count constant even
+#' when the PMF tail underflows to exactly zero.
+#'
+#' @param rd_n Integer length of the reporting delay PMF (delays 0:(rd_n - 1)).
+#' @param ft Integer number of latent time points (`t + rd_n - 1`).
+#'
+#' @return An integer array giving the PMF index (1:`rd_n`) for each nonzero of
+#' the convolution matrix in CSR row-major order.
+#' @noRd
+.conv_pmf_index_map <- function(rd_n, ft) {
+  # Convolution matrix with values = PMF index, matching the Stan
+  # convolution_matrix() placement (column s holds pmf[1:l] from row s).
+  idx_mat <- convolution_matrix(
+    seq_len(rd_n), ft,
+    include_partial = FALSE
+  )
+  # CSR is row-major: iterate rows, left to right within each row.
+  w_idx <- as.integer(t(idx_mat)[t(idx_mat) != 0])
+  array(w_idx)
 }
 
 #' Expectation model module
@@ -587,11 +621,28 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
         include_partial = FALSE
       )
     } else {
-      # Placeholder; the convolution is rebuilt in-model when uncertain.
-      matrix(0, nrow = r_list$ft, ncol = r_list$ft)
+      # Pattern matrix with the correct sparsity structure. The values are
+      # rebuilt in-model per sample (see the Stan convolution_matrix() call);
+      # passing the pattern here sizes the sparse CSR components so the fixed
+      # and uncertain branches share one matrix-vector path.
+      convolution_matrix(
+        rep(1 / lrd$n, lrd$n), r_list$ft,
+        include_partial = FALSE
+      )
     },
-    lrd_dist = lrd$dist
+    lrd_dist = lrd$dist,
+    # For an uncertain delay, the CSR weights are rebuilt in-model from the
+    # sampled PMF. This maps each nonzero (in CSR row-major order, matching the
+    # precomputed sparse pattern) to the PMF index that supplies its value.
+    # Computed from a value-stable pattern (not the sampled PMF, whose tail may
+    # underflow to exactly zero and change the nonzero count).
+    lrd_w_idx = if (lrd$dist == 0) {
+      array(1L)
+    } else {
+      .conv_pmf_index_map(lrd$n, r_list$ft)
+    }
   )
+  obs_list$lrd_w_n <- length(obs_list$lrd_w_idx)
 
   obs_list$obs <- as.numeric(
     lrd$scale != 1 || obs_list$lrd_n != 1 || lrd$dist != 0 ||
@@ -619,20 +670,28 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   names(obs_list) <- paste0("expl_", names(obs_list))
   out$data <- c(r_list, r_data, obs_list, obs_data)
 
+  # Priors for the uncertain delay parameters are carried on the spec object
+  # (the `mean`/`sd` arguments of `enw_uncertain()`) and passed as Stan data
+  # directly, so they do not alter the user-facing `$priors` table for the
+  # default fixed-PMF case. The Stan parameters are sized 0 (and these data
+  # are unused) unless the corresponding delay is uncertain.
+  out$data$expr_gt_mean_p <- as.array(matrix(gt$mean_p, nrow = 2))
+  out$data$expr_gt_sd_p <- as.array(matrix(gt$sd_p, nrow = 2))
+  out$data$expl_lrd_mean_p <- as.array(matrix(lrd$mean_p, nrow = 2))
+  out$data$expl_lrd_sd_p <- as.array(matrix(lrd$sd_p, nrow = 2))
+
   out$priors <- data.table::data.table(
     variable = c(
       "expr_r_int", "expr_beta_sd",
       rep("expr_lelatent_int", length(seed_obs)),
       "expr_arima_sigma", "expr_arima_pacf",
       "expr_gp_rho", "expr_gp_alpha",
-      "expr_gt_mean", "expr_gt_sd",
-      "expl_lrd_mean", "expl_lrd_sd",
       "expl_beta_sd",
       "expl_arima_sigma", "expl_arima_pacf",
       "expl_gp_rho", "expl_gp_alpha"
     ),
     dimension = c(
-      1, 1, seq_along(seed_obs), 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+      1, 1, seq_along(seed_obs), 1, 1, 1, 1, 1, 1, 1, 1, 1
     ),
     description = c(
       "Intercept of the log growth rate",
@@ -648,10 +707,6 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       .arima_pacf_prior_description("log growth rate"),
       .gp_rho_prior_description("log growth rate"),
       .gp_alpha_prior_description("log growth rate"),
-      "Location parameter of the uncertain generation time distribution",
-      "Scale parameter of the uncertain generation time distribution",
-      "Location parameter of the uncertain latent reporting delay",
-      "Scale parameter of the uncertain latent reporting delay",
       "Standard deviation of scaled pooled log growth rate effects",
       paste(
         "Standard deviation of the ARIMA latent residual on log",
@@ -665,20 +720,16 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       "Normal", "Zero truncated normal", rep("Normal", length(seed_obs)),
       "Zero truncated normal", "Uniform",
       "Log normal", "Zero truncated normal",
-      "Normal", "Zero truncated normal",
-      "Normal", "Zero truncated normal",
       "Zero truncated normal",
       "Zero truncated normal", "Uniform",
       "Log normal", "Zero truncated normal"
     ),
     mean = c(
       0, 0, seed_obs, 0, 0, log(3), 0,
-      gt$mean_p[1], gt$sd_p[1], lrd$mean_p[1], lrd$sd_p[1],
       0, 0, 0, log(3), 0
     ),
     sd = c(
       0.2, 1, rep(1, length(seed_obs)), 0.2, 0, 0.5, 0.05,
-      gt$mean_p[2], gt$sd_p[2], lrd$mean_p[2], lrd$sd_p[2],
       1, 0.2, 0, 0.5, 0.05
     )
   )
@@ -708,21 +759,21 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       )
       if (isTRUE(data$expr_gt_dist > 0)) {
         init$expr_gt_mean <- array(rnorm(
-          1, priors$expr_gt_mean_p[1], priors$expr_gt_mean_p[2] / 10
+          1, data$expr_gt_mean_p[1], data$expr_gt_mean_p[2] / 10
         ))
         if (data$expr_gt_dist > 1) {
           init$expr_gt_sd <- array(abs(rnorm(
-            1, priors$expr_gt_sd_p[1], priors$expr_gt_sd_p[2] / 10
+            1, data$expr_gt_sd_p[1], data$expr_gt_sd_p[2] / 10
           )))
         }
       }
       if (isTRUE(data$expl_lrd_dist > 0)) {
         init$expl_lrd_mean <- array(rnorm(
-          1, priors$expl_lrd_mean_p[1], priors$expl_lrd_mean_p[2] / 10
+          1, data$expl_lrd_mean_p[1], data$expl_lrd_mean_p[2] / 10
         ))
         if (data$expl_lrd_dist > 1) {
           init$expl_lrd_sd <- array(abs(rnorm(
-            1, priors$expl_lrd_sd_p[1], priors$expl_lrd_sd_p[2] / 10
+            1, data$expl_lrd_sd_p[1], data$expl_lrd_sd_p[2] / 10
           )))
         }
       }
