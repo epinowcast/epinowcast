@@ -201,6 +201,87 @@ add_pmfs <- function(pmfs) {
   })
 }
 
+#' Specify an uncertain parametric delay distribution
+#'
+#' @description
+#' Builds a specification for a delay distribution whose parameters are
+#' uncertain and estimated within the model rather than supplied as a fixed
+#' probability mass function (PMF). The distribution is discretised in-model
+#' using the same machinery as the parametric reference date model
+#' (see [enw_reference()]) so that a fresh PMF is rebuilt for each posterior
+#' sample. This provides parity with the uncertain distribution support in
+#' `EpiNow2` (which draws delay parameters from priors and marginalises them
+#' within the model).
+#'
+#' Uncertain distributions can be passed to the `generation_time` and
+#' `latent_reporting_delay` arguments of [enw_expectation()] in place of a
+#' fixed numeric PMF.
+#'
+#' @param distribution A character string giving the parametric family. One of
+#' `"lognormal"` (the default), `"exponential"`, `"gamma"`, or `"loglogistic"`.
+#' These match the families supported by [enw_reference()].
+#'
+#' @param mean A length-2 numeric vector `c(mean, sd)` giving the mean and
+#' standard deviation of the `Normal` prior on the distribution's location
+#' parameter (`mu`). For the lognormal family this is the prior on the
+#' `meanlog`. Defaults to a weakly informative `c(1, 1)`.
+#'
+#' @param sd A length-2 numeric vector `c(mean, sd)` giving the mean and
+#' standard deviation of the zero-truncated `Normal` prior on the
+#' distribution's scale parameter (`sigma`). For the lognormal family this is
+#' the prior on the `sdlog`. Ignored for the single-parameter exponential
+#' family. Defaults to `c(0.5, 1)`.
+#'
+#' @param max Integer maximum delay (in timesteps) at which the distribution is
+#' truncated and discretised. Must be at least 2. The resulting PMF has `max`
+#' entries (delays `0` to `max - 1`).
+#'
+#' @return A list of class `enw_uncertain` describing the uncertain delay
+#' distribution, with elements `distribution`, `dist_id` (the Stan integer
+#' code), `max`, `mean_p`, and `sd_p`.
+#'
+#' @family modelmodulehelpers
+#' @importFrom cli cli_abort
+#' @export
+#' @examples
+#' # An uncertain lognormal generation time
+#' enw_uncertain(
+#'   distribution = "lognormal",
+#'   mean = c(1.6, 0.05), sd = c(0.4, 0.05), max = 15
+#' )
+enw_uncertain <- function(distribution = c(
+                            "lognormal", "exponential", "gamma", "loglogistic"
+                          ),
+                          mean = c(1, 1), sd = c(0.5, 1), max) {
+  distribution <- match.arg(distribution)
+  if (missing(max) || length(max) != 1 || max < 2) {
+    cli::cli_abort(
+      "{.arg max} must be a single integer of at least 2"
+    )
+  }
+  if (length(mean) != 2) {
+    cli::cli_abort("{.arg mean} must be a numeric vector of length 2")
+  }
+  if (length(sd) != 2) {
+    cli::cli_abort("{.arg sd} must be a numeric vector of length 2")
+  }
+  dist_id <- data.table::fcase(
+    distribution == "exponential", 1L,
+    distribution == "lognormal", 2L,
+    distribution == "gamma", 3L,
+    distribution == "loglogistic", 4L
+  )
+  out <- list(
+    distribution = distribution,
+    dist_id = dist_id,
+    max = as.integer(max),
+    mean_p = as.numeric(mean),
+    sd_p = as.numeric(sd)
+  )
+  class(out) <- c("enw_uncertain", "list")
+  out
+}
+
 #' Extract sparse matrix elements
 #'
 #' This helper function allows the extraction of a sparse matrix from a matrix
