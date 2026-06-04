@@ -30,14 +30,19 @@ simulate_depleting_epidemic <- function(population = 4000, rt = 1.6,
 
 # Build a complete-reporting line list (no delay) from daily incidence so the
 # expectation model is the only thing being tested.
-incidence_to_obs <- function(incidence, start = as.Date("2021-01-01")) {
+incidence_to_obs <- function(incidence, start = as.Date("2021-01-01"),
+                             group = NULL) {
   counts <- rpois(length(incidence), pmax(incidence, 1e-3))
   dates <- start + seq_along(counts) - 1
-  data.table::data.table(
+  dt <- data.table::data.table(
     reference_date = dates,
     report_date = dates,
     confirm = counts
   )
+  if (!is.null(group)) {
+    dt[, age_group := group]
+  }
+  dt
 }
 
 attack_size_from_fit <- function(nowcast) {
@@ -139,5 +144,64 @@ test_that(
     # The known population should lie within the estimated 90% credible interval.
     expect_lte(pop_post$q5, population)
     expect_gte(pop_post$q95, population)
+  }
+)
+
+test_that(
+  "the uncertain-population variant fits an independent population per group",
+  {
+    skip_on_cran()
+    skip_on_local()
+
+    set.seed(404)
+    gt <- c(0.3, 0.4, 0.3)
+    pops <- c(3000, 6000)
+    sims <- lapply(pops, function(p) {
+      simulate_depleting_epidemic(
+        population = p, rt = 1.7, generation_time = gt, n_days = 45
+      )
+    })
+    obs <- data.table::rbindlist(list(
+      incidence_to_obs(sims[[1]]$incidence, group = "a"),
+      incidence_to_obs(sims[[2]]$incidence, group = "b")
+    ))
+    pobs <- suppressWarnings(enw_preprocess_data(
+      enw_complete_dates(obs, max_delay = 2, by = "age_group"),
+      by = "age_group", max_delay = 2
+    ))
+
+    nowcast <- suppressMessages(epinowcast(
+      pobs,
+      # Uncertain mode fits each group independently from a shared prior, so a
+      # single shared prior median (between the two truths) is used with a wide
+      # CV; both groups are still free to move to their own value.
+      expectation = enw_expectation(
+        r = ~ rw(week, by = .group), generation_time = gt,
+        population = rep(mean(pops), 2), population_uncertain = TRUE,
+        population_cv = 0.8, data = pobs
+      ),
+      fit = enw_fit_opts(
+        sampler = silent_enw_sample, save_warmup = FALSE, pp = FALSE,
+        chains = 2, iter_warmup = 500, iter_sampling = 500,
+        refresh = 0, show_messages = FALSE, adapt_delta = 0.95,
+        max_treedepth = 12
+      ),
+      obs = enw_obs(family = "poisson", data = pobs),
+      model = sd_model()
+    ))
+
+    pop_post <- nowcast$fit[[1]]$summary("expr_pop_est")
+    # Two independent per-group population parameters are fitted.
+    expect_identical(nrow(pop_post), 2L)
+    # Each group's known population lies within (approximately) its 90% credible
+    # interval. The population is only weakly identified from the depletion
+    # tail, so a small relative tolerance is allowed on the interval edges.
+    tol <- 0.02
+    expect_lte(pop_post$q5[1], pops[1] * (1 + tol))
+    expect_gte(pop_post$q95[1], pops[1] * (1 - tol))
+    expect_lte(pop_post$q5[2], pops[2] * (1 + tol))
+    expect_gte(pop_post$q95[2], pops[2] * (1 - tol))
+    # The larger-population group is estimated higher than the smaller one.
+    expect_gt(pop_post$mean[2], pop_post$mean[1])
   }
 )
