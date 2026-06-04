@@ -63,7 +63,7 @@ The expected secondary value is built from the primary expectation
 (\code{exp_lobs} in Stan) by convolving with \code{delay}, applying a log-scale
 ascertainment \code{scale}, and combining the convolved and current terms via the
 target switches in \code{secondary} (see \code{\link[=enw_secondary_opts]{enw_secondary_opts()}} and the Stan
-\code{\link[=calculate_secondary]{calculate_secondary()}} function). The secondary observations are then fitted
+\code{calculate_secondary()} function). The secondary observations are then fitted
 with their own observation \code{family}, sharing the same formula interface as
 the other modules.
 

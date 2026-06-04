@@ -1050,7 +1050,7 @@ enw_secondary_opts <- function(type = c("incidence", "prevalence"),
 #' (`exp_lobs` in Stan) by convolving with `delay`, applying a log-scale
 #' ascertainment `scale`, and combining the convolved and current terms via the
 #' target switches in `secondary` (see [enw_secondary_opts()] and the Stan
-#' [calculate_secondary()] function). The secondary observations are then fitted
+#' `calculate_secondary()` function). The secondary observations are then fitted
 #' with their own observation `family`, sharing the same formula interface as
 #' the other modules.
 #'
