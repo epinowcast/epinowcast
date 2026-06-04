@@ -116,7 +116,7 @@ test_that("construct_gp() rejects a term it did not build", {
 })
 
 test_that("enw_formula() collects gp specs alongside fixed/random", {
-  f <- enw_formula(~ 1 + (1 | day_of_week) + gp(week), data)
+  f <- enw_formula(~ 1 + (1 | day_of_week) + gp(week), data, sparse = FALSE)
   expect_s3_class(f, "enw_formula")
   expect_length(f$gp, 1L)
   expect_identical(f$gp[[1]]$gp_type, 2L)
@@ -124,7 +124,7 @@ test_that("enw_formula() collects gp specs alongside fixed/random", {
 })
 
 test_that("enw_formula_as_data_list() ships the gp Stan data", {
-  f <- enw_formula(~ 1 + gp(week, day_of_week), data)
+  f <- enw_formula(~ 1 + gp(week, day_of_week), data, sparse = FALSE)
   dl <- enw_formula_as_data_list(f, "ref")
 
   expect_identical(dl$ref_gp_present, 1L)
@@ -158,7 +158,7 @@ test_that("enw_formula_as_data_list() returns inert defaults without gp", {
 test_that("enw_formula_as_data_list() rejects multiple gp terms", {
   expect_error(
     enw_formula_as_data_list(
-      enw_formula(~ 1 + gp(week) + gp(month), data),
+      enw_formula(~ 1 + gp(week) + gp(month), data, sparse = FALSE),
       "ref"
     ),
     "Only one `gp\\(\\)` term"
@@ -173,4 +173,85 @@ test_that("enw_expectation() wires a gp() growth-rate term to Stan", {
   # GP length-scale and magnitude priors must be exposed as data.
   expect_true("expr_gp_rho" %in% exp$priors$variable)
   expect_true("expr_gp_alpha" %in% exp$priors$variable)
+})
+
+test_that("enw_formula() rejects a gp() term on a sparse design", {
+  # GP is dense-only for now; a sparse design would mis-gather the
+  # latent process, so it must error rather than silently misbehave.
+  expect_error(
+    enw_formula(~ 1 + gp(week), data, sparse = TRUE),
+    "not supported with a sparse design"
+  )
+  expect_s3_class(
+    enw_formula(~ 1 + gp(week), data, sparse = FALSE), "enw_formula"
+  )
+})
+
+test_that("epinowcast() fits a gp() growth-rate term in compiled Stan", {
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_on_local()
+  # This is the only path that exercises apply_gp_term() / update_gp() in
+  # compiled Stan, so without it a regression would pass CI silently.
+  fit_pobs <- enw_example("preprocessed")
+  exp <- enw_expectation(r = ~ 1 + gp(week), data = fit_pobs)
+  nowcast_gp <- suppressWarnings(epinowcast(
+    fit_pobs,
+    expectation = exp,
+    fit = enw_fit_opts(
+      save_warmup = FALSE, pp = FALSE, chains = 2, parallel_chains = 2,
+      iter_warmup = 250, iter_sampling = 250, show_messages = FALSE,
+      show_exceptions = FALSE, refresh = 0, adapt_delta = 0.95
+    )
+  ))
+  expect_convergence(nowcast_gp, rhat = 1.1)
+  # GP hyperparameters must be present and finite in the fit.
+  draws <- suppressWarnings(summary(nowcast_gp, type = "fit"))
+  gp_pars <- draws[grepl("expr_gp_(rho|alpha)", variable)]
+  expect_true(nrow(gp_pars) >= 2)
+  expect_true(all(is.finite(gp_pars$mean)))
+})
+
+test_that("a grouped gp() term gives differing per-group realisations", {
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_on_local()
+  # Build a small two-group preprocessed object so the by-group GP has
+  # more than one level to realise independently.
+  grp_obs <- germany_covid19_hosp[
+    location == "DE" & age_group %in% c("00-04", "80+")
+  ]
+  grp_obs <- enw_filter_report_dates(grp_obs, remove_days = 30)
+  grp_obs <- enw_filter_reference_dates(grp_obs, include_days = 30)
+  grp_pobs <- suppressWarnings(
+    enw_preprocess_data(grp_obs, by = "age_group", max_delay = 10)
+  )
+  exp <- enw_expectation(r = ~ 1 + gp(week, age_group), data = grp_pobs)
+  # The grouped term must declare two GP groups.
+  expect_identical(exp$data$expr_gp_G, 2L)
+
+  nowcast_gp <- suppressWarnings(epinowcast(
+    grp_pobs,
+    expectation = exp,
+    reference = suppressWarnings(enw_reference(~1, data = grp_pobs)),
+    obs = enw_obs(family = "poisson", data = grp_pobs),
+    fit = enw_fit_opts(
+      save_warmup = FALSE, pp = FALSE, chains = 2, parallel_chains = 2,
+      iter_warmup = 250, iter_sampling = 250, show_messages = FALSE,
+      show_exceptions = FALSE, refresh = 0, adapt_delta = 0.95
+    )
+  ))
+  # The non-centred spectral coefficients are stored as a (basis x group)
+  # matrix; the two groups must realise independently rather than share a
+  # single column.
+  eta <- suppressWarnings(
+    summary(nowcast_gp, type = "fit")[grepl("expr_gp_eta", variable)]
+  )
+  expect_true(nrow(eta) > 0)
+  g1 <- eta[grepl("\\[[0-9]+,1\\]$", variable)]$mean
+  g2 <- eta[grepl("\\[[0-9]+,2\\]$", variable)]$mean
+  expect_identical(length(g1), length(g2))
+  expect_true(length(g1) > 0)
+  # Independent realisations: the per-group coefficient vectors differ.
+  expect_gt(max(abs(g1 - g2)), 1e-6)
 })
