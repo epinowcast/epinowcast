@@ -8,6 +8,10 @@
   An integer `d` argument (matching `arima()`'s `d`) integrates the process `d` times: `d = 0` is stationary (the default, like EpiNow2's `gp_on = "R0"`), `d = 1` gives a smoothly drifting trend (like EpiNow2's default `gp_on = "R_t-1"`), and `d >= 2` integrates further, anchoring the first `d` values to zero so the level and slope are carried by the fixed effects.
   The Stan implementation is adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2, MIT licensed).
   See #824.
+- Added a delay-only model that fits the reporting-delay distribution conditional on known per-reference-date totals, treating those totals as fixed truth (the standard delay-estimation pattern of Kalbfleisch & Lawless, 1989; Höhle & an der Heiden, 2014).
+  Enable it with `enw_obs(delay_only = TRUE)`: the latent process and per-cell observation model are bypassed and replaced by a (truncated) multinomial likelihood over the reported cells of each reference date.
+  When the known totals are final retrospective totals this is the plain multinomial (#775); when they are running totals observed only up to some horizon the likelihood renormalises over the observed delay range to give the truncated multinomial (#776).
+  See #775 and #776.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
 
