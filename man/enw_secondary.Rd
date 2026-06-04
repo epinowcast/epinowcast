@@ -6,8 +6,10 @@
 \usage{
 enw_secondary(
   secondary = enw_secondary_opts(),
+  obs = NULL,
   delay = 1,
   scale = ~1,
+  family = c("poisson", "negbin", "negbin1d"),
   data,
   ...
 )
@@ -15,7 +17,12 @@ enw_secondary(
 \arguments{
 \item{secondary}{Either a call to \code{\link[=enw_secondary_opts]{enw_secondary_opts()}} specifying the
 secondary target structure, or \code{~0} to disable the secondary model (the
-default behaviour is an incidence target via \code{enw_secondary_opts()}).}
+default behaviour is an incidence target via \code{\link[=enw_secondary_opts]{enw_secondary_opts()}}).}
+
+\item{obs}{A \code{data.frame} of observed secondary counts with a \code{confirm}
+column (the secondary count), a \code{reference_date} column, and any grouping
+columns used in \code{data}. When \code{NULL} (the default) no secondary observations
+are fitted and the module is disabled; supply this to fit the joint model.}
 
 \item{delay}{A numeric probability mass function describing the delay from a
 primary observation to the corresponding secondary observation. Defaults to
@@ -23,11 +30,13 @@ primary observation to the corresponding secondary observation. Defaults to
 for time-varying delays, as in \code{\link[=enw_expectation]{enw_expectation()}}.}
 
 \item{scale}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}}) describing the
-log-scale multiplicative scaling (ascertainment) to be applied to the
-convolved primary series by the forthcoming joint likelihood. This module
-exposes the corresponding scaling design matrix; the scaling itself is not
-yet applied. Defaults to \code{~1} (a single scaling intercept). Set to \code{~0} to
-omit the scaling design.}
+log-scale multiplicative scaling (ascertainment) applied to the convolved
+primary series. Defaults to \code{~1} (a single scaling intercept). Set to \code{~0}
+to fix the scaling at one.}
+
+\item{family}{Character string, the secondary observation model; enforced by
+\code{\link[base:match.arg]{base::match.arg()}}. One of \code{"poisson"} (the default), \code{"negbin"}, or
+\code{"negbin1d"}, matching \code{\link[=enw_obs]{enw_obs()}}.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
@@ -41,37 +50,31 @@ can be used to sample from a tightened version of the prior distribution.
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-Builds the data required to model a secondary observation as a function of a
-primary observed (or nowcast) series. The intended secondary outcome is a
-delayed, scaled convolution of the primary series, optionally accumulated
-over time for prevalence-type targets (e.g. bed occupancy). This brings the
-\code{EpiNow2::estimate_secondary()} modelling pattern into the \code{epinowcast}
-joint-modelling framework so that the primary series can itself be a nowcast
-and uncertainty propagates end to end.
+Models a secondary observation jointly with the primary (possibly nowcast)
+series. The expected secondary outcome is a delayed, scaled convolution of
+the primary expectation, optionally accumulated over time for
+prevalence-type targets (e.g. bed occupancy). Fitting both series together
+propagates the primary nowcast uncertainty into the secondary estimate,
+bringing the \code{EpiNow2::estimate_secondary()} pattern into the \code{epinowcast}
+joint-modelling framework.
 }
 \details{
-This module currently builds the R-side data interface only: the
-delay convolution matrix (via \code{\link[=convolution_matrix]{convolution_matrix()}}), a scaling design
-matrix from \code{scale}, the target options from \code{secondary}, and the primary
-series. It does not yet apply the scaling or fit the secondary observations;
-the Stan-side joint likelihood that consumes this data, applies the scaling,
-and fits the secondary observations simultaneously with the primary nowcast
-is under development (see issue #825 and the package NEWS for the current
-status and the design decisions taken here). The Stan
-\code{calculate_secondary()} function that combines the convolved and scaled
-primary terms into incidence or prevalence targets is included and tested
-independently.
+The expected secondary value is built from the primary expectation
+(\code{exp_lobs} in Stan) by convolving with \code{delay}, applying a log-scale
+ascertainment \code{scale}, and combining the convolved and current terms via the
+target switches in \code{secondary} (see \code{\link[=enw_secondary_opts]{enw_secondary_opts()}} and the Stan
+\code{\link[=calculate_secondary]{calculate_secondary()}} function). The secondary observations are then fitted
+with their own observation \code{family}, sharing the same formula interface as
+the other modules.
+
+The secondary series is modelled at its reference date. Right-truncation and
+an independent reporting-delay nowcast of the secondary series itself are not
+yet supported; the primary series retains its full nowcasting model. See the
+package NEWS for the remaining work.
 }
 \examples{
-# Default (incidence) secondary model
+# Disabled secondary model (default)
 enw_secondary(data = enw_example("preprocessed"))
-
-# Prevalence target (e.g. bed occupancy) with a reporting delay
-enw_secondary(
-  secondary = enw_secondary_opts("prevalence"),
-  delay = c(0.1, 0.3, 0.4, 0.2),
-  data = enw_example("preprocessed")
-)
 }
 \seealso{
 Model modules
