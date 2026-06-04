@@ -229,6 +229,54 @@ remove_arima_terms <- function(formula) {
   form
 }
 
+#' Finds Gaussian process terms in a formula object
+#'
+#' @description This function extracts Gaussian process terms denoted
+#' using [gp()] from a formula so that they can be processed on their
+#' own.
+#'
+#' @return A character vector containing the Gaussian process terms
+#' identified in the supplied formula.
+#'
+#' @inheritParams enw_formula
+#' @family formulatools
+#' @examples
+#' epinowcast:::gp_terms(~ 1 + age_group + gp(week))
+#' epinowcast:::gp_terms(~ 1 + gp(week, kernel = "se") + gp(day))
+gp_terms <- function(formula) {
+  trms <- attr(terms(formula), "term.labels")
+  match <- grepl("^gp\\(.*\\)$", trms)
+  match <- match & !grepl("|", trms, fixed = TRUE)
+  trms[match]
+}
+
+#' Remove Gaussian process terms from a formula object
+#'
+#' @description This function removes Gaussian process terms denoted
+#' using [gp()] from a formula so they can be processed on their own.
+#'
+#' @inheritParams split_formula_to_terms
+#' @return A formula object with the Gaussian process terms removed.
+#' @family formulatools
+#' @examples
+#' epinowcast:::remove_gp_terms(~ 1 + age_group + gp(week))
+remove_gp_terms <- function(formula) {
+  form <- as_string_formula(formula)
+  form <- gsub("gp\\(.*?\\) \\+ ", "", form)
+  form <- gsub("\\+ gp\\(.*?\\)", "", form)
+  form <- gsub("gp\\(.*?\\)", "", form)
+
+  form <- tryCatch(
+    {
+      as.formula(form)
+    },
+    error = function(cond) {
+      as.formula(paste(form, 1))
+    }
+  )
+  form
+}
+
 #' Parse a formula into components
 #'
 #' @description This function uses a series internal functions
@@ -247,6 +295,7 @@ remove_arima_terms <- function(formula) {
 #'  - `random`: A list of of \link[lme4]{lme4} style random effects
 #'  - `rw`: A character vector of [rw()] random walk terms.
 #'  - `arima`: A character vector of [arima()] ARIMA(p, d, q) terms.
+#'  - `gp`: A character vector of [gp()] Gaussian process terms.
 #' @inheritParams enw_formula
 #' @importFrom reformulas nobars findbars
 #' @importFrom cli cli_abort
@@ -267,6 +316,8 @@ parse_formula <- function(formula) {
   formula <- remove_rw_terms(formula)
   arima <- arima_terms(formula)
   formula <- remove_arima_terms(formula)
+  gp <- gp_terms(formula)
+  formula <- remove_gp_terms(formula)
   fixed <- reformulas::nobars(formula)
   random <- reformulas::findbars(formula)
 
@@ -274,7 +325,8 @@ parse_formula <- function(formula) {
     fixed = split_formula_to_terms(fixed),
     random = random,
     rw = rw,
-    arima = arima
+    arima = arima,
+    gp = gp
   )
   model_terms
 }
@@ -480,6 +532,97 @@ arma <- function(time, by, p = 1, q = 1) {
   invisible(NULL)
 }
 
+#' Adds an approximate Gaussian process to the model.
+#'
+#' @description A call to `gp()` can be used in the `formula` argument of
+#' model construction functions in the `epinowcast` package such as
+#' [enw_formula()]. It declares a Hilbert-space reduced-rank
+#' (spectral) approximate Gaussian process indexed by `time` (and
+#' optionally a grouping variable `by`) whose value at each observation
+#' is added to the linear predictor. As with [arima()], arguments are
+#' not evaluated; they are passed by name for use in model construction.
+#'
+#' @section Reference:
+#' The Stan implementation of the approximate Gaussian process is
+#' adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2,
+#' MIT licensed). The Hilbert-space approximation follows
+#' Riutort-Mayol et al. (2023), doi:10.1007/s11222-022-10167-2.
+#'
+#' @param time Defines the time index of the Gaussian process. Must be
+#' numeric.
+#'
+#' @param by Optional grouping variable. If supplied, an independent
+#' Gaussian process is fitted for each level of `by` (sharing the
+#' length scale and magnitude hyperparameters). Currently limited to a
+#' single variable.
+#'
+#' @param kernel Character string selecting the covariance kernel. One
+#' of `"matern32"` (the default, a Matern 3/2 kernel), `"matern52"`
+#' (Matern 5/2), `"ou"` (Ornstein-Uhlenbeck, equivalent to Matern
+#' 1/2), `"se"` (squared exponential), or `"periodic"`.
+#'
+#' @param basis_prop Numeric in `(0, 1]`. Proportion of time points to
+#' use as basis functions, controlling the accuracy-speed trade-off of
+#' the reduced-rank approximation. Defaults to `0.2` (the `EpiNow2`
+#' default). The number of basis functions is
+#' `ceiling(basis_prop * T)`.
+#'
+#' @param boundary_scale Numeric, defaults to `1.5`. Boundary factor
+#' `L` of the Hilbert-space approximation; the process is approximated
+#' on the interval scaled by this factor.
+#'
+#' @return A list of class `enw_gp_term` describing the Gaussian
+#' process term, interpretable by [construct_gp()].
+#' @export
+#' @importFrom cli cli_abort
+#' @importFrom rlang arg_match
+#' @family formulatools
+#' @examples
+#' gp(time)
+#' gp(time, location)
+#' gp(time, kernel = "se", basis_prop = 0.3)
+gp <- function(time, by, kernel = c(
+                 "matern32", "matern52", "ou", "se", "periodic"
+               ), basis_prop = 0.2, boundary_scale = 1.5) {
+  if (missing(time)) {
+    cli::cli_abort("`time` must be present")
+  }
+  time <- deparse(substitute(time))
+  by <- if (missing(by)) NULL else deparse(substitute(by))
+  kernel <- rlang::arg_match(kernel)
+  .check_gp_basis_prop(basis_prop)
+  if (!is.numeric(boundary_scale) || length(boundary_scale) != 1L ||
+        !is.finite(boundary_scale) || boundary_scale <= 0) {
+    cli::cli_abort("`boundary_scale` must be a positive numeric scalar.")
+  }
+  # Map the user-facing kernel name to the Stan-side gp_type / nu that
+  # the EpiNow2-derived `update_gp()` switch expects. gp_type: 0 = SE,
+  # 1 = periodic, 2 = Matern; nu selects the Matern order.
+  gp_type <- switch(kernel,
+    se = 0L, periodic = 1L, 2L
+  )
+  nu <- switch(kernel,
+    ou = 0.5, matern32 = 1.5, matern52 = 2.5, 1.5
+  )
+  out <- list(
+    time = time, by = by, kernel = kernel,
+    gp_type = gp_type, nu = nu,
+    basis_prop = basis_prop, boundary_scale = boundary_scale
+  )
+  class(out) <- "enw_gp_term"
+  out
+}
+
+# Internal helper: validate that the GP `basis_prop` is a numeric scalar
+# in (0, 1].
+.check_gp_basis_prop <- function(value) {
+  if (!is.numeric(value) || length(value) != 1L || is.na(value) ||
+        !is.finite(value) || value <= 0 || value > 1) {
+    cli::cli_abort("`basis_prop` must be a numeric scalar in (0, 1].")
+  }
+  invisible(NULL)
+}
+
 #' Constructs random walk terms
 #'
 #' @description This function takes random walks as defined
@@ -642,6 +785,156 @@ construct_arima <- function(arima, data) {
     time_idx = time_idx, group_idx = group_idx,
     time_vals = time_vals, group_levels = group_levels,
     name = name
+  )
+}
+
+#' Hilbert-space basis functions for the approximate Gaussian process
+#'
+#' @description Builds the `T x M` matrix of basis functions used by the
+#' reduced-rank (spectral) approximate Gaussian process, mirroring the
+#' `PHI()` / `PHI_periodic()` Stan functions adapted from `EpiNow2`. The
+#' time index is rescaled to the symmetric interval used by the
+#' approximation before evaluating the basis.
+#'
+#' @param T_len Integer number of distinct time points.
+#' @param M Integer number of basis functions.
+#' @param boundary_scale Numeric boundary factor `L`.
+#' @param is_periodic Logical, whether to use the periodic basis.
+#' @param w0 Numeric fundamental frequency for the periodic basis.
+#'
+#' @return A numeric matrix of basis functions with `T_len` rows.
+#' @noRd
+.gp_basis_matrix <- function(T_len, M, boundary_scale, is_periodic = FALSE,
+                             w0 = 1.0) {
+  x <- seq_len(T_len)
+  x <- 2 * (x - mean(x)) / (max(x) - 1)
+  if (is_periodic) {
+    w0xk <- outer(w0 * x, seq_len(M))
+    cbind(cos(w0xk), sin(w0xk))
+  } else {
+    sin(outer(pi / (2 * boundary_scale) * (x + boundary_scale), seq_len(M))) /
+      sqrt(boundary_scale)
+  }
+}
+
+#' Constructs Gaussian process term metadata
+#'
+#' @description Takes a Gaussian process term as defined by [gp()] and
+#' returns the metadata required to wire the term into a Stan model.
+#' Like [construct_arima()], this does not modify the data or produce
+#' design matrix columns; the Gaussian process enters the linear
+#' predictor through a Hilbert-space reduced-rank approximation (see
+#' `inst/stan/functions/gaussian_process.stan`).
+#'
+#' @param gp A Gaussian process term as defined by [gp()].
+#'
+#' @param data A `data.frame` of observations used to define the term.
+#' Must contain the time and (if specified) grouping variable.
+#'
+#' @return A list with the following elements:
+#'   - `time`, `by`, `kernel`, `gp_type`, `nu`, `basis_prop`,
+#'     `boundary_scale`: passed through from the [gp()] term.
+#'   - `T`: number of distinct time points in the series.
+#'   - `G`: number of groups (1 if `by` is unspecified).
+#'   - `M`: number of basis functions, `ceiling(basis_prop * T)`.
+#'   - `PHI`: the `T x M` basis matrix.
+#'   - `time_idx`, `group_idx`: per-observation lookup indices.
+#'   - `time_vals`, `group_levels`: lookup vectors so the indices can
+#'     be inverted.
+#'   - `name`: a label for the term, suitable as a parameter prefix.
+#' @family formulatools
+#' @importFrom cli cli_abort
+#' @examples
+#' data <- enw_example("preproc")$metareference[[1]]
+#' epinowcast:::construct_gp(gp(week), data)
+#' epinowcast:::construct_gp(gp(week, day_of_week, kernel = "se"), data)
+construct_gp <- function(gp, data) {
+  if (!inherits(gp, "enw_gp_term")) {
+    cli::cli_abort(
+      "Argument `gp` must be constructed by `epinowcast::gp()`."
+    )
+  }
+  idx <- .time_group_index(data, gp$time, gp$by, what = "Gaussian process")
+  M <- as.integer(ceiling(gp$basis_prop * idx$T))
+  PHI <- .gp_basis_matrix(
+    idx$T, M, gp$boundary_scale,
+    is_periodic = gp$gp_type == 1L, w0 = 1.0
+  )
+
+  name <- paste0(
+    "gp__", gp$time,
+    if (!is.null(gp$by)) paste0("__", gp$by) else ""
+  )
+
+  list(
+    time = gp$time, by = gp$by, kernel = gp$kernel,
+    gp_type = gp$gp_type, nu = gp$nu,
+    basis_prop = gp$basis_prop, boundary_scale = gp$boundary_scale,
+    T = idx$T, G = idx$G, M = M, PHI = PHI,
+    time_idx = idx$time_idx, group_idx = idx$group_idx,
+    time_vals = idx$time_vals, group_levels = idx$group_levels,
+    name = name
+  )
+}
+
+# Internal: shared per-observation time/group indexing used by
+# construct_arima() and construct_gp(). Validates the (numeric) time
+# variable and the optional grouping variable, returning the distinct
+# time/group counts and the per-row lookup indices.
+.time_group_index <- function(data, time, by, what = "term") {
+  data <- coerce_dt(data)
+  if (is.null(data[[time]])) {
+    cli::cli_abort(
+      "Time variable `{time}` is not present in the supplied data."
+    )
+  }
+  if (!is.numeric(data[[time]])) {
+    cli::cli_abort(
+      "Time variable `{time}` must be numeric for a {what} term."
+    )
+  }
+  if (anyNA(data[[time]])) {
+    cli::cli_abort("Time variable `{time}` contains missing values.")
+  }
+
+  time_vals <- sort(unique(data[[time]]))
+  T_len <- length(time_vals)
+  time_idx <- match(data[[time]], time_vals)
+
+  if (is.null(by)) {
+    return(list(
+      T = T_len, G = 1L, time_idx = time_idx,
+      group_idx = rep(1L, nrow(data)),
+      time_vals = time_vals, group_levels = "1"
+    ))
+  }
+  if (is.null(data[[by]])) {
+    cli::cli_abort("Grouping variable `{by}` is not present in the data.")
+  }
+  by_vals <- data[[by]]
+  if (anyNA(by_vals)) {
+    cli::cli_abort("Grouping variable `{by}` contains missing values.")
+  }
+  group_levels <- if (is.factor(by_vals)) {
+    levels(droplevels(by_vals))
+  } else {
+    sort(unique(by_vals))
+  }
+  G <- length(group_levels)
+  if (G < 2) {
+    cli::cli_inform(
+      "Grouping variable `{by}` has fewer than 2 levels; ignoring `by`."
+    )
+    return(list(
+      T = T_len, G = 1L, time_idx = time_idx,
+      group_idx = rep(1L, nrow(data)),
+      time_vals = time_vals, group_levels = "1"
+    ))
+  }
+  list(
+    T = T_len, G = G, time_idx = time_idx,
+    group_idx = match(as.character(by_vals), as.character(group_levels)),
+    time_vals = time_vals, group_levels = group_levels
   )
 }
 
@@ -1147,6 +1440,19 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     arima_specs <- list()
   }
 
+  # Gaussian process terms enter the linear predictor through a
+  # Hilbert-space reduced-rank approximation. Like arima() terms they
+  # carry per-observation lookup metadata rather than design columns.
+  if (length(parsed_formula$gp) > 0) {
+    gp_specs <- purrr::map(
+      parsed_formula$gp,
+      ~ eval(parse(text = paste0("epinowcast::", .)))
+    )
+    gp_specs <- purrr::map(gp_specs, construct_gp, data = data)
+  } else {
+    gp_specs <- list()
+  }
+
   # Get random effects for all specified random effects
   # Happens last as converts all RHS variables to factors (which can interact)
   # with other formula terms (i.e. random walks)
@@ -1253,7 +1559,8 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     expanded_formula = as_string_formula(expanded_formula),
     fixed = fixed,
     random = random,
-    arima = arima_specs
+    arima = arima_specs,
+    gp = gp_specs
   )
   class(out) <- c("enw_formula", class(out))
   out

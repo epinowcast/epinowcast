@@ -538,10 +538,12 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       "expr_r_int", "expr_beta_sd",
       rep("expr_lelatent_int", length(seed_obs)),
       "expr_arima_sigma", "expr_arima_pacf",
+      "expr_gp_rho", "expr_gp_alpha",
       "expl_beta_sd",
-      "expl_arima_sigma", "expl_arima_pacf"
+      "expl_arima_sigma", "expl_arima_pacf",
+      "expl_gp_rho", "expl_gp_alpha"
     ),
-    dimension = c(1, 1, seq_along(seed_obs), 1, 1, 1, 1, 1),
+    dimension = c(1, 1, seq_along(seed_obs), 1, 1, 1, 1, 1, 1, 1, 1, 1),
     description = c(
       "Intercept of the log growth rate",
       "Standard deviation of scaled pooled log growth rate effects",
@@ -554,21 +556,31 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       ),
       "Standard deviation of the ARIMA latent residual on log growth rate",
       .arima_pacf_prior_description("log growth rate"),
+      .gp_rho_prior_description("log growth rate"),
+      .gp_alpha_prior_description("log growth rate"),
       "Standard deviation of scaled pooled log growth rate effects",
       paste(
         "Standard deviation of the ARIMA latent residual on log",
         "latent-to-obs proportion"
       ),
-      .arima_pacf_prior_description("log latent-to-obs proportion")
+      .arima_pacf_prior_description("log latent-to-obs proportion"),
+      .gp_rho_prior_description("log latent-to-obs proportion"),
+      .gp_alpha_prior_description("log latent-to-obs proportion")
     ),
     distribution = c(
       "Normal", "Zero truncated normal", rep("Normal", length(seed_obs)),
       "Zero truncated normal", "Uniform",
+      "Log normal", "Zero truncated normal",
       "Zero truncated normal",
-      "Zero truncated normal", "Uniform"
+      "Zero truncated normal", "Uniform",
+      "Log normal", "Zero truncated normal"
     ),
-    mean = c(0, 0, seed_obs, 0, 0, 0, 0, 0),
-    sd = c(0.2, 1, rep(1, length(seed_obs)), 0.2, 0, 1, 0.2, 0)
+    mean = c(
+      0, 0, seed_obs, 0, 0, log(3), 0, 0, 0, 0, log(3), 0
+    ),
+    sd = c(
+      0.2, 1, rep(1, length(seed_obs)), 0.2, 0, 0.5, 0.05, 1, 0.2, 0, 0.5, 0.05
+    )
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -605,10 +617,12 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
         ))
       }
       init <- c(init, .arima_inits(data, priors, "expr"))
+      init <- c(init, .gp_inits(data, priors, "expr"))
       if (data$expl_fncol > 0) {
         init$expl_beta <- array(rnorm(data$expl_fncol, 0, 0.01))
       }
       init <- c(init, .arima_inits(data, priors, "expl"))
+      init <- c(init, .gp_inits(data, priors, "expl"))
       if (data$expl_rncol > 0) {
         init$expl_beta_sd <- array(abs(rnorm(
           data$expl_rncol, priors$expl_beta_sd_p[1],

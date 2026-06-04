@@ -157,7 +157,7 @@ test_that("enw_formula_as_data_list() returns inert defaults without gp", {
 test_that("enw_formula_as_data_list() rejects multiple gp terms", {
   expect_error(
     enw_formula_as_data_list(
-      enw_formula(~ 1 + gp(week) + gp(day_of_week), data),
+      enw_formula(~ 1 + gp(week) + gp(month), data),
       "ref"
     ),
     "Only one `gp\\(\\)` term"

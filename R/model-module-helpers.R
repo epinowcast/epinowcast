@@ -552,3 +552,54 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
   }
   init
 }
+
+# Standard descriptions for the Gaussian process hyperprior data. The
+# length scale (rho) is modelled on the log scale (a log-normal prior)
+# and the magnitude (alpha) with a half-normal, mirroring the EpiNow2
+# GP defaults.
+.gp_rho_prior_description <- function(context) {
+  paste0(
+    "Length scale of the Gaussian process on the ", context,
+    "; log-normal prior on the (positive) length scale"
+  )
+}
+
+.gp_alpha_prior_description <- function(context) {
+  paste0(
+    "Magnitude (marginal standard deviation) of the Gaussian process on ",
+    "the ", context, "; half-normal prior"
+  )
+}
+
+# Build conditional Gaussian process initial values for a module's
+# prefix. Mirrors `.arima_inits()`: declares empty defaults for the
+# spectral coefficients (`<prefix>_gp_eta`), length scale
+# (`<prefix>_gp_rho`) and magnitude (`<prefix>_gp_alpha`), then fills
+# them when the term is present and genuinely sized.
+#' @importFrom stats rlnorm
+.gp_inits <- function(data, priors, prefix) {
+  eta_nm <- paste0(prefix, "_gp_eta")
+  rho_nm <- paste0(prefix, "_gp_rho")
+  alpha_nm <- paste0(prefix, "_gp_alpha")
+
+  init <- list()
+  init[[eta_nm]] <- numeric(0)
+  init[[rho_nm]] <- numeric(0)
+  init[[alpha_nm]] <- numeric(0)
+
+  present <- data[[paste0(prefix, "_gp_present")]]
+  if (!isTRUE(present > 0)) {
+    return(init)
+  }
+  # Periodic kernels use 2M spectral coefficients (cos/sin pairs), the
+  # others M. gp_type == 1 is the periodic kernel.
+  m <- data[[paste0(prefix, "_gp_M")]]
+  n_eta <- if (isTRUE(data[[paste0(prefix, "_gp_type")]] == 1L)) 2L * m else m
+  init[[eta_nm]] <- array(rnorm(n_eta, 0, 0.01))
+
+  rho_p <- priors[[paste0(prefix, "_gp_rho_p")]]
+  init[[rho_nm]] <- array(rlnorm(1, rho_p[1], rho_p[2] / 10))
+  alpha_p <- priors[[paste0(prefix, "_gp_alpha_p")]]
+  init[[alpha_nm]] <- array(abs(rnorm(1, alpha_p[1], alpha_p[2] / 10 + 1e-3)))
+  init
+}
