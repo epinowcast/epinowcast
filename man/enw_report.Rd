@@ -57,6 +57,8 @@ Model modules
 \code{\link{enw_fit_opts}()},
 \code{\link{enw_missing}()},
 \code{\link{enw_obs}()},
-\code{\link{enw_reference}()}
+\code{\link{enw_reference}()},
+\code{\link{enw_secondary}()},
+\code{\link{enw_secondary_opts}()}
 }
 \concept{modelmodules}

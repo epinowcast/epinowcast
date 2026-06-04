@@ -950,6 +950,286 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
   out
 }
 
+#' Secondary observation target options
+#'
+#' @description Defines how a secondary observation relates to the primary
+#' series, mirroring the parameterisation used by `EpiNow2::secondary_opts()`
+#' (MIT licensed, see Note). The two built-in `type`s cover the common cases:
+#' an *incidence* secondary outcome (a delayed, scaled convolution of the
+#' primary series, e.g. cases to deaths) and a *prevalence* secondary outcome
+#' (a cumulative quantity such as bed occupancy that accumulates inflow and
+#' loses outflow over time).
+#'
+#' The relationship is built from five binary switches (each `0` or `1`):
+#' * `cumulative`: carry the previous secondary value forward (prevalence).
+#' * `historic`: include the convolution of past primary observations.
+#' * `primary_hist_additive`: add (`1`) or subtract (`0`) the historic term.
+#' * `current`: include the (scaled) current primary observation.
+#' * `primary_current_additive`: add (`1`) or subtract (`0`) the current term.
+#'
+#' @param type Character string, one of `"incidence"` (the default) or
+#' `"prevalence"`. Sets sensible defaults for the binary switches below.
+#'
+#' @param cumulative Optional integer (`0`/`1`) override for the cumulative
+#' switch. When `NULL` (the default) the value implied by `type` is used.
+#'
+#' @param historic Optional integer (`0`/`1`) override for the historic switch.
+#'
+#' @param primary_hist_additive Optional integer (`0`/`1`) override controlling
+#' whether the historic primary term is additive.
+#'
+#' @param current Optional integer (`0`/`1`) override for the current switch.
+#'
+#' @param primary_current_additive Optional integer (`0`/`1`) override
+#' controlling whether the current primary term is additive.
+#'
+#' @return A named list of integer switches (prefixed with `sec_`) for use by
+#' [enw_secondary()].
+#'
+#' @note The switch parameterisation and the corresponding Stan
+#' `calculate_secondary()` function are adapted from `EpiNow2`
+#' (<https://github.com/epiforecasts/EpiNow2>, MIT licensed).
+#'
+#' @family modelmodules
+#' @importFrom cli cli_abort
+#' @export
+#' @examples
+#' # Incidence secondary outcome (e.g. cases -> deaths)
+#' enw_secondary_opts()
+#'
+#' # Prevalence secondary outcome (e.g. bed occupancy)
+#' enw_secondary_opts("prevalence")
+enw_secondary_opts <- function(type = c("incidence", "prevalence"),
+                               cumulative = NULL, historic = NULL,
+                               primary_hist_additive = NULL, current = NULL,
+                               primary_current_additive = NULL) {
+  type <- match.arg(type)
+  defaults <- switch(type,
+    incidence = list(
+      cumulative = 0L, historic = 1L, primary_hist_additive = 1L,
+      current = 0L, primary_current_additive = 0L
+    ),
+    prevalence = list(
+      cumulative = 1L, historic = 1L, primary_hist_additive = 0L,
+      current = 1L, primary_current_additive = 1L
+    )
+  )
+
+  overrides <- list(
+    cumulative = cumulative, historic = historic,
+    primary_hist_additive = primary_hist_additive, current = current,
+    primary_current_additive = primary_current_additive
+  )
+  for (nm in names(overrides)) {
+    if (!is.null(overrides[[nm]])) {
+      val <- overrides[[nm]]
+      if (length(val) != 1 || !val %in% c(0L, 1L, 0, 1)) {
+        cli::cli_abort(
+          "`{nm}` must be a single value of 0 or 1."
+        )
+      }
+      defaults[[nm]] <- as.integer(val)
+    }
+  }
+
+  stats::setNames(defaults, paste0("sec_", names(defaults)))
+}
+
+#' Secondary observation model module
+#'
+#' @description `r lifecycle::badge("experimental")`
+#' Builds the data required to model a secondary observation as a function of a
+#' primary observed (or nowcast) series. The secondary outcome is a delayed,
+#' scaled convolution of the primary series, optionally accumulated over time
+#' for prevalence-type targets (e.g. bed occupancy). This brings the
+#' `EpiNow2::estimate_secondary()` modelling pattern into the `epinowcast`
+#' joint-modelling framework so that the primary series can itself be a nowcast
+#' and uncertainty propagates end to end.
+#'
+#' @details The expected secondary value at time `t` is built from the primary
+#' series `p` via a convolution with `delay` and a (possibly time-varying)
+#' multiplicative scaling on the log scale set by `scale`, then combined
+#' according to the target options in `secondary` (see [enw_secondary_opts()]).
+#' For incidence targets this reduces to a scaled convolution; for prevalence
+#' targets contributions accumulate and decay over time.
+#'
+#' This module produces the R-side data interface and is the first part of
+#' joint primary/secondary nowcasting (see issue #825). The Stan-side joint
+#' likelihood that fits the secondary observations simultaneously with the
+#' primary nowcast is under development; see the package NEWS and the issue for
+#' the current status and the design decisions taken here.
+#'
+#' @param secondary Either a call to [enw_secondary_opts()] specifying the
+#' secondary target structure, or `~0` to disable the secondary model (the
+#' default behaviour is an incidence target via `enw_secondary_opts()`).
+#'
+#' @param delay A numeric probability mass function describing the delay from a
+#' primary observation to the corresponding secondary observation. Defaults to
+#' `1` (no delay). A list of PMFs (one per modelled time point) can be supplied
+#' for time-varying delays, as in [enw_expectation()].
+#'
+#' @param scale A formula (as implemented in [enw_formula()]) describing the
+#' log-scale multiplicative scaling (ascertainment) applied to the convolved
+#' primary series when producing the secondary expectation. Defaults to `~1`
+#' (a single scaling intercept). Set to `~0` to fix the scaling at one.
+#'
+#' @param data Output from [enw_preprocess_data()].
+#'
+#' @param ... Additional arguments passed to [enw_add_metaobs_features()].
+#'
+#' @inherit enw_report return
+#' @inheritParams enw_obs
+#' @family modelmodules
+#' @importFrom data.table data.table
+#' @importFrom cli cli_abort
+#' @importFrom stats rnorm setNames
+#' @export
+#' @examples
+#' # Default (incidence) secondary model
+#' enw_secondary(data = enw_example("preprocessed"))
+#'
+#' # Prevalence target (e.g. bed occupancy) with a reporting delay
+#' enw_secondary(
+#'   secondary = enw_secondary_opts("prevalence"),
+#'   delay = c(0.1, 0.3, 0.4, 0.2),
+#'   data = enw_example("preprocessed")
+#' )
+enw_secondary <- function(secondary = enw_secondary_opts(), delay = 1,
+                          scale = ~1, data, ...) {
+  # Disabled model: ship an empty, Stan-compatible data list
+  if (!is.list(secondary) && as_string_formula(secondary) == "~0") {
+    data_list <- enw_formula_as_data_list(prefix = "sec", drop_intercept = TRUE)
+    data_list$model_sec <- 0L
+    data_list$sec_cumulative <- 0L
+    data_list$sec_historic <- 0L
+    data_list$sec_primary_hist_additive <- 0L
+    data_list$sec_current <- 0L
+    data_list$sec_primary_current_additive <- 0L
+    data_list$sec_delay_n <- 1L
+    data_list$sec_delay <- matrix(numeric(0), nrow = 0, ncol = 0)
+    out <- list(
+      formula = list(scale = "~0"),
+      data = data_list,
+      priors = data.table::data.table(
+        variable = character(0), description = character(0),
+        distribution = character(0), mean = numeric(0), sd = numeric(0)
+      ),
+      inits = function(data, priors) function() list()
+    )
+    return(out)
+  }
+
+  if (!is.list(secondary)) {
+    cli::cli_abort(
+      paste0(
+        "`secondary` must be a call to `enw_secondary_opts()` or the formula ",
+        "`~0` to disable the secondary model."
+      )
+    )
+  }
+  required <- paste0(
+    "sec_",
+    c(
+      "cumulative", "historic", "primary_hist_additive", "current",
+      "primary_current_additive"
+    )
+  )
+  if (!all(required %in% names(secondary))) {
+    cli::cli_abort(
+      "`secondary` must be created with `enw_secondary_opts()`."
+    )
+  }
+
+  if (abs(sum(unlist(delay)) - 1) > 1e-3 &&
+    !(length(delay) == 1 && delay == 1)) {
+    cli::cli_abort("The secondary `delay` distribution must sum to 1.")
+  }
+  if (as_string_formula(scale) == "~0") {
+    scale <- ~0
+  }
+
+  # Number of modelled time points (per group) and the primary series matrix.
+  # The primary series links to the expectation/nowcast of the primary outcome
+  # in the joint model; here we expose the latest observed primary counts so
+  # the module is self-describing and testable.
+  t <- data$time[[1]]
+  n_groups <- data$groups[[1]]
+  primary_matrix <- latest_obs_as_matrix(data$latest[[1]])
+
+  delay_n <- if (is.list(delay)) length(delay[[1]]) else length(delay)
+  # Convolution matrix mapping primary events to secondary events
+  sec_delay <- convolution_matrix(delay, t, include_partial = FALSE)
+
+  # Scaling (ascertainment) formula
+  if (as_string_formula(scale) == "~0") {
+    scale_data <- enw_formula_as_data_list(
+      prefix = "sec", drop_intercept = TRUE
+    )
+    scale_formula <- "~0"
+    model_scale <- 0L
+  } else {
+    scale_form <- enw_formula(scale, data$metareference[[1]], sparse = FALSE)
+    check_design_matrix_sparsity(scale_form$fixed$design, name = "secondary")
+    scale_data <- enw_formula_as_data_list(
+      scale_form,
+      prefix = "sec", drop_intercept = TRUE
+    )
+    scale_formula <- scale_form$formula
+    model_scale <- 1L
+  }
+
+  data_list <- scale_data
+  data_list$model_sec <- 1L
+  data_list$model_sec_scale <- model_scale
+  data_list <- c(data_list, secondary)
+  data_list$sec_delay_n <- delay_n
+  data_list$sec_delay <- sec_delay
+  data_list$sec_t <- t
+  data_list$sec_g <- n_groups
+  data_list$sec_primary <- primary_matrix
+
+  out <- list()
+  out$formula <- list(scale = scale_formula)
+  out$data <- data_list
+  out$priors <- data.table::data.table(
+    variable = c("sec_scale_int", "sec_beta_sd"),
+    description = c(
+      "Log-scale intercept of the primary-to-secondary scaling",
+      "Standard deviation of scaled pooled secondary scaling effects"
+    ),
+    distribution = c("Normal", "Zero truncated normal"),
+    mean = c(0, 0),
+    sd = c(1, 1)
+  )
+  out$inits <- function(data, priors) {
+    priors <- enw_priors_as_data_list(priors)
+    fn <- function() {
+      init <- list(
+        sec_scale_int = numeric(0),
+        sec_beta = numeric(0),
+        sec_beta_sd = numeric(0)
+      )
+      if (isTRUE(data$model_sec_scale > 0)) {
+        init$sec_scale_int <- array(rnorm(
+          1, priors$sec_scale_int_p[1], priors$sec_scale_int_p[2] * 0.1
+        ))
+      }
+      if (isTRUE(data$sec_fncol > 0)) {
+        init$sec_beta <- array(rnorm(data$sec_fncol, 0, 0.01))
+      }
+      if (isTRUE(data$sec_rncol > 0)) {
+        init$sec_beta_sd <- array(abs(rnorm(
+          data$sec_rncol, priors$sec_beta_sd_p[1],
+          priors$sec_beta_sd_p[2] / 10
+        )))
+      }
+      init
+    }
+    fn
+  }
+  out
+}
+
 #' Format model fitting options for use with stan
 #'
 #' @param sampler A function that creates an object that be used to extract

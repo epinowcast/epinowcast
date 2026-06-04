@@ -8,6 +8,9 @@
   An integer `d` argument (matching `arima()`'s `d`) integrates the process `d` times: `d = 0` is stationary (the default, like EpiNow2's `gp_on = "R0"`), `d = 1` gives a smoothly drifting trend (like EpiNow2's default `gp_on = "R_t-1"`), and `d >= 2` integrates further, anchoring the first `d` values to zero so the level and slope are carried by the fixed effects.
   The Stan implementation is adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2, MIT licensed).
   See #824.
+- Added an experimental secondary observation model (`enw_secondary()` with `enw_secondary_opts()`) for modelling a secondary outcome as a delayed, scaled convolution of a primary series, covering both incidence targets (e.g. cases to deaths) and prevalence targets (e.g. bed occupancy).
+  This is the first part of joint primary/secondary nowcasting (#825): the R-side data interface and the Stan `calculate_secondary()` function (adapted from `EpiNow2`, MIT licensed) are in place; the Stan-side joint likelihood that fits the secondary observations simultaneously with the primary nowcast is still under development.
+  See #825 by @seabbs.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
 
