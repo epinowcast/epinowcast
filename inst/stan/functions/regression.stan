@@ -24,12 +24,35 @@
  * x ARIMA group) deduplication so the same gather works at sparse-row
  * granularity. See `vignettes/arima.Rmd` for the joint scheme.
  */
+/**
+ * Intercept centring offset for a fixed-effects design.
+ *
+ * Returns `dot(means_fixed, scaled_beta)`, the mean of the fixed-effect
+ * contribution `X * scaled_beta` over the observations (with `means_fixed`
+ * the observation-weighted column means of the design). Subtracting this
+ * from the linear predictor centres the design so the intercept becomes
+ * the predictor mean rather than its value at the covariate origin,
+ * decorrelating the intercept from the slopes. This is the device brms
+ * applies by default to the population-level design matrix. The same
+ * offset recovers the original-scale intercept via `int_raw = int - offset`
+ * (an additive shift, so the change of variables has unit Jacobian).
+ *
+ * Returns 0 when there are no fixed effects (`neffs == 0`).
+ */
+real intercept_centring_offset(vector means_fixed, vector beta,
+                               vector beta_sd, matrix rdesign, int neffs) {
+  if (neffs == 0) return 0.0;
+  vector[1 + num_elements(beta_sd)] ext_beta_sd = append_row(1.0, beta_sd);
+  vector[neffs] scaled_beta = beta .* (rdesign * ext_beta_sd);
+  return dot_product(means_fixed, scaled_beta);
+}
+
 vector regression_predictor(
   array[] real intercept, vector beta, int nobs, int neffs,
   matrix fdesign,
   tuple(vector, array[] int, array[] int) sparse,
   vector beta_sd, matrix rdesign,
-  int add_intercept, int sparse_design,
+  int add_intercept, int sparse_design, int centre,
   int arima_present, int arima_T, int arima_G,
   int arima_p, int arima_d, int arima_q, int arima_n_obs,
   matrix arima_z, vector arima_pacf, vector arima_theta,
@@ -40,7 +63,8 @@ vector regression_predictor(
   // combine_effects() directly so we skip materialising the
   // intermediate `base` vector and the apply_arima_residual() call
   // frame on every gradient evaluation. Behaviour is identical when an
-  // ARIMA term is present.
+  // ARIMA term is present. Design centring (the `- offset` shift) is a
+  // constant and is applied by the caller, so it does not enter here.
   if (!arima_present) {
     return combine_effects(
       intercept, beta, nobs, neffs, fdesign, sparse, beta_sd, rdesign,
@@ -51,8 +75,12 @@ vector regression_predictor(
     intercept, beta, nobs, neffs, fdesign, sparse, beta_sd, rdesign,
     add_intercept, sparse_design
   );
+  // `centre` is the free-intercept flag: an integrated residual is only
+  // mean-centred when a free intercept exists to absorb the level it
+  // gives up. Intercept-less modules keep the raw series so no signal is
+  // lost.
   return apply_arima_residual(
-    base, arima_n_obs, arima_present, arima_T, arima_G,
+    base, arima_n_obs, arima_present, centre, arima_T, arima_G,
     arima_p, arima_d, arima_q,
     arima_z, arima_pacf, arima_theta, arima_sigma,
     arima_flat_idx

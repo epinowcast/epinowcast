@@ -27,6 +27,9 @@
       3    1    0    0
       5    0    0    1
       
+      $simple_fdesign_means
+      [1] 0.2 0.6 0.2
+      
       $simple_rdesign
         fixed cyl
       1     0   1
@@ -88,6 +91,9 @@
       1    0    1    0
       3    1    0    0
       5    0    0    1
+      
+      $simple_fdesign_means
+      [1] 0.2 0.6 0.2
       
       $simple_rdesign
         fixed cyl
@@ -151,6 +157,9 @@
       1    0    1    0
       3    1    0    0
       5    0    0    1
+      
+      $simple_fdesign_means
+      [1] 0.2 0.6 0.2
       
       $simple_rdesign
         fixed cyl
@@ -216,6 +225,9 @@
       3  108    1    0    0         4         0         0  0.000  2.320
       4  258    0    1    0         0         3         0  3.215  0.000
       5  360    0    0    1         0         0         3  3.440  0.000
+      
+      $complex_fdesign_means
+      [1] 209.200   0.200   0.600   0.200   0.800   2.200   0.600   1.331   1.563
       
       $complex_rdesign
         fixed cyl gear__cyl wt__am
@@ -287,6 +299,9 @@
       3  108    1    0    0         4         0         0  0.000  2.320
       4  258    0    1    0         0         3         0  3.215  0.000
       5  360    0    0    1         0         0         3  3.440  0.000
+      
+      $comple_fdesign_means
+      [1] 209.200   0.200   0.600   0.200   0.800   2.200   0.600   1.331   1.563
       
       $comple_rdesign
         fixed cyl gear__cyl wt__am

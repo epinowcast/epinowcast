@@ -47,6 +47,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     fncol = 0,
     rncol = 0,
     fdesign = numeric(0),
+    fdesign_means = numeric(0),
     rdesign = numeric(0),
     arima_present = 0L,
     arima_T = 0L,
@@ -80,6 +81,18 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     data$fdesign <- formula$fixed$design
     if (fintercept) {
       data$fdesign <- data$fdesign[, -1, drop = FALSE]
+    }
+    # Observation-weighted column means of the (non-intercept) fixed
+    # design, used to centre the design in Stan so the intercept
+    # decorrelates from the slopes (brms-style). Weighted by how often
+    # each design row is used via the observation index. The choice of
+    # means leaves the posterior unchanged (it only shifts the level
+    # between the intercept and the slopes); these means are the ones
+    # that best decorrelate the two.
+    full_design <- formula$fixed$design[formula$fixed$index, , drop = FALSE]
+    data$fdesign_means <- as.numeric(colMeans(full_design))
+    if (fintercept) {
+      data$fdesign_means <- data$fdesign_means[-1]
     }
     data$rdesign <- formula$random$design
 

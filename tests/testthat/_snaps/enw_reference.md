@@ -118,6 +118,9 @@
       4                   0                  0                    0
       5                   0                  0                    0
       
+      $data$refp_fdesign_means
+      [1] 0.150 0.125 0.150 0.150 0.150 0.125 0.150
+      
       $data$refp_rdesign
         fixed day_of_week
       1     0           1
@@ -1023,6 +1026,9 @@
       799
       800
       
+      $data$refnp_fdesign_means
+      numeric(0)
+      
       $data$refnp_rdesign
            (Intercept)
       attr(,"assign")
@@ -1132,6 +1138,9 @@
       $data$refp_fdesign
        
       1
+      
+      $data$refp_fdesign_means
+      numeric(0)
       
       $data$refp_rdesign
            (Intercept)
@@ -3632,6 +3641,10 @@
       799       0
       800       1
       
+      $data$refnp_fdesign_means
+       [1] 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05
+      [16] 0.05 0.05 0.05 0.05 0.05
+      
       $data$refnp_rdesign
          fixed delay
       1      0     1
@@ -3784,6 +3797,9 @@
       $data$refp_fdesign
        
       1
+      
+      $data$refp_fdesign_means
+      numeric(0)
       
       $data$refp_rdesign
            (Intercept)
@@ -4691,6 +4707,9 @@
       [10,15)     0      0       1       0
       [15,20)     0      0       0       1
       
+      
+      $data$refnp_fdesign_means
+      [1] 0.25 0.25 0.25 0.25
       
       $data$refnp_rdesign
         fixed delay_cat

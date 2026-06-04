@@ -60,6 +60,7 @@ data {
   int expr_fncol;
   int expr_rncol;
   matrix[expr_fnindex, expr_fncol] expr_fdesign;
+  vector[expr_fncol] expr_fdesign_means; // obs-weighted column means
   matrix[expr_fncol, expr_rncol + 1] expr_rdesign;
   array[g] int expr_g; // starting time points for growth of each group
   // Priors for growth rate and initial log latent cases
@@ -110,6 +111,7 @@ data {
   array[s] int refp_findex;
   int refp_fncol;
   matrix[refp_fnrow, refp_fncol] refp_fdesign;
+  vector[refp_fncol] refp_fdesign_means; // obs-weighted column means
   int refp_rncol;
   matrix[refp_fncol, refp_rncol + 1] refp_rdesign;
   array[2, 1] real refp_mean_int_p;
@@ -140,6 +142,7 @@ data {
   int refnp_fncol;
   int refnp_rncol;
   matrix[refnp_fnindex, refnp_fncol] refnp_fdesign;
+  vector[refnp_fncol] refnp_fdesign_means; // obs-weighted column means
   matrix[refnp_fncol, refnp_rncol + 1] refnp_rdesign;
   array[2, 1] real refnp_int_p;
   array[2, 1] real refnp_beta_sd_p;
@@ -189,6 +192,7 @@ data {
   int miss_fncol;
   int miss_rncol;
   matrix[miss_fnindex, miss_fncol] miss_fdesign;
+  vector[miss_fncol] miss_fdesign_means; // obs-weighted column means
   matrix[miss_fncol, model_miss ? miss_rncol + 1 : 0] miss_rdesign;
   // Observations reported without a reference date (by reporting time)
   // --> Since the first dmax-1 obs are not used here, the reporting time
@@ -250,7 +254,7 @@ parameters {
   // Expectation model
   // ---- Growth rate submodule ----
   matrix<offset = to_matrix(expr_lelatent_int_p[1], expr_r_seed, g), multiplier = to_matrix(expr_lelatent_int_p[2], expr_r_seed, g)>[expr_r_seed, g] expr_lelatent_int; // initial observations by group (log)
-  array[expr_fintercept ? 1 : 0] real<offset = expr_r_int_p[1, 1], multiplier = expr_r_int_p[2, 1]> expr_r_int; // growth rate intercept
+  array[expr_fintercept ? 1 : 0] real<offset = expr_r_int_p[1, 1], multiplier = expr_r_int_p[2, 1]> expr_r_int_c; // growth rate intercept (centred)
   vector[expr_fncol] expr_beta;
   vector<lower=0>[expr_rncol] expr_beta_sd;
   // Growth rate ARIMA term parameters
@@ -269,7 +273,7 @@ parameters {
 
   // Reference model
   // Parametric reference model
-  array[model_refp ? 1 : 0] real<offset = refp_mean_int_p[1,1], multiplier = refp_mean_int_p[2,1]> refp_mean_int;
+  array[model_refp ? 1 : 0] real<offset = refp_mean_int_p[1,1], multiplier = refp_mean_int_p[2,1]> refp_mean_int_c;
   array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; 
   vector[model_refp ? refp_fncol : 0] refp_mean_beta;
   vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta;
@@ -284,7 +288,7 @@ parameters {
   array[refp_arima_present && model_refp > 1 ? 1 : 0]
     real<lower=0> refp_arima_sd_sigma;
   // Non-parametric reference model
-  array[model_refnp && refnp_fintercept ? 1 : 0] real refnp_int;
+  array[model_refnp && refnp_fintercept ? 1 : 0] real refnp_int_c;
   vector[model_refnp ? refnp_fncol : 0] refnp_beta;
   vector<lower=0>[refnp_rncol] refnp_beta_sd;
   // Non-parametric reference ARIMA term parameters
@@ -303,7 +307,7 @@ parameters {
   array[rep_arima_present ? 1 : 0] real<lower=0> rep_arima_sigma;
 
   // Missing reference date model
-  array[model_miss] real miss_int;
+  array[model_miss] real miss_int_c;
   vector[miss_fncol] miss_beta;
   vector<lower=0>[miss_rncol] miss_beta_sd;
   // Missing-reference ARIMA term parameters
@@ -340,17 +344,41 @@ transformed parameters{
   // Observation model
   array[model_obs > 0 ? 1 : 0] real phi; // Transformed overdispersion
 
+  // Recovered original-scale intercepts. The sampled `*_int_c` are on the
+  // centred design (decorrelated from the slopes); subtracting the design
+  // offset `dot(means, beta)` recovers the intercept the user specified a
+  // prior on (brms's `b_Intercept`). The shift is additive (unit Jacobian).
+  array[expr_fintercept ? 1 : 0] real expr_r_int;
+  array[model_refp ? 1 : 0] real refp_mean_int;
+  array[model_refnp && refnp_fintercept ? 1 : 0] real refnp_int;
+  array[model_miss] real miss_int;
+
   // Expectation model
   profile("transformed_expected_final_observations") {
   // Get log growth rates and map to expected latent cases
   r = regression_predictor(
-    expr_r_int, expr_beta, expr_fnindex, expr_fncol, expr_fdesign,
+    expr_r_int_c, expr_beta, expr_fnindex, expr_fncol, expr_fdesign,
     expr_sparse, expr_beta_sd, expr_rdesign, expr_fintercept, sparse_design,
+    expr_fintercept,
     expr_arima_present, expr_arima_T, expr_arima_G,
     expr_arima_p, expr_arima_d, expr_arima_q, expr_arima_n_obs,
     expr_arima_z, expr_arima_pacf, expr_arima_theta, expr_arima_sigma,
     expr_arima_flat_idx
   );
+  if (expr_fintercept) {
+    real expr_offset = intercept_centring_offset(
+      expr_fdesign_means, expr_beta, expr_beta_sd, expr_rdesign, expr_fncol
+    );
+    real expr_lat_offset = arima_latent_mean_offset(
+      expr_arima_present, expr_fintercept, expr_arima_T, expr_arima_G,
+      expr_arima_p, expr_arima_d, expr_arima_q,
+      expr_arima_z, expr_arima_pacf, expr_arima_theta, expr_arima_sigma
+    );
+    r = r - expr_offset;            // centre the design contribution
+    // recover raw intercept: undo both the design and latent centring so
+    // the prior stays on the original-scale level (unit Jacobian)
+    expr_r_int[1] = expr_r_int_c[1] - expr_offset - expr_lat_offset;
+  }
   exp_llatent = log_expected_latent_from_r(
     expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
     expr_ft, g
@@ -359,7 +387,7 @@ transformed parameters{
   if (expl_obs) {
     expl_prop = regression_predictor(
       {0}, expl_beta, expl_fnindex, expl_fncol, expl_fdesign,
-      expl_sparse, expl_beta_sd, expl_rdesign, 1, sparse_design,
+      expl_sparse, expl_beta_sd, expl_rdesign, 1, sparse_design, 0,
       expl_arima_present, expl_arima_T, expl_arima_G,
       expl_arima_p, expl_arima_d, expl_arima_q, expl_arima_n_obs,
       expl_arima_z, expl_arima_pacf, expl_arima_theta, expl_arima_sigma,
@@ -382,18 +410,34 @@ transformed parameters{
     // applied per joint-deduplicated tuple)
     profile("transformed_delay_reference_time_effects") {
     refp_mean = regression_predictor(
-      refp_mean_int, refp_mean_beta, refp_fnrow, refp_fncol, refp_fdesign,
-      refp_sparse, refp_mean_beta_sd, refp_rdesign, 1, sparse_design,
+      refp_mean_int_c, refp_mean_beta, refp_fnrow, refp_fncol, refp_fdesign,
+      refp_sparse, refp_mean_beta_sd, refp_rdesign, 1, sparse_design, 1,
       refp_arima_present, refp_arima_T, refp_arima_G,
       refp_arima_p, refp_arima_d, refp_arima_q, refp_arima_n_obs,
       refp_arima_z, refp_arima_pacf, refp_arima_theta, refp_arima_sigma,
       refp_arima_flat_idx
     );
+    {
+      real refp_mean_offset = intercept_centring_offset(
+        refp_fdesign_means, refp_mean_beta, refp_mean_beta_sd, refp_rdesign,
+        refp_fncol
+      );
+      real refp_mean_lat_offset = arima_latent_mean_offset(
+        refp_arima_present, 1, refp_arima_T, refp_arima_G,
+        refp_arima_p, refp_arima_d, refp_arima_q,
+        refp_arima_z, refp_arima_pacf, refp_arima_theta, refp_arima_sigma
+      );
+      refp_mean = refp_mean - refp_mean_offset;
+      refp_mean_int[1] =
+        refp_mean_int_c[1] - refp_mean_offset - refp_mean_lat_offset;
+    }
     if (model_refp > 1) {
+      // refp_sd uses a log-link intercept; centring it would need a
+      // non-trivial Jacobian, so it is left on the raw design.
       refp_sd = regression_predictor(
         {log(refp_sd_int[1])}, refp_sd_beta, refp_fnrow, refp_fncol,
         refp_fdesign, refp_sparse, refp_sd_beta_sd, refp_rdesign, 1,
-        sparse_design,
+        sparse_design, 0,
         refp_arima_present, refp_arima_T, refp_arima_G,
         refp_arima_p, refp_arima_d, refp_arima_q, refp_arima_n_obs,
         refp_arima_z, refp_arima_pacf, refp_arima_theta,
@@ -418,14 +462,27 @@ transformed parameters{
     // calculate non-parametric reference date logit hazards
     profile("transformed_delay_non_parametric_reference_time_hazards") {
     refnp_lh = regression_predictor(
-      refnp_int, refnp_beta, refnp_fnindex, refnp_fncol, refnp_fdesign,
+      refnp_int_c, refnp_beta, refnp_fnindex, refnp_fncol, refnp_fdesign,
       refnp_sparse, refnp_beta_sd, refnp_rdesign, refnp_fintercept,
-      sparse_design,
+      sparse_design, refnp_fintercept,
       refnp_arima_present, refnp_arima_T, refnp_arima_G,
       refnp_arima_p, refnp_arima_d, refnp_arima_q, refnp_arima_n_obs,
       refnp_arima_z, refnp_arima_pacf, refnp_arima_theta, refnp_arima_sigma,
       refnp_arima_flat_idx
     );
+    if (refnp_fintercept) {
+      real refnp_offset = intercept_centring_offset(
+        refnp_fdesign_means, refnp_beta, refnp_beta_sd, refnp_rdesign,
+        refnp_fncol
+      );
+      real refnp_lat_offset = arima_latent_mean_offset(
+        refnp_arima_present, refnp_fintercept, refnp_arima_T, refnp_arima_G,
+        refnp_arima_p, refnp_arima_d, refnp_arima_q,
+        refnp_arima_z, refnp_arima_pacf, refnp_arima_theta, refnp_arima_sigma
+      );
+      refnp_lh = refnp_lh - refnp_offset;
+      refnp_int[1] = refnp_int_c[1] - refnp_offset - refnp_lat_offset;
+    }
     }
   }
 
@@ -433,7 +490,7 @@ transformed parameters{
   profile("transformed_delay_reporting_time_effects") {
   srdlh = regression_predictor(
     {0}, rep_beta, rep_fnrow, rep_fncol, rep_fdesign,
-    rep_sparse, rep_beta_sd, rep_rdesign, 1, sparse_design,
+    rep_sparse, rep_beta_sd, rep_rdesign, 1, sparse_design, 0,
     rep_arima_present, rep_arima_T, rep_arima_G,
     rep_arima_p, rep_arima_d, rep_arima_q, rep_arima_n_obs,
     rep_arima_z, rep_arima_pacf, rep_arima_theta, rep_arima_sigma,
@@ -443,14 +500,24 @@ transformed parameters{
 
   // Missing reference model
   if (model_miss) {
-    miss_ref_lprop = log_inv_logit(regression_predictor(
-      miss_int, miss_beta, miss_fnindex, miss_fncol, miss_fdesign,
-      miss_sparse, miss_beta_sd, miss_rdesign, 1, sparse_design,
+    vector[miss_fnindex] miss_lp = regression_predictor(
+      miss_int_c, miss_beta, miss_fnindex, miss_fncol, miss_fdesign,
+      miss_sparse, miss_beta_sd, miss_rdesign, 1, sparse_design, 1,
       miss_arima_present, miss_arima_T, miss_arima_G,
       miss_arima_p, miss_arima_d, miss_arima_q, miss_arima_n_obs,
       miss_arima_z, miss_arima_pacf, miss_arima_theta, miss_arima_sigma,
       miss_arima_flat_idx
-    ));
+    );
+    real miss_offset = intercept_centring_offset(
+      miss_fdesign_means, miss_beta, miss_beta_sd, miss_rdesign, miss_fncol
+    );
+    real miss_lat_offset = arima_latent_mean_offset(
+      miss_arima_present, 1, miss_arima_T, miss_arima_G,
+      miss_arima_p, miss_arima_d, miss_arima_q,
+      miss_arima_z, miss_arima_pacf, miss_arima_theta, miss_arima_sigma
+    );
+    miss_int[1] = miss_int_c[1] - miss_offset - miss_lat_offset;
+    miss_ref_lprop = log_inv_logit(miss_lp - miss_offset);
   }
   // Observation model
   if (model_obs) {

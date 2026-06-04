@@ -168,6 +168,8 @@ matrix arima_filter(matrix Z, vector phi, vector theta, int d) {
  * @param base       Predictor to which the latent is added.
  * @param n_obs      Length of `base` and of the lookup vectors.
  * @param present    0 = inert, 1 = active.
+ * @param centre     1 = mean-centre integrated (d >= 1) residuals so the
+ *                   intercept owns the level; 0 = leave the raw series.
  * @param T          Number of time points in the latent series.
  * @param G          Number of groups.
  * @param p, d, q    ARIMA orders.
@@ -182,8 +184,35 @@ matrix arima_filter(matrix Z, vector phi, vector theta, int d) {
  * @return A new vector equal to `base + sigma * (D^d * T(psi)) * z`
  *         looked up at the per-observation indices.
  */
+/**
+ * Average (over groups) of the per-group mean of the integrated latent.
+ *
+ * When the integrated residual is mean-centred (see `apply_arima_residual`)
+ * the level it carried is removed from the predictor. To keep the prior on
+ * the original-scale intercept (the EpiNow2 device: prior on the recovered
+ * level via a unit-Jacobian shift), this offset is subtracted from the
+ * sampled intercept so the recovered intercept absorbs the level. The
+ * average across groups is used because the intercept is shared across
+ * groups; for a single group this makes the centring an exact
+ * reparameterisation, for several groups it preserves the shared level and
+ * only the per-group deviations from the mean are re-expressed.
+ *
+ * Returns 0 unless the term is present, centring is on, and d >= 1.
+ */
+real arima_latent_mean_offset(int present, int centre, int T, int G,
+                              int p, int d, int q,
+                              matrix z, vector pacf, vector theta,
+                              array[] real sigma) {
+  if (!present || !centre || d < 1) return 0.0;
+  vector[p] phi = pacf_to_phi(pacf);
+  matrix[T, G] eps = sigma[1] * arima_filter(z, phi, theta, d);
+  real m = 0.0;
+  for (gg in 1:G) m += mean(eps[, gg]);
+  return m / G;
+}
+
 vector apply_arima_residual(vector base, int n_obs,
-                            int present, int T, int G,
+                            int present, int centre, int T, int G,
                             int p, int d, int q,
                             matrix z, vector pacf, vector theta,
                             array[] real sigma,
@@ -191,6 +220,18 @@ vector apply_arima_residual(vector base, int n_obs,
   if (!present) return base;
   vector[p] phi = pacf_to_phi(pacf);
   matrix[T, G] eps = sigma[1] * arima_filter(z, phi, theta, d);
+  // Integration (d >= 1) gives the residual a free overall level: the
+  // first shock propagates through the cumulative sum and shifts the
+  // whole path, so the residual level trades off against the intercept
+  // (a ridge in the joint posterior that slows HMC). When an intercept
+  // is present to carry the level, mean-centre each group's series so
+  // the residual becomes a pure mean-zero deviation. This mirrors brms's
+  // design-matrix centring and EpiNow2's `gp -= mean(gp)`.
+  if (centre && d >= 1) {
+    for (gg in 1:G) {
+      eps[, gg] = eps[, gg] - mean(eps[, gg]);
+    }
+  }
   // Vectorised gather: flat_idx is precomputed in transformed data
   // as (group_idx - 1) * T + time_idx, so to_vector(eps) (column-
   // major flatten) [flat_idx] returns the per-observation residuals

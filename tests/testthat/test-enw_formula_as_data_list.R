@@ -59,6 +59,24 @@ test_that(
   }
 )
 
+test_that(
+  "enw_formula_as_data_list returns observation-weighted design means", {
+    f <- enw_formula(~ 1 + disp, test_cars)
+    out <- enw_formula_as_data_list(f, prefix = "m")
+    full <- f$fixed$design[f$fixed$index, , drop = FALSE]
+    # intercept column dropped, matching fdesign
+    expect_equal(out$m_fdesign_means, as.numeric(colMeans(full))[-1])
+    expect_length(out$m_fdesign_means, out$m_fncol)
+
+    # without an intercept every column is kept
+    f0 <- enw_formula(~ 0 + disp, test_cars)
+    out0 <- enw_formula_as_data_list(f0, prefix = "m")
+    full0 <- f0$fixed$design[f0$fixed$index, , drop = FALSE]
+    expect_equal(out0$m_fdesign_means, as.numeric(colMeans(full0)))
+    expect_length(out0$m_fdesign_means, out0$m_fncol)
+  }
+)
+
 test_that("enw_formula_as_data_list produces expected default output", {
   expect_identical(
     enw_formula_as_data_list(
@@ -68,7 +86,8 @@ test_that("enw_formula_as_data_list produces expected default output", {
       c_fintercept = 0, c_fnrow = 0,
       c_findex = numeric(0), c_fnindex = 0,
       c_fncol = 0, c_rncol = 0,
-      c_fdesign = numeric(0), c_rdesign = numeric(0),
+      c_fdesign = numeric(0), c_fdesign_means = numeric(0),
+      c_rdesign = numeric(0),
       c_arima_present = 0L, c_arima_T = 0L, c_arima_G = 0L,
       c_arima_p = 0L, c_arima_d = 0L, c_arima_q = 0L,
       c_arima_n_obs = 0L,
