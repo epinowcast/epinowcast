@@ -46,9 +46,7 @@ The chains are deliberately short to keep the build time reasonable; a real anal
 ``` r
 library(epinowcast)
 library(data.table)
-#> Warning: package 'data.table' was built under R version 4.5.2
 library(ggplot2) # nolint: unused_import_linter. Required by plot.epinowcast().
-#> Warning: package 'ggplot2' was built under R version 4.5.2
 library(knitr)
 ```
 
@@ -183,10 +181,10 @@ kable(arima_pars, digits = 3)
 
 
 
-|variable            |   mean|     q5|   q95|
-|:-------------------|------:|------:|-----:|
-|expr_arima_pacf[1]  | -0.014| -0.852| 0.826|
-|expr_arima_sigma[1] |  0.029|  0.011| 0.055|
+|variable            |  mean|     q5|   q95|
+|:-------------------|-----:|------:|-----:|
+|expr_arima_pacf[1]  | 0.009| -0.826| 0.813|
+|expr_arima_sigma[1] | 0.030|  0.011| 0.054|
 
 
 
@@ -345,7 +343,7 @@ diagnostics <- rbindlist(lapply(names(fits), function(model) {
     runtime_s = round(fits[[model]]$fit[[1]]$time()$total)
   )
 }))
-#> Warning: 1 of 1000 (0.0%) transitions hit the maximum treedepth limit of 12.
+#> Warning: 1 of 1000 (0.0%) transitions ended with a divergence.
 #> See https://mc-stan.org/misc/warnings for details.
 kable(diagnostics)
 ```
@@ -354,12 +352,12 @@ kable(diagnostics)
 
 |model                                     | max_rhat| min_ess_bulk| divergences| runtime_s|
 |:-----------------------------------------|--------:|------------:|-----------:|---------:|
-|rw(week)                                  |    1.013|          169|           0|       106|
-|arima(week, age_group, 1, 1, 0)           |    1.015|          205|           0|        88|
-|ar(day, age_group, 1)                     |    1.016|          214|           0|        93|
-|(1 &#124; week:.group)                    |    1.014|          208|           0|        84|
-|(1 &#124; day_of_week)                    |    1.023|          166|           0|       231|
-|(1 &#124; day_of_week) + arima(week, ...) |    1.015|          183|           0|       295|
+|rw(week)                                  |    1.020|          199|           1|       169|
+|arima(week, age_group, 1, 1, 0)           |    1.031|          166|           0|        99|
+|ar(day, age_group, 1)                     |    1.029|          123|           0|       120|
+|(1 &#124; week:.group)                    |    1.031|          126|           0|        92|
+|(1 &#124; day_of_week)                    |    1.013|          237|           0|       281|
+|(1 &#124; day_of_week) + arima(week, ...) |    1.022|          196|           0|       335|
 
 
 
