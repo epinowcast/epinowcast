@@ -94,19 +94,18 @@ data {
   array[2, 1] real expr_gp_rho_p;
   array[2, 1] real expr_gp_alpha_p;
   // ---- Susceptible-depletion (population) adjustment ----
-  // Switch: 0 = none; > 0 = apply adjustment (1 = "forecast", 2 = "all"; the
-  // value records population_period but the adjusted recursion is run for the
-  // whole post-seed series in either case, see log_expected_latent_from_r).
-  int<lower=0, upper=2> expr_pop_use;
+  // Switch: 0 = none; 1 = apply adjustment. When on, the adjusted recursion is
+  // always run for the whole post-seed series (see log_expected_latent_from_r).
+  int<lower=0, upper=1> expr_pop_use;
   // Is the initial susceptible population estimated (1) or fixed (0)?
   int<lower=0, upper=1> expr_pop_uncertain;
   // Fixed initial susceptible population (per group). Used when not estimated.
   vector<lower=0>[g] expr_pop_fixed;
   // Numerical-stability floor for the susceptible pool
   real<lower=0> expr_pop_floor;
-  // LogNormal prior (log median, log sd) for the estimated population. Shared
-  // across groups but each group draws an independent value (see parameters).
-  array[2, 1] real expr_pop_p;
+  // Per-group LogNormal prior for the estimated population (row 1 = log median
+  // per group, row 2 = shared log sd). Each group draws an independent value.
+  array[2, g] real expr_pop_p;
   // ---- Latent case submodule ----
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
   // Partial PMF of the latent delay distribution as a convolution matrix
@@ -656,9 +655,10 @@ model {
     expr_gp_rho_p, expr_gp_alpha_p
   );
   // initial susceptible population (when estimated): independent LogNormal
-  // prior per group, parameters on the log scale (log median, log sd)
+  // prior per group, with a per-group log median (expr_pop_p[1]) and shared
+  // log sd (expr_pop_p[2])
   if (expr_pop_uncertain) {
-    expr_pop_est ~ lognormal(expr_pop_p[1, 1], expr_pop_p[2, 1]);
+    expr_pop_est ~ lognormal(expr_pop_p[1], expr_pop_p[2]);
   }
   // ---- Latent case submodule ----
   // latent-to-obs proportion effect + ARIMA priors

@@ -48,11 +48,10 @@ vector extract_group_rates(vector r, array[] int r_g, int k, int r_t) {
  * modelled new latent cases each step.
  *
  * @param use_pop Susceptible-depletion adjustment switch. 0 = no adjustment
- * (default, unadjusted renewal equation); > 0 = apply the susceptible-depletion
+ * (default, unadjusted renewal equation); 1 = apply the susceptible-depletion
  * adjustment. When enabled the adjusted bounded-exponential recursion is run
  * for the whole post-seed series so the susceptible pool stays internally
- * consistent (see note). The specific positive value carries the user-facing
- * `population_period` choice but does not change the recursion.
+ * consistent (see note).
  *
  * @param pop_floor Minimum susceptible population used as a numerical-stability
  * floor, preventing instability as the susceptible pool approaches zero. Only

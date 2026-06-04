@@ -10,7 +10,6 @@ enw_expectation(
   observation = ~1,
   latent_reporting_delay = 1,
   population = NULL,
-  population_period = c("all", "forecast"),
   population_floor = 1,
   population_uncertain = FALSE,
   population_cv = 0.1,
@@ -64,23 +63,17 @@ scaled by the remaining susceptible fraction \code{S_t / population}, where
 cases. May be a single value (the same initial susceptible population for
 every group, with an explicit warning when more than one group is present)
 or a numeric vector with one value per group. Groups are treated as
-independent well-mixed populations. The adjustment only applies to the
-renewal path (i.e. when \code{generation_time} has length greater than 1); it is
-ignored for the daily growth rate model (\code{generation_time = 1}). The
+independent well-mixed populations. When the adjustment is enabled the
+bounded susceptible-depletion recursion is always applied to the whole
+modelled (post-seed) series so the susceptible pool stays internally
+consistent; the adjustment cannot be restricted to part of the series (a
+forecast-only mode could be a future extension). The adjustment only applies
+to the renewal path (i.e. when \code{generation_time} has length greater than 1);
+it is ignored for the daily growth rate model (\code{generation_time = 1}). The
 adjustment assumes a single well-mixed population per group with no waning of
 immunity and no births or deaths, so the susceptible pool is only ever
 depleted. Adapted from the implementation in \code{EpiNow2}
 (\code{rt_opts(pop = ...)}, MIT licence).}
-
-\item{population_period}{Character string, either \code{"all"} (the default) or
-\code{"forecast"}. Retained for forward compatibility; with the current
-implementation both values behave identically. When the adjustment is
-enabled the bounded susceptible-depletion recursion is applied to the whole
-modelled (post-seed) series so the susceptible pool stays internally
-consistent. Restricting the adjustment to only part of the series (e.g. a
-forecast window) would let larger unadjusted in-data incidence over-deplete
-the pool, biasing the reproduction number downwards in the remainder, so it
-is not done. Ignored when \code{population} is \code{NULL}.}
 
 \item{population_floor}{Numeric, defaulting to 1. Minimum susceptible
 population used as a numerical-stability floor when adjusting for depletion.
@@ -91,10 +84,10 @@ stability (see \code{\link[=enw_expectation]{enw_expectation()}} Stan implementa
 
 \item{population_uncertain}{Logical, defaulting to \code{FALSE}. If \code{TRUE}, the
 initial susceptible population is treated as an estimated (fitted) parameter
-rather than a fixed value, fitted independently per group from a shared
-LogNormal prior whose median equals \code{population} (the first value if a vector
-is supplied) and whose coefficient of variation is \code{population_cv}. Ignored
-when \code{population} is \code{NULL}.}
+rather than a fixed value, fitted independently per group from a per-group
+LogNormal prior whose median equals that group's supplied \code{population} value
+and whose coefficient of variation is \code{population_cv}. Ignored when
+\code{population} is \code{NULL}.}
 
 \item{population_cv}{Numeric, defaulting to 0.1. Coefficient of variation
 (on the natural scale) of the LogNormal prior on the initial susceptible
