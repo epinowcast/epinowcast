@@ -128,3 +128,73 @@ test_that(
     )
   }
 )
+
+test_that("enw_expectation defaults to no susceptible-depletion adjustment", {
+  expectation <- enw_expectation(data = pobs)
+  expect_identical(expectation$data$expr_pop_use, 0L)
+  expect_identical(expectation$data$expr_pop_uncertain, 0L)
+  expect_identical(expectation$data$expr_pop_floor, 1)
+  expect_length(expectation$data$expr_pop_fixed, pobs$groups[[1]])
+  expect_true(all(expectation$data$expr_pop_fixed == 0))
+  expect_false("expr_pop" %in% expectation$priors$variable)
+})
+
+test_that("enw_expectation accepts a fixed population for depletion", {
+  expectation <- enw_expectation(
+    generation_time = c(0.2, 0.5, 0.3), population = 1000, data = pobs
+  )
+  expect_identical(expectation$data$expr_pop_use, 2L)
+  expect_identical(expectation$data$expr_pop_uncertain, 0L)
+  expect_true(all(expectation$data$expr_pop_fixed == 1000))
+  expect_false("expr_pop" %in% expectation$priors$variable)
+})
+
+test_that("enw_expectation restricts depletion to the forecast period", {
+  expectation <- enw_expectation(
+    generation_time = c(0.2, 0.5, 0.3), population = 1000,
+    population_period = "forecast", data = pobs
+  )
+  expect_identical(expectation$data$expr_pop_use, 1L)
+  expect_gte(expectation$data$expr_pop_nht, 0L)
+  expect_lte(expectation$data$expr_pop_nht, expectation$data$expr_t)
+})
+
+test_that("enw_expectation supports an uncertain (fitted) population", {
+  expectation <- enw_expectation(
+    generation_time = c(0.2, 0.5, 0.3), population = 1000,
+    population_uncertain = TRUE, data = pobs
+  )
+  expect_identical(expectation$data$expr_pop_use, 2L)
+  expect_identical(expectation$data$expr_pop_uncertain, 1L)
+  expect_true("expr_pop" %in% expectation$priors$variable)
+  pop_prior <- expectation$priors[variable == "expr_pop"]
+  expect_identical(pop_prior$distribution, "Log normal")
+  # LogNormal log-mean recovers the supplied population on the natural scale
+  expect_equal(exp(pop_prior$mean), 1000, tolerance = 1e-6)
+  pop_init <- expectation$inits(
+    c(expectation$data, list(g = pobs$groups[[1]])), expectation$priors
+  )()$expr_pop_est
+  expect_length(pop_init, 1L)
+  expect_gt(pop_init, 0)
+})
+
+test_that("enw_expectation validates population arguments", {
+  expect_error(
+    enw_expectation(population = -1, data = pobs),
+    "population"
+  )
+  expect_error(
+    enw_expectation(population = c(1, 2), data = pobs),
+    "population"
+  )
+  expect_error(
+    enw_expectation(population_floor = -1, data = pobs),
+    "population_floor"
+  )
+  expect_error(
+    enw_expectation(
+      population_uncertain = TRUE, population = NULL, data = pobs
+    ),
+    "population"
+  )
+})

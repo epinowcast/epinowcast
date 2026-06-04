@@ -93,6 +93,19 @@ data {
   array[expr_gp_n_obs] int<lower=1> expr_gp_flat_idx;
   array[2, 1] real expr_gp_rho_p;
   array[2, 1] real expr_gp_alpha_p;
+  // ---- Susceptible-depletion (population) adjustment ----
+  // Mode: 0 = none; 1 = forecast period only; 2 = all post-seed time points
+  int<lower=0, upper=2> expr_pop_use;
+  // Is the initial susceptible population estimated (1) or fixed (0)?
+  int<lower=0, upper=1> expr_pop_uncertain;
+  // Fixed initial susceptible population (per group). Used when not estimated.
+  vector<lower=0>[g] expr_pop_fixed;
+  // Numerical-stability floor for the susceptible pool
+  real<lower=0> expr_pop_floor;
+  // Number of non-forecast post-seed time points (for expr_pop_use == 1)
+  int<lower=0> expr_pop_nht;
+  // LogNormal prior (log mean, log sd) for the estimated population
+  array[2, 1] real expr_pop_p;
   // ---- Latent case submodule ----
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
   // Partial PMF of the latent delay distribution as a convolution matrix
@@ -359,6 +372,9 @@ parameters {
   matrix[expr_gp_type == 1 ? 2 * expr_gp_M : expr_gp_M, expr_gp_G] expr_gp_eta;
   array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_rho;
   array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_alpha;
+  // Estimated initial susceptible population (when uncertain). Shared across
+  // groups; applied per group via expr_pop below.
+  array[expr_pop_uncertain ? 1 : 0] real<lower=0> expr_pop_est;
   // ---- Latent case submodule ----
   vector[expl_fncol] expl_beta;
   vector<lower=0>[expl_rncol] expl_beta_sd;
@@ -480,9 +496,13 @@ transformed parameters{
     expr_gp_type, expr_gp_nu, expr_gp_d, expr_gp_PHI, expr_gp_eta,
     expr_gp_rho, expr_gp_alpha, expr_gp_flat_idx
   );
+  // Initial susceptible population per group: either the estimated value
+  // (broadcast across groups) or the supplied fixed value.
+  vector[g] expr_pop = expr_pop_uncertain ?
+    rep_vector(expr_pop_est[1], g) : expr_pop_fixed;
   exp_llatent = log_expected_latent_from_r(
     expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
-    expr_ft, g
+    expr_ft, g, expr_pop, expr_pop_use, expr_pop_floor, expr_pop_nht
   );
   // Get latent-to-obs proportions and map expected latent cases to expected observations
   if (expl_obs) {
@@ -635,6 +655,11 @@ model {
     expr_gp_present, expr_gp_eta, expr_gp_rho, expr_gp_alpha,
     expr_gp_rho_p, expr_gp_alpha_p
   );
+  // initial susceptible population (when estimated): LogNormal prior with
+  // parameters given on the log scale (log mean, log sd)
+  if (expr_pop_uncertain) {
+    expr_pop_est[1] ~ lognormal(expr_pop_p[1, 1], expr_pop_p[2, 1]);
+  }
   // ---- Latent case submodule ----
   // latent-to-obs proportion effect + ARIMA priors
   regression_priors_lp(
