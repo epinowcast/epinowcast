@@ -37,16 +37,19 @@ test_that("an uncertain latent reporting delay is recovered (#177)", {
   pobs <- build_fully_reported(y)
 
   lrd_spec <- enw_uncertain(
-    "gamma", mean = c(1.4, 0.3), sd = c(1.5, 0.4), max = dmax
+    "gamma",
+    mean = c(1.4, 0.3), sd = c(1.5, 0.4), max = dmax
   )
   expectation <- enw_expectation(
     r = ~1, latent_reporting_delay = lrd_spec, data = pobs
   )
   reference <- enw_reference(
-    ~0, non_parametric = ~ 0 + (1 | delay), data = pobs
+    ~0,
+    non_parametric = ~ 0 + (1 | delay), data = pobs
   )
   nowcast <- suppressMessages(epinowcast(
-    pobs, expectation = expectation, reference = reference,
+    pobs,
+    expectation = expectation, reference = reference,
     fit = enw_fit_opts(
       chains = 2, parallel_chains = 2, iter_warmup = 500,
       iter_sampling = 500, pp = FALSE, show_messages = FALSE,
@@ -90,16 +93,19 @@ test_that("an uncertain generation time samples and mixes (#178)", {
   pobs <- build_fully_reported(y)
 
   gt_spec <- enw_uncertain(
-    "lognormal", mean = c(1.5, 0.1), sd = c(0.4, 0.05), max = gmax
+    "lognormal",
+    mean = c(1.5, 0.1), sd = c(0.4, 0.05), max = gmax
   )
   expectation <- enw_expectation(
     r = ~ rw(week), generation_time = gt_spec, data = pobs
   )
   reference <- enw_reference(
-    ~0, non_parametric = ~ 0 + (1 | delay), data = pobs
+    ~0,
+    non_parametric = ~ 0 + (1 | delay), data = pobs
   )
   nowcast <- suppressMessages(epinowcast(
-    pobs, expectation = expectation, reference = reference,
+    pobs,
+    expectation = expectation, reference = reference,
     fit = enw_fit_opts(
       chains = 2, parallel_chains = 2, iter_warmup = 500,
       iter_sampling = 500, pp = FALSE, show_messages = FALSE,

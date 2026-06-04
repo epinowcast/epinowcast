@@ -9,8 +9,8 @@
   The Stan implementation is adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2, MIT licensed).
   See #824.
 - `enw_expectation()` now accepts uncertain generation time and latent reporting delay distributions specified with the new `enw_uncertain()` helper, in addition to the existing fixed numeric PMFs.
-  The distribution parameters are estimated from priors and the PMF is discretised (and, for the latent reporting delay, convolved) within the model, reusing the parametric reference date discretisation machinery.
-  This gives parity with the uncertain distribution support in `EpiNow2`.
+  The distribution parameters are estimated from priors and the PMF is discretised (and, for the latent reporting delay, convolved) within the model, reusing epinowcast's own parametric reference date discretisation machinery.
+  This gives feature parity with the uncertain distribution support in `EpiNow2` (no `EpiNow2` code is used).
   Fixed PMFs remain the default so existing models are unaffected.
   See #177 and #178.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
