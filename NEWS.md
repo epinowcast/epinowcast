@@ -9,10 +9,11 @@
   The Stan implementation is adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2, MIT licensed).
   See #824.
 - Added `enw_simulate()` and `enw_forecast()` for forward simulation and forecasting separate from fitting.
-  `enw_simulate()` forward-generates synthetic observations from known/fixed parameters and a supplied growth rate, for prior or posterior predictive checks, synthetic-recovery tests, and scenario analysis.
-  `enw_forecast()` projects a fitted nowcast forward under a new growth rate trajectory, propagating posterior uncertainty in the unchanged delay, report, and observation components.
-  Both reuse the existing Stan generated-quantities machinery via a new `expr_r_override` data hook so simulated, forecast, and fitted outputs are directly comparable.
-  The override is a single growth rate trajectory applied to every posterior draw; per-draw trajectories and a true forward horizon are tracked separately in #838 and need a redesign rather than an extension of this hook.
+  `enw_simulate()` forward-generates synthetic observations from known/fixed parameters and a supplied growth rate; any model parameter can be fixed through `parameters`.
+  `enw_forecast()` re-drives a fitted nowcast, taking each component from the per-draw posterior unless it is overridden through a named `overrides` list (currently the growth rate `r`), propagating posterior uncertainty in the components that are not overridden.
+  Both reuse the existing Stan generated-quantities machinery via a component-override data hook so simulated, forecast, and fitted outputs are directly comparable.
+  A `horizon` argument scopes forward extension beyond the fitted window; full support is in development and tracked in #838.
+  Added a "Simulating, fitting, and forecasting" vignette and a features-table entry.
   See #829 by @seabbs.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
