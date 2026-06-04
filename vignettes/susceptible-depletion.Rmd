@@ -1,0 +1,241 @@
+---
+title: "Susceptible depletion in the renewal model"
+description: "Demonstrating the optional susceptible-depletion adjustment of the renewal expectation model on simulated data where depletion plays a clear role."
+author: Epinowcast Team
+output:
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{Susceptible depletion in the renewal model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+The renewal expectation model in `epinowcast` can optionally account for
+susceptible depletion.
+Given an initial susceptible population, transmission is scaled by the remaining
+susceptible fraction, so the effective reproduction number bends down as the
+pool depletes.
+This vignette demonstrates the adjustment on simulated data where depletion
+plays a clear role, fitting the expectation-only model with and without it.
+
+
+``` r
+library(epinowcast)
+library(data.table)
+library(ggplot2)
+
+set.seed(2024)
+```
+
+## A depleting epidemic on simulated data
+
+We simulate a single well-mixed population of `N = 4000` susceptibles seeded
+with a few cases and driven by a renewal process with a fixed generation time
+and a constant reproduction number.
+Because the population is small, the susceptible pool is meaningfully depleted
+over the epidemic and the realised growth slows even though transmissibility is
+constant.
+
+
+``` r
+simulate_depleting <- function(population, rt, generation_time, n_days,
+                                seed_cases = 5) {
+  gt_n <- length(generation_time)
+  rgt <- rev(generation_time)
+  inc <- rep(seed_cases, n_days)
+  cum_cases <- sum(inc[seq_len(gt_n)])
+  for (i in (gt_n + 1):n_days) {
+    infectiousness <- sum(inc[(i - gt_n):(i - 1)] * rgt)
+    remaining <- max(0, population - cum_cases)
+    inc[i] <- remaining * (1 - exp(-rt * infectiousness / max(1, remaining)))
+    cum_cases <- cum_cases + inc[i]
+  }
+  list(incidence = inc, attack_size = cum_cases)
+}
+
+population <- 4000
+gt <- c(0.3, 0.4, 0.3)
+sim <- simulate_depleting(population, rt = 1.7, generation_time = gt,
+                          n_days = 45)
+
+obs <- data.table(
+  reference_date = as.Date("2021-01-01") + seq_along(sim$incidence) - 1,
+  confirm = rpois(length(sim$incidence), sim$incidence)
+)
+obs[, report_date := reference_date]
+
+cat("Realised attack size:", round(sim$attack_size),
+    "of", population, "susceptibles\n")
+#> Realised attack size: 4000 of 4000 susceptibles
+```
+
+The realised attack size consumes a large fraction of the population, so
+depletion is not negligible.
+
+## Preprocessing
+
+We treat the simulated counts as fully reported (no reporting delay) so the
+expectation model is the only component being tested.
+
+
+``` r
+pobs <- enw_preprocess_data(
+  enw_complete_dates(obs, max_delay = 2), max_delay = 2
+)
+```
+
+## Fitting with and without susceptible depletion
+
+We fit the same renewal model twice: once with the susceptible-depletion
+adjustment (`population = N`) and once without it (the default).
+Both use a weekly random walk on the log reproduction number.
+
+
+``` r
+fit_opts <- enw_fit_opts(
+  save_warmup = FALSE, pp = FALSE, chains = 2,
+  iter_warmup = 500, iter_sampling = 500, adapt_delta = 0.95,
+  max_treedepth = 12, show_messages = FALSE, refresh = 0
+)
+
+nowcast_adjusted <- epinowcast(
+  pobs,
+  expectation = enw_expectation(
+    r = ~ rw(week), generation_time = gt, population = population, data = pobs
+  ),
+  obs = enw_obs(family = "poisson", data = pobs),
+  fit = fit_opts
+)
+
+nowcast_unadjusted <- epinowcast(
+  pobs,
+  expectation = enw_expectation(
+    r = ~ rw(week), generation_time = gt, data = pobs
+  ),
+  obs = enw_obs(family = "poisson", data = pobs),
+  fit = fit_opts
+)
+```
+
+## Comparing the recovered attack size
+
+We extract the posterior latent cases (`exp_llatent`) from each fit and compare
+the recovered cumulative attack size with the known truth.
+
+
+``` r
+attack_size <- function(nowcast, label) {
+  draws <- posterior::as_draws_matrix(nowcast$fit[[1]]$draws("exp_llatent"))
+  total <- rowSums(exp(draws))
+  data.table(
+    model = label, mean = mean(total),
+    q5 = quantile(total, 0.05), q95 = quantile(total, 0.95)
+  )
+}
+
+attack <- rbind(
+  attack_size(nowcast_adjusted, "adjusted"),
+  attack_size(nowcast_unadjusted, "unadjusted")
+)
+knitr::kable(attack, digits = 0, caption = paste(
+  "Recovered cumulative attack size. True value:", round(sim$attack_size)
+))
+```
+
+
+
+Table: Recovered cumulative attack size. True value: 4000
+
+|model      | mean|   q5|  q95|
+|:----------|----:|----:|----:|
+|adjusted   | 4000| 4000| 4000|
+|unadjusted | 4038| 3922| 4153|
+
+
+
+The adjusted model recovers the realised attack size, attributing the slowdown
+to a shrinking susceptible pool.
+The unadjusted model has to explain the same slowdown through a falling
+reproduction number, which biases its reconstruction of the latent epidemic.
+
+## Estimated latent epidemic
+
+
+``` r
+latent_summary <- function(nowcast, label) {
+  s <- nowcast$fit[[1]]$summary("exp_llatent", mean = mean)
+  data.table(model = label, time = seq_len(nrow(s)), mean = exp(s$mean))
+}
+
+latent <- rbind(
+  latent_summary(nowcast_adjusted, "adjusted"),
+  latent_summary(nowcast_unadjusted, "unadjusted")
+)
+truth <- data.table(
+  model = "truth", time = seq_along(sim$incidence), mean = sim$incidence
+)
+
+ggplot(rbind(latent, truth), aes(x = time, y = mean, colour = model)) +
+  geom_line() +
+  labs(x = "Time", y = "Latent cases", colour = NULL) +
+  theme_bw()
+```
+
+![Posterior mean latent cases under each model against the simulated truth.](figures/susceptible-depletion-plot-latent-1.png)
+
+## Fitting an uncertain population
+
+When the initial susceptible population is unknown, it can be estimated by
+setting `population_uncertain = TRUE`.
+`population` then provides the median of a LogNormal prior with coefficient of
+variation `population_cv`.
+
+
+``` r
+nowcast_uncertain <- epinowcast(
+  pobs,
+  expectation = enw_expectation(
+    r = ~ rw(week), generation_time = gt, population = population,
+    population_uncertain = TRUE, population_cv = 0.5, data = pobs
+  ),
+  obs = enw_obs(family = "poisson", data = pobs),
+  fit = fit_opts
+)
+
+pop_post <- nowcast_uncertain$fit[[1]]$summary("expr_pop_est")
+knitr::kable(
+  pop_post[, c("variable", "mean", "q5", "q95")],
+  digits = 0, caption = paste("Estimated population. True value:", population)
+)
+```
+
+
+
+Table: Estimated population. True value: 4000
+
+|variable        | mean|   q5|  q95|
+|:---------------|----:|----:|----:|
+|expr_pop_est[1] | 4036| 3935| 4140|
+
+
+
+The estimated population brackets the true value, recovering it from the
+depletion signal alone.
+
+## Assumptions
+
+The adjustment assumes a single well-mixed population per group with no waning
+of immunity and no births or deaths, so the susceptible pool is only ever
+depleted by modelled latent cases.
+It applies only to the renewal path (`length(generation_time) > 1`).
+See `?enw_expectation` for the `population`, `population_floor`,
+`population_uncertain`, and `population_cv` arguments.

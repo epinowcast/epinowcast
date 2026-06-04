@@ -43,6 +43,8 @@ navbar:
         href: articles/germany-age-stratified-nowcasting.html
       - text: Estimating the effective reproduction number in real-time for a single timeseries with reporting delays
         href: articles/single-timeseries-rt-estimation.html
+      - text: Susceptible depletion in the renewal model
+        href: articles/susceptible-depletion.html
       - text: Working with epinowcast
       - text: Comparing inference methods
         href: articles/inference-methods.html

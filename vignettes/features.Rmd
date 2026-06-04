@@ -130,6 +130,7 @@ Specify the generative model for the expected latent process (e.g., infections, 
 | ARIMA residual | Trend and autocorrelation; `d` sets the integration order | `~1 + arima(week, by = .group, p = 1, d = 1)` | `d` >= 1 gives non-stationary drift |
 | Growth rate | Exponential growth/decline | `generation_time = 1` (default) | Simple trend |
 | Renewal process | Epidemic dynamics | `generation_time = c(0.2, 0.5, 0.3)` | [Rt estimation vignette](single-timeseries-rt-estimation.html) |
+| Susceptible depletion | Rt bends down as the susceptible pool depletes | `generation_time = c(...)`, `population = N` | [Susceptible depletion vignette](susceptible-depletion.html) |
 | Fixed effects | Covariates (e.g., interventions) | `~1 + intervention + ...` | Include predictors |
 | Observation modifiers | Ascertainment variation (e.g., day of week) | `observation = ~1 + day_of_week` | Adjust for reporting patterns |
 
@@ -138,7 +139,7 @@ Specify the generative model for the expected latent process (e.g., infections, 
 - `enw_expectation()`: Specify latent process model and observation modifiers
 - See `?enw_expectation` for details
 
-**Where to see it:** The [latent processes vignette](latent-processes.html) compares random walks, ARIMA(p, d, q) residuals, stationary AR, and periodic terms on the growth rate, with the [ARIMA reference](arima.html) covering the maths, priors, and usage. The [Rt estimation vignette](single-timeseries-rt-estimation.html) demonstrates renewal process models with generation times.
+**Where to see it:** The [latent processes vignette](latent-processes.html) compares random walks, ARIMA(p, d, q) residuals, stationary AR, and periodic terms on the growth rate, with the [ARIMA reference](arima.html) covering the maths, priors, and usage. The [Rt estimation vignette](single-timeseries-rt-estimation.html) demonstrates renewal process models with generation times, and the [susceptible depletion vignette](susceptible-depletion.html) shows the population adjustment on simulated data.
 
 # Hierarchical Structure {#hierarchical}
 
