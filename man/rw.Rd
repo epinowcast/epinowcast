@@ -4,45 +4,57 @@
 \alias{rw}
 \title{Adds random walks with Gaussian steps to the model.}
 \usage{
-rw(time, by, type = c("independent", "dependent"))
+rw(time, by)
 }
 \arguments{
 \item{time}{Defines the random walk time period.}
 
 \item{by}{Defines the grouping parameter used for the random walk.
 If not specified no grouping is used. Currently this is limited to a single
-variable.}
-
-\item{type}{Character string, how standard deviation of grouped random
-walks is estimated: "independent", or "dependent" across groups;
-enforced by \code{\link[base:match.arg]{base::match.arg()}}.}
+variable. Each group draws an independent shock series; the latent
+standard deviation is shared across groups (per-group standard
+deviations are a planned extension).}
 }
 \value{
-A list defining the time frame, group, and type with class
-"enw_rw_term" that can be interpreted by \code{\link[=construct_rw]{construct_rw()}}.
+A list of class \code{enw_arima_term} (with \code{p = 0}, \code{d = 1},
+\code{q = 0}) that can be interpreted by \code{\link[=construct_arima]{construct_arima()}}.
 }
 \description{
-A call to \code{rw()} can be used in the 'formula' argument of model
-construction functions in the \code{epinowcast} package such as \code{\link[=enw_formula]{enw_formula()}}.
-Does not evaluate arguments but instead simply passes information for use in
-model construction.
+A call to \code{rw()} can be used in the \code{formula} argument of model
+construction functions in the \code{epinowcast} package such as
+\code{\link[=enw_formula]{enw_formula()}}. Mathematically a Gaussian random walk is exactly
+an ARIMA(0, 1, 0) process; \code{rw(time, by, type)} is now a thin
+wrapper over \code{\link[=arima]{arima()}} with \code{p = 0}, \code{d = 1}, \code{q = 0}. It is kept
+as a user-facing convenience because random walks are the most
+common time-series structure in \code{epinowcast} formulas.
+}
+\details{
+Does not evaluate arguments but instead simply passes information
+for use in model construction.
 }
 \examples{
 rw(time)
 
 rw(time, location)
 
-rw(time, location, type = "dependent")
+rw(time, location)
 }
 \seealso{
 Functions used to help convert formulas into model designs
+\code{\link{ar}()},
+\code{\link{arima}()},
+\code{\link{arima_terms}()},
+\code{\link{arma}()},
 \code{\link{as_string_formula}()},
+\code{\link{construct_arima}()},
 \code{\link{construct_re}()},
 \code{\link{construct_rw}()},
 \code{\link{enw_formula}()},
 \code{\link{enw_manual_formula}()},
+\code{\link{ma}()},
 \code{\link{parse_formula}()},
 \code{\link{re}()},
+\code{\link{remove_arima_terms}()},
 \code{\link{remove_rw_terms}()},
 \code{\link{rw_terms}()},
 \code{\link{split_formula_to_terms}()}

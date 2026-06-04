@@ -172,6 +172,63 @@ remove_rw_terms <- function(formula) {
   form
 }
 
+#' Finds ARIMA terms in a formula object
+#'
+#' @description This function extracts ARIMA terms from a formula so that
+#' they can be processed on their own. Matches all four user-facing
+#' helpers that produce an `enw_arima_term`: [arima()], plus the
+#' convenience aliases [ar()], [ma()], and [arma()].
+#'
+#' @return A character vector containing the ARIMA terms identified in
+#' the supplied formula.
+#'
+#' @inheritParams enw_formula
+#' @family formulatools
+#' @examples
+#' epinowcast:::arima_terms(~ 1 + age_group + arima(week))
+#' epinowcast:::arima_terms(~ 1 + ar(week, p = 2))
+#' epinowcast:::arima_terms(~ 1 + arma(week, location, p = 1, q = 1))
+arima_terms <- function(formula) {
+  trms <- attr(terms(formula), "term.labels")
+  # Longer names first so the alternation matches `arima` and `arma`
+  # before falling back to `ar`/`ma`.
+  match <- grepl("^(arima|arma|ar|ma)\\(.*\\)$", trms)
+  match <- match & !grepl("|", trms, fixed = TRUE)
+  trms[match]
+}
+
+#' Remove ARIMA terms from a formula object
+#'
+#' @description This function removes ARIMA terms — `arima()`, `ar()`,
+#' `ma()`, and `arma()` — from a formula so they can be processed on
+#' their own.
+#'
+#' @inheritParams split_formula_to_terms
+#' @return A formula object with the ARIMA terms removed.
+#' @family formulatools
+#' @examples
+#' epinowcast:::remove_arima_terms(~ 1 + age_group + arima(week))
+#' epinowcast:::remove_arima_terms(~ 1 + age_group + ar(week, p = 2))
+remove_arima_terms <- function(formula) {
+  form <- as_string_formula(formula)
+  # Longer names first to avoid `ar(` matching inside `arima(`.
+  for (fn in c("arima", "arma", "ar", "ma")) {
+    form <- gsub(paste0(fn, "\\(.*?\\) \\+ "), "", form)
+    form <- gsub(paste0("\\+ ", fn, "\\(.*?\\)"), "", form)
+    form <- gsub(paste0(fn, "\\(.*?\\)"), "", form)
+  }
+
+  form <- tryCatch(
+    {
+      as.formula(form)
+    },
+    error = function(cond) {
+      as.formula(paste(form, 1))
+    }
+  )
+  form
+}
+
 #' Parse a formula into components
 #'
 #' @description This function uses a series internal functions
@@ -189,6 +246,7 @@ remove_rw_terms <- function(formula) {
 #'  - `fixed`: A character vector of fixed effect terms
 #'  - `random`: A list of of \link[lme4]{lme4} style random effects
 #'  - `rw`: A character vector of [rw()] random walk terms.
+#'  - `arima`: A character vector of [arima()] ARIMA(p, d, q) terms.
 #' @inheritParams enw_formula
 #' @importFrom reformulas nobars findbars
 #' @importFrom cli cli_abort
@@ -207,36 +265,43 @@ parse_formula <- function(formula) {
   }
   rw <- rw_terms(formula)
   formula <- remove_rw_terms(formula)
+  arima <- arima_terms(formula)
+  formula <- remove_arima_terms(formula)
   fixed <- reformulas::nobars(formula)
   random <- reformulas::findbars(formula)
 
   model_terms <- list(
     fixed = split_formula_to_terms(fixed),
     random = random,
-    rw = rw
+    rw = rw,
+    arima = arima
   )
   model_terms
 }
 
 #' Adds random walks with Gaussian steps to the model.
 #'
-#' A call to `rw()` can be used in the 'formula' argument of model
-#' construction functions in the `epinowcast` package such as [enw_formula()].
-#' Does not evaluate arguments but instead simply passes information for use in
-#' model construction.
+#' A call to `rw()` can be used in the `formula` argument of model
+#' construction functions in the `epinowcast` package such as
+#' [enw_formula()]. Mathematically a Gaussian random walk is exactly
+#' an ARIMA(0, 1, 0) process; `rw(time, by, type)` is now a thin
+#' wrapper over [arima()] with `p = 0`, `d = 1`, `q = 0`. It is kept
+#' as a user-facing convenience because random walks are the most
+#' common time-series structure in `epinowcast` formulas.
+#'
+#' Does not evaluate arguments but instead simply passes information
+#' for use in model construction.
 #'
 #' @param time Defines the random walk time period.
 #'
 #' @param by Defines the grouping parameter used for the random walk.
 #' If not specified no grouping is used. Currently this is limited to a single
-#' variable.
+#' variable. Each group draws an independent shock series; the latent
+#' standard deviation is shared across groups (per-group standard
+#' deviations are a planned extension).
 #'
-#' @param type Character string, how standard deviation of grouped random
-#' walks is estimated: "independent", or "dependent" across groups;
-#' enforced by [base::match.arg()].
-#'
-#' @return A list defining the time frame, group, and type with class
-#' "enw_rw_term" that can be interpreted by [construct_rw()].
+#' @return A list of class `enw_arima_term` (with `p = 0`, `d = 1`,
+#' `q = 0`) that can be interpreted by [construct_arima()].
 #' @export
 #' @importFrom cli cli_abort
 #' @family formulatools
@@ -245,11 +310,10 @@ parse_formula <- function(formula) {
 #'
 #' rw(time, location)
 #'
-#' rw(time, location, type = "dependent")
-rw <- function(time, by, type = c("independent", "dependent")) {
-  type <- match.arg(type)
+#' rw(time, location)
+rw <- function(time, by) {
   if (missing(time)) {
-    cli::cli_abort("time must be present")
+    cli::cli_abort("`time` must be present")
   } else {
     time <- deparse(substitute(time))
   }
@@ -259,9 +323,161 @@ rw <- function(time, by, type = c("independent", "dependent")) {
   } else {
     by <- deparse(substitute(by))
   }
-  out <- list(time = time, by = by, type = type)
-  class(out) <- "enw_rw_term"
+  out <- list(
+    time = time, by = by,
+    p = 0L, d = 1L, q = 0L
+  )
+  class(out) <- "enw_arima_term"
   out
+}
+
+#' Adds an ARIMA(p, d, q) latent residual to the model.
+#'
+#' @description A call to `arima()` can be used in the `formula` argument
+#' of model construction functions in the `epinowcast` package such as
+#' [enw_formula()]. It declares an ARIMA(p, d, q) latent series indexed
+#' by `time` (and optionally a grouping variable `by`) whose value at
+#' each observation is added to the linear predictor. As with [rw()],
+#' arguments are not evaluated; they are passed by name for use in
+#' model construction. Setting `p = d = q = 0` is not allowed; use
+#' [rw()] (equivalent to `arima(time, d = 1)`) for a random walk.
+#'
+#' @param time Defines the time index of the ARIMA process.
+#'
+#' @param by Optional grouping variable. If supplied, an independent
+#' ARIMA series is fitted for each level of `by`. Currently limited to
+#' a single variable.
+#'
+#' @param p Non-negative integer. Order of the autoregressive part.
+#' Defaults to 1.
+#'
+#' @param d Non-negative integer. Order of differencing (`d = 1` gives
+#' an integrated series, equivalent to `rw()` when `p = q = 0`).
+#' Defaults to 0.
+#'
+#' @param q Non-negative integer. Order of the moving-average part.
+#' Defaults to 0.
+#'
+#' @return A list of class `enw_arima_term` describing the ARIMA term,
+#' interpretable by [construct_arima()]. Each group draws an independent
+#' shock series; `phi`, `theta`, and `sigma` are shared across groups
+#' (per-group parameters are a planned extension).
+#' @export
+#' @importFrom cli cli_abort
+#' @family formulatools
+#' @examples
+#' arima(time)
+#' arima(time, location)
+#' arima(time, location, p = 2, d = 1, q = 1)
+arima <- function(time, by, p = 1, d = 0, q = 0) {
+  if (missing(time)) {
+    cli::cli_abort("`time` must be present")
+  }
+  time <- deparse(substitute(time))
+  by <- if (missing(by)) NULL else deparse(substitute(by))
+  .arima_term(time, by, p, d, q)
+}
+
+#' Autoregressive alias for [arima()]
+#'
+#' Thin wrapper around [arima()] that fixes `d = 0` and `q = 0`. Matches
+#' the in-formula `ar()` helper that `brms` users will be familiar with.
+#' Equivalent to `arima(time, by, p = p, d = 0, q = 0)`.
+#'
+#' @param time Time variable for the latent series; numeric.
+#' @param by Optional grouping variable. Each group draws an
+#' independent shock series; AR/MA parameters and the latent standard
+#' deviation are shared across groups.
+#' @param p Autoregressive order. Defaults to `1`.
+#'
+#' @return An `enw_arima_term` interpretable by [construct_arima()].
+#' @family formulatools
+#' @export
+#' @examples
+#' ar(time)
+#' ar(time, location, p = 2)
+ar <- function(time, by, p = 1) {
+  if (missing(time)) cli::cli_abort("`time` must be present")
+  time <- deparse(substitute(time))
+  by <- if (missing(by)) NULL else deparse(substitute(by))
+  .arima_term(time, by, p = p, d = 0L, q = 0L)
+}
+
+#' Moving-average alias for [arima()]
+#'
+#' Thin wrapper around [arima()] that fixes `p = 0` and `d = 0`.
+#' Equivalent to `arima(time, by, p = 0, d = 0, q = q)`.
+#'
+#' @inheritParams ar
+#' @param q Moving-average order. Defaults to `1`.
+#'
+#' @return An `enw_arima_term` interpretable by [construct_arima()].
+#' @family formulatools
+#' @export
+#' @examples
+#' ma(time)
+#' ma(time, location, q = 2)
+ma <- function(time, by, q = 1) {
+  if (missing(time)) cli::cli_abort("`time` must be present")
+  time <- deparse(substitute(time))
+  by <- if (missing(by)) NULL else deparse(substitute(by))
+  .arima_term(time, by, p = 0L, d = 0L, q = q)
+}
+
+#' ARMA alias for [arima()]
+#'
+#' Thin wrapper around [arima()] that fixes `d = 0`. Equivalent to
+#' `arima(time, by, p = p, d = 0, q = q)`. For an integrated
+#' (random-walk) series use [rw()] or
+#' `arima(time, by, p = 0, d = 1, q = 0)` directly.
+#'
+#' @inheritParams ar
+#' @param p Autoregressive order. Defaults to `1`.
+#' @param q Moving-average order. Defaults to `1`.
+#'
+#' @return An `enw_arima_term` interpretable by [construct_arima()].
+#' @family formulatools
+#' @export
+#' @examples
+#' arma(time)
+#' arma(time, location, p = 1, q = 1)
+arma <- function(time, by, p = 1, q = 1) {
+  if (missing(time)) cli::cli_abort("`time` must be present")
+  time <- deparse(substitute(time))
+  by <- if (missing(by)) NULL else deparse(substitute(by))
+  .arima_term(time, by, p = p, d = 0L, q = q)
+}
+
+# Internal: build an `enw_arima_term` from already-deparsed `time`/`by`
+# strings and integer orders. Used by `arima()`, `ar()`, `ma()`,
+# `arma()`, and `rw()` so order validation and the degenerate-order
+# guard live in one place.
+.arima_term <- function(time, by, p, d, q) {
+  .check_arima_order(p, "p")
+  .check_arima_order(d, "d")
+  .check_arima_order(q, "q")
+  if (p == 0 && d == 0 && q == 0) {
+    cli::cli_abort(
+      "`arima(p = 0, d = 0, q = 0)` is degenerate; use a fixed effect."
+    )
+  }
+  out <- list(
+    time = time, by = by,
+    p = as.integer(p), d = as.integer(d), q = as.integer(q)
+  )
+  class(out) <- "enw_arima_term"
+  out
+}
+
+# Internal helper: validate that an ARIMA order argument is a non-negative
+# integer. Used to keep `arima()` cyclomatic complexity below the lint
+# threshold without changing its public behaviour.
+.check_arima_order <- function(value, name) {
+  if (!is.numeric(value) || length(value) != 1L || is.na(value) ||
+      !is.finite(value) || value < 0 || value != as.integer(value)) {
+    cli::cli_abort("`{name}` must be a non-negative integer scalar.")
+  }
+  invisible(NULL)
 }
 
 #' Constructs random walk terms
@@ -296,85 +512,137 @@ rw <- function(time, by, type = c("independent", "dependent")) {
 #'
 #' epinowcast:::construct_rw(rw(week, day_of_week), data)
 construct_rw <- function(rw, data) {
-  if (!inherits(rw, "enw_rw_term")) {
+  # rw() now returns an enw_arima_term with p = 0, d = 1, q = 0; this
+  # function delegates to construct_arima() so callers see the unified
+  # backend output. Older enw_rw_term inputs are coerced for compat.
+  if (inherits(rw, "enw_rw_term")) {
+    rw$p <- 0L
+    rw$d <- 1L
+    rw$q <- 0L
+    class(rw) <- "enw_arima_term"
+  }
+  if (!inherits(rw, "enw_arima_term")) {
     cli::cli_abort(
-      paste0(
-        "Argument `rw` must be a random walk term as constructed by ",
-        "`epinowcast:::rw`"
-      )
+      "`rw` must be a term constructed by `rw()` or `arima()`."
     )
   }
+  construct_arima(rw, data)
+}
 
-  if (!is.numeric(data[[rw$time]])) {
+#' Constructs ARIMA term metadata
+#'
+#' @description Takes an ARIMA term as defined by [arima()] and returns
+#' the metadata required to wire the term into a Stan model. Unlike
+#' [construct_rw()], this does not modify the data or produce design
+#' matrix columns; ARIMA latent residuals enter the linear predictor
+#' through a parameter-dependent kernel applied to unit-normal shocks
+#' (see `inst/stan/functions/arima_kernel.stan`).
+#'
+#' @param arima An ARIMA term as defined by [arima()].
+#'
+#' @param data A `data.frame` of observations used to define the ARIMA
+#' term. Must contain the time and (if specified) grouping variable.
+#'
+#' @return A list with the following elements:
+#'   - `time`, `by`, `p`, `d`, `q`: passed through from the [arima()]
+#'     term.
+#'   - `T`: number of distinct time points in the series.
+#'   - `G`: number of groups (1 if `by` is unspecified).
+#'   - `time_idx`: integer vector mapping each row of `data` to a
+#'     time index in `1:T`.
+#'   - `group_idx`: integer vector mapping each row of `data` to a
+#'     group index in `1:G`.
+#'   - `time_vals`, `group_levels`: lookup vectors so the indices can
+#'     be inverted.
+#'   - `name`: a label for the term, suitable as a parameter prefix.
+#' @family formulatools
+#' @importFrom cli cli_abort
+#' @examples
+#' data <- enw_example("preproc")$metareference[[1]]
+#' epinowcast:::construct_arima(arima(week), data)
+#' epinowcast:::construct_arima(
+#'   arima(week, day_of_week, p = 2, d = 1), data
+#' )
+construct_arima <- function(arima, data) {
+  if (!inherits(arima, "enw_arima_term")) {
     cli::cli_abort(
-      paste0(
-        "The time variable {rw$time} is not numeric but must be ",
-        "to be used as a random walk term."
-      )
+      "Argument `arima` must be constructed by `epinowcast::arima()`."
+    )
+  }
+  data <- coerce_dt(data)
+  if (is.null(data[[arima$time]])) {
+    cli::cli_abort(
+      "Time variable `{arima$time}` is not present in the supplied data."
+    )
+  }
+  if (!is.numeric(data[[arima$time]])) {
+    cli::cli_abort(
+      "Time variable `{arima$time}` must be numeric for an ARIMA term."
+    )
+  }
+  if (anyNA(data[[arima$time]])) {
+    cli::cli_abort(
+      "Time variable `{arima$time}` contains missing values."
     )
   }
 
-  if (anyNA(data[[rw$time]])) {
-    cli::cli_abort("The time variable {rw$time} contains non-numeric values.")
-  }
+  time_vals <- sort(unique(data[[arima$time]]))
+  T_len <- length(time_vals)
+  time_idx <- match(data[[arima$time]], time_vals)
 
-  # add new cumulative features to use for the random walk
-  data <- enw_add_cumulative_membership(
-    data,
-    feature = rw$time
-  )
-  ctime <- paste0("c", rw$time)
-  terms <- grep(ctime, colnames(data), value = TRUE)
-  fdata <- data[, c(terms, rw$by), with = FALSE]
-  if (!is.null(rw$by)) {
-    if (is.null(fdata[[rw$by]])) {
-      cli::cli_abort(
-        paste0(
-          "Requested grouping variable, {rw$by} is not present in the ",
-          "supplied data"
-        )
-      )
-    }
-    if (length(unique(fdata[[rw$by]])) < 2) {
-      cli::cli_inform(
-        paste0(
-          "A grouped random walk using {rw$by} is not possible as this ",
-          "variable has fewer than 2 unique values."
-        )
-      )
-      rw$by <- NULL
-    } else {
-      terms <- paste0(rw$by, ":", terms)
-    }
-  }
-
-  # make a fixed effects design matrix
-  fixed <- enw_manual_formula(
-    fdata,
-    fixed = terms, no_contrasts = TRUE
-  )$fixed$design
-
-  # extract effects metadata
-  effects <- enw_effects_metadata(fixed)
-
-  # implement random walk structure effects
-  if (is.null(rw$by) || rw$type == "dependent") {
-    effects <- enw_add_pooling_effect(
-      effects, var_name = paste0("rw__", rw$time), prefix = ctime
-    )
+  if (is.null(arima$by)) {
+    G <- 1L
+    group_idx <- rep(1L, nrow(data))
+    group_levels <- "1"
   } else {
-    for (i in unique(fdata[[rw$by]])) {
-      nby <- paste0(rw$by, i)
-      effects <- enw_add_pooling_effect(
-        effects, var_name = paste0("rw__", nby, "__", rw$time),
-        finder_fn = function(effect, pattern, prefix) {
-          grepl(pattern, effect) & startsWith(effect, prefix)
-        },
-        pattern = ctime, prefix = paste0(rw$by, i)
+    if (is.null(data[[arima$by]])) {
+      cli::cli_abort(
+        "Grouping variable `{arima$by}` is not present in the data."
       )
     }
+    by_vals <- data[[arima$by]]
+    if (anyNA(by_vals)) {
+      cli::cli_abort(
+        "Grouping variable `{arima$by}` contains missing values."
+      )
+    }
+    group_levels <- if (is.factor(by_vals)) levels(droplevels(by_vals)) else
+      sort(unique(by_vals))
+    G <- length(group_levels)
+    if (G < 2) {
+      cli::cli_inform(paste0(
+        "Grouping variable `{arima$by}` has fewer than 2 levels; ",
+        "ignoring `by`."
+      ))
+      G <- 1L
+      group_idx <- rep(1L, nrow(data))
+      group_levels <- "1"
+    } else {
+      group_idx <- match(as.character(by_vals), as.character(group_levels))
+    }
   }
-  list(data = data, terms = terms, effects = effects)
+
+  if (T_len < arima$p + arima$d + arima$q + 1) {
+    cli::cli_abort(paste0(
+      "ARIMA series has only {T_len} time points; need at least ",
+      "{arima$p + arima$d + arima$q + 1} for ARIMA(",
+      "{arima$p}, {arima$d}, {arima$q})."
+    ))
+  }
+
+  name <- paste0(
+    "arima__", arima$time,
+    if (!is.null(arima$by)) paste0("__", arima$by) else ""
+  )
+
+  list(
+    time = arima$time, by = arima$by,
+    p = arima$p, d = arima$d, q = arima$q,
+    T = T_len, G = G,
+    time_idx = time_idx, group_idx = group_idx,
+    time_vals = time_vals, group_levels = group_levels,
+    name = name
+  )
 }
 
 #' Defines random effect terms using the lme4 syntax
@@ -745,11 +1013,30 @@ construct_re <- function(re, data) {
 #' effects that evolve smoothly over time. For example:
 #' - `~ rw(week)`: a random walk over weeks
 #' - `~ rw(week, location)`: independent random walks for each location
-#' - `~ rw(week, location, type = "dependent")`: random walks with shared
-#' variance across locations
+#' - `~ rw(week, location)`: random walks with shared variance across
+#' locations (per-group variance is a planned extension)
 #'
-#' These three types of effects can be combined in a single formula, for
-#' example: `~ 1 + age_group + (1 | location) + rw(week, location)`
+#' **ARIMA residuals**: Uses the [arima()] helper to add an ARIMA(p, d, q)
+#' latent residual series to the linear predictor. Unlike [rw()], the
+#' kernel that maps unit-normal shocks to the latent series depends on
+#' the autoregressive and moving-average parameters, so the term does
+#' not produce design-matrix columns; it carries lookup metadata that
+#' the Stan layer uses with the kernel from
+#' `inst/stan/functions/arima_kernel.stan`. For example:
+#' - `~ arima(week)`: AR(1) on weekly residuals
+#' - `~ arima(week, location, p = 2, d = 1, q = 1)`: ARIMA(2, 1, 1)
+#' driven by independent shocks per location, with `phi`, `theta`,
+#' and `sigma` shared across locations (per-group parameters are a
+#' planned extension)
+#' - `arima(time, d = 1, p = 0, q = 0)` is equivalent to `rw(time)`
+#'
+#' Convenience aliases match `brms`'s in-formula vocabulary:
+#' - `ar(time, by, p)` is `arima(time, by, p = p, d = 0, q = 0)`
+#' - `ma(time, by, q)` is `arima(time, by, p = 0, d = 0, q = q)`
+#' - `arma(time, by, p, q)` is `arima(time, by, p = p, d = 0, q = q)`
+#'
+#' These four types of effects can be combined in a single formula,
+#' for example: `~ 1 + age_group + (1 | location) + rw(week, location)`
 #' specifies fixed age effects, random location intercepts, and
 #' location-specific random walks over time.
 #'
@@ -840,27 +1127,24 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # Parse formula
   parsed_formula <- parse_formula(formula)
 
-  # Get random walk effects by iteratively looping through (as variables are
-  # created in input data so need to use iteratively)
-  if (length(parsed_formula$rw) > 0) {
-    rw <- purrr::map(
-      parsed_formula$rw,
+  rw_terms <- NULL
+  rw_metadata <- NULL
+
+  # rw() and arima() now share a single backend: rw(time, by, type)
+  # is exactly arima(time, by, p = 0, d = 1, q = 0, type = type) and
+  # both produce enw_arima_term objects. Process them together
+  # through construct_arima so they pick up the per-observation
+  # lookup metadata used at the Stan layer to apply a
+  # parameter-dependent kernel to unit-normal shocks.
+  arima_calls <- c(parsed_formula$rw, parsed_formula$arima)
+  if (length(arima_calls) > 0) {
+    arima_specs <- purrr::map(
+      arima_calls,
       ~ eval(parse(text = paste0("epinowcast::", .)))
     )
-    for (i in seq_along(rw)) {
-      rw[[i]] <- construct_rw(rw[[i]], data)
-      data <- rw[[i]]$data
-      rw[[i]]$data <- NULL
-    }
-    rw <- purrr::transpose(rw)
-    rw_terms <- unlist(rw$terms)
-    rw_metadata <- data.table::rbindlist(
-      rw$effects,
-      use.names = TRUE, fill = TRUE
-    )
+    arima_specs <- purrr::map(arima_specs, construct_arima, data = data)
   } else {
-    rw_terms <- NULL
-    rw_metadata <- NULL
+    arima_specs <- list()
   }
 
   # Get random effects for all specified random effects
@@ -903,6 +1187,32 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     data = data,
     sparse = sparse
   )
+
+  # Joint sparse deduplication: when an ARIMA term is supplied
+  # alongside a sparse design, deduplicate by the joint (covariate
+  # row × ARIMA time × ARIMA group) granularity rather than by
+  # covariate row alone. This lets downstream consumers that loop over
+  # fdesign rows (for example a per-row PMF call) benefit from
+  # coarse-time ARIMA without paying per-snapshot cost.
+  if (sparse && length(arima_specs) > 0) {
+    arima_spec <- arima_specs[[1]]
+    # Joint key over (covariate row, ARIMA time, ARIMA group) using a
+    # data.table group id; avoids round-tripping through string keys.
+    joint <- data.table::data.table(
+      cov = fixed$index,
+      t = arima_spec$time_idx,
+      g = arima_spec$group_idx
+    )
+    joint[, "uniq" := .GRP, by = c("cov", "t", "g")]
+    new_index <- joint[["uniq"]]
+    uniq <- unique(joint, by = c("cov", "t", "g"))
+    data.table::setorderv(uniq, "uniq")
+    fixed$design <- fixed$design[uniq[["cov"]], , drop = FALSE]
+    fixed$index <- new_index
+    arima_spec$time_idx <- uniq[["t"]]
+    arima_spec$group_idx <- uniq[["g"]]
+    arima_specs[[1]] <- arima_spec
+  }
   # Extract fixed effects metadata
   metadata <- enw_effects_metadata(fixed$design)
 
@@ -942,7 +1252,8 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     parsed_formula = parsed_formula,
     expanded_formula = as_string_formula(expanded_formula),
     fixed = fixed,
-    random = random
+    random = random,
+    arima = arima_specs
   )
   class(out) <- c("enw_formula", class(out))
   out

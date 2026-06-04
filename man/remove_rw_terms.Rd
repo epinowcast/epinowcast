@@ -34,13 +34,20 @@ epinowcast:::remove_rw_terms(~ 1 + age_group + location + rw(week, location))
 }
 \seealso{
 Functions used to help convert formulas into model designs
+\code{\link{ar}()},
+\code{\link{arima}()},
+\code{\link{arima_terms}()},
+\code{\link{arma}()},
 \code{\link{as_string_formula}()},
+\code{\link{construct_arima}()},
 \code{\link{construct_re}()},
 \code{\link{construct_rw}()},
 \code{\link{enw_formula}()},
 \code{\link{enw_manual_formula}()},
+\code{\link{ma}()},
 \code{\link{parse_formula}()},
 \code{\link{re}()},
+\code{\link{remove_arima_terms}()},
 \code{\link{rw}()},
 \code{\link{rw_terms}()},
 \code{\link{split_formula_to_terms}()}

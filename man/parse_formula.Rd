@@ -18,6 +18,7 @@ A list of formula components. These currently include:
 \item \code{fixed}: A character vector of fixed effect terms
 \item \code{random}: A list of of \link[lme4]{lme4} style random effects
 \item \code{rw}: A character vector of \code{\link[=rw]{rw()}} random walk terms.
+\item \code{arima}: A character vector of \code{\link[=arima]{arima()}} ARIMA(p, d, q) terms.
 }
 }
 \description{
@@ -45,12 +46,19 @@ epinowcast:::parse_formula(~ 1 + (1 | location) + rw(week, location))
 }
 \seealso{
 Functions used to help convert formulas into model designs
+\code{\link{ar}()},
+\code{\link{arima}()},
+\code{\link{arima_terms}()},
+\code{\link{arma}()},
 \code{\link{as_string_formula}()},
+\code{\link{construct_arima}()},
 \code{\link{construct_re}()},
 \code{\link{construct_rw}()},
 \code{\link{enw_formula}()},
 \code{\link{enw_manual_formula}()},
+\code{\link{ma}()},
 \code{\link{re}()},
+\code{\link{remove_arima_terms}()},
 \code{\link{remove_rw_terms}()},
 \code{\link{rw}()},
 \code{\link{rw_terms}()},

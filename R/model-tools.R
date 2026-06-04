@@ -21,6 +21,14 @@
 #'  - `prefix_rdesign`: The random effects design matrix
 #'  - `prefix_rncol`: The number of columns (i.e random effects) in the random
 #'  effect design matrix (minus 1 as the intercept is dropped).
+#'  - `prefix_arima_present`: `1` if the formula contains an [arima()] term,
+#'  `0` otherwise.
+#'  - `prefix_arima_T`, `prefix_arima_G`: ARIMA series length and group count.
+#'  - `prefix_arima_p`, `prefix_arima_d`, `prefix_arima_q`: ARIMA orders.
+#'  - `prefix_arima_flat_idx`: per-observation column-major index into a
+#'  `(T x G)` ARIMA residual matrix, used by Stan to gather residuals
+#'  with `to_vector(eps)[flat_idx]`.
+#'  - `prefix_arima_n_obs`: length of the lookup vectors.
 #' @family modeltools
 #' @importFrom cli cli_abort
 #' @export
@@ -39,7 +47,15 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     fncol = 0,
     rncol = 0,
     fdesign = numeric(0),
-    rdesign = numeric(0)
+    rdesign = numeric(0),
+    arima_present = 0L,
+    arima_T = 0L,
+    arima_G = 0L,
+    arima_p = 0L,
+    arima_d = 0L,
+    arima_q = 0L,
+    arima_n_obs = 0L,
+    arima_flat_idx = integer(0)
   )
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
@@ -67,6 +83,28 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     }
     data$rdesign <- formula$random$design
 
+    if (length(formula$arima) > 1L) {
+      cli::cli_abort(
+        "Only one `arima()` term per formula is currently supported."
+      )
+    }
+    if (length(formula$arima) == 1L) {
+      a <- formula$arima[[1]]
+      data$arima_present <- 1L
+      data$arima_T <- a$T
+      data$arima_G <- a$G
+      data$arima_p <- a$p
+      data$arima_d <- a$d
+      data$arima_q <- a$q
+      data$arima_n_obs <- length(a$time_idx)
+      # Pre-flatten (time, group) into a single column-major index
+      # over a (T x G) matrix so the Stan side can do a single
+      # vectorised gather (`to_vector(eps)[flat_idx]`) instead of a
+      # per-observation lookup loop.
+      data$arima_flat_idx <- as.integer(
+        (a$group_idx - 1L) * a$T + a$time_idx
+      )
+    }
   }
   names(data) <- sprintf("%s_%s", prefix, names(data))
   data
@@ -570,7 +608,10 @@ enw_stan_to_r <- function(
   check_cmdstanr()
   overloaded_fns <- c(
     "delay_lpmf.stan", "allocate_observed_obs.stan", "obs_lpmf.stan",
-    "effects_priors_lp.stan"
+    "effects_priors_lp.stan",
+    # regression.stan calls the overloaded effect_priors_lp() so it
+    # cannot be standalone-compiled when that file is excluded.
+    "regression.stan"
   )
   if (any(files %in% overloaded_fns)) {
     cli::cli_warn(c(

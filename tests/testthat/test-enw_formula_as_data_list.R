@@ -68,7 +68,11 @@ test_that("enw_formula_as_data_list produces expected default output", {
       c_fintercept = 0, c_fnrow = 0,
       c_findex = numeric(0), c_fnindex = 0,
       c_fncol = 0, c_rncol = 0,
-      c_fdesign = numeric(0), c_rdesign = numeric(0)
+      c_fdesign = numeric(0), c_rdesign = numeric(0),
+      c_arima_present = 0L, c_arima_T = 0L, c_arima_G = 0L,
+      c_arima_p = 0L, c_arima_d = 0L, c_arima_q = 0L,
+      c_arima_n_obs = 0L,
+      c_arima_flat_idx = integer(0)
     )
   )
 })

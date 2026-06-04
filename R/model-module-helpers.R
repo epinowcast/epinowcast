@@ -473,3 +473,82 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
 
   metadata[, .(.group, date, report_date, report)]
 }
+
+# Build conditional ARIMA initial values for a module's prefix.
+#
+# Pulls the `<prefix>_arima_*` size and presence fields from `data`
+# (as shipped by `enw_formula_as_data_list()`) and the
+# `<prefix>_arima_sigma_p` (and optionally `<prefix>_arima_sd_sigma_p`)
+# rows from the prior list. Returns a named list of initial values
+# for any ARIMA parameters that are non-empty given the data; returns
+# an empty list when no ARIMA term is present for this prefix.
+#
+# Used by `enw_expectation()`, `enw_reference()`, `enw_report()`, and
+# `enw_missing()` to keep their `inits` functions short and to keep
+# the per-module ARIMA boilerplate in one place.
+# Standard description for an ARIMA partial-autocorrelation prior.
+#
+# The AR coefficients are parameterised through partial autocorrelations
+# constrained to (-1, 1), which are Uniform by default. Supplying a
+# positive standard deviation switches to a Normal(mean, sd) prior
+# truncated to (-1, 1), shared across the AR order and any groups.
+.arima_pacf_prior_description <- function(context) {
+  paste0(
+    "Partial autocorrelations of the ARIMA latent residual on the ",
+    context, "; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) ",
+    "truncated to (-1, 1)"
+  )
+}
+
+#' @importFrom stats runif
+.arima_inits <- function(data, priors, prefix, with_sd_sigma = FALSE) {
+  z_nm <- paste0(prefix, "_arima_z")
+  pacf_nm <- paste0(prefix, "_arima_pacf")
+  theta_nm <- paste0(prefix, "_arima_theta")
+  sigma_nm <- paste0(prefix, "_arima_sigma")
+  sd_sigma_nm <- paste0(prefix, "_arima_sd_sigma")
+
+  # Declare every vector-valued ARIMA parameter the module exposes with
+  # an empty default, then fill in real inits below when the term is
+  # present. This mirrors how the other module parameters are
+  # initialised (the `numeric(0)` defaults in the module `inits`
+  # functions) and stops cmdstanr warning about missing inits for them.
+  #
+  # `arima_z` is a matrix and is handled separately: an empty 0x0 matrix
+  # cannot be represented in cmdstanr's JSON (it serialises to `[]`,
+  # which Stan reads as dims (0) not (0, 0) and rejects at
+  # initialisation), so it is only supplied when genuinely sized.
+  init <- list()
+  init[[pacf_nm]] <- numeric(0)
+  init[[theta_nm]] <- numeric(0)
+  init[[sigma_nm]] <- numeric(0)
+  if (with_sd_sigma) {
+    init[[sd_sigma_nm]] <- numeric(0)
+  }
+
+  pT <- data[[paste0(prefix, "_arima_T")]]
+  pG <- data[[paste0(prefix, "_arima_G")]]
+  pp <- data[[paste0(prefix, "_arima_p")]]
+  pq <- data[[paste0(prefix, "_arima_q")]]
+  ppresent <- data[[paste0(prefix, "_arima_present")]]
+  if (isTRUE(pT > 0 && pG > 0)) {
+    init[[z_nm]] <- matrix(rnorm(pT * pG, 0, 0.01), pT, pG)
+  }
+  if (isTRUE(pp > 0)) {
+    init[[pacf_nm]] <- array(runif(pp, -0.1, 0.1))
+  }
+  if (isTRUE(pq > 0)) {
+    init[[theta_nm]] <- array(rnorm(pq, 0, 0.01))
+  }
+  if (isTRUE(ppresent > 0)) {
+    sp <- priors[[paste0(prefix, "_arima_sigma_p")]]
+    init[[sigma_nm]] <- array(abs(rnorm(1, sp[1], sp[2] / 10)))
+    # The sd-scale parameter is only sized 1 when the parametric sd is
+    # modelled (`model_refp > 1`); otherwise it stays the empty default.
+    if (with_sd_sigma && isTRUE(data$model_refp > 1)) {
+      sd_p <- priors[[paste0(prefix, "_arima_sd_sigma_p")]]
+      init[[sd_sigma_nm]] <- array(abs(rnorm(1, sd_p[1], sd_p[2] / 10)))
+    }
+  }
+  init
+}

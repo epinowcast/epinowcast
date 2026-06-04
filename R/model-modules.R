@@ -144,22 +144,32 @@ enw_reference <- function(
   out$priors <- data.table::data.table(
     variable = c(
       "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd",
-      "refnp_int", "refnp_beta_sd"
+      "refp_arima_sigma", "refp_arima_sd_sigma", "refp_arima_pacf",
+      "refnp_int", "refnp_beta_sd", "refnp_arima_sigma", "refnp_arima_pacf"
     ),
     description = c(
       "Log mean intercept for parametric reference date delay",
       "Log standard deviation for the parametric reference date delay",
       "Standard deviation of scaled pooled parametric mean effects",
       "Standard deviation of scaled pooled parametric sd effects",
+      "Scale of the ARIMA latent residual on the parametric reference mean",
+      "Scale of the ARIMA latent residual on the parametric reference sd",
+      .arima_pacf_prior_description("parametric reference"),
       "Intercept for non-parametric reference date delay",
-      "Standard deviation of scaled pooled non-parametric effects"
+      "Standard deviation of scaled pooled non-parametric effects",
+      paste(
+        "Standard deviation of the ARIMA latent residual on",
+        "non-parametric reference logit hazards"
+      ),
+      .arima_pacf_prior_description("non-parametric reference")
     ),
     distribution = c(
       "Normal", rep("Zero truncated normal", 3),
-      "Normal", "Zero truncated normal"
+      "Zero truncated normal", "Zero truncated normal", "Uniform",
+      "Normal", "Zero truncated normal", "Zero truncated normal", "Uniform"
     ),
-    mean = c(1, 0.5, 0, 0, 0, 0),
-    sd = 1
+    mean = c(1, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+    sd = c(1, 1, 1, 1, 0.2, 0.2, 0, 1, 1, 0.2, 0)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -209,6 +219,12 @@ enw_reference <- function(
           )))
         }
       }
+      # refp always declares `refp_arima_sd_sigma` (size 0 unless the
+      # parametric sd is modelled), so always declare its init default;
+      # the fill is gated on `model_refp > 1` inside `.arima_inits()`.
+      init <- c(init, .arima_inits(
+        data, priors, "refp", with_sd_sigma = TRUE
+      ))
       if (data$model_refnp > 0) {
         if (data$refnp_fintercept > 0) {
           init$refnp_int <- array(rnorm(
@@ -225,6 +241,8 @@ enw_reference <- function(
           )))
         }
       }
+      # ARIMA term parameters for non-parametric reference logit hazards
+      init <- c(init, .arima_inits(data, priors, "refnp"))
       init
     }
     fn
@@ -338,11 +356,20 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   out$formula$non_parametric <- form$formula
   out$data <- data_list
   out$priors <- data.table::data.table(
-    variable = "rep_beta_sd",
-    description = "Standard deviation of scaled pooled report date effects",
-    distribution = "Zero truncated normal",
-    mean = 0,
-    sd = 1
+    variable = c("rep_beta_sd", "rep_arima_sigma", "rep_arima_pacf"),
+    description = c(
+      "Standard deviation of scaled pooled report date effects",
+      paste(
+        "Standard deviation of the ARIMA latent residual on",
+        "report-time logit hazards"
+      ),
+      .arima_pacf_prior_description("report-time logit hazards")
+    ),
+    distribution = c(
+      "Zero truncated normal", "Zero truncated normal", "Uniform"
+    ),
+    mean = c(0, 0, 0),
+    sd = c(1, 0.2, 0)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -360,6 +387,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
           priors$rep_beta_sd_p[2] / 10
         )))
       }
+      init <- c(init, .arima_inits(data, priors, "rep"))
       init
     }
     fn
@@ -509,9 +537,11 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
     variable = c(
       "expr_r_int", "expr_beta_sd",
       rep("expr_lelatent_int", length(seed_obs)),
-      "expl_beta_sd"
+      "expr_arima_sigma", "expr_arima_pacf",
+      "expl_beta_sd",
+      "expl_arima_sigma", "expl_arima_pacf"
     ),
-    dimension = c(1, 1, seq_along(seed_obs), 1),
+    dimension = c(1, 1, seq_along(seed_obs), 1, 1, 1, 1, 1),
     description = c(
       "Intercept of the log growth rate",
       "Standard deviation of scaled pooled log growth rate effects",
@@ -522,14 +552,23 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
         ),
         length(seed_obs)
       ),
-      "Standard deviation of scaled pooled log growth rate effects"
+      "Standard deviation of the ARIMA latent residual on log growth rate",
+      .arima_pacf_prior_description("log growth rate"),
+      "Standard deviation of scaled pooled log growth rate effects",
+      paste(
+        "Standard deviation of the ARIMA latent residual on log",
+        "latent-to-obs proportion"
+      ),
+      .arima_pacf_prior_description("log latent-to-obs proportion")
     ),
     distribution = c(
       "Normal", "Zero truncated normal", rep("Normal", length(seed_obs)),
-      "Zero truncated normal"
+      "Zero truncated normal", "Uniform",
+      "Zero truncated normal",
+      "Zero truncated normal", "Uniform"
     ),
-    mean = c(0, 0, seed_obs, 0),
-    sd = c(0.2, 1, rep(1, length(seed_obs)), 1)
+    mean = c(0, 0, seed_obs, 0, 0, 0, 0, 0),
+    sd = c(0.2, 1, rep(1, length(seed_obs)), 0.2, 0, 1, 0.2, 0)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -565,9 +604,11 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
           1, priors$expr_r_int_p[1], priors$expr_r_int_p[2] * 0.1
         ))
       }
+      init <- c(init, .arima_inits(data, priors, "expr"))
       if (data$expl_fncol > 0) {
         init$expl_beta <- array(rnorm(data$expl_fncol, 0, 0.01))
       }
+      init <- c(init, .arima_inits(data, priors, "expl"))
       if (data$expl_rncol > 0) {
         init$expl_beta_sd <- array(abs(rnorm(
           data$expl_rncol, priors$expl_beta_sd_p[1],
@@ -681,15 +722,29 @@ enw_missing <- function(formula = ~1, data) {
   out$data <- data_list
   # Define default priors
   out$priors <- data.table::data.table(
-    variable = c("miss_int", "miss_beta_sd"),
-    description = c(
-      "Intercept on the logit scale for the proportion missing reference dates",
-      "Standard deviation of scaled pooled logit missing reference date
-       effects"
+    variable = c(
+      "miss_int", "miss_beta_sd", "miss_arima_sigma", "miss_arima_pacf"
     ),
-    distribution = c("Normal", "Zero truncated normal"),
-    mean = c(0, 0),
-    sd = c(1, 1)
+    description = c(
+      paste(
+        "Intercept on the logit scale for the proportion missing",
+        "reference dates"
+      ),
+      paste(
+        "Standard deviation of scaled pooled logit missing reference",
+        "date effects"
+      ),
+      paste(
+        "Standard deviation of the ARIMA latent residual on",
+        "missing-reference logit proportion"
+      ),
+      .arima_pacf_prior_description("missing-reference logit proportion")
+    ),
+    distribution = c(
+      "Normal", "Zero truncated normal", "Zero truncated normal", "Uniform"
+    ),
+    mean = c(0, 0, 0, 0),
+    sd = c(1, 1, 0.2, 0)
   )
   # Define a function for sampling from the priors and data
   out$inits <- function(data, priors) {
@@ -714,6 +769,7 @@ enw_missing <- function(formula = ~1, data) {
           )))
         }
       }
+      init <- c(init, .arima_inits(data, priors, "miss"))
       init
     }
     fn

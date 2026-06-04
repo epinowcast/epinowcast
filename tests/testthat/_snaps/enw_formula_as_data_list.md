@@ -35,6 +35,30 @@
       attr(,"assign")
       [1] 1 2
       
+      $simple_arima_present
+      [1] 0
+      
+      $simple_arima_T
+      [1] 0
+      
+      $simple_arima_G
+      [1] 0
+      
+      $simple_arima_p
+      [1] 0
+      
+      $simple_arima_d
+      [1] 0
+      
+      $simple_arima_q
+      [1] 0
+      
+      $simple_arima_n_obs
+      [1] 0
+      
+      $simple_arima_flat_idx
+      integer(0)
+      
 
 ---
 
@@ -72,6 +96,30 @@
       3     0   1
       attr(,"assign")
       [1] 1 2
+      
+      $simple_arima_present
+      [1] 0
+      
+      $simple_arima_T
+      [1] 0
+      
+      $simple_arima_G
+      [1] 0
+      
+      $simple_arima_p
+      [1] 0
+      
+      $simple_arima_d
+      [1] 0
+      
+      $simple_arima_q
+      [1] 0
+      
+      $simple_arima_n_obs
+      [1] 0
+      
+      $simple_arima_flat_idx
+      integer(0)
       
 
 ---
@@ -111,6 +159,30 @@
       3     0   1
       attr(,"assign")
       [1] 1 2
+      
+      $simple_arima_present
+      [1] 0
+      
+      $simple_arima_T
+      [1] 0
+      
+      $simple_arima_G
+      [1] 0
+      
+      $simple_arima_p
+      [1] 0
+      
+      $simple_arima_d
+      [1] 0
+      
+      $simple_arima_q
+      [1] 0
+      
+      $simple_arima_n_obs
+      [1] 0
+      
+      $simple_arima_flat_idx
+      integer(0)
       
 
 # enw_formula_as_data_list produces expected output using a more complex formula
@@ -159,6 +231,30 @@
       attr(,"assign")
       [1] 1 2 3 4
       
+      $complex_arima_present
+      [1] 0
+      
+      $complex_arima_T
+      [1] 0
+      
+      $complex_arima_G
+      [1] 0
+      
+      $complex_arima_p
+      [1] 0
+      
+      $complex_arima_d
+      [1] 0
+      
+      $complex_arima_q
+      [1] 0
+      
+      $complex_arima_n_obs
+      [1] 0
+      
+      $complex_arima_flat_idx
+      integer(0)
+      
 
 ---
 
@@ -205,5 +301,29 @@
       9     0   0         0      1
       attr(,"assign")
       [1] 1 2 3 4
+      
+      $comple_arima_present
+      [1] 0
+      
+      $comple_arima_T
+      [1] 0
+      
+      $comple_arima_G
+      [1] 0
+      
+      $comple_arima_p
+      [1] 0
+      
+      $comple_arima_d
+      [1] 0
+      
+      $comple_arima_q
+      [1] 0
+      
+      $comple_arima_n_obs
+      [1] 0
+      
+      $comple_arima_flat_idx
+      integer(0)
       
 

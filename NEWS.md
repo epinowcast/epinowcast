@@ -1,5 +1,10 @@
 # epinowcast 0.6.0.1000
 
+## Model
+
+- The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
+  The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
+
 ## Package
 
 - Lowered the minimum R version from 4.4.0 to 4.3.0 so users on R 4.3.x can install the package.
