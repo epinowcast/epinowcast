@@ -54,8 +54,9 @@ vector extract_group_rates(vector r, array[] int r_g, int k, int r_t) {
  * consistent (see note).
  *
  * @param pop_floor Minimum susceptible population used as a numerical-stability
- * floor, preventing instability as the susceptible pool approaches zero. Only
- * used when `use_pop > 0`.
+ * floor on the transmission-rate denominator only (not on the new-case count),
+ * preventing the rate from blowing up as the susceptible pool approaches zero.
+ * Only used when `use_pop > 0`.
  *
  * @return An array of vectors containing log-transformed expected latent
  * values for each group and time period.
@@ -87,8 +88,12 @@ vector extract_group_rates(vector r, array[] int r_g, int k, int r_t) {
  *
  * Two numerical floors are used and are distinct:
  *   - `pop_floor` is the user-facing minimum susceptible population (see the
- *     `population_floor` argument of `enw_expectation()`); it bounds the
- *     denominator of the susceptible fraction.
+ *     `population_floor` argument of `enw_expectation()`); it floors ONLY the
+ *     denominator of the susceptible fraction, preventing a blow-up of the
+ *     transmission rate as the pool empties. It does not floor the new-case
+ *     count: the modelled new cases are capped by the actual remaining
+ *     susceptibles (`fmax(0, pop - cum_cases)`), so depletion can never create
+ *     more cases than there are susceptibles left.
  *   - a small fixed `1e-8` floor is applied to the adjusted new cases. This is
  *     load-bearing: as the pool nears exhaustion the bounded-exponential term
  *     can return (numerically) zero, and the subsequent `log()` would be
@@ -139,12 +144,16 @@ array[] vector log_expected_latent_from_r(
             segment(exp_obs, r_seed + i - gt_n, gt_n), rgt
           );
           // Scale transmission by the remaining susceptible fraction and
-          // deplete the pool by the modelled new cases. `pop_floor` bounds the
-          // denominator; the fixed 1e-8 floor keeps the subsequent log()
+          // deplete the pool by the modelled new cases. `pop_floor` floors only
+          // the rate denominator (preventing a blow-up as the pool empties);
+          // the new-case count is capped by the actual remaining susceptibles
+          // so depletion can never create more cases than there are
+          // susceptibles. The fixed 1e-8 floor keeps the subsequent log()
           // finite near pool exhaustion (see note).
-          real susceptible = fmax(pop_floor, pop[k] - cum_cases);
-          real adj = 1 - exp(-local_R[i] * infectiousness / susceptible);
-          exp_obs[r_seed + i] = fmax(1e-8, susceptible * adj);
+          real remaining_susceptible = fmax(0, pop[k] - cum_cases);
+          real denom = fmax(pop_floor, remaining_susceptible);
+          real adj = 1 - exp(-local_R[i] * infectiousness / denom);
+          exp_obs[r_seed + i] = fmax(1e-8, remaining_susceptible * adj);
           cum_cases += exp_obs[r_seed + i];
         }
       } else {

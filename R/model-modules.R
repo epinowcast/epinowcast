@@ -440,9 +440,9 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
                                           population_uncertain, population_cv,
                                           generation_time, groups) {
   if (!is.numeric(population_floor) || length(population_floor) != 1 ||
-    population_floor < 0) {
+    !is.finite(population_floor) || population_floor < 0) {
     cli::cli_abort(
-      "`population_floor` must be a single non-negative number."
+      "`population_floor` must be a single non-negative finite number."
     )
   }
   out <- list(
@@ -500,11 +500,12 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' @importFrom cli cli_abort cli_warn
 #' @noRd
 .check_population_values <- function(population, groups) {
-  if (!is.numeric(population) || any(population <= 0) ||
-    !length(population) %in% c(1L, groups)) {
+  if (!is.numeric(population) || !all(is.finite(population)) ||
+    any(population <= 0) || !length(population) %in% c(1L, groups)) {
     cli::cli_abort(paste(
-      "`population` must be `NULL`, a single positive number, or a positive",
-      "numeric vector with one value per group (length {groups})."
+      "`population` must be `NULL`, a single positive finite number, or a",
+      "positive finite numeric vector with one value per group",
+      "(length {groups})."
     ))
   }
   if (length(population) == 1L && groups > 1L) {
@@ -537,8 +538,8 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' @noRd
 .expectation_population_prior <- function(out, population, population_cv) {
   if (!is.numeric(population_cv) || length(population_cv) != 1 ||
-    population_cv <= 0) {
-    cli::cli_abort("`population_cv` must be a single positive number.")
+    !is.finite(population_cv) || population_cv <= 0) {
+    cli::cli_abort("`population_cv` must be a single positive finite number.")
   }
   out$uncertain <- 1L
   # Per-group LogNormal parameters such that each group's prior median equals

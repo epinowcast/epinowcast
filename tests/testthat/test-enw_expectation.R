@@ -259,6 +259,36 @@ test_that("enw_expectation validates population arguments", {
   )
 })
 
+test_that("enw_expectation rejects NA / non-finite population inputs", {
+  gt <- c(0.2, 0.5, 0.3)
+  # NA / non-finite population fails cleanly with the intended message.
+  expect_error(
+    enw_expectation(generation_time = gt, population = NA_real_, data = pobs),
+    "`population` must be"
+  )
+  expect_error(
+    enw_expectation(generation_time = gt, population = Inf, data = pobs),
+    "`population` must be"
+  )
+  # NA / non-finite population_floor.
+  expect_error(
+    enw_expectation(population_floor = NA_real_, data = pobs),
+    "`population_floor` must be"
+  )
+  expect_error(
+    enw_expectation(population_floor = Inf, data = pobs),
+    "`population_floor` must be"
+  )
+  # NA / non-finite population_cv (only checked when uncertain).
+  expect_error(
+    enw_expectation(
+      generation_time = gt, population = 1000,
+      population_uncertain = TRUE, population_cv = NA_real_, data = pobs
+    ),
+    "`population_cv` must be"
+  )
+})
+
 test_that("enw_expectation warns when population is set without a renewal", {
   expect_warning(
     enw_expectation(population = 1000, data = pobs),
