@@ -1,0 +1,229 @@
+---
+title: "Estimating reporting delays with the full and delay-only models"
+description: "A walk through of estimating a reporting delay distribution, comparing the full nowcasting model with the delay-only model that conditions on known totals."
+author: Epinowcast Team
+output:
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{Estimating reporting delays with the full and delay-only models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+In this case study we estimate a reporting delay distribution two ways and
+compare them.
+The first is the full `epinowcast` nowcasting model, which jointly estimates
+the latent process and the delay.
+The second is the *delay-only* model, which conditions on known
+per-reference-date totals and fits only the delay.
+For more on the `epinowcast` package see the
+[documentation](https://package.epinowcast.org/).
+
+::: {.alert .alert-primary}
+## Use case {-}
+
+We have a reporting triangle and we want the reporting-delay distribution.
+We are not (here) interested in the latent process or a nowcast, and we
+either know the final totals per reference date or are willing to treat the
+latest running totals as fixed.
+:::
+
+## Two ways to estimate a delay
+
+The full model treats each cell of the reporting triangle as a noisy
+observation of an expected value built from a latent process and the delay
+distribution.
+The delay is identified jointly with the latent process, and for recent
+reference dates uncertainty in the latent process propagates into the delay.
+
+The delay-only model takes the total for each reference date as fixed truth
+and models only how that total is split across delays.
+For a reference date with total $N_t$ and delay probabilities $p_d$ the
+observed cells $n_{t,d}$ follow a multinomial,
+$$ n_{t, 0:D} \mid N_t \sim \mathrm{Multinomial}(N_t, p_{0:D}), $$
+which is the standard conditional delay likelihood
+[@kalbfleisch1989; @hohle].
+When only delays up to some horizon are observed the probabilities are
+renormalised over the observed range, giving a truncated multinomial.
+This removes the latent-process identification burden and gives tighter delay
+estimates at recent dates, at the cost of assuming the totals are correct.
+
+## Getting set up
+
+
+``` r
+library(epinowcast)
+library(ggplot2)
+library(data.table)
+```
+
+
+
+## Simulating a reporting triangle
+
+We simulate hospitalisations with a known lognormal reporting delay so we can
+check that each model recovers the truth.
+Each reference date has a known total split across delays by the delay PMF.
+
+
+``` r
+set.seed(890)
+
+meanlog <- 1.6
+sdlog <- 0.5
+max_delay <- 15
+n_dates <- 60
+total <- 2000
+
+# Discretised lognormal delay PMF (matching the package double-censored scheme)
+delay_pmf <- {
+  u <- max_delay
+  lcdf <- plnorm(1:u, meanlog, sdlog, log.p = TRUE)
+  m <- max(lcdf[u], lcdf[u - 1])
+  denom <- m + log(sum(exp(c(lcdf[u], lcdf[u - 1]) - m)))
+  lcdf <- lcdf - denom
+  p <- numeric(u)
+  p[1] <- exp(lcdf[1])
+  p[2] <- exp(lcdf[2])
+  for (i in 3:u) p[i] <- exp(lcdf[i]) - exp(lcdf[i - 2])
+  p
+}
+
+dates <- as.Date("2021-01-01") + 0:(n_dates - 1)
+delays <- 0:(max_delay - 1)
+counts <- round(total * delay_pmf)
+
+obs <- rbindlist(lapply(seq_along(dates), function(i) {
+  data.table(
+    reference_date = dates[i],
+    report_date = dates[i] + delays,
+    confirm = cumsum(counts)
+  )
+}))
+
+pobs <- enw_preprocess_data(obs, max_delay = max_delay)
+```
+
+## Fitting the full model
+
+
+``` r
+full_fit <- epinowcast(
+  pobs,
+  reference = enw_reference(~1, distribution = "lognormal", data = pobs),
+  obs = enw_obs(family = "poisson", data = pobs),
+  fit = enw_fit_opts(
+    save_warmup = FALSE, chains = 2,
+    iter_warmup = 500, iter_sampling = 500,
+    show_messages = FALSE, refresh = 0
+  )
+)
+```
+
+## Fitting the delay-only model
+
+The delay-only model uses the same reference-delay specification but sets
+`delay_only = TRUE` in `enw_obs()`.
+The expectation module is supplied but inert (its expected observations are
+overridden by the known totals), so we pass a minimal `~1` expectation.
+
+
+``` r
+delay_fit <- epinowcast(
+  pobs,
+  expectation = enw_expectation(~1, data = pobs),
+  reference = enw_reference(~1, distribution = "lognormal", data = pobs),
+  obs = enw_obs(family = "poisson", delay_only = TRUE, data = pobs),
+  fit = enw_fit_opts(
+    nowcast = FALSE, save_warmup = FALSE, chains = 2,
+    iter_warmup = 500, iter_sampling = 500,
+    show_messages = FALSE, refresh = 0
+  )
+)
+```
+
+## Comparing the recovered delays
+
+Both models recover the simulated delay parameters (`meanlog` = 1.6,
+`sdlog` = 0.5).
+
+
+``` r
+pars <- c("refp_mean_int", "refp_sd_int")
+full_pars <- full_fit$fit[[1]]$summary(pars)
+delay_pars <- delay_fit$fit[[1]]$summary(pars)
+
+comparison <- rbind(
+  data.table(model = "full", full_pars[, c("variable", "mean", "q5", "q95")]),
+  data.table(model = "delay-only",
+             delay_pars[, c("variable", "mean", "q5", "q95")])
+)
+comparison
+#>         model         variable      mean        q5       q95
+#>        <char>           <char>     <num>     <num>     <num>
+#> 1:       full refp_mean_int[1] 1.5999981 1.5975230 1.6025561
+#> 2:       full   refp_sd_int[1] 0.5006905 0.4986731 0.5029385
+#> 3: delay-only refp_mean_int[1] 1.5999221 1.5974364 1.6024405
+#> 4: delay-only   refp_sd_int[1] 0.5007555 0.4986924 0.5030582
+```
+
+
+``` r
+draw_pmf <- function(fit) {
+  s <- fit$fit[[1]]$summary(c("refp_mean_int", "refp_sd_int"))
+  mu <- s$mean[s$variable == "refp_mean_int[1]"]
+  sigma <- s$mean[s$variable == "refp_sd_int[1]"]
+  u <- max_delay
+  lcdf <- plnorm(1:u, mu, sigma, log.p = TRUE)
+  m <- max(lcdf[u], lcdf[u - 1])
+  denom <- m + log(sum(exp(c(lcdf[u], lcdf[u - 1]) - m)))
+  lcdf <- lcdf - denom
+  p <- numeric(u)
+  p[1] <- exp(lcdf[1]); p[2] <- exp(lcdf[2])
+  for (i in 3:u) p[i] <- exp(lcdf[i]) - exp(lcdf[i - 2])
+  p
+}
+
+pmf_dt <- rbind(
+  data.table(delay = delays, pmf = delay_pmf, source = "truth"),
+  data.table(delay = delays, pmf = draw_pmf(full_fit), source = "full"),
+  data.table(delay = delays, pmf = draw_pmf(delay_fit), source = "delay-only")
+)
+
+ggplot(pmf_dt, aes(x = delay, y = pmf, colour = source)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Delay", y = "Probability", colour = NULL) +
+  theme_bw()
+```
+
+<div class="figure">
+<img src="figures/delay-estimation-plot-delay-1.png" alt="Recovered delay distribution from each model against the truth" width="100%" />
+<p class="caption">Recovered delay distribution from each model against the truth</p>
+</div>
+
+## When to use the delay-only model
+
+The delay-only model is the right tool when the totals are trustworthy and a
+delay estimate, rather than a nowcast, is the goal.
+It is faster and gives tighter delay estimates at recent reference dates
+because it does not have to identify the latent process.
+It does not produce a nowcast; for that, use the full model.
+If the totals are themselves uncertain (subject to later revision) the full
+model is preferable, since the delay-only model treats them as fixed and will
+be overconfident.
+
+The delay-only model also supports an observation indicator (gaps in the
+reporting triangle) and running totals observed only up to a horizon, in which
+case the multinomial renormalises over the observed delays.
+
+## References
