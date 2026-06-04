@@ -2,18 +2,25 @@
 % Please edit documentation in R/forecast.R
 \name{enw_forecast}
 \alias{enw_forecast}
-\title{Forecast from a fitted nowcast under a new growth rate}
+\title{Forecast from a fitted nowcast under overridden model components}
 \usage{
-enw_forecast(fit, growth_rate = NULL, model = epinowcast::enw_model(), ...)
+enw_forecast(
+  fit,
+  overrides = list(),
+  horizon = 0L,
+  model = epinowcast::enw_model(),
+  ...
+)
 }
 \arguments{
 \item{fit}{A fitted \code{\link[=epinowcast]{epinowcast()}} object.}
 
-\item{growth_rate}{Either \code{NULL} (the default, re-uses the posterior-mean
-growth rate, useful as a check), or a numeric vector of log growth rates of
-length 1 (recycled) or \code{expr_t * g}. \code{NA} elements re-use the posterior mean
-of the fitted growth rate at that position, so partial overrides (for
-example only the most recent period) are supported.}
+\item{overrides}{A named list of model-component overrides (see Details).
+The empty list (the default) re-drives the fit using the per-draw posterior.}
+
+\item{horizon}{Integer number of future time steps to forecast beyond the
+fitted window. Default \code{0} (re-drive only). When greater than \code{0},
+\code{overrides$r} must cover the extended window.}
 
 \item{model}{The compiled model to use, as returned by \code{\link[=enw_model]{enw_model()}}.}
 
@@ -26,49 +33,63 @@ quantities, compatible with \code{\link[=summary.epinowcast]{summary.epinowcast(
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-Project a fitted \code{\link[=epinowcast]{epinowcast()}} object forward under a new assumption about
-the latent process by re-running the model's generated quantities with a
-supplied growth rate trajectory. The delay, report, and observation
-components are held at their posterior values so their uncertainty is
-propagated, while the latent process is driven by the user-supplied growth
-rate. This reuses the same Stan generated-quantities machinery as
-\code{\link[=epinowcast]{epinowcast()}} so forecast and fitted outputs are directly comparable.
+Project a fitted \code{\link[=epinowcast]{epinowcast()}} object forward by re-running the model's
+generated quantities with the posterior draws, optionally overriding one or
+more latent model components and optionally extending the modelled window
+into the future. The components that are not overridden are taken from the
+posterior per draw, so their uncertainty is propagated. This reuses the same
+Stan generated-quantities machinery as \code{\link[=epinowcast]{epinowcast()}} so forecast and fitted
+outputs are directly comparable.
 
 This is distinct from the horizon-based forecasting performed as part of a
-fit. Here a fit already exists and is re-driven with a new latent-process
-input (a counterfactual or projected growth rate), composing with the joint
-nowcast.
+fit. Here a fit already exists and is re-driven, optionally under new
+latent-process assumptions, composing with the joint nowcast.
 }
 \details{
-The growth rate \code{r} in \code{epinowcast} is the log of the effective reproduction
-number when a generation time is supplied, or the log growth rate otherwise
-(see \code{\link[=enw_expectation]{enw_expectation()}}). It is supplied here on the same scale as the
-fitted \code{r} parameter, with one value per modelled time point and group
-(\code{expr_t * g} values, ordered by group then time). A single value is
-recycled across all time points and groups.
+\subsection{Overrides}{
 
-A single growth rate trajectory is applied across all posterior draws. The
-uncertainty in the delay, report, and observation components is propagated
-because those parameters are taken unchanged from the posterior. The latent
-process itself is fixed to the one supplied trajectory and so does not carry
-the posterior uncertainty in the growth rate. Per-draw growth rate
-trajectories and extending the modelled window to add new future time points
-are tracked as follow-up work (see #838); they require a redesign rather than
-an extension of the current single-trajectory override.
+The override interface is a named list. Each element replaces a latent model
+component for every posterior draw with the supplied values, while every
+other component keeps its per-draw posterior values. Currently the supported
+component is:
+\itemize{
+\item \code{r}: the growth rate (the log of the effective reproduction number when a
+generation time is supplied, or the log growth rate otherwise; see
+\code{\link[=enw_expectation]{enw_expectation()}}). Supplied on the same scale as the fitted \code{r}
+parameter, with one value per modelled time point and group, ordered by
+group then time. A single value is recycled. \code{NA} elements re-use the
+posterior-mean growth rate at that position.
+}
 
-When \code{growth_rate} is \code{NULL} or contains \code{NA} values, the missing positions
-are filled with the \strong{posterior mean} of the fitted growth rate. With
-\code{growth_rate = NULL} this means the forecast substitutes the posterior-mean
-growth rate trajectory, not the per-draw posterior, so it does not exactly
-reproduce the original fit's nowcast; it is a like-for-like re-driving useful
-as a check rather than a reproduction.
+The mechanism is general: each override is injected via a model data hook
+that bypasses the corresponding regression. New components can be exposed by
+adding the matching Stan hook. The interface mirrors \code{EpiNow2:: forecast_infections()}, which overrides the reproduction number of a fit;
+here the same idea is generalised to any hooked component.
+
+When no override is supplied for a component, the forecast uses the full
+per-draw posterior for that component (no collapse to a summary), so
+\code{enw_forecast(fit)} with no overrides reproduces the fitted nowcast up to the
+observation-model redraw.
+}
+
+\subsection{Forward extension}{
+
+With \code{horizon > 0} the modelled reference dates are extended forward by
+\code{horizon} time steps and the generated quantities produce predictions for the
+future window. The latent process over the future window must be supplied via
+\code{overrides$r} (length \code{(expr_t + horizon) * g}); the fitted portion may be
+left as \code{NA} to re-use the posterior. Forward extension is applied per draw
+so each draw keeps its own fitted history.
+}
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 fit <- enw_example("nowcast")
-# Re-drive the fit with a flat, slightly declining growth rate
-forecast <- enw_forecast(fit, growth_rate = -0.05)
-summary(forecast)
+# Re-drive the fit using the per-draw posterior
+redriven <- enw_forecast(fit)
+# Re-drive under a flat, slightly declining growth rate
+counterfactual <- enw_forecast(fit, overrides = list(r = -0.05))
+summary(counterfactual)
 \dontshow{\}) # examplesIf}
 }
 \seealso{

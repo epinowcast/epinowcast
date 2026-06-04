@@ -10,11 +10,18 @@
 #' @details
 #' Simulation is performed by running the model with `algorithm = "fixed_param"`
 #' and the likelihood disabled. The latent process is driven by a supplied log
-#' growth rate trajectory (`growth_rate`); the remaining parameters (reporting
-#' delay, report-date effects, observation overdispersion, etc.) are taken from
-#' `parameters` or, where not supplied, from the model initialisation. The
+#' growth rate trajectory (`growth_rate`). Every other model component can be
+#' fixed through `parameters`, which sets any model parameter directly:
+#' reporting-delay parameters (`refp_mean_int`, `refp_sd_int`, `refnp_*`),
+#' report-date effects (`rep_*`), the latent-to-observation proportion
+#' (`expl_*`), missingness (`miss_*`), and observation overdispersion
+#' (`sqrt_phi`). Any parameter left unset is initialised from its prior. The
 #' generated quantities (`pp_obs`, `pp_inf_obs`) then forward-generate
 #' synthetic reported and final observations.
+#'
+#' The growth rate is handled separately from `parameters` because it is a
+#' transformed quantity rather than a sampled parameter, so it is injected via
+#' the same model data hook used by [enw_forecast()].
 #'
 #' The modules supplied (`reference`, `report`, `expectation`, `obs`, ...) must
 #' be fully specified and define the structure of the simulation, exactly as
@@ -28,12 +35,11 @@
 #' reproduction number when a generation time is supplied, or the log growth
 #' rate otherwise (see [enw_expectation()]).
 #'
-#' @param parameters An optional named list of fixed parameter values passed as
-#' initial values to the fixed-parameter sampler (for example
-#' `list(refp_mean_int = 1.5, sqrt_phi = 0.5)`). These are merged over the
-#' model's prior-based initialisation (as used by [epinowcast()]), so any
-#' parameter not supplied is initialised from its prior rather than from
-#' `cmdstanr`'s default.
+#' @param parameters An optional named list of fixed parameter values for any
+#' model parameter (for example `list(refp_mean_int = 1.5, sqrt_phi = 0.5)`).
+#' These are merged over the model's prior-based initialisation (as used by
+#' [epinowcast()]), so any parameter not supplied is initialised from its prior
+#' rather than from `cmdstanr`'s default.
 #'
 #' @param seed Integer random seed for reproducible simulation. Default: 1.
 #'

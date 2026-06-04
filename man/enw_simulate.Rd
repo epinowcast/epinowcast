@@ -30,12 +30,11 @@ ordered by group then time). The growth rate is the log of the effective
 reproduction number when a generation time is supplied, or the log growth
 rate otherwise (see \code{\link[=enw_expectation]{enw_expectation()}}).}
 
-\item{parameters}{An optional named list of fixed parameter values passed as
-initial values to the fixed-parameter sampler (for example
-\code{list(refp_mean_int = 1.5, sqrt_phi = 0.5)}). These are merged over the
-model's prior-based initialisation (as used by \code{\link[=epinowcast]{epinowcast()}}), so any
-parameter not supplied is initialised from its prior rather than from
-\code{cmdstanr}'s default.}
+\item{parameters}{An optional named list of fixed parameter values for any
+model parameter (for example \code{list(refp_mean_int = 1.5, sqrt_phi = 0.5)}).
+These are merged over the model's prior-based initialisation (as used by
+\code{\link[=epinowcast]{epinowcast()}}), so any parameter not supplied is initialised from its prior
+rather than from \code{cmdstanr}'s default.}
 
 \item{reference}{The reference date indexed reporting process model
 specification as defined using \code{\link[=enw_reference]{enw_reference()}}.}
@@ -85,11 +84,18 @@ predictive checks, synthetic-data recovery tests, and scenario analysis.
 \details{
 Simulation is performed by running the model with \code{algorithm = "fixed_param"}
 and the likelihood disabled. The latent process is driven by a supplied log
-growth rate trajectory (\code{growth_rate}); the remaining parameters (reporting
-delay, report-date effects, observation overdispersion, etc.) are taken from
-\code{parameters} or, where not supplied, from the model initialisation. The
+growth rate trajectory (\code{growth_rate}). Every other model component can be
+fixed through \code{parameters}, which sets any model parameter directly:
+reporting-delay parameters (\code{refp_mean_int}, \code{refp_sd_int}, \verb{refnp_*}),
+report-date effects (\verb{rep_*}), the latent-to-observation proportion
+(\verb{expl_*}), missingness (\verb{miss_*}), and observation overdispersion
+(\code{sqrt_phi}). Any parameter left unset is initialised from its prior. The
 generated quantities (\code{pp_obs}, \code{pp_inf_obs}) then forward-generate
 synthetic reported and final observations.
+
+The growth rate is handled separately from \code{parameters} because it is a
+transformed quantity rather than a sampled parameter, so it is injected via
+the same model data hook used by \code{\link[=enw_forecast]{enw_forecast()}}.
 
 The modules supplied (\code{reference}, \code{report}, \code{expectation}, \code{obs}, ...) must
 be fully specified and define the structure of the simulation, exactly as

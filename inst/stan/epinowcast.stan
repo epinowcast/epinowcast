@@ -67,15 +67,16 @@ data {
   array[2, g * expr_r_seed] real expr_lelatent_int_p; 
   array[2, 1] real expr_r_int_p;
   array[2, 1] real expr_beta_sd_p;
-  // Override the modelled growth rate with supplied values. Used by the
-  // simulate and forecast modes to inject a known or new latent-process
-  // trajectory while reusing the generated-quantities machinery. When
-  // expr_r_override is 0 (the default) the regression-derived growth rate
-  // is used and expr_r_override_value is ignored (length 0).
-  // NOTE: this is a single trajectory applied to every posterior draw via
-  // the data block. It does NOT generalise to per-draw trajectories;
-  // supporting those (and a true forward horizon) is a redesign, not an
-  // extension of this hook (see issue #838).
+  // Override the modelled growth rate with supplied values. This is the
+  // growth rate instance of a general component-override pattern used by the
+  // simulate and forecast modes to inject a known or new latent process while
+  // reusing the generated-quantities machinery. When expr_r_override is 0 (the
+  // default) the regression-derived growth rate is used and
+  // expr_r_override_value is ignored (length 0); generate_quantities then
+  // recomputes the growth rate per draw from each draw's parameters.
+  // The override is a single trajectory applied to every draw via the data
+  // block, so per-draw overridden trajectories and a true forward horizon are
+  // a separate piece of work rather than an extension of this hook.
   int<lower=0, upper=1> expr_r_override;
   vector[expr_r_override ? expr_t * g : 0] expr_r_override_value;
   // ARIMA(p, d, q) latent residual on growth rate

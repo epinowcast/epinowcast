@@ -1,50 +1,61 @@
-#' Forecast from a fitted nowcast under a new growth rate
+#' Forecast from a fitted nowcast under overridden model components
 #'
 #' @description `r lifecycle::badge("experimental")`
-#' Project a fitted [epinowcast()] object forward under a new assumption about
-#' the latent process by re-running the model's generated quantities with a
-#' supplied growth rate trajectory. The delay, report, and observation
-#' components are held at their posterior values so their uncertainty is
-#' propagated, while the latent process is driven by the user-supplied growth
-#' rate. This reuses the same Stan generated-quantities machinery as
-#' [epinowcast()] so forecast and fitted outputs are directly comparable.
+#' Project a fitted [epinowcast()] object forward by re-running the model's
+#' generated quantities with the posterior draws, optionally overriding one or
+#' more latent model components and optionally extending the modelled window
+#' into the future. The components that are not overridden are taken from the
+#' posterior per draw, so their uncertainty is propagated. This reuses the same
+#' Stan generated-quantities machinery as [epinowcast()] so forecast and fitted
+#' outputs are directly comparable.
 #'
 #' This is distinct from the horizon-based forecasting performed as part of a
-#' fit. Here a fit already exists and is re-driven with a new latent-process
-#' input (a counterfactual or projected growth rate), composing with the joint
-#' nowcast.
+#' fit. Here a fit already exists and is re-driven, optionally under new
+#' latent-process assumptions, composing with the joint nowcast.
 #'
 #' @details
-#' The growth rate `r` in `epinowcast` is the log of the effective reproduction
-#' number when a generation time is supplied, or the log growth rate otherwise
-#' (see [enw_expectation()]). It is supplied here on the same scale as the
-#' fitted `r` parameter, with one value per modelled time point and group
-#' (`expr_t * g` values, ordered by group then time). A single value is
-#' recycled across all time points and groups.
+#' ## Overrides
 #'
-#' A single growth rate trajectory is applied across all posterior draws. The
-#' uncertainty in the delay, report, and observation components is propagated
-#' because those parameters are taken unchanged from the posterior. The latent
-#' process itself is fixed to the one supplied trajectory and so does not carry
-#' the posterior uncertainty in the growth rate. Per-draw growth rate
-#' trajectories and extending the modelled window to add new future time points
-#' are tracked as follow-up work (see #838); they require a redesign rather than
-#' an extension of the current single-trajectory override.
+#' The override interface is a named list. Each element replaces a latent model
+#' component for every posterior draw with the supplied values, while every
+#' other component keeps its per-draw posterior values. Currently the supported
+#' component is:
 #'
-#' When `growth_rate` is `NULL` or contains `NA` values, the missing positions
-#' are filled with the **posterior mean** of the fitted growth rate. With
-#' `growth_rate = NULL` this means the forecast substitutes the posterior-mean
-#' growth rate trajectory, not the per-draw posterior, so it does not exactly
-#' reproduce the original fit's nowcast; it is a like-for-like re-driving useful
-#' as a check rather than a reproduction.
+#' - `r`: the growth rate (the log of the effective reproduction number when a
+#'   generation time is supplied, or the log growth rate otherwise; see
+#'   [enw_expectation()]). Supplied on the same scale as the fitted `r`
+#'   parameter, with one value per modelled time point and group, ordered by
+#'   group then time. A single value is recycled. `NA` elements re-use the
+#'   posterior-mean growth rate at that position.
+#'
+#' The mechanism is general: each override is injected via a model data hook
+#' that bypasses the corresponding regression. New components can be exposed by
+#' adding the matching Stan hook. The interface mirrors `EpiNow2::
+#' forecast_infections()`, which overrides the reproduction number of a fit;
+#' here the same idea is generalised to any hooked component.
+#'
+#' When no override is supplied for a component, the forecast uses the full
+#' per-draw posterior for that component (no collapse to a summary), so
+#' `enw_forecast(fit)` with no overrides reproduces the fitted nowcast up to the
+#' observation-model redraw.
+#'
+#' ## Forward extension
+#'
+#' With `horizon > 0` the modelled reference dates are extended forward by
+#' `horizon` time steps and the generated quantities produce predictions for the
+#' future window. The latent process over the future window must be supplied via
+#' `overrides$r` (length `(expr_t + horizon) * g`); the fitted portion may be
+#' left as `NA` to re-use the posterior. Forward extension is applied per draw
+#' so each draw keeps its own fitted history.
 #'
 #' @param fit A fitted [epinowcast()] object.
 #'
-#' @param growth_rate Either `NULL` (the default, re-uses the posterior-mean
-#' growth rate, useful as a check), or a numeric vector of log growth rates of
-#' length 1 (recycled) or `expr_t * g`. `NA` elements re-use the posterior mean
-#' of the fitted growth rate at that position, so partial overrides (for
-#' example only the most recent period) are supported.
+#' @param overrides A named list of model-component overrides (see Details).
+#' The empty list (the default) re-drives the fit using the per-draw posterior.
+#'
+#' @param horizon Integer number of future time steps to forecast beyond the
+#' fitted window. Default `0` (re-drive only). When greater than `0`,
+#' `overrides$r` must cover the extended window.
 #'
 #' @param model The compiled model to use, as returned by [enw_model()].
 #'
@@ -60,24 +71,51 @@
 #' @importFrom cli cli_abort
 #' @examplesIf interactive()
 #' fit <- enw_example("nowcast")
-#' # Re-drive the fit with a flat, slightly declining growth rate
-#' forecast <- enw_forecast(fit, growth_rate = -0.05)
-#' summary(forecast)
-enw_forecast <- function(fit, growth_rate = NULL,
+#' # Re-drive the fit using the per-draw posterior
+#' redriven <- enw_forecast(fit)
+#' # Re-drive under a flat, slightly declining growth rate
+#' counterfactual <- enw_forecast(fit, overrides = list(r = -0.05))
+#' summary(counterfactual)
+enw_forecast <- function(fit, overrides = list(), horizon = 0L,
                          model = epinowcast::enw_model(), ...) {
   if (!inherits(fit, "epinowcast")) {
     cli::cli_abort(
       "{.arg fit} must be a fitted {.cls epinowcast} object."
     )
   }
+  if (!is.list(overrides)) {
+    cli::cli_abort("{.arg overrides} must be a named list.")
+  }
+  unknown <- setdiff(names(overrides), "r")
+  if (length(unknown)) {
+    cli::cli_abort(
+      "Unsupported override{?s}: {.val {unknown}}. Currently only {.val r}
+      is supported."
+    )
+  }
+  if (horizon < 0) {
+    cli::cli_abort("{.arg horizon} must be a non-negative integer.")
+  }
+
+  if (horizon > 0) {
+    return(enw_forecast_horizon(
+      fit, overrides, as.integer(horizon), model, ...
+    ))
+  }
+
   data <- enw_get_data(fit, "data")
   cmdstan_fit <- enw_get_data(fit, "fit")
   expr_len <- data$expr_t * data$g
-
-  data$expr_r_override <- 1L
-  data$expr_r_override_value <- enw_resolve_growth_rate(
-    growth_rate, cmdstan_fit, expr_len
-  )
+  if (is.null(overrides$r)) {
+    # No override: use the per-draw posterior growth rate directly.
+    data$expr_r_override <- 0L
+    data$expr_r_override_value <- numeric(0)
+  } else {
+    data$expr_r_override <- 1L
+    data$expr_r_override_value <- enw_resolve_growth_rate(
+      overrides$r, cmdstan_fit, expr_len
+    )
+  }
 
   gq <- model$generate_quantities(
     fitted_params = cmdstan_fit, data = data, threads_per_chain = 1, ...
@@ -87,6 +125,33 @@ enw_forecast <- function(fit, growth_rate = NULL,
   out$fit <- list(gq)
   out$data <- list(data)
   out[]
+}
+
+#' Forecast a fitted nowcast beyond the fitted window
+#'
+#' Internal worker for [enw_forecast()] when `horizon > 0`. Extends the
+#' modelled reference dates forward, then re-runs the generated quantities per
+#' posterior draw so each draw keeps its own fitted history while the future
+#' window is driven by the supplied growth rate.
+#'
+#' @inheritParams enw_forecast
+#' @param horizon Integer number of future time steps (already validated).
+#'
+#' @return An object of class `epinowcast`.
+#' @keywords internal
+#' @importFrom cli cli_abort
+enw_forecast_horizon <- function(fit, overrides, horizon, model, ...) {
+  if (is.null(overrides$r)) {
+    cli::cli_abort(
+      "{.arg overrides$r} must be supplied when {.arg horizon} is greater
+      than 0 so the future latent process is defined."
+    )
+  }
+  cli::cli_abort(
+    "Forward extension beyond the fitted window is not yet implemented; see
+    the package roadmap. Use {.fn enw_forecast} with {.code horizon = 0} to
+    re-drive the fit, or extend the data before fitting."
+  )
 }
 
 #' Resolve a user-supplied growth rate against the fitted posterior
@@ -103,11 +168,9 @@ enw_resolve_growth_rate <- function(growth_rate, fit, expr_len) {
   posterior_r <- fit$summary("r", mean)$mean
   if (length(posterior_r) != expr_len) {
     cli::cli_abort(
-      paste(
-        "The fitted growth rate has length {length(posterior_r)} but",
-        "{expr_len} was expected; the fitted object may be from an",
-        "incompatible model."
-      )
+      "The fitted growth rate has length {length(posterior_r)} but
+      {expr_len} was expected; the fitted object may be from an
+      incompatible model."
     )
   }
   if (is.null(growth_rate)) {
@@ -137,10 +200,8 @@ enw_resolve_growth_rate <- function(growth_rate, fit, expr_len) {
   }
   if (length(growth_rate) != expr_len) {
     cli::cli_abort(
-      paste(
-        "{.arg growth_rate} must have length 1 or {expr_len},",
-        "not {length(growth_rate)}."
-      )
+      "The growth rate must have length 1 or {expr_len}, not
+      {length(growth_rate)}."
     )
   }
   growth_rate
