@@ -21,8 +21,13 @@ simulate_depleting_epidemic <- function(population = 4000, rt = 1.6,
   cum_cases <- sum(inc[seq_len(gt_n)])
   for (i in (gt_n + 1):n_days) {
     infectiousness <- sum(inc[(i - gt_n):(i - 1)] * rgt)
-    susceptible <- max(1, population - cum_cases)
-    inc[i] <- susceptible * (1 - exp(-rt * infectiousness / susceptible))
+    # Mirror the Stan recursion: the new-case count is capped by the true
+    # remaining susceptibles while the rate denominator is floored separately.
+    remaining_susceptible <- max(0, population - cum_cases)
+    denom <- max(1, remaining_susceptible)
+    inc[i] <- remaining_susceptible * (
+      1 - exp(-rt * infectiousness / denom)
+    )
     cum_cases <- cum_cases + inc[i]
   }
   list(incidence = inc, attack_size = cum_cases)
@@ -45,9 +50,14 @@ incidence_to_obs <- function(incidence, start = as.Date("2021-01-01"),
   dt
 }
 
+# Posterior mean attack size on the natural scale: sum exp(exp_llatent) within
+# each draw, then average across draws (a per-draw sum, not a geometric mean of
+# the log-scale summary).
 attack_size_from_fit <- function(nowcast) {
-  latent <- nowcast$fit[[1]]$summary("exp_llatent", mean = mean)
-  sum(exp(latent$mean))
+  draws <- posterior::as_draws_matrix(
+    nowcast$fit[[1]]$draws("exp_llatent")
+  )
+  mean(rowSums(exp(draws)))
 }
 
 test_that(
@@ -96,7 +106,9 @@ test_that(
 
     # Relaxed treedepth: the renewal random walk on a short series has a
     # challenging geometry; rhat / divergences are the substantive checks.
+    # Both fits must converge before their summaries are compared.
     expect_convergence(nowcast_adj, treedepth = 13)
+    expect_convergence(nowcast_unadj, treedepth = 13)
 
     err_adj <- abs(attack_size_from_fit(nowcast_adj) - sim$attack_size)
     err_unadj <- abs(attack_size_from_fit(nowcast_unadj) - sim$attack_size)
@@ -133,11 +145,15 @@ test_that(
       fit = enw_fit_opts(
         sampler = silent_enw_sample, save_warmup = FALSE, pp = FALSE,
         chains = 2, iter_warmup = 500, iter_sampling = 500,
-        refresh = 0, show_messages = FALSE, adapt_delta = 0.95
+        refresh = 0, show_messages = FALSE, adapt_delta = 0.95,
+        max_treedepth = 12
       ),
       obs = enw_obs(family = "poisson", data = pobs),
       model = sd_model()
     ))
+
+    # Gate the recovery assertion on sampler convergence.
+    expect_convergence(nowcast, treedepth = 13)
 
     pop_post <- nowcast$fit[[1]]$summary("expr_pop_est")
     # The known population should lie within the estimated 90% credible interval.
@@ -188,6 +204,9 @@ test_that(
       obs = enw_obs(family = "poisson", data = pobs),
       model = sd_model()
     ))
+
+    # Gate the recovery assertions on sampler convergence.
+    expect_convergence(nowcast, treedepth = 13)
 
     pop_post <- nowcast$fit[[1]]$summary("expr_pop_est")
     # Two independent per-group population parameters are fitted.
