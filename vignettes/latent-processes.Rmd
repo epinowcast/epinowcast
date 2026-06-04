@@ -441,5 +441,6 @@ A typical surveillance pattern mixes one latent option for the trend with a peri
 The `by` argument on `arima()`, the aliases `ar()` / `ma()` / `arma()`, and `rw()` lets each group draw its own innovation series; the AR/MA parameters and latent standard deviation are currently shared across groups (per-group parameters are a planned extension).
 
 These terms are not specific to the growth rate.
-The same `rw()`, `ar()`, `arima()`, `gp()`, and random-effect terms can be placed on any module's formula: an `arima()` term on the reference delay mean, for instance, models a reporting delay that drifts over time.
-See the [implementation notes](arima.html) for the full list of modules that accept them.
+The same `rw()`, `ar()`, `arima()`, `gp()`, and random-effect terms can be placed on any module's formula, each routed through the shared regression layer: the growth rate (`expr`) and latent-to-obs proportion (`expl`) in [`enw_expectation()`], the parametric (`refp`) and non-parametric (`refnp`) reference delay in [`enw_reference()`], the report-date hazards (`rep`) in [`enw_report()`], and the missing-reference proportion (`miss`) in [`enw_missing()`].
+An `arima()` or `gp()` term on the reference delay mean, for instance, models a reporting delay that drifts over time.
+See the [ARIMA](arima.html) and [Gaussian process](gaussian-process.html) implementation notes for the per-module details.
