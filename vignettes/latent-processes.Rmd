@@ -28,6 +28,7 @@ The first three are time-series terms built from the same ARIMA(p, d, q) machine
 - **Random walk** via `rw(week)`. The growth rate drifts: each step builds on the last with no pull back towards a mean. This is ARIMA(0, 1, 0).
 - **Integrated AR** via `arima(week, age_group, p = 1, d = 1)`. The same drift, but with autocorrelated increments, so the path is smoother than a plain random walk.
 - **Stationary AR** via `ar(day, age_group, p = 1)`. The growth rate reverts to a fixed mean, with autocorrelated departures that decay rather than accumulate. This is ARIMA(1, 0, 0).
+- **Gaussian process** via `gp(week)`. A smooth function of time with a length scale that controls how quickly the growth rate can change; a flexible non-parametric smoother.
 
 The last two impose no time correlation at all.
 
@@ -183,10 +184,10 @@ kable(arima_pars, digits = 3)
 
 
 
-|variable            |   mean|     q5|   q95|
-|:-------------------|------:|------:|-----:|
-|expr_arima_pacf[1]  | -0.014| -0.852| 0.826|
-|expr_arima_sigma[1] |  0.029|  0.011| 0.055|
+|variable            |  mean|     q5|   q95|
+|:-------------------|-----:|------:|-----:|
+|expr_arima_pacf[1]  | 0.000| -0.813| 0.845|
+|expr_arima_sigma[1] | 0.029|  0.010| 0.054|
 
 
 
@@ -218,6 +219,59 @@ plot(nowcast_ar, latest_obs = latest_obs) +
 ```
 
 ![Nowcast under a stationary AR(1) residual on day.](figures/latent-processes-ar-plot-1.png)
+
+# Gaussian process on weeks
+
+`gp(time, by, kernel, basis_prop)` adds an approximate Gaussian process to the growth rate.
+Where the random walk and AR terms build memory from one step to the next, a Gaussian process places a smooth prior over the whole trajectory at once: nearby time points are correlated, with a length scale that the model learns from the data.
+The result is a flexible smoother that can capture curvature a random walk would only reach through accumulated noise.
+
+The process is fitted using the Hilbert-space reduced-rank (spectral) approximation, so the cost is controlled by the number of basis functions rather than the number of time points.
+`basis_prop` sets that number as a proportion of the series length (the default `0.2` follows `EpiNow2`); a larger value is more accurate but slower.
+The default `kernel = "matern32"` is a Matern 3/2 kernel; `"matern52"`, `"ou"` (Ornstein-Uhlenbeck), `"se"` (squared exponential), and `"periodic"` are also available.
+The Stan implementation is adapted from [`EpiNow2`](https://github.com/epiforecasts/EpiNow2) (MIT licensed).
+
+
+``` r
+nowcast_gp <- epinowcast(
+  pobs,
+  expectation = enw_expectation(
+    r = ~ 1 + gp(week),
+    data = pobs
+  ),
+  reference = reference_mod,
+  obs = enw_obs(family = "negbin", data = pobs),
+  fit = fit
+)
+```
+
+
+``` r
+plot(nowcast_gp, latest_obs = latest_obs) +
+  facet_wrap(vars(age_group), scales = "free_y")
+```
+
+![Nowcast under a Gaussian process on weeks.](figures/latent-processes-gp-plot-1.png)
+
+The Gaussian-process-specific posterior summaries are the length scale `rho` (how quickly the growth rate can change) and the magnitude `alpha` (how far it can depart from the mean):
+
+
+``` r
+gp_pars <- summary(nowcast_gp, type = "fit")[
+  grepl("expr_gp_(rho|alpha)", variable),
+  .(variable, mean, q5, q95)
+]
+kable(gp_pars, digits = 3)
+```
+
+
+
+|variable         |  mean|    q5|   q95|
+|:----------------|-----:|-----:|-----:|
+|expr_gp_rho[1]   | 3.122| 1.283| 6.104|
+|expr_gp_alpha[1] | 0.046| 0.004| 0.104|
+
+
 
 # Independent per-(week, group) effects
 
@@ -330,6 +384,7 @@ fits <- list(
   "rw(week)" = nowcast_rw,
   "arima(week, age_group, 1, 1, 0)" = nowcast_arima,
   "ar(day, age_group, 1)" = nowcast_ar,
+  "gp(week)" = nowcast_gp,
   "(1 | week:.group)" = nowcast_re,
   "(1 | day_of_week)" = nowcast_dow,
   "(1 | day_of_week) + arima(week, ...)" = nowcast_combined
@@ -345,7 +400,9 @@ diagnostics <- rbindlist(lapply(names(fits), function(model) {
     runtime_s = round(fits[[model]]$fit[[1]]$time()$total)
   )
 }))
-#> Warning: 1 of 1000 (0.0%) transitions hit the maximum treedepth limit of 12.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: 2 of 1000 (0.0%) transitions hit the maximum treedepth limit of 12.
 #> See https://mc-stan.org/misc/warnings for details.
 kable(diagnostics)
 ```
@@ -354,12 +411,13 @@ kable(diagnostics)
 
 |model                                     | max_rhat| min_ess_bulk| divergences| runtime_s|
 |:-----------------------------------------|--------:|------------:|-----------:|---------:|
-|rw(week)                                  |    1.013|          169|           0|       106|
-|arima(week, age_group, 1, 1, 0)           |    1.015|          205|           0|        88|
-|ar(day, age_group, 1)                     |    1.016|          214|           0|        93|
-|(1 &#124; week:.group)                    |    1.014|          208|           0|        84|
-|(1 &#124; day_of_week)                    |    1.023|          166|           0|       231|
-|(1 &#124; day_of_week) + arima(week, ...) |    1.015|          183|           0|       295|
+|rw(week)                                  |    1.019|          164|           0|       117|
+|arima(week, age_group, 1, 1, 0)           |    1.008|          188|           0|        49|
+|ar(day, age_group, 1)                     |    1.020|          172|           0|        70|
+|gp(week)                                  |    1.021|          136|           0|        54|
+|(1 &#124; week:.group)                    |    1.013|          188|           0|        41|
+|(1 &#124; day_of_week)                    |    1.019|          171|           0|       162|
+|(1 &#124; day_of_week) + arima(week, ...) |    1.023|          218|           0|       170|
 
 
 
@@ -372,6 +430,7 @@ The five models trace a spectrum of how much the growth rate remembers its past,
 | Random walk | Full drift, no mean | `rw(week)` | The growth rate evolves smoothly with no preferred direction; the standard non-stationary smoother. |
 | Integrated AR | Drift, smoother | `arima(week, by, p = 1, d = 1)` | You want a drifting trend but with autocorrelated, more persistent increments than a plain random walk. |
 | Stationary AR | Reverts to a mean | `ar(day, by, p = 1)` | Growth is stable on average and you want to model autocorrelated departures from that level rather than drift. |
+| Gaussian process | Smooth, learned length scale | `gp(week)` | You want a flexible non-parametric smoother whose smoothness is learned from the data rather than fixed by the differencing order. |
 | Independent week effects | None | `(1 \| week:.group)` | Weekly fluctuations look like noise around a stable mean; no time correlation is imposed. |
 | Day-of-week effects | Fixed weekly cycle | `(1 \| day_of_week)` | Within-week variation is structurally periodic and you want pooled rather than fixed weekday effects. |
 
@@ -380,5 +439,5 @@ A typical surveillance pattern mixes one latent option for the trend with a peri
 The `by` argument on `arima()`, the aliases `ar()` / `ma()` / `arma()`, and `rw()` lets each group draw its own innovation series; the AR/MA parameters and latent standard deviation are currently shared across groups (per-group parameters are a planned extension).
 
 These terms are not specific to the growth rate.
-The same `rw()`, `ar()`, `arima()`, and random-effect terms can be placed on any module's formula: an `arima()` term on the reference delay mean, for instance, models a reporting delay that drifts over time.
+The same `rw()`, `ar()`, `arima()`, `gp()`, and random-effect terms can be placed on any module's formula: an `arima()` term on the reference delay mean, for instance, models a reporting delay that drifts over time.
 See the [implementation notes](arima.html) for the full list of modules that accept them.
