@@ -115,23 +115,41 @@ vector update_gp(matrix PHI, int M, real L, real alpha,
 
 /**
  * Add an approximate Gaussian process latent term to a per-observation
- * predictor.
+ * predictor, with optional integer-order differencing.
  *
- * Encapsulates the spectral update, per-group evaluation, and
- * per-observation gather so module call sites are a single line. When
- * `present` is 0 the input is returned unchanged. Each group shares the
- * length scale `rho` and magnitude `alpha`; per-group spectral
- * coefficients are stacked column-wise in `eta`.
+ * Encapsulates the spectral update, per-group evaluation, optional
+ * integration, and per-observation gather so module call sites are a
+ * single line. When `present` is 0 the input is returned unchanged.
+ * Each group shares the length scale `rho` and magnitude `alpha`;
+ * per-group spectral coefficients are stacked column-wise in `eta`.
+ *
+ * The differencing order `d` integrates each group's realisation `d`
+ * times before it enters the predictor:
+ *
+ *   - `d = 0`: stationary deviations of length `T` (the basis matrix is
+ *     `T x M`). This is the original behaviour.
+ *   - `d >= 1`: the basis matrix has `T - d` rows, so the spectral
+ *     update yields `T - d` free values. These fill positions
+ *     `(d + 1):T` of a length-`T` vector whose first `d` entries are
+ *     zero; applying `cumulative_sum()` `d` times then integrates the
+ *     series. Because the leading `d` entries start at zero, they stay
+ *     zero through every integration pass, anchoring the first `d`
+ *     values of the realisation to zero. This leaves the free level
+ *     (for `d = 1`) and additionally the free slope (for `d >= 2`) to
+ *     the module's fixed effects rather than the GP, which is the
+ *     identifiability fix. `d = 1` matches EpiNow2's non-stationary
+ *     reproduction-number GP (`gp[2:(gp_n + 1)] = noise; cumulative_sum`).
  *
  * @param base      Predictor to which the latent process is added.
  * @param present   0 = inert, 1 = active.
- * @param T         Number of time points in the latent series.
+ * @param T         Number of time points in the integrated series.
  * @param G         Number of groups.
  * @param M         Number of basis functions.
  * @param L         Boundary factor.
  * @param type      Kernel type (0 SE, 1 periodic, 2 Matern).
  * @param nu        Matern smoothness.
- * @param PHI       Basis matrix (T x M, or T x 2M for periodic).
+ * @param d         Differencing (integration) order, `d >= 0`.
+ * @param PHI       Basis matrix ((T - d) x M, or (T - d) x 2M periodic).
  * @param eta       Spectral coefficients ((2M or M) x G matrix; empty
  *                  when not present).
  * @param rho       Length scale (length-1 array, empty when inert).
@@ -141,16 +159,30 @@ vector update_gp(matrix PHI, int M, real L, real alpha,
  * @return base + gathered Gaussian process contribution.
  */
 vector apply_gp_term(vector base, int present, int T, int G,
-                     int M, real L, int type, real nu,
+                     int M, real L, int type, real nu, int d,
                      matrix PHI, matrix eta,
                      array[] real rho, array[] real alpha,
                      array[] int flat_idx) {
   if (!present) return base;
   matrix[T, G] gp_eps;
   for (g in 1:G) {
-    gp_eps[, g] = update_gp(
+    // Free GP values (length T for d = 0, T - d for d >= 1).
+    vector[rows(PHI)] f = update_gp(
       PHI, M, L, alpha[1], rho[1], eta[, g], type, nu
     );
+    if (d == 0) {
+      gp_eps[, g] = f;
+    } else {
+      // Anchor the first d entries to zero and place the free values
+      // from (d + 1):T, then integrate d times. The leading zeros are
+      // preserved by each cumulative_sum pass.
+      vector[T] col = rep_vector(0.0, T);
+      col[(d + 1):T] = f;
+      for (i in 1:d) {
+        col = cumulative_sum(col);
+      }
+      gp_eps[, g] = col;
+    }
   }
   return base + to_vector(gp_eps)[flat_idx];
 }

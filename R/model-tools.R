@@ -62,6 +62,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     gp_M = 0L,
     gp_type = 0L,
     gp_nu = 0,
+    gp_d = 0L,
     gp_L = 0,
     gp_n_obs = 0L,
     gp_PHI = matrix(numeric(0), 0, 0),
@@ -130,6 +131,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
       data$gp_M <- g$M
       data$gp_type <- g$gp_type
       data$gp_nu <- g$nu
+      data$gp_d <- g$d
       data$gp_L <- g$boundary_scale
       data$gp_n_obs <- length(g$time_idx)
       data$gp_PHI <- g$PHI

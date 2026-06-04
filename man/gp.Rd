@@ -7,6 +7,7 @@
 gp(
   time,
   by,
+  d = 0,
   kernel = c("matern32", "matern52", "ou", "se", "periodic"),
   basis_prop = 0.2,
   boundary_scale = 1.5
@@ -20,6 +21,20 @@ numeric.}
 Gaussian process is fitted for each level of \code{by} (sharing the
 length scale and magnitude hyperparameters). Currently limited to a
 single variable.}
+
+\item{d}{Non-negative integer, defaults to \code{0}. Order of
+differencing, matching the \code{d} of \code{\link[=arima]{arima()}}: the per-group
+realisation is integrated (cumulative-summed) \code{d} times before it is
+added to the predictor. \code{d = 0} gives stationary deviations (the
+default, equivalent to EpiNow2's \code{gp_on = "R0"}). \code{d = 1} integrates
+once, giving a smoothly drifting, random-walk-like trajectory
+(equivalent to EpiNow2's default \code{gp_on = "R_t-1"}). For \code{d >= 1} the
+first \code{d} values of the realisation are anchored to zero, so the free
+level (and, for \code{d >= 2}, slope) is carried by the module's fixed
+effects rather than the GP. Differencing is intended for the latent
+expectation modules (the growth rate \code{expr} and latent-to-obs
+proportion \code{expl}); integrating a logit-hazard term (\code{refnp}, \code{rep},
+\code{miss}) is unusual but permitted for API consistency with \code{\link[=arima]{arima()}}.}
 
 \item{kernel}{Character string selecting the covariance kernel. One
 of \code{"matern32"} (the default, a Matern 3/2 kernel), \code{"matern52"}
@@ -82,6 +97,7 @@ Riutort-Mayol et al. (2023), doi:10.1007/s11222-022-10167-2.
 gp(time)
 gp(time, location)
 gp(time, kernel = "se", basis_prop = 0.3)
+gp(time, d = 1)
 }
 \seealso{
 Functions used to help convert formulas into model designs

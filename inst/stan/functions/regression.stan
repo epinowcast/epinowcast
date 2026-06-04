@@ -41,7 +41,7 @@ vector regression_predictor(
   array[] real arima_sigma,
   array[] int arima_flat_idx,
   int gp_present, int gp_T, int gp_G, int gp_M, real gp_L,
-  int gp_type, real gp_nu, matrix gp_PHI, matrix gp_eta,
+  int gp_type, real gp_nu, int gp_d, matrix gp_PHI, matrix gp_eta,
   array[] real gp_rho, array[] real gp_alpha,
   array[] int gp_flat_idx
 ) {
@@ -68,7 +68,7 @@ vector regression_predictor(
     arima_flat_idx
   );
   return apply_gp_term(
-    base, gp_present, gp_T, gp_G, gp_M, gp_L, gp_type, gp_nu,
+    base, gp_present, gp_T, gp_G, gp_M, gp_L, gp_type, gp_nu, gp_d,
     gp_PHI, gp_eta, gp_rho, gp_alpha, gp_flat_idx
   );
 }

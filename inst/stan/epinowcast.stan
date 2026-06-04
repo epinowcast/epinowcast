@@ -85,9 +85,11 @@ data {
   int<lower=0> expr_gp_M;
   int<lower=0> expr_gp_type;
   real<lower=0> expr_gp_nu;
+  int<lower=0> expr_gp_d;
   real<lower=0> expr_gp_L;
   int<lower=0> expr_gp_n_obs;
-  matrix[expr_gp_T, expr_gp_type == 1 ? 2 * expr_gp_M : expr_gp_M] expr_gp_PHI;
+  matrix[expr_gp_T - expr_gp_d,
+    expr_gp_type == 1 ? 2 * expr_gp_M : expr_gp_M] expr_gp_PHI;
   array[expr_gp_n_obs] int<lower=1> expr_gp_flat_idx;
   array[2, 1] real expr_gp_rho_p;
   array[2, 1] real expr_gp_alpha_p;
@@ -123,9 +125,11 @@ data {
   int<lower=0> expl_gp_M;
   int<lower=0> expl_gp_type;
   real<lower=0> expl_gp_nu;
+  int<lower=0> expl_gp_d;
   real<lower=0> expl_gp_L;
   int<lower=0> expl_gp_n_obs;
-  matrix[expl_gp_T, expl_gp_type == 1 ? 2 * expl_gp_M : expl_gp_M] expl_gp_PHI;
+  matrix[expl_gp_T - expl_gp_d,
+    expl_gp_type == 1 ? 2 * expl_gp_M : expl_gp_M] expl_gp_PHI;
   array[expl_gp_n_obs] int<lower=1> expl_gp_flat_idx;
   array[2, 1] real expl_gp_rho_p;
   array[2, 1] real expl_gp_alpha_p;
@@ -170,9 +174,11 @@ data {
   int<lower=0> refp_gp_M;
   int<lower=0> refp_gp_type;
   real<lower=0> refp_gp_nu;
+  int<lower=0> refp_gp_d;
   real<lower=0> refp_gp_L;
   int<lower=0> refp_gp_n_obs;
-  matrix[refp_gp_T, refp_gp_type == 1 ? 2 * refp_gp_M : refp_gp_M] refp_gp_PHI;
+  matrix[refp_gp_T - refp_gp_d,
+    refp_gp_type == 1 ? 2 * refp_gp_M : refp_gp_M] refp_gp_PHI;
   array[refp_gp_n_obs] int<lower=1> refp_gp_flat_idx;
   array[2, 1] real refp_gp_rho_p;
   array[2, 1] real refp_gp_alpha_p;     // mean magnitude prior
@@ -205,9 +211,11 @@ data {
   int<lower=0> refnp_gp_M;
   int<lower=0> refnp_gp_type;
   real<lower=0> refnp_gp_nu;
+  int<lower=0> refnp_gp_d;
   real<lower=0> refnp_gp_L;
   int<lower=0> refnp_gp_n_obs;
-  matrix[refnp_gp_T, refnp_gp_type == 1 ? 2 * refnp_gp_M : refnp_gp_M]
+  matrix[refnp_gp_T - refnp_gp_d,
+    refnp_gp_type == 1 ? 2 * refnp_gp_M : refnp_gp_M]
     refnp_gp_PHI;
   array[refnp_gp_n_obs] int<lower=1> refnp_gp_flat_idx;
   array[2, 1] real refnp_gp_rho_p;
@@ -243,9 +251,11 @@ data {
   int<lower=0> rep_gp_M;
   int<lower=0> rep_gp_type;
   real<lower=0> rep_gp_nu;
+  int<lower=0> rep_gp_d;
   real<lower=0> rep_gp_L;
   int<lower=0> rep_gp_n_obs;
-  matrix[rep_gp_T, rep_gp_type == 1 ? 2 * rep_gp_M : rep_gp_M] rep_gp_PHI;
+  matrix[rep_gp_T - rep_gp_d,
+    rep_gp_type == 1 ? 2 * rep_gp_M : rep_gp_M] rep_gp_PHI;
   array[rep_gp_n_obs] int<lower=1> rep_gp_flat_idx;
   array[2, 1] real rep_gp_rho_p;
   array[2, 1] real rep_gp_alpha_p;
@@ -295,9 +305,11 @@ data {
   int<lower=0> miss_gp_M;
   int<lower=0> miss_gp_type;
   real<lower=0> miss_gp_nu;
+  int<lower=0> miss_gp_d;
   real<lower=0> miss_gp_L;
   int<lower=0> miss_gp_n_obs;
-  matrix[miss_gp_T, miss_gp_type == 1 ? 2 * miss_gp_M : miss_gp_M] miss_gp_PHI;
+  matrix[miss_gp_T - miss_gp_d,
+    miss_gp_type == 1 ? 2 * miss_gp_M : miss_gp_M] miss_gp_PHI;
   array[miss_gp_n_obs] int<lower=1> miss_gp_flat_idx;
   array[2, 1] real miss_gp_rho_p;
   array[2, 1] real miss_gp_alpha_p;
@@ -465,7 +477,7 @@ transformed parameters{
     expr_arima_z, expr_arima_pacf, expr_arima_theta, expr_arima_sigma,
     expr_arima_flat_idx,
     expr_gp_present, expr_gp_T, expr_gp_G, expr_gp_M, expr_gp_L,
-    expr_gp_type, expr_gp_nu, expr_gp_PHI, expr_gp_eta,
+    expr_gp_type, expr_gp_nu, expr_gp_d, expr_gp_PHI, expr_gp_eta,
     expr_gp_rho, expr_gp_alpha, expr_gp_flat_idx
   );
   exp_llatent = log_expected_latent_from_r(
@@ -482,7 +494,7 @@ transformed parameters{
       expl_arima_z, expl_arima_pacf, expl_arima_theta, expl_arima_sigma,
       expl_arima_flat_idx,
       expl_gp_present, expl_gp_T, expl_gp_G, expl_gp_M, expl_gp_L,
-      expl_gp_type, expl_gp_nu, expl_gp_PHI, expl_gp_eta,
+      expl_gp_type, expl_gp_nu, expl_gp_d, expl_gp_PHI, expl_gp_eta,
       expl_gp_rho, expl_gp_alpha, expl_gp_flat_idx
     );
     exp_lobs = log_expected_obs_from_latent(
@@ -509,7 +521,7 @@ transformed parameters{
       refp_arima_z, refp_arima_pacf, refp_arima_theta, refp_arima_sigma,
       refp_arima_flat_idx,
       refp_gp_present, refp_gp_T, refp_gp_G, refp_gp_M, refp_gp_L,
-      refp_gp_type, refp_gp_nu, refp_gp_PHI, refp_gp_eta,
+      refp_gp_type, refp_gp_nu, refp_gp_d, refp_gp_PHI, refp_gp_eta,
       refp_gp_rho, refp_gp_alpha, refp_gp_flat_idx
     );
     if (model_refp > 1) {
@@ -523,7 +535,7 @@ transformed parameters{
         refp_arima_sd_sigma,
         refp_arima_flat_idx,
         refp_gp_present, refp_gp_T, refp_gp_G, refp_gp_M, refp_gp_L,
-        refp_gp_type, refp_gp_nu, refp_gp_PHI, refp_gp_eta,
+        refp_gp_type, refp_gp_nu, refp_gp_d, refp_gp_PHI, refp_gp_eta,
         refp_gp_rho, refp_gp_sd_alpha, refp_gp_flat_idx
       );
       refp_sd = exp(refp_sd);
@@ -552,7 +564,7 @@ transformed parameters{
       refnp_arima_z, refnp_arima_pacf, refnp_arima_theta, refnp_arima_sigma,
       refnp_arima_flat_idx,
       refnp_gp_present, refnp_gp_T, refnp_gp_G, refnp_gp_M, refnp_gp_L,
-      refnp_gp_type, refnp_gp_nu, refnp_gp_PHI, refnp_gp_eta,
+      refnp_gp_type, refnp_gp_nu, refnp_gp_d, refnp_gp_PHI, refnp_gp_eta,
       refnp_gp_rho, refnp_gp_alpha, refnp_gp_flat_idx
     );
     }
@@ -568,7 +580,7 @@ transformed parameters{
     rep_arima_z, rep_arima_pacf, rep_arima_theta, rep_arima_sigma,
     rep_arima_flat_idx,
     rep_gp_present, rep_gp_T, rep_gp_G, rep_gp_M, rep_gp_L,
-    rep_gp_type, rep_gp_nu, rep_gp_PHI, rep_gp_eta,
+    rep_gp_type, rep_gp_nu, rep_gp_d, rep_gp_PHI, rep_gp_eta,
     rep_gp_rho, rep_gp_alpha, rep_gp_flat_idx
   );
   }
@@ -583,7 +595,7 @@ transformed parameters{
       miss_arima_z, miss_arima_pacf, miss_arima_theta, miss_arima_sigma,
       miss_arima_flat_idx,
       miss_gp_present, miss_gp_T, miss_gp_G, miss_gp_M, miss_gp_L,
-      miss_gp_type, miss_gp_nu, miss_gp_PHI, miss_gp_eta,
+      miss_gp_type, miss_gp_nu, miss_gp_d, miss_gp_PHI, miss_gp_eta,
       miss_gp_rho, miss_gp_alpha, miss_gp_flat_idx
     ));
   }

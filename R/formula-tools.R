@@ -573,6 +573,20 @@ arma <- function(time, by, p = 1, q = 1) {
 #' length scale and magnitude hyperparameters). Currently limited to a
 #' single variable.
 #'
+#' @param d Non-negative integer, defaults to `0`. Order of
+#' differencing, matching the `d` of [arima()]: the per-group
+#' realisation is integrated (cumulative-summed) `d` times before it is
+#' added to the predictor. `d = 0` gives stationary deviations (the
+#' default, equivalent to EpiNow2's `gp_on = "R0"`). `d = 1` integrates
+#' once, giving a smoothly drifting, random-walk-like trajectory
+#' (equivalent to EpiNow2's default `gp_on = "R_t-1"`). For `d >= 1` the
+#' first `d` values of the realisation are anchored to zero, so the free
+#' level (and, for `d >= 2`, slope) is carried by the module's fixed
+#' effects rather than the GP. Differencing is intended for the latent
+#' expectation modules (the growth rate `expr` and latent-to-obs
+#' proportion `expl`); integrating a logit-hazard term (`refnp`, `rep`,
+#' `miss`) is unusual but permitted for API consistency with [arima()].
+#'
 #' @param kernel Character string selecting the covariance kernel. One
 #' of `"matern32"` (the default, a Matern 3/2 kernel), `"matern52"`
 #' (Matern 5/2), `"ou"` (Ornstein-Uhlenbeck, equivalent to Matern
@@ -600,7 +614,8 @@ arma <- function(time, by, p = 1, q = 1) {
 #' gp(time)
 #' gp(time, location)
 #' gp(time, kernel = "se", basis_prop = 0.3)
-gp <- function(time, by, kernel = c(
+#' gp(time, d = 1)
+gp <- function(time, by, d = 0, kernel = c(
                  "matern32", "matern52", "ou", "se", "periodic"
                ), basis_prop = 0.2, boundary_scale = 1.5) {
   if (missing(time)) {
@@ -609,6 +624,8 @@ gp <- function(time, by, kernel = c(
   time <- deparse(substitute(time))
   by <- if (missing(by)) NULL else deparse(substitute(by))
   kernel <- rlang::arg_match(kernel)
+  # `d` shares the non-negative-integer validation with arima()'s orders.
+  .check_arima_order(d, "d")
   .check_gp_basis_prop(basis_prop)
   if (!is.numeric(boundary_scale) || length(boundary_scale) != 1L ||
     !is.finite(boundary_scale) || boundary_scale <= 0) {
@@ -630,7 +647,7 @@ gp <- function(time, by, kernel = c(
   )
   out <- list(
     time = time, by = by, kernel = kernel,
-    gp_type = gp_type, nu = nu,
+    gp_type = gp_type, nu = nu, d = as.integer(d),
     basis_prop = basis_prop, boundary_scale = boundary_scale
   )
   class(out) <- "enw_gp_term"
@@ -859,12 +876,15 @@ construct_arima <- function(arima, data) {
 #' Must contain the time and (if specified) grouping variable.
 #'
 #' @return A list with the following elements:
-#'   - `time`, `by`, `kernel`, `gp_type`, `nu`, `basis_prop`,
+#'   - `time`, `by`, `kernel`, `gp_type`, `nu`, `d`, `basis_prop`,
 #'     `boundary_scale`: passed through from the [gp()] term.
-#'   - `T`: number of distinct time points in the series.
+#'   - `T`: number of distinct time points in the integrated series.
 #'   - `G`: number of groups (1 if `by` is unspecified).
-#'   - `M`: number of basis functions, `ceiling(basis_prop * T)`.
-#'   - `PHI`: the `T x M` basis matrix.
+#'   - `M`: number of basis functions, `ceiling(basis_prop * (T - d))`.
+#'   - `PHI`: the `(T - d) x M` basis matrix. For `d >= 1` the basis is
+#'     built on the `T - d` free values that are integrated `d` times in
+#'     Stan; the first `d` values of the realisation are anchored to
+#'     zero.
 #'   - `time_idx`, `group_idx`: per-observation lookup indices.
 #'   - `time_vals`, `group_levels`: lookup vectors so the indices can
 #'     be inverted.
@@ -882,9 +902,20 @@ construct_gp <- function(gp, data) {
     )
   }
   idx <- .time_group_index(data, gp$time, gp$by, what = "Gaussian process")
-  M <- as.integer(ceiling(gp$basis_prop * idx$T))
+  d <- gp$d
+  # For d-fold differencing the GP generates the T - d free values that
+  # are integrated d times in Stan (the first d values are anchored to
+  # zero), so the basis is built on T - d points.
+  n_free <- idx$T - d
+  if (n_free < 2L) {
+    cli::cli_abort(paste0(
+      "Gaussian process series has only {idx$T} time points; need at ",
+      "least {d + 2} for a `gp()` term with `d = {d}`."
+    ))
+  }
+  M <- as.integer(ceiling(gp$basis_prop * n_free))
   PHI <- .gp_basis_matrix(
-    idx$T, M, gp$boundary_scale,
+    n_free, M, gp$boundary_scale,
     is_periodic = gp$gp_type == 1L, w0 = 1.0
   )
 
@@ -895,7 +926,7 @@ construct_gp <- function(gp, data) {
 
   list(
     time = gp$time, by = gp$by, kernel = gp$kernel,
-    gp_type = gp$gp_type, nu = gp$nu,
+    gp_type = gp$gp_type, nu = gp$nu, d = d,
     basis_prop = gp$basis_prop, boundary_scale = gp$boundary_scale,
     T = idx$T, G = idx$G, M = M, PHI = PHI,
     time_idx = idx$time_idx, group_idx = idx$group_idx,

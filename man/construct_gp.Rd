@@ -15,12 +15,15 @@ Must contain the time and (if specified) grouping variable.}
 \value{
 A list with the following elements:
 \itemize{
-\item \code{time}, \code{by}, \code{kernel}, \code{gp_type}, \code{nu}, \code{basis_prop},
+\item \code{time}, \code{by}, \code{kernel}, \code{gp_type}, \code{nu}, \code{d}, \code{basis_prop},
 \code{boundary_scale}: passed through from the \code{\link[=gp]{gp()}} term.
-\item \code{T}: number of distinct time points in the series.
+\item \code{T}: number of distinct time points in the integrated series.
 \item \code{G}: number of groups (1 if \code{by} is unspecified).
-\item \code{M}: number of basis functions, \code{ceiling(basis_prop * T)}.
-\item \code{PHI}: the \verb{T x M} basis matrix.
+\item \code{M}: number of basis functions, \code{ceiling(basis_prop * (T - d))}.
+\item \code{PHI}: the \verb{(T - d) x M} basis matrix. For \code{d >= 1} the basis is
+built on the \code{T - d} free values that are integrated \code{d} times in
+Stan; the first \code{d} values of the realisation are anchored to
+zero.
 \item \code{time_idx}, \code{group_idx}: per-observation lookup indices.
 \item \code{time_vals}, \code{group_levels}: lookup vectors so the indices can
 be inverted.
