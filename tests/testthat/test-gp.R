@@ -41,6 +41,38 @@ test_that("gp() rejects invalid hyperparameters", {
   expect_error(gp(week, boundary_scale = 0), "boundary_scale")
 })
 
+test_that("gp() defaults to d = 0 and validates the differencing order", {
+  expect_identical(gp(week)$d, 0L)
+  expect_identical(gp(week, d = 1)$d, 1L)
+  expect_identical(gp(week, d = 2)$d, 2L)
+  expect_error(gp(week, d = -1), "non-negative integer")
+  expect_error(gp(week, d = 1.5), "non-negative integer")
+  expect_error(gp(week, d = "x"), "non-negative integer")
+})
+
+test_that("construct_gp() sizes the basis to T - d for differencing", {
+  T_len <- length(unique(data$week))
+  s0 <- construct_gp(gp(week, d = 0), data)
+  expect_identical(s0$d, 0L)
+  expect_identical(nrow(s0$PHI), T_len)
+  expect_identical(s0$M, as.integer(ceiling(T_len * 0.2)))
+
+  s1 <- construct_gp(gp(week, d = 1), data)
+  expect_identical(s1$d, 1L)
+  # Basis is built on the T - d free values that are integrated in Stan.
+  expect_identical(nrow(s1$PHI), T_len - 1L)
+  expect_identical(s1$M, as.integer(ceiling((T_len - 1L) * 0.2)))
+  # The full integrated series is still length T.
+  expect_identical(s1$T, T_len)
+})
+
+test_that("construct_gp() rejects a series too short for d", {
+  expect_error(
+    construct_gp(gp(week, d = 100), data),
+    "only .* time points"
+  )
+})
+
 test_that("gp() requires a time argument", {
   expect_error(gp(), "time")
 })
@@ -130,6 +162,7 @@ test_that("enw_formula_as_data_list() ships the gp Stan data", {
   expect_identical(dl$ref_gp_present, 1L)
   expect_identical(dl$ref_gp_type, 2L)
   expect_identical(dl$ref_gp_nu, 1.5)
+  expect_identical(dl$ref_gp_d, 0L)
   expect_identical(dl$ref_gp_T, length(unique(data$week)))
   expect_identical(dl$ref_gp_G, length(unique(data$day_of_week)))
   expect_identical(dl$ref_gp_M, as.integer(ceiling(dl$ref_gp_T * 0.2)))
@@ -152,7 +185,33 @@ test_that("enw_formula_as_data_list() returns inert defaults without gp", {
   expect_identical(dl$ref_gp_present, 0L)
   expect_identical(dl$ref_gp_T, 0L)
   expect_identical(dl$ref_gp_M, 0L)
+  expect_identical(dl$ref_gp_d, 0L)
   expect_identical(dl$ref_gp_n_obs, 0L)
+})
+
+test_that("enw_formula_as_data_list() ships the gp differencing order", {
+  f <- enw_formula(~ 1 + gp(week, d = 1), data, sparse = FALSE)
+  dl <- enw_formula_as_data_list(f, "ref")
+  expect_identical(dl$ref_gp_d, 1L)
+  # The basis matrix has T - d rows; the integrated series stays length T.
+  expect_identical(nrow(dl$ref_gp_PHI), dl$ref_gp_T - dl$ref_gp_d)
+  expect_identical(dl$ref_gp_M, as.integer(ceiling(
+    (dl$ref_gp_T - dl$ref_gp_d) * 0.2
+  )))
+})
+
+test_that("gp_d flows through to Stan data on every supporting module", {
+  exp <- enw_expectation(r = ~ 1 + gp(week, d = 1), data = pobs)
+  expect_identical(exp$data$expr_gp_d, 1L)
+  expect_identical(
+    nrow(exp$data$expr_gp_PHI), exp$data$expr_gp_T - 1L
+  )
+
+  ref <- suppressWarnings(enw_reference(~ 1 + gp(week, d = 1), data = pobs))
+  expect_identical(ref$data$refp_gp_d, 1L)
+
+  rep_mod <- enw_report(~ 1 + gp(day, d = 1), data = pobs)
+  expect_identical(rep_mod$data$rep_gp_d, 1L)
 })
 
 test_that("enw_formula_as_data_list() rejects multiple gp terms", {
@@ -247,6 +306,113 @@ test_that("epinowcast() fits a gp() growth-rate term in compiled Stan", {
   gp_pars <- draws[grepl("expr_gp_(rho|alpha)", variable)]
   expect_true(nrow(gp_pars) >= 2)
   expect_true(all(is.finite(gp_pars$mean)))
+})
+
+test_that("gp(d = 0) reproduces the stationary fit and d = 1 integrates", {
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_on_local()
+  fit_pobs <- enw_example("preprocessed")
+  fit_opts <- enw_fit_opts(
+    save_warmup = FALSE, pp = FALSE, chains = 2, parallel_chains = 2,
+    iter_warmup = 250, iter_sampling = 250, show_messages = FALSE,
+    show_exceptions = FALSE, refresh = 0, adapt_delta = 0.95, seed = 1
+  )
+  # d = 0 must reproduce the default stationary gp() exactly: same data
+  # shipped to Stan (the differencing path is inert).
+  exp_default <- enw_expectation(r = ~ 1 + gp(week), data = fit_pobs)
+  exp_d0 <- enw_expectation(r = ~ 1 + gp(week, d = 0), data = fit_pobs)
+  expect_identical(exp_d0$data$expr_gp_d, 0L)
+  expect_identical(
+    exp_default$data$expr_gp_PHI, exp_d0$data$expr_gp_PHI
+  )
+  expect_identical(
+    exp_default$data$expr_gp_M, exp_d0$data$expr_gp_M
+  )
+
+  # d = 1 integrates the growth-rate process once: it fits and the
+  # basis is built on T - 1 free values.
+  exp_d1 <- enw_expectation(r = ~ 1 + gp(week, d = 1), data = fit_pobs)
+  expect_identical(exp_d1$data$expr_gp_d, 1L)
+  expect_identical(
+    nrow(exp_d1$data$expr_gp_PHI), exp_d1$data$expr_gp_T - 1L
+  )
+  nowcast_d1 <- suppressWarnings(epinowcast(
+    fit_pobs,
+    expectation = exp_d1,
+    obs = enw_obs(family = "poisson", data = fit_pobs),
+    fit = fit_opts
+  ))
+  expect_convergence(nowcast_d1, rhat = 1.1)
+})
+
+test_that("a d = 1 gp() recovers a known integrated (drifting) trend", {
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_on_local()
+  # Standalone HSGP model with d = 1 must integrate the latent process
+  # and anchor f[1] = 0, recovering a smooth drifting trend.
+  stan_dir <- system.file("stan", package = "epinowcast")
+  model_code <- paste(
+    "functions {",
+    "  #include functions/gaussian_process.stan",
+    "}",
+    "data {",
+    "  int<lower=1> T; int<lower=1> M; real<lower=0> L;",
+    "  matrix[T - 1, M] PHI; vector[T] y; real<lower=0> obs_sd;",
+    "}",
+    "transformed data {",
+    "  array[T] int idx; for (i in 1:T) idx[i] = i;",
+    "}",
+    "parameters {",
+    "  vector[M] eta; real<lower=0> rho; real<lower=0> alpha;",
+    "}",
+    "transformed parameters {",
+    "  vector[T] f = apply_gp_term(",
+    "    rep_vector(0.0, T), 1, T, 1, M, L, 2, 1.5, 1,",
+    "    PHI, to_matrix(eta, M, 1), {rho}, {alpha}, idx);",
+    "}",
+    "model {",
+    "  eta ~ std_normal(); rho ~ lognormal(log(10), 0.5);",
+    "  alpha ~ normal(0, 1); y ~ normal(f, obs_sd);",
+    "}",
+    sep = "\n"
+  )
+  mod <- cmdstanr::cmdstan_model(
+    cmdstanr::write_stan_file(model_code),
+    include_paths = stan_dir
+  )
+  T_len <- 40L
+  L <- 1.5
+  M <- ceiling((T_len - 1L) * 0.4)
+  # A smooth drifting trend that starts at zero (matching the d = 1
+  # anchoring) so the GP carries the whole shape.
+  x <- seq_len(T_len)
+  true_f <- cumsum(c(0, 0.3 * sin(2 * pi * x[-1] / T_len)))
+  obs_sd <- 0.1
+  set.seed(1)
+  y <- true_f + rnorm(T_len, 0, obs_sd)
+  fit <- mod$sample(
+    data = list(
+      T = T_len, M = M, L = L,
+      PHI = {
+        xs <- seq_len(T_len - 1L)
+        xs <- 2 * (xs - mean(xs)) / (max(xs) - 1)
+        sin(outer(pi / (2 * L) * (xs + L), seq_len(M))) / sqrt(L)
+      },
+      y = y, obs_sd = obs_sd
+    ),
+    chains = 2, parallel_chains = 2, iter_warmup = 1000,
+    iter_sampling = 500, adapt_delta = 0.95, seed = 1, refresh = 0,
+    show_messages = FALSE, show_exceptions = FALSE
+  )
+  fsum <- fit$summary("f")
+  fhat <- fsum$mean
+  # The first value is anchored to zero by construction.
+  expect_lt(abs(fhat[1]), 1e-8)
+  # The posterior mean tracks the integrated trend.
+  expect_lt(sqrt(mean((fhat - true_f)^2)), 0.15)
+  expect_true(all(fit$summary(c("rho", "alpha"))$rhat < 1.1))
 })
 
 test_that("gp() wires data and priors into every supporting module", {

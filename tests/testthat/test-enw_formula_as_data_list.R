@@ -74,7 +74,8 @@ test_that("enw_formula_as_data_list produces expected default output", {
       c_arima_n_obs = 0L,
       c_arima_flat_idx = integer(0),
       c_gp_present = 0L, c_gp_T = 0L, c_gp_G = 0L, c_gp_M = 0L,
-      c_gp_type = 0L, c_gp_nu = 0, c_gp_L = 0, c_gp_n_obs = 0L,
+      c_gp_type = 0L, c_gp_nu = 0, c_gp_d = 0L, c_gp_L = 0,
+      c_gp_n_obs = 0L,
       c_gp_PHI = matrix(numeric(0), 0, 0),
       c_gp_flat_idx = integer(0)
     )

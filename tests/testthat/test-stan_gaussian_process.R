@@ -54,6 +54,56 @@ test_that("update_gp() returns PHI %*% (diagSPD .* eta)", {
   expect_lt(max(abs(out - ref)), 1e-10)
 })
 
+test_that("apply_gp_term() integrates and anchors under differencing", {
+  # Single group, base = 0, flat_idx = identity, so the output is the
+  # latent gp_eps. Exercise d = 0 (stationary), d = 1 and d = 2.
+  T_full <- 12L
+  L <- 1.5
+  alpha <- 1.0
+  rho <- 3.0
+  make_phi <- function(n, M) {
+    x <- seq_len(n)
+    x <- 2 * (x - mean(x)) / (max(x) - 1)
+    sin(outer(pi / (2 * L) * (x + L), seq_len(M))) / sqrt(L)
+  }
+  run <- function(d, eta, phi, M) {
+    eta_m <- matrix(eta, ncol = 1)
+    apply_gp_term(
+      rep(0, T_full), 1L, T_full, 1L, M, L, 2L, 1.5, d,
+      phi, eta_m, array(rho), array(alpha), seq_len(T_full)
+    )
+  }
+  set.seed(1)
+  # d = 0: basis on all T points; output equals update_gp() directly.
+  M0 <- 5L
+  phi0 <- make_phi(T_full, M0)
+  eta0 <- rnorm(M0)
+  out0 <- run(0L, eta0, phi0, M0)
+  ref0 <- update_gp(phi0, M0, L, alpha, rho, eta0, 2L, 1.5)
+  expect_lt(max(abs(out0 - ref0)), 1e-10)
+
+  # d = 1: basis on T - 1 points; first value anchored to zero and the
+  # series is the cumulative sum of c(0, free).
+  M1 <- 5L
+  phi1 <- make_phi(T_full - 1L, M1)
+  eta1 <- rnorm(M1)
+  out1 <- run(1L, eta1, phi1, M1)
+  free1 <- update_gp(phi1, M1, L, alpha, rho, eta1, 2L, 1.5)
+  expect_lt(abs(out1[1]), 1e-12)
+  expect_lt(max(abs(out1 - cumsum(c(0, free1)))), 1e-10)
+
+  # d = 2: first two values anchored to zero, double cumulative sum.
+  M2 <- 4L
+  phi2 <- make_phi(T_full - 2L, M2)
+  eta2 <- rnorm(M2)
+  out2 <- run(2L, eta2, phi2, M2)
+  free2 <- update_gp(phi2, M2, L, alpha, rho, eta2, 2L, 1.5)
+  expect_lt(max(abs(out2[1:2])), 1e-12)
+  expect_lt(
+    max(abs(out2 - cumsum(cumsum(c(0, 0, free2))))), 1e-10
+  )
+})
+
 test_that("a small Stan model recovers a smooth GP trend", {
   skip_if_not_installed("cmdstanr")
   skip_if(
