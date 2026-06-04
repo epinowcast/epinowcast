@@ -28,7 +28,13 @@ weekly random walk (specified as \code{rw(week, by = .group)}). Setting to
 \item{generation_time}{A numeric vector that sums to 1 and defaults to 1.
 Describes the weighting to apply to previous generations (i.e as part of a
 renewal equation). When set to 1 (the default) this corresponds to modelling
-the daily growth rate.}
+the daily growth rate. Alternatively, an uncertain distribution created with
+\code{\link[=enw_uncertain]{enw_uncertain()}} can be supplied. The distribution is then discretised and
+marginalised within the model, with its parameters estimated from priors
+(matching the uncertain distribution support in \code{EpiNow2}). Note that the
+generation time is only weakly identified from incidence data alone, so
+informative priors are usually required (see the discussion in the help for
+\code{\link[=enw_uncertain]{enw_uncertain()}}).}
 
 \item{observation}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}}) describing
 the modifiers used to adjust expected observations. This can use features
@@ -46,7 +52,10 @@ based on some assumed reporting delay and to rescale observations (by
 multiplying a probability mass function by some fraction) to account
 ascertainment etc. A list of PMFs can be provided to allow for time-varying
 PMFs. This should be the same length as the modelled time period plus the
-length of the generation time if supplied.}
+length of the generation time if supplied. Alternatively, an uncertain
+distribution created with \code{\link[=enw_uncertain]{enw_uncertain()}} can be supplied, in which case
+the delay PMF is discretised and convolved within the model with its
+parameters estimated from priors.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 

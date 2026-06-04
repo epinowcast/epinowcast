@@ -8,6 +8,11 @@
   An integer `d` argument (matching `arima()`'s `d`) integrates the process `d` times: `d = 0` is stationary (the default, like EpiNow2's `gp_on = "R0"`), `d = 1` gives a smoothly drifting trend (like EpiNow2's default `gp_on = "R_t-1"`), and `d >= 2` integrates further, anchoring the first `d` values to zero so the level and slope are carried by the fixed effects.
   The Stan implementation is adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2, MIT licensed).
   See #824.
+- `enw_expectation()` now accepts uncertain generation time and latent reporting delay distributions specified with the new `enw_uncertain()` helper, in addition to the existing fixed numeric PMFs.
+  The distribution parameters are estimated from priors and the PMF is discretised (and, for the latent reporting delay, convolved) within the model, reusing the parametric reference date discretisation machinery.
+  This gives parity with the uncertain distribution support in `EpiNow2`.
+  Fixed PMFs remain the default so existing models are unaffected.
+  See #177 and #178.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
 
