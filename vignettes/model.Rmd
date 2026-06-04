@@ -190,6 +190,22 @@ For example, `enw_reference(non_parametric = ~ 1 + day_of_week)` adds day-of-wee
 All fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations.
 See `?epinowcast` for details on inspecting and customising these priors.
 
+## Centring
+
+Each (log-)linear predictor above pairs an intercept ($r_0$, $\nu_0$, $\mu_0$, $\delta_0$) with a fixed-effect design matrix.
+Because the design columns are not generally centred at zero, the intercept and the fixed-effect coefficients trade off against each other, which correlates them in the posterior and slows sampling.
+For efficiency the fixed-effect design is therefore centred on its observation-weighted column means $\bar X$ before it enters the predictor, so the intercept represents the predictor at the mean of the covariates rather than at their origin.
+Taking the growth rate as an example,
+
+\begin{equation}
+  \text{log}(R_{g,t}) = r_0^{c} + \beta_{f,r} (X_r - \bar X_r) + \beta_{r,r} Z_r,
+\end{equation}
+
+where $r_0^{c}$ is the sampled (centred) intercept.
+The original-scale intercept reported to the user is recovered as $r_0 = r_0^{c} - \bar X_r \beta_{f,r}$, and the user's prior is placed on $r_0$.
+The shift is additive, so the change of variables has unit Jacobian, the posterior is unchanged, and the prior keeps its meaning; this is the parameterisation `brms` uses for population-level intercepts by default.
+The same centring is applied to the integrated drift of any autoregressive term (see the ARIMA vignette), and modules without a free intercept are left uncentred.
+
 # Observation model and nowcast
 
 Expected notifications by date of reference ($t$) and reporting delay can now be found by multiplying expected final notifications for each $t$ with the probability of reporting for each day of delay ($p_{g,t,d}$). We assume a negative binomial observation model, by default, with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion[@stan_prior_wiki]) and produce a nowcast of final observed notifications at each reference date by summing posterior estimates for unobserved notification and observed notifications for that reference date.

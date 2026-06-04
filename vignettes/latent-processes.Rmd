@@ -185,8 +185,8 @@ kable(arima_pars, digits = 3)
 
 |variable            |   mean|     q5|   q95|
 |:-------------------|------:|------:|-----:|
-|expr_arima_pacf[1]  | -0.014| -0.852| 0.826|
-|expr_arima_sigma[1] |  0.029|  0.011| 0.055|
+|expr_arima_pacf[1]  | -0.064| -0.907| 0.850|
+|expr_arima_sigma[1] |  0.040|  0.016| 0.075|
 
 
 
@@ -345,8 +345,6 @@ diagnostics <- rbindlist(lapply(names(fits), function(model) {
     runtime_s = round(fits[[model]]$fit[[1]]$time()$total)
   )
 }))
-#> Warning: 1 of 1000 (0.0%) transitions hit the maximum treedepth limit of 12.
-#> See https://mc-stan.org/misc/warnings for details.
 kable(diagnostics)
 ```
 
@@ -354,12 +352,12 @@ kable(diagnostics)
 
 |model                                     | max_rhat| min_ess_bulk| divergences| runtime_s|
 |:-----------------------------------------|--------:|------------:|-----------:|---------:|
-|rw(week)                                  |    1.013|          169|           0|       106|
-|arima(week, age_group, 1, 1, 0)           |    1.015|          205|           0|        88|
-|ar(day, age_group, 1)                     |    1.016|          214|           0|        93|
-|(1 &#124; week:.group)                    |    1.014|          208|           0|        84|
-|(1 &#124; day_of_week)                    |    1.023|          166|           0|       231|
-|(1 &#124; day_of_week) + arima(week, ...) |    1.015|          183|           0|       295|
+|rw(week)                                  |    1.017|          165|           0|        46|
+|arima(week, age_group, 1, 1, 0)           |    1.023|          154|           0|        51|
+|ar(day, age_group, 1)                     |    1.014|          255|           0|        81|
+|(1 &#124; week:.group)                    |    1.017|          184|           0|        45|
+|(1 &#124; day_of_week)                    |    1.011|          218|           0|        60|
+|(1 &#124; day_of_week) + arima(week, ...) |    1.013|          236|           0|        55|
 
 
 

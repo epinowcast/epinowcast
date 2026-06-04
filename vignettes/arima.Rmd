@@ -95,6 +95,25 @@ eps  <- sigma * K * z                      # T x G latent
 
 The Stan implementation of these steps lives in `inst/stan/functions/arima_kernel.stan`.
 
+# Centring the integrated residual
+
+When the residual is integrated ($d \ge 1$) the cumulative-sum operator $D^d$ gives $\epsilon$ a free overall level: the first shock propagates through the cumulative sum and shifts the whole path, so the level of $\epsilon$ trades off against the intercept $\alpha$ of the linear predictor.
+This is a ridge in the joint posterior and slows sampling, the same way an un-centred design matrix correlates an intercept with its slopes.
+
+When the module has a free intercept, each group's residual is mean-centred,
+
+$$\tilde\epsilon_{\cdot, g} = \epsilon_{\cdot, g} - \frac{1}{T} \sum_{t=1}^{T} \epsilon_{t, g},$$
+
+so the residual is a pure mean-zero deviation and the intercept owns the level.
+To keep the prior on the original-scale intercept, the removed level is recovered into it,
+
+$$\alpha = \alpha_c - \bar m, \qquad \bar m = \frac{1}{G} \sum_{g=1}^{G} \frac{1}{T} \sum_{t=1}^{T} \epsilon_{t, g},$$
+
+where $\alpha_c$ is the sampled (centred) intercept and the user's prior is placed on $\alpha$.
+The shift is additive, so the change of variables has unit Jacobian and the prior keeps its meaning.
+For a single group this is an exact reparameterisation; for several groups the shared level is preserved while per-group deviations from the mean are re-expressed.
+This mirrors how `brms` centres its population-level design matrix and how EpiNow2 centres the cumulative Gaussian process for the reproduction number, and on a weekly random-walk growth model it roughly halves the sampling time at the `adapt_delta` these models use.
+
 # Stationarity via partial autocorrelations
 
 The autoregressive part is only well behaved if it is *stationary*.
