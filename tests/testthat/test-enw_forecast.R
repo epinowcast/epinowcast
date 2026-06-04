@@ -27,6 +27,26 @@ test_that("enw_forecast() rejects non-epinowcast input", {
   )
 })
 
+test_that("enw_resolve_growth_rate() guards against a mismatched fit", {
+  # Stub fit whose posterior growth rate length does not match expr_len
+  stub_fit <- list(
+    summary = function(...) data.frame(mean = c(0.1, 0.2, 0.3))
+  )
+  expect_error(
+    enw_resolve_growth_rate(NULL, stub_fit, expr_len = 5L),
+    "incompatible model"
+  )
+  expect_error(
+    enw_resolve_growth_rate(0.1, stub_fit, expr_len = 5L),
+    "incompatible model"
+  )
+  # Matching length passes through
+  expect_identical(
+    enw_resolve_growth_rate(NULL, stub_fit, expr_len = 3L),
+    c(0.1, 0.2, 0.3)
+  )
+})
+
 test_that("enw_forecast() with NULL growth rate uses the posterior mean", {
   skip_on_cran()
   skip_on_local()

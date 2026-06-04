@@ -98,8 +98,18 @@ enw_forecast <- function(fit, growth_rate = NULL,
 #'
 #' @return A numeric vector of growth rates of length `expr_len`.
 #' @keywords internal
+#' @importFrom cli cli_abort
 enw_resolve_growth_rate <- function(growth_rate, fit, expr_len) {
   posterior_r <- fit$summary("r", mean)$mean
+  if (length(posterior_r) != expr_len) {
+    cli::cli_abort(
+      paste(
+        "The fitted growth rate has length {length(posterior_r)} but",
+        "{expr_len} was expected; the fitted object may be from an",
+        "incompatible model."
+      )
+    )
+  }
   if (is.null(growth_rate)) {
     return(posterior_r)
   }
