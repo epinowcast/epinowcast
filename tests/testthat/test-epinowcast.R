@@ -93,7 +93,8 @@ test_that("epinowcast() runs with within-chain parallelisation", {
   pobs <- enw_preprocess_data(obs, max_delay = 5)
   nowcast <- suppressMessages(
     epinowcast(
-      pobs, fit = enw_fit_opts(
+      pobs,
+      fit = enw_fit_opts(
         sampler = silent_enw_sample,
         threads_per_chain = 2
       )
@@ -498,7 +499,7 @@ test_that("epinowcast() can fit a simple combined parametric and non-parametric
       sampler = silent_enw_sample,
       save_warmup = FALSE, pp = TRUE,
       chains = 2, iter_warmup = 500, iter_sampling = 1000,
-      refresh = 0, show_messages = FALSE
+      refresh = 0, show_messages = FALSE, max_treedepth = 12
     ),
     model = model
   ))
@@ -549,7 +550,8 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
   )
 
   # Keep only Wednesday reports
-  weekly_obs[,
+  weekly_obs[
+    ,
     confirm := fifelse(day_of_week == "Wednesday", confirm, NA_real_)
   ]
   weekly_obs <- enw_flag_observed_observations(weekly_obs)
@@ -564,7 +566,8 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
 
   # Create Wednesday structural reporting
   structural <- enw_dayofweek_structural_reporting(
-    pobs, day_of_week = "Wednesday"
+    pobs,
+    day_of_week = "Wednesday"
   )
 
   # Fit model
