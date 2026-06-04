@@ -38,8 +38,13 @@ reference date (Kalbfleisch & Lawless, 1989; Hoehle & an der Heiden,
 these are the final retrospective totals this is the multinomial of #775,
 and when they are running totals observed only up to some horizon the
 renormalisation over the observed delay range gives the truncated
-multinomial of #776. Use with \code{expectation = enw_expectation(~0, data = data)} so the (now unused) latent process is switched off. Not compatible
-with an \code{observation_indicator} or with the missing reference model.}
+multinomial of #776. Supply a minimal expectation, e.g.
+\code{expectation = enw_expectation(~1, data = data)}; in delay-only mode its
+expected observations are overridden by the known totals so the latent
+process is inert (it does not affect the delay estimate). This mode is for
+delay estimation, not nowcasting (no posterior nowcast is produced; refit
+with the full model for a nowcast). Not compatible with an
+\code{observation_indicator} or with the missing reference model.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }

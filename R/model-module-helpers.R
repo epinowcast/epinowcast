@@ -116,7 +116,16 @@ delay_only_ltotal <- function(data, delay_only) {
   # latest_obs_as_matrix returns reference dates (t) by group (g); transpose
   # to the array[g] vector[t] layout cmdstanr expects.
   totals <- t(latest_obs_as_matrix(data$latest[[1]]))
-  if (any(totals <= 0, na.rm = TRUE)) {
+  if (!all(is.finite(totals))) {
+    cli::cli_abort(
+      paste0(
+        "All known totals must be finite for the delay-only model; found a ",
+        "missing or non-finite total. This usually means the latest available ",
+        "data has gaps in its reference dates."
+      )
+    )
+  }
+  if (any(totals <= 0)) {
     cli::cli_abort(
       paste0(
         "All known totals must be strictly positive for the delay-only ",

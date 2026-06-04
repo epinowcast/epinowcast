@@ -54,7 +54,7 @@ fit_delay_only <- function(pobs, model) {
     fit = enw_fit_opts(
       sampler = silent_enw_sample, nowcast = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 500, iter_sampling = 500,
-      show_messages = FALSE, refresh = 0
+      show_messages = FALSE, refresh = 0, seed = 8675309
     ),
     model = model
   )))
@@ -89,6 +89,16 @@ test_that("delay_only rejects non-positive totals", {
   bad$latest[[1]][1, confirm := 0]
   expect_error(
     enw_obs(delay_only = TRUE, data = bad), "strictly positive"
+  )
+})
+
+test_that("delay_only rejects missing or non-finite totals", {
+  pobs <- enw_example("preprocessed")
+  bad <- data.table::copy(pobs)
+  bad$latest[[1]] <- data.table::copy(pobs$latest[[1]])
+  bad$latest[[1]][1, confirm := NA_real_]
+  expect_error(
+    enw_obs(delay_only = TRUE, data = bad), "finite"
   )
 })
 
@@ -177,7 +187,7 @@ test_that("delay_only with nowcast = TRUE produces coherent output", {
     fit = enw_fit_opts(
       sampler = silent_enw_sample, nowcast = TRUE, pp = TRUE,
       output_loglik = TRUE, chains = 2, iter_warmup = 300, iter_sampling = 300,
-      show_messages = FALSE, refresh = 0
+      show_messages = FALSE, refresh = 0, seed = 8675309
     ),
     model = model
   )))

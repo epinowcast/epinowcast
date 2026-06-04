@@ -827,11 +827,15 @@ generated quantities {
         sdmax, csdmax, rep_agg_p, rep_agg_n_selected, rep_agg_selected_idx
       );
       for (i in 1:s) {
-        dlo_n = filt_obs_indexes(i, i, csl, sl);
-        log_lik[i] = delay_multinomial_lpmf(
-          segment(flat_obs, dlo_n[1], sl[i]) |
-            segment(dlo_lexp, dlo_n[1], sl[i])
-        );
+        // Skip empty snapshots, mirroring delay_multinomial_snaps, so the
+        // log_lik path does no empty work and never segments out of range.
+        if (sl[i]) {
+          dlo_n = filt_obs_indexes(i, i, csl, sl);
+          log_lik[i] = delay_multinomial_lpmf(
+            segment(flat_obs, dlo_n[1], sl[i]) |
+              segment(dlo_lexp, dlo_n[1], sl[i])
+          );
+        }
       }
     }
   } else {

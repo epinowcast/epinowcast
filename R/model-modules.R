@@ -850,9 +850,13 @@ enw_missing <- function(formula = ~1, data) {
 #' these are the final retrospective totals this is the multinomial of #775,
 #' and when they are running totals observed only up to some horizon the
 #' renormalisation over the observed delay range gives the truncated
-#' multinomial of #776. Use with `expectation = enw_expectation(~0, data =
-#' data)` so the (now unused) latent process is switched off. Not compatible
-#' with an `observation_indicator` or with the missing reference model.
+#' multinomial of #776. Supply a minimal expectation, e.g.
+#' `expectation = enw_expectation(~1, data = data)`; in delay-only mode its
+#' expected observations are overridden by the known totals so the latent
+#' process is inert (it does not affect the delay estimate). This mode is for
+#' delay estimation, not nowcasting (no posterior nowcast is produced; refit
+#' with the full model for a nowcast). Not compatible with an
+#' `observation_indicator` or with the missing reference model.
 #'
 #' @param data Output from [enw_preprocess_data()].
 #'
