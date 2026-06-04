@@ -53,39 +53,35 @@ test_that("epinowcast() runs using default arguments only", {
   )
   expect_error(nowcast$fit[[1]]$summary("refp_beta"))
   expect_error(nowcast$fit[[1]]$summary("rep_beta"))
-  expect_data_table(nowcast$priors[[1]])
-  expect_identical(nrow(nowcast$priors[[1]]), 21L)
+  priors <- nowcast$priors[[1]]
+  expect_data_table(priors)
   expect_named(
-    nowcast$priors[[1]],
+    priors,
     c("variable", "dimension", "description", "distribution", "mean", "sd")
   )
-  expect_identical(
-    nowcast$priors[[1]][, variable],
-    c(
-      "expr_r_int", "expr_beta_sd", "expr_lelatent_int",
-      "expr_arima_sigma",
-      "expl_beta_sd", "expl_arima_sigma",
-      "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd",
-      "refp_sd_beta_sd", "refp_arima_sigma", "refp_arima_sd_sigma",
-      "refnp_int", "refnp_beta_sd", "refnp_arima_sigma",
-      "rep_beta_sd", "rep_arima_sigma",
-      "miss_int", "miss_beta_sd", "miss_arima_sigma",
-      "sqrt_phi"
-    )
+  # Assert the core model priors are all present rather than hard-coding the
+  # exact set and count, so the test is robust to additive prior rows (the
+  # ARIMA partial-autocorrelation terms, and optional model features that
+  # each introduce further priors).
+  core_priors <- c(
+    "expr_r_int", "expr_beta_sd", "expr_lelatent_int", "expr_arima_sigma",
+    "expl_beta_sd", "expl_arima_sigma",
+    "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd",
+    "refp_sd_beta_sd", "refp_arima_sigma", "refp_arima_sd_sigma",
+    "refnp_int", "refnp_beta_sd", "refnp_arima_sigma",
+    "rep_beta_sd", "rep_arima_sigma",
+    "miss_int", "miss_beta_sd", "miss_arima_sigma",
+    "sqrt_phi"
   )
-  # Re-derive expected mean/sd vectors from the prior data.table itself
-  # rather than hard-coding them so the test is robust to ARIMA-related
-  # additions.
-  expect_true(all(is.finite(nowcast$priors[[1]][, mean])))
-  expect_true(all(nowcast$priors[[1]][, sd] > 0))
-  expect_identical(
-    nowcast$priors[[1]][variable %like% "exp", dimension],
-    c(1, 1, 1, 1, 1, 1)
-  )
-  expect_identical(
-    nowcast$priors[[1]][!variable %like% "exp", dimension],
-    rep(NA_real_, nrow(nowcast$priors[[1]][!variable %like% "exp"]))
-  )
+  expect_true(all(core_priors %in% priors[, variable]))
+  expect_true(all(is.finite(priors[, mean])))
+  # Prior sds are non-negative, and strictly positive except for the
+  # degenerate (Uniform) ARIMA partial-autocorrelation priors (sd == 0).
+  expect_true(all(priors[, sd] >= 0))
+  expect_true(all(priors[!variable %like% "arima_pacf", sd] > 0))
+  # Expectation-process priors carry a dimension index; the rest are NA.
+  expect_true(all(priors[variable %like% "exp", dimension] == 1))
+  expect_true(all(is.na(priors[!variable %like% "exp", dimension])))
 })
 
 test_that("epinowcast() runs with within-chain parallelisation", {
