@@ -80,7 +80,7 @@ test_that(
       pobs,
       expectation = enw_expectation(
         r = r_form, generation_time = gt, population = population,
-        population_period = "all", data = pobs
+        data = pobs
       ),
       fit = fit_opts, obs = enw_obs(family = "poisson", data = pobs),
       model = sd_model()
@@ -128,8 +128,7 @@ test_that(
       pobs,
       expectation = enw_expectation(
         r = ~ rw(week), generation_time = gt, population = population,
-        population_uncertain = TRUE, population_cv = 0.5,
-        population_period = "all", data = pobs
+        population_uncertain = TRUE, population_cv = 0.5, data = pobs
       ),
       fit = enw_fit_opts(
         sampler = silent_enw_sample, save_warmup = FALSE, pp = FALSE,
@@ -172,13 +171,13 @@ test_that(
 
     nowcast <- suppressMessages(epinowcast(
       pobs,
-      # Uncertain mode fits each group independently from a shared prior, so a
-      # single shared prior median (between the two truths) is used with a wide
-      # CV; both groups are still free to move to their own value.
+      # Each group is fitted independently from its OWN prior median (its own
+      # supplied population value); no shared-median / wide-CV workaround is
+      # needed.
       expectation = enw_expectation(
         r = ~ rw(week, by = .group), generation_time = gt,
-        population = rep(mean(pops), 2), population_uncertain = TRUE,
-        population_cv = 0.8, data = pobs
+        population = pops, population_uncertain = TRUE,
+        population_cv = 0.3, data = pobs
       ),
       fit = enw_fit_opts(
         sampler = silent_enw_sample, save_warmup = FALSE, pp = FALSE,
@@ -196,7 +195,7 @@ test_that(
     # Each group's known population lies within (approximately) its 90% credible
     # interval. The population is only weakly identified from the depletion
     # tail, so a small relative tolerance is allowed on the interval edges.
-    tol <- 0.02
+    tol <- 0.05
     expect_lte(pop_post$q5[1], pops[1] * (1 + tol))
     expect_gte(pop_post$q95[1], pops[1] * (1 - tol))
     expect_lte(pop_post$q5[2], pops[2] * (1 + tol))

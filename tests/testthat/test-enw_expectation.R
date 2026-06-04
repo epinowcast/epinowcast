@@ -1,6 +1,25 @@
 # Use example data
 pobs <- enw_example("preprocessed")
 
+# A small two-group preprocessed dataset for per-group population tests.
+multi_group_pobs <- function() {
+  nat_germany_hosp <- germany_covid19_hosp[location == "DE"][
+    age_group %in% c("00+", "80+")
+  ]
+  nat_germany_hosp <- enw_filter_report_dates(
+    nat_germany_hosp,
+    latest_date = "2021-10-01"
+  )
+  nat_germany_hosp <- enw_complete_dates(
+    nat_germany_hosp,
+    by = c("location", "age_group")
+  )
+  suppressWarnings(enw_preprocess_data(
+    enw_filter_reference_dates(nat_germany_hosp, include_days = 10),
+    by = "age_group", max_delay = 10
+  ))
+}
+
 test_that("enw_expectation produces the expected default model", {
   expect_snapshot({
     expectation <- enw_expectation(data = pobs)
@@ -145,20 +164,9 @@ test_that("enw_expectation accepts a fixed population for depletion", {
   expectation <- enw_expectation(
     generation_time = c(0.2, 0.5, 0.3), population = 1000, data = pobs
   )
-  expect_identical(expectation$data$expr_pop_use, 2L)
+  expect_identical(expectation$data$expr_pop_use, 1L)
   expect_identical(expectation$data$expr_pop_uncertain, 0L)
   expect_true(all(expectation$data$expr_pop_fixed == 1000))
-})
-
-test_that("enw_expectation records the population_period choice", {
-  expectation <- enw_expectation(
-    generation_time = c(0.2, 0.5, 0.3), population = 1000,
-    population_period = "forecast", data = pobs
-  )
-  # population_period is recorded via expr_pop_use but does not change the
-  # (always fully adjusted) recursion; no separate horizon (nht) is passed.
-  expect_identical(expectation$data$expr_pop_use, 1L)
-  expect_false("expr_pop_nht" %in% names(expectation$data))
 })
 
 test_that("enw_expectation supports an uncertain (fitted) population", {
@@ -168,11 +176,13 @@ test_that("enw_expectation supports an uncertain (fitted) population", {
     generation_time = c(0.2, 0.5, 0.3), population = population,
     population_uncertain = TRUE, population_cv = population_cv, data = pobs
   )
-  expect_identical(expectation$data$expr_pop_use, 2L)
+  expect_identical(expectation$data$expr_pop_use, 1L)
   expect_identical(expectation$data$expr_pop_uncertain, 1L)
   expect_true("expr_pop" %in% expectation$priors$variable)
   pop_prior <- expectation$priors[variable == "expr_pop"]
-  expect_identical(pop_prior$distribution, "Log normal")
+  expect_identical(unique(pop_prior$distribution), "Log normal")
+  # One prior row per group.
+  expect_identical(nrow(pop_prior), pobs$groups[[1]])
   # LogNormal log-median recovers the supplied population on the natural scale
   expect_equal(exp(pop_prior$mean), population, tolerance = 1e-6)
   # CV -> sdlog derivation is sqrt(log1p(cv^2))
@@ -186,21 +196,7 @@ test_that("enw_expectation supports an uncertain (fitted) population", {
 })
 
 test_that("enw_expectation accepts per-group fixed populations", {
-  nat_germany_hosp <- germany_covid19_hosp[location == "DE"][
-    age_group %in% c("00+", "80+")
-  ]
-  nat_germany_hosp <- enw_filter_report_dates(
-    nat_germany_hosp,
-    latest_date = "2021-10-01"
-  )
-  nat_germany_hosp <- enw_complete_dates(
-    nat_germany_hosp,
-    by = c("location", "age_group")
-  )
-  multi_pobs <- suppressWarnings(enw_preprocess_data(
-    enw_filter_reference_dates(nat_germany_hosp, include_days = 10),
-    by = "age_group", max_delay = 10
-  ))
+  multi_pobs <- multi_group_pobs()
   expectation <- enw_expectation(
     r = ~ 1 + (1 | .group), generation_time = c(0.2, 0.5, 0.3),
     population = c(1000, 2000), data = multi_pobs
@@ -215,6 +211,30 @@ test_that("enw_expectation accepts per-group fixed populations", {
     ),
     "recycling"
   )
+})
+
+test_that("enw_expectation fits per-group population prior medians", {
+  multi_pobs <- multi_group_pobs()
+  population <- c(1000, 4000)
+  population_cv <- 0.2
+  expectation <- suppressWarnings(enw_expectation(
+    r = ~ 1 + (1 | .group), generation_time = c(0.2, 0.5, 0.3),
+    population = population, population_uncertain = TRUE,
+    population_cv = population_cv, data = multi_pobs
+  ))
+  pop_prior <- expectation$priors[variable == "expr_pop"]
+  # One prior row per group, each centred on its own supplied population.
+  expect_identical(nrow(pop_prior), multi_pobs$groups[[1]])
+  expect_equal(exp(pop_prior$mean), population, tolerance = 1e-6)
+  # A single shared log sd from the CV.
+  expect_equal(
+    pop_prior$sd, rep(sqrt(log1p(population_cv^2)), length(population)),
+    tolerance = 1e-12
+  )
+  # Stan data carries a per-group prior (2 x g) via expr_pop_p.
+  pop_p <- enw_priors_as_data_list(pop_prior)$expr_pop_p
+  expect_identical(dim(pop_p), c(2L, length(population)))
+  expect_equal(exp(pop_p[1, ]), population, tolerance = 1e-6)
 })
 
 test_that("enw_expectation validates population arguments", {
