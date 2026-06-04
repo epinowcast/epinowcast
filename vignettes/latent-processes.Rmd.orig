@@ -199,9 +199,10 @@ plot(nowcast_ar, latest_obs = latest_obs) +
 
 # Gaussian process on weeks
 
-`gp(time, by, kernel, basis_prop)` adds an approximate Gaussian process to the growth rate.
+`gp(time, by, d, kernel, basis_prop)` adds an approximate Gaussian process to the growth rate.
 Where the random walk and AR terms build memory from one step to the next, a Gaussian process places a smooth prior over the whole trajectory at once: nearby time points are correlated, with a length scale that the model learns from the data.
 The result is a flexible smoother that can capture curvature a random walk would only reach through accumulated noise.
+By default the process is stationary; `gp(week, d = 1)` integrates it once for a smoothly drifting, random-walk-like trend (mirroring `arima()`'s `d`), as detailed in the [implementation notes](gaussian-process.html#differencing).
 
 The process is fitted using the Hilbert-space reduced-rank (spectral) approximation, so the cost is controlled by the number of basis functions rather than the number of time points.
 `basis_prop` sets that number as a proportion of the series length (the default `0.2` follows `EpiNow2`); a larger value is more accurate but slower.

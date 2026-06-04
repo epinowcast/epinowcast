@@ -55,6 +55,7 @@ Add a term to any module's formula with `gp()`:
 
 - `gp(time)` — a Gaussian process over `time` with the default Matérn 3/2 kernel.
 - `gp(time, by)` — an independent realisation per level of `by`, sharing the length scale and magnitude.
+- `gp(time, d = 1)` — an integrated (non-stationary) process (see [Differencing order](#differencing)).
 - `gp(time, kernel = "se")` — a different kernel (see [Kernels](#kernels)).
 - `gp(time, basis_prop = 0.3)` — more basis functions, trading speed for approximation accuracy.
 
@@ -140,6 +141,31 @@ The latent process produces $f \in \mathbb{R}^{T \times G}$, but observations li
 Each observation carries its own time and group index, so the contribution to the linear predictor is a single matrix lookup per observation — negligible next to building the spectral densities.
 On modules with a sparse design (the parametric and non-parametric reference, the report-time hazards, and the missing-reference proportion) the lookup index is built from the same joint (covariate row $\times$ time $\times$ group) deduplication used for `arima()`, so the gather stays aligned with the deduplicated design rows.
 
+# Differencing order {#differencing}
+
+The `d` argument integrates the realisation $d$ times before it enters the predictor, matching the `d` of [`arima()`](arima.html).
+It controls whether the Gaussian process models the *level* of the latent quantity or its *change*.
+
+- **`d = 0`** (the default) is a stationary process: $f$ is the realisation described above, fluctuating around zero with no preferred direction.
+  On the growth rate this corresponds to EpiNow2's `gp_on = "R0"`, where the process models stationary deviations from a fixed reproduction number.
+
+- **`d = 1`** integrates the process once, so it is the *increments* of the trajectory that are smooth rather than the trajectory itself.
+  The result drifts like a random walk but with correlated, smoothly varying steps, which is often the more natural prior for an epidemic trend.
+  This matches EpiNow2's default `gp_on = "R_t-1"`, where the Gaussian process is placed on the first difference of the log reproduction number.
+
+- **`d \ge 2`** integrates further, generalising beyond EpiNow2 to smoother non-stationary trends (for example $d = 2$ models curvature with a smoothly varying slope).
+
+Concretely, for $d \ge 1$ the spectral approximation generates the $T - d$ free values $\tilde f$, which are placed in positions $(d+1), \dots, T$ of a length-$T$ vector whose first $d$ entries are zero, and the vector is then cumulatively summed $d$ times:
+
+$$f = \underbrace{C \cdots C}_{d}\, \begin{pmatrix} \mathbf{0}_d \\ \tilde f \end{pmatrix}, \qquad C \text{ the cumulative-sum operator}.$$
+
+Because the leading $d$ entries start at zero they remain zero through every integration pass, so $f_1 = \dots = f_d = 0$.
+This anchoring is the identifiability fix: it leaves the free level (for $d = 1$) and additionally the free slope (for $d \ge 2$) to the module's fixed effects rather than the Gaussian process, which would otherwise be confounded with the intercept.
+This is the same convention EpiNow2 uses for its non-stationary reproduction-number process (`gp[2:(gp_n + 1)] = noise; gp = cumulative_sum(gp)`), generalised to arbitrary $d$.
+
+Differencing is meaningful for the latent expectation modules (the growth rate `expr` and the latent-to-obs proportion `expl`), where a drifting non-stationary trend is the usual model.
+It is permitted on the logit-hazard modules (`refnp`, `rep`, `miss`) for API consistency with `arima()`, but integrating a logit hazard is unusual and rarely the intended model.
+
 # Priors {#priors}
 
 The default priors follow `EpiNow2` [@approxGP].
@@ -179,6 +205,5 @@ Putting a `gp()` term on the reference delay mean, for instance, models a report
 - Grouped series share the length scale and magnitude across groups; per-group hyperparameters are a planned extension. Until that lands `gp()` does not take a `type` argument.
 - The approximation accuracy is controlled by `basis_prop`; too few basis functions oversmooth short-length-scale structure, while too many slow the fit. The `EpiNow2` default of $b = 0.2$ is a reasonable starting point but may need raising for processes with fast variation.
 - When the parametric reference standard deviation is modelled (`model_refp > 1`), it shares the Gaussian process basis, length scale, and spectral weights of the mean but carries an independent magnitude (`refp_gp_sd_alpha`). The two latent processes are therefore perfectly correlated up to that magnitude rather than driven by separate weights. A separate sd process is a planned extension.
-- A differenced / non-stationary mode (a Gaussian process on the first difference, as in `EpiNow2`'s `gp_on = "R_t-1"`) is not currently implemented.
 
 # References

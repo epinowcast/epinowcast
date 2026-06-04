@@ -5,6 +5,7 @@
 - Added a `gp()` formula helper that places an approximate Gaussian process on any module's linear predictor, the same way `arima()` and `rw()` work.
   It uses a Hilbert-space reduced-rank (spectral) approximation with selectable kernels (Matern 3/2 default, Matern 5/2, Ornstein-Uhlenbeck, squared exponential, periodic) and a `basis_prop` accuracy-speed control.
   A `gp()` term can be placed on the growth rate (`expr`), the latent-to-obs proportion (`expl`), the parametric (`refp`) and non-parametric (`refnp`) reference delay, the report-time hazards (`rep`), and the missing-reference proportion (`miss`).
+  An integer `d` argument (matching `arima()`'s `d`) integrates the process `d` times: `d = 0` is stationary (the default, like EpiNow2's `gp_on = "R0"`), `d = 1` gives a smoothly drifting trend (like EpiNow2's default `gp_on = "R_t-1"`), and `d >= 2` integrates further, anchoring the first `d` values to zero so the level and slope are carried by the fixed effects.
   The Stan implementation is adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2, MIT licensed).
   See #824.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).

@@ -19,6 +19,7 @@ Betancourt's
 Bisaloo
 brms
 cdot
+cdots
 center
 choi
 christinesangphet
@@ -61,6 +62,7 @@ findex
 formulatools
 frac
 GC
+ge
 Gelman
 GEP
 geq
@@ -111,6 +113,7 @@ lsl
 Matern
 Matérn
 mathbb
+mathbf
 mathcal
 mathrm
 maxTree
@@ -161,6 +164,7 @@ parksw
 pearsonca
 pitmonticone
 pkgdown
+pmatrix
 PMF
 PMFs
 poisson
@@ -221,6 +225,7 @@ treedepth
 u
 Uhlenbeck
 un
+underbrace
 underpredicting
 underprediction
 unmodelled
