@@ -497,19 +497,21 @@ transformed parameters{
   // Observation model
   array[model_obs > 0 ? 1 : 0] real phi; // Transformed overdispersion
 
-  // Generation time log PMF (reversed). Fixed from data, or rebuilt in-model
-  // from sampled parameters using the parametric reference discretisation.
-  vector[expr_gt_n] expr_lrgt_use;
-  // Latent reporting delay convolution weights (the nonzero values of the
-  // convolution matrix, in CSR order). For a fixed PMF these are precomputed
-  // in transformed data; for an uncertain PMF they are rebuilt per sample. The
-  // sparsity pattern (column indices and row pointers) is identical in both
-  // cases, so only the real-valued weights vary and the integer parts are
-  // reused from `expl_lrd_sparse`.
-  vector[num_elements(expl_lrd_sparse.1)] expl_lrd_w;
-
   // Expectation model
   profile("transformed_expected_final_observations") {
+  // Explicit local block (NOT a profile block, which would be stripped by
+  // remove_profiling() leaving these declarations at top level). The
+  // generation time log PMF (reversed) and latent reporting delay convolution
+  // weights are local so they are not saved to draws: the default fixed-PMF
+  // posterior output stays byte-identical and the fixed-seed sampler is not
+  // perturbed. For a fixed PMF these are taken straight from transformed data;
+  // for an uncertain PMF they are rebuilt per sample. The sparsity pattern
+  // (column indices / row pointers) is identical in both cases, so only the
+  // real-valued weights vary and the integer parts are reused from
+  // `expl_lrd_sparse`.
+  {
+  vector[expr_gt_n] expr_lrgt_use;
+  vector[num_elements(expl_lrd_sparse.1)] expl_lrd_w;
   // Reuse the parametric reference discretisation (discretised_logit_hazard
   // with ref_as_p = 1 returns a log PMF) to rebuild distributions in-model.
   if (expr_gt_dist) {
@@ -570,6 +572,7 @@ transformed parameters{
   } else {
     exp_lobs = exp_llatent; // assume latent cases and obs are identical
   }
+  } // close local block scoping expr_lrgt_use / expl_lrd_w
   }
 
   // Reference model
