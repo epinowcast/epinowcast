@@ -15,7 +15,8 @@ test_that("enw_report supports non-parametric models", {
     rep$inits(rep$data, rep$priors)(),
     c(
       "rep_beta", "rep_beta_sd",
-      "rep_arima_pacf", "rep_arima_theta", "rep_arima_sigma"
+      "rep_arima_pacf", "rep_arima_theta", "rep_arima_sigma",
+      "rep_gp_rho", "rep_gp_alpha"
     )
   )
   expect_identical(

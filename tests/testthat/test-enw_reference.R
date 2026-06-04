@@ -63,7 +63,9 @@ test_that("enw_reference supports parametric models", {
       "refp_mean", "refp_sd",
       "refp_arima_pacf", "refp_arima_theta", "refp_arima_sigma",
       "refp_arima_sd_sigma", "refp_arima_z",
-      "refnp_arima_pacf", "refnp_arima_theta", "refnp_arima_sigma"
+      "refp_gp_rho", "refp_gp_alpha", "refp_gp_sd_alpha",
+      "refnp_arima_pacf", "refnp_arima_theta", "refnp_arima_sigma",
+      "refnp_gp_rho", "refnp_gp_alpha"
     )
   )
   c(
@@ -74,7 +76,9 @@ test_that("enw_reference supports parametric models", {
   zero_length <- c(
     "refnp_int", "refnp_beta", "refnp_beta_sd",
     "refp_arima_pacf", "refp_arima_theta",
-    "refnp_arima_pacf", "refnp_arima_theta", "refnp_arima_sigma"
+    "refp_gp_rho", "refp_gp_alpha", "refp_gp_sd_alpha",
+    "refnp_arima_pacf", "refnp_arima_theta", "refnp_arima_sigma",
+    "refnp_gp_rho", "refnp_gp_alpha"
   )
   expect_zero_length_or_not(zero_length, inits)
 
@@ -129,7 +133,9 @@ test_that("enw_reference supports non-parametric models", {
     "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
     "refp_mean", "refp_sd", "refnp_beta_sd",
     "refp_arima_pacf", "refp_arima_theta", "refp_arima_sigma",
-    "refp_arima_sd_sigma", "refnp_arima_pacf", "refnp_arima_theta"
+    "refp_arima_sd_sigma", "refnp_arima_pacf", "refnp_arima_theta",
+    "refp_gp_rho", "refp_gp_alpha", "refp_gp_sd_alpha",
+    "refnp_gp_rho", "refnp_gp_alpha"
   )
   expect_zero_length_or_not(zero_length, inits)
   # check that not having an intercept works as expected
@@ -167,7 +173,9 @@ test_that("Parametric and non-parametric models can be jointly specified", {
     "refnp_int",
     "refp_arima_pacf", "refp_arima_theta", "refp_arima_sigma",
     "refp_arima_sd_sigma", "refnp_arima_pacf", "refnp_arima_theta",
-    "refnp_arima_sigma"
+    "refnp_arima_sigma",
+    "refp_gp_rho", "refp_gp_alpha", "refp_gp_sd_alpha",
+    "refnp_gp_rho", "refnp_gp_alpha"
   )
   expect_zero_length_or_not(zero_length, inits)
 })

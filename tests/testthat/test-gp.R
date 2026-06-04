@@ -175,16 +175,53 @@ test_that("enw_expectation() wires a gp() growth-rate term to Stan", {
   expect_true("expr_gp_alpha" %in% exp$priors$variable)
 })
 
-test_that("enw_formula() rejects a gp() term on a sparse design", {
-  # GP is dense-only for now; a sparse design would mis-gather the
-  # latent process, so it must error rather than silently misbehave.
-  expect_error(
-    enw_formula(~ 1 + gp(week), data, sparse = TRUE),
-    "not supported with a sparse design"
+test_that("enw_formula() supports a gp() term on a sparse design", {
+  # GP works on sparse-design modules: the joint dedup must remap the GP
+  # time/group indices onto the deduplicated fixed$index rows.
+  f <- enw_formula(~ 1 + gp(week), data, sparse = TRUE)
+  expect_s3_class(f, "enw_formula")
+  expect_length(f$gp, 1L)
+  # After dedup the GP lookup vectors are one entry per unique fdesign
+  # row, and the flat_idx must point inside the (T x G) latent matrix.
+  spec <- f$gp[[1]]
+  expect_identical(length(spec$time_idx), nrow(f$fixed$design))
+  expect_true(all(spec$time_idx >= 1L & spec$time_idx <= spec$T))
+  expect_true(all(spec$group_idx >= 1L & spec$group_idx <= spec$G))
+})
+
+test_that("gp_specs time/group are remapped under the joint sparse dedup", {
+  # With only a covariate that is constant in time, the dense design has
+  # one row per (week) but the sparse dedup collapses identical covariate
+  # rows; the GP lookup must follow the deduplicated index so the
+  # column-major flat_idx still gathers the right latent cell.
+  f <- enw_formula(~ 1 + gp(week), data, sparse = TRUE)
+  spec <- f$gp[[1]]
+  dl <- enw_formula_as_data_list(f, "ref")
+  # flat_idx is rebuilt from the remapped indices and must be one per
+  # fdesign row, all inside the (T x G) matrix.
+  expect_identical(length(dl$ref_gp_flat_idx), nrow(f$fixed$design))
+  expect_identical(
+    dl$ref_gp_flat_idx,
+    as.integer((spec$group_idx - 1L) * spec$T + spec$time_idx)
   )
-  expect_s3_class(
-    enw_formula(~ 1 + gp(week), data, sparse = FALSE), "enw_formula"
-  )
+  expect_true(all(
+    dl$ref_gp_flat_idx >= 1L &
+      dl$ref_gp_flat_idx <= dl$ref_gp_T * dl$ref_gp_G
+  ))
+  # The sparse findex must address every fdesign row.
+  expect_identical(max(f$fixed$index), nrow(f$fixed$design))
+})
+
+test_that("a joint arima + gp sparse dedup keeps both lookups aligned", {
+  f <- enw_formula(~ 1 + arima(week) + gp(week), data, sparse = TRUE)
+  a <- f$arima[[1]]
+  gpe <- f$gp[[1]]
+  n_rows <- nrow(f$fixed$design)
+  # Both terms' lookup vectors are one entry per deduplicated row.
+  expect_identical(length(a$time_idx), n_rows)
+  expect_identical(length(gpe$time_idx), n_rows)
+  # findex addresses exactly the deduplicated rows.
+  expect_identical(max(f$fixed$index), n_rows)
 })
 
 test_that("epinowcast() fits a gp() growth-rate term in compiled Stan", {
@@ -208,6 +245,55 @@ test_that("epinowcast() fits a gp() growth-rate term in compiled Stan", {
   # GP hyperparameters must be present and finite in the fit.
   draws <- suppressWarnings(summary(nowcast_gp, type = "fit"))
   gp_pars <- draws[grepl("expr_gp_(rho|alpha)", variable)]
+  expect_true(nrow(gp_pars) >= 2)
+  expect_true(all(is.finite(gp_pars$mean)))
+})
+
+test_that("gp() wires data and priors into every supporting module", {
+  # Every module that builds a predictor via regression_predictor() can
+  # take a gp() term: the parametric/non-parametric reference, the
+  # report-time hazards, and the missing-reference proportion.
+  ref <- suppressWarnings(enw_reference(~ 1 + gp(week), data = pobs))
+  expect_identical(ref$data$refp_gp_present, 1L)
+  expect_true("refp_gp_rho" %in% ref$priors$variable)
+  expect_true("refp_gp_alpha" %in% ref$priors$variable)
+  expect_true("refp_gp_sd_alpha" %in% ref$priors$variable)
+
+  refnp <- suppressWarnings(
+    enw_reference(~1, non_parametric = ~ 1 + gp(delay), data = pobs)
+  )
+  expect_identical(refnp$data$refnp_gp_present, 1L)
+  expect_true("refnp_gp_rho" %in% refnp$priors$variable)
+
+  rep_mod <- enw_report(~ 1 + gp(day), data = pobs)
+  expect_identical(rep_mod$data$rep_gp_present, 1L)
+  expect_true("rep_gp_rho" %in% rep_mod$priors$variable)
+})
+
+test_that("epinowcast() fits a gp() term on a sparse reference module", {
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_on_local()
+  # The parametric reference-delay mean uses a sparse design with the
+  # joint (covariate row x time x group) dedup. This exercises the GP
+  # sparse-dedup remap end-to-end in compiled Stan.
+  fit_pobs <- enw_example("preprocessed")
+  ref_gp <- suppressWarnings(enw_reference(~ 1 + gp(week), data = fit_pobs))
+  expect_identical(ref_gp$data$refp_gp_present, 1L)
+  nowcast_gp <- suppressWarnings(epinowcast(
+    fit_pobs,
+    expectation = enw_expectation(~1, data = fit_pobs),
+    reference = ref_gp,
+    obs = enw_obs(family = "poisson", data = fit_pobs),
+    fit = enw_fit_opts(
+      save_warmup = FALSE, pp = FALSE, chains = 2, parallel_chains = 2,
+      iter_warmup = 250, iter_sampling = 250, show_messages = FALSE,
+      show_exceptions = FALSE, refresh = 0, adapt_delta = 0.95
+    )
+  ))
+  expect_convergence(nowcast_gp, rhat = 1.1)
+  draws <- suppressWarnings(summary(nowcast_gp, type = "fit"))
+  gp_pars <- draws[grepl("refp_gp_(rho|alpha)", variable)]
   expect_true(nrow(gp_pars) >= 2)
   expect_true(all(is.finite(gp_pars$mean)))
 })
