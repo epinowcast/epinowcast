@@ -32,7 +32,7 @@ The continuous delay distributions must therefore be discretised and adjusted fo
 The default (`"logit_hazard"`) uses a uniform-interval approximation.
 The `"primarycensored"` method uses the double interval censoring discretisation from the [primarycensored](https://primarycensored.epinowcast.org) package [@primarycensored].
 
-It is helpful to separate two distinct adjustments, following the discussion in [issue #297](https://github.com/epinowcast/epinowcast/issues/297).
+It is helpful to separate two distinct adjustments.
 The first is discretisation: turning the continuous delay into a probability mass over integer delays $d = 0, 1, 2, \dots$, with each $p_d$ defined for an infinite maximum delay so that $\sum_{d=0}^{\infty} p_d = 1$.
 The second is conditioning on the maximum delay $D$: restricting attention to delays $d \le D$ and renormalising so that the truncated probabilities sum to 1, i.e. $p^{\prime}_{d} = p_d / \sum_{j=0}^{D} p_j$.
 The first step is about how a continuous distribution becomes discrete; the second is about right truncation at $D$.
@@ -58,7 +58,7 @@ Because of the uniform-interval discretisation, the discrete delay distribution 
 
 The `"primarycensored"` method instead computes the double interval censored probability mass directly, accounting for the primary event window, the secondary (reporting) interval, and right truncation at $D$ [@primarycensored].
 Writing the delay as the time between a primary event (e.g. infection), assumed uniform over a window of width 1, and a secondary event observed in a daily interval, the probability of a censored delay $d$ is obtained by integrating the continuous delay density over both the primary window and the secondary interval, then conditioning on the maximum delay $D$.
-The Stan implementation is vendored from the [primarycensored](https://primarycensored.epinowcast.org) package and uses analytical solutions for the lognormal and gamma distributions and numerical integration otherwise.
+The Stan implementation is vendored from the [primarycensored](https://primarycensored.epinowcast.org) package and uses analytical solutions for the supported distributions (the exponential is handled as a gamma with shape one).
 This avoids the uniform-interval approximation used by the default method and so recovers the double interval censored distribution more exactly, including at short delays.
 It is currently available for the exponential, lognormal and gamma distributions.
 

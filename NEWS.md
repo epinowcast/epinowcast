@@ -10,7 +10,7 @@
   See #824.
 - Added a `discretisation` argument to `enw_reference()` offering a `"primarycensored"` option that discretises the parametric reference delay using the double interval censoring approach vendored from the [primarycensored](https://primarycensored.epinowcast.org) package, as an alternative to the existing uniform-interval `"logit_hazard"` approximation.
   The new option more exactly accounts for primary event censoring, secondary interval censoring, and right truncation, and currently supports the exponential, lognormal, and gamma distributions.
-  See #438 and #297.
+  See #848 (addressing #438 and #297) by @seabbs.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
 

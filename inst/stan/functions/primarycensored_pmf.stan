@@ -24,11 +24,17 @@
  *
  * @return The corresponding primarycensored dist_id.
  *
+ * @note The exponential (epinowcast id 1) is routed through the
+ * primarycensored gamma id (2) as a Gamma(shape = 1) special case. This uses
+ * the analytical gamma-uniform solution rather than falling back to the
+ * per-delay ODE integration that primarycensored's standalone exponential id
+ * (4) would require, which is substantially faster inside the sampler.
+ *
  * @note loglogistic (epinowcast id 4) is not currently supported by the
  * primarycensored Stan functions and triggers a reject.
  */
 int enw_to_pcens_dist_id(int dist) {
-  if (dist == 1) return 4;  // exponential -> primarycensored exponential
+  if (dist == 1) return 2;  // exponential -> primarycensored gamma (shape 1)
   if (dist == 2) return 1;  // lognormal   -> primarycensored lognormal
   if (dist == 3) return 2;  // gamma       -> primarycensored gamma
   reject(
@@ -59,10 +65,12 @@ int enw_to_pcens_dist_id(int dist) {
 array[] real enw_to_pcens_params(real mu, real sigma, int dist) {
   array[2] real params;
   if (dist == 1) {
-    // Exponential: epinowcast uses exp(-mu) as the rate, primarycensored
-    // exponential takes a single rate parameter.
-    params[1] = exp(-mu);
-    params[2] = 0; // unused
+    // Exponential: epinowcast uses exp(-mu) as the rate. Routed through the
+    // gamma path as Gamma(shape = 1, rate = exp(-mu)), which is identical to
+    // Exponential(rate = exp(-mu)) but hits the analytical gamma-uniform
+    // solution.
+    params[1] = 1;
+    params[2] = exp(-mu);
   } else if (dist == 2) {
     // Lognormal: shared (meanlog, sdlog) parameterisation.
     params[1] = mu;
@@ -152,13 +160,9 @@ vector lprob_to_log_hazard(vector lprob, int u) {
 vector discretised_pcens_logit_hazard(real mu, real sigma, int dmax, int dist,
                                       int ref_as_p) {
   int pcens_dist = enw_to_pcens_dist_id(dist);
-  array[2] real all_params = enw_to_pcens_params(mu, sigma, dist);
-  // Exponential takes a single parameter; other supported distributions take
-  // two.
-  array[dist == 1 ? 1 : 2] real params;
-  for (i in 1:num_elements(params)) {
-    params[i] = all_params[i];
-  }
+  // All supported distributions (exponential routed via gamma, lognormal,
+  // gamma) take two parameters under the primarycensored convention.
+  array[2] real params = enw_to_pcens_params(mu, sigma, dist);
   array[0] real primary_params;
   vector[dmax] lprob = primarycensored_sone_lpmf_vectorized(
     dmax - 1, 0.0, dmax * 1.0, pcens_dist, params, 1.0, 1, primary_params

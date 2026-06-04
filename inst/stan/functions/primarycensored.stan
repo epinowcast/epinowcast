@@ -1,24 +1,36 @@
 /**
  * Vendored primary event censored distribution functions
  *
- * These Stan functions are vendored from the primarycensored R package
- * (version 1.5.0), part of the epinowcast organisation, available at
+ * These Stan functions are vendored from the primarycensored R package,
+ * part of the epinowcast organisation, available at
  * https://github.com/epinowcast/primarycensored and documented at
  * https://primarycensored.epinowcast.org.
  *
+ * Provenance: copied from primarycensored release tag v1.5.0
+ * (git commit 1ea1d80af02c8f51d1d2cd698876f1f4f402b74a), specifically the
+ * files under inst/stan/functions/. See VENDOR.md in this directory for the
+ * upstream reference and how to refresh the copy.
+ *
  * They implement the double interval censoring discretisation described in
- * Park et al. and the primarycensored documentation: a continuous delay
- * distribution is convolved with a uniform primary event window and then
- * interval censored on the secondary (reporting) side, with optional right
- * truncation. This is a more exact alternative to the uniform-interval
- * approximation used by discretised_logit_hazard().
+ * the primarycensored documentation: a continuous delay distribution is
+ * convolved with a uniform primary event window and then interval censored on
+ * the secondary (reporting) side, with optional right truncation. This is a
+ * more exact alternative to the uniform-interval approximation used by
+ * discretised_logit_hazard().
  *
  * primarycensored is distributed under the MIT licence (Copyright (c) 2024
  * primarycensored authors). The licence text is reproduced in
  * inst/stan/functions/LICENSE.primarycensored. Both primarycensored and
  * epinowcast are MIT licensed and maintained by the epinowcast organisation.
  *
- * Sourced files (concatenated, unmodified except for this header):
+ * Modifications relative to upstream: the four source files listed below were
+ * concatenated and this header plus the "// ===== <file> =====" section
+ * markers were added. The function bodies (including their upstream comments,
+ * some of which refer to primarycensored's R-side conventions such as
+ * pcd_distributions$stan_id) are otherwise reproduced verbatim from the tagged
+ * release, except that a few non-ASCII characters in the log_weibull_g doc
+ * comment (the Greek letters lambda and gamma) were transliterated to ASCII so
+ * the concatenated functions block lexes on all stanc versions.
  *   - primarycensored.stan
  *   - primarycensored_ode.stan
  *   - primarycensored_analytical_cdf.stan
@@ -886,13 +898,13 @@ real primarycensored_lognormal_uniform_lcdf(data real d, real q, array[] real pa
   *
   * This function is used in the analytical solution for the primary censored
   * Weibull distribution with uniform primary censoring. It corresponds to the
-  * g(t; λ, k) function described in the analytic solutions document.
+  * g(t; lambda, k) function described in the analytic solutions document.
   *
   * @param t Upper bound of integration
   * @param shape Shape parameter (k) of the Weibull distribution
-  * @param scale Scale parameter (λ) of the Weibull distribution
+  * @param scale Scale parameter (lambda) of the Weibull distribution
   *
-  * @return Log of g(t; λ, k) = γ(1 + 1/k, (t/λ)^k)
+  * @return Log of g(t; lambda, k) = lower_gamma(1 + 1/k, (t/lambda)^k)
   */
 real log_weibull_g(real t, real shape, real scale) {
   real x = pow(t * inv(scale), shape);
