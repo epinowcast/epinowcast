@@ -207,6 +207,7 @@ The process is fitted using the Hilbert-space reduced-rank (spectral) approximat
 `basis_prop` sets that number as a proportion of the series length (the default `0.2` follows `EpiNow2`); a larger value is more accurate but slower.
 The default `kernel = "matern32"` is a Matern 3/2 kernel; `"matern52"`, `"ou"` (Ornstein-Uhlenbeck), `"se"` (squared exponential), and `"periodic"` are also available.
 The Stan implementation is adapted from [`EpiNow2`](https://github.com/epiforecasts/EpiNow2) (MIT licensed).
+The [Gaussian process implementation notes](gaussian-process.html) cover the spectral approximation, the kernels, and the priors in detail.
 
 ```{r gp-fit, results = "hide", message = FALSE, warning = FALSE}
 nowcast_gp <- epinowcast(

@@ -18,6 +18,7 @@ Betancourt
 Betancourt's
 Bisaloo
 brms
+cdot
 center
 choi
 christinesangphet
@@ -35,6 +36,7 @@ cyclomatic
 dataconverters
 dedup
 deduplicate
+deduplicated
 deduplication
 difftime
 discretisation
@@ -48,6 +50,7 @@ dt
 enw
 epidemia
 EpiEstim
+epiforecasts
 EpiNow
 ess
 etc
@@ -63,6 +66,7 @@ GEP
 geq
 github
 Github
+gp
 gt
 Gulfa
 HalfNormal
@@ -85,6 +89,7 @@ jss
 kaitejohnson
 kathsherratt
 kylieainslie
+lceil
 leq
 LFO
 lifecycle
@@ -103,10 +108,13 @@ LogNormal
 lp
 lpmf
 lsl
+Matern
+Matérn
 mathbb
 mathcal
 mathrm
 maxTree
+Mayol
 Mba
 MCSE
 medewitt
@@ -141,8 +149,10 @@ Ocaml
 offs
 ORCID
 ord
+Ornstein
 overpredict
 overprediction
+oversmooth
 pacf
 parameterisations
 parameterise
@@ -166,15 +176,18 @@ precomputes
 precomputing
 predictives
 PSIS
+qquad
+rceil
 readibility
 refp
 Reinsel
 Renviron
-Rhat
-RodrigoZepeda
-Rstudio
 reparameterisation
 rhat
+Rhat
+Riutort
+RodrigoZepeda
+Rstudio
 rumackaaron
 runtimes
 rw
@@ -195,6 +208,7 @@ stan
 stanc
 standalone
 teojcryan
+tfrac
 th
 tidyverse
 Timespans
@@ -205,6 +219,7 @@ Toeplitz
 toolset
 treedepth
 u
+Uhlenbeck
 un
 underpredicting
 underprediction
