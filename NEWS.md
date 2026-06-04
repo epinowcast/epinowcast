@@ -12,6 +12,7 @@
   `enw_simulate()` forward-generates synthetic observations from known/fixed parameters and a supplied growth rate, for prior or posterior predictive checks, synthetic-recovery tests, and scenario analysis.
   `enw_forecast()` projects a fitted nowcast forward under a new growth rate trajectory, propagating posterior uncertainty in the unchanged delay, report, and observation components.
   Both reuse the existing Stan generated-quantities machinery via a new `expr_r_override` data hook so simulated, forecast, and fitted outputs are directly comparable.
+  The override is a single growth rate trajectory applied to every posterior draw; per-draw trajectories and a true forward horizon are tracked separately in #838 and need a redesign rather than an extension of this hook.
   See #829 by @seabbs.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.

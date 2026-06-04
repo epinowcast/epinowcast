@@ -72,6 +72,10 @@ data {
   // trajectory while reusing the generated-quantities machinery. When
   // expr_r_override is 0 (the default) the regression-derived growth rate
   // is used and expr_r_override_value is ignored (length 0).
+  // NOTE: this is a single trajectory applied to every posterior draw via
+  // the data block. It does NOT generalise to per-draw trajectories;
+  // supporting those (and a true forward horizon) is a redesign, not an
+  // extension of this hook (see issue #838).
   int<lower=0, upper=1> expr_r_override;
   vector[expr_r_override ? expr_t * g : 0] expr_r_override_value;
   // ARIMA(p, d, q) latent residual on growth rate

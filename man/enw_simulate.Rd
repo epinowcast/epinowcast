@@ -32,8 +32,10 @@ rate otherwise (see \code{\link[=enw_expectation]{enw_expectation()}}).}
 
 \item{parameters}{An optional named list of fixed parameter values passed as
 initial values to the fixed-parameter sampler (for example
-\code{list(refp_mean_int = 1.5, sqrt_phi = 0.5)}). Parameters not supplied use
-the model's prior-based initialisation.}
+\code{list(refp_mean_int = 1.5, sqrt_phi = 0.5)}). These are merged over the
+model's prior-based initialisation (as used by \code{\link[=epinowcast]{epinowcast()}}), so any
+parameter not supplied is initialised from its prior rather than from
+\code{cmdstanr}'s default.}
 
 \item{reference}{The reference date indexed reporting process model
 specification as defined using \code{\link[=enw_reference]{enw_reference()}}.}
@@ -114,5 +116,21 @@ inputs.
 
 Tools for data simulation
 \code{\link{enw_simulate_missing_reference}()}
+
+Functions used to help convert models into the format required for stan
+\code{\link{enw_forecast}()},
+\code{\link{enw_formula_as_data_list}()},
+\code{\link{enw_get_cache}()},
+\code{\link{enw_model}()},
+\code{\link{enw_pathfinder}()},
+\code{\link{enw_priors_as_data_list}()},
+\code{\link{enw_replace_priors}()},
+\code{\link{enw_sample}()},
+\code{\link{enw_set_cache}()},
+\code{\link{enw_stan_to_r}()},
+\code{\link{enw_unset_cache}()},
+\code{\link{remove_profiling}()},
+\code{\link{write_stan_files_no_profile}()}
 }
+\concept{modeltools}
 \concept{simulate}

@@ -65,6 +65,7 @@ Functions used to help convert models into the format required for stan
 \code{\link{enw_replace_priors}()},
 \code{\link{enw_sample}()},
 \code{\link{enw_set_cache}()},
+\code{\link{enw_simulate}()},
 \code{\link{enw_unset_cache}()},
 \code{\link{remove_profiling}()},
 \code{\link{write_stan_files_no_profile}()}

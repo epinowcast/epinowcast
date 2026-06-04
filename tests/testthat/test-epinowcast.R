@@ -1,9 +1,6 @@
 # load example preprocessed data (already regression tested)
+# the `model` object is compiled once in setup-model.R
 pobs <- enw_example("preprocessed")
-if (not_on_cran() && on_ci()) {
-  model <- enw_model()
-  options(mc.cores = 2)
-}
 
 test_that("epinowcast() preprocesses data and model modules as expected", {
   nowcast <- suppressMessages(epinowcast(pobs,
@@ -93,7 +90,8 @@ test_that("epinowcast() runs with within-chain parallelisation", {
   pobs <- enw_preprocess_data(obs, max_delay = 5)
   nowcast <- suppressMessages(
     epinowcast(
-      pobs, fit = enw_fit_opts(
+      pobs,
+      fit = enw_fit_opts(
         sampler = silent_enw_sample,
         threads_per_chain = 2
       )
@@ -547,7 +545,8 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
   )
 
   # Keep only Wednesday reports
-  weekly_obs[,
+  weekly_obs[
+    ,
     confirm := fifelse(day_of_week == "Wednesday", confirm, NA_real_)
   ]
   weekly_obs <- enw_flag_observed_observations(weekly_obs)
@@ -562,7 +561,8 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
 
   # Create Wednesday structural reporting
   structural <- enw_dayofweek_structural_reporting(
-    pobs, day_of_week = "Wednesday"
+    pobs,
+    day_of_week = "Wednesday"
   )
 
   # Fit model

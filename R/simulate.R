@@ -30,8 +30,10 @@
 #'
 #' @param parameters An optional named list of fixed parameter values passed as
 #' initial values to the fixed-parameter sampler (for example
-#' `list(refp_mean_int = 1.5, sqrt_phi = 0.5)`). Parameters not supplied use
-#' the model's prior-based initialisation.
+#' `list(refp_mean_int = 1.5, sqrt_phi = 0.5)`). These are merged over the
+#' model's prior-based initialisation (as used by [epinowcast()]), so any
+#' parameter not supplied is initialised from its prior rather than from
+#' `cmdstanr`'s default.
 #'
 #' @param seed Integer random seed for reproducible simulation. Default: 1.
 #'
@@ -43,9 +45,11 @@
 #' @seealso [enw_forecast()] which projects a fitted model forward under new
 #' inputs.
 #' @family simulate
+#' @family modeltools
 #' @export
 #' @importFrom cli cli_abort
 #' @importFrom data.table data.table
+#' @importFrom utils modifyList
 #' @examplesIf interactive()
 #' pobs <- enw_example("preprocessed")
 #' # Simulate from a flat growth rate and a known reporting delay
@@ -84,20 +88,14 @@ enw_simulate <- function(data, growth_rate,
     )
   }
   expr_len <- expectation$data$expr_t * data$groups[[1]]
-  if (length(growth_rate) == 1) {
-    growth_rate <- rep(growth_rate, expr_len)
-  }
-  if (length(growth_rate) != expr_len) {
-    cli::cli_abort(
-      "{.arg growth_rate} must have length 1 or {expr_len}, not {length(growth_rate)}." # nolint
-    )
-  }
+  growth_rate <- .resolve_growth_rate_length(growth_rate, expr_len)
 
-  # Assemble the full Stan data list by routing through epinowcast() with a
-  # capturing sampler. This reuses epinowcast()'s module assembly and prior
-  # handling so the simulated and fitted data paths are identical.
-  capture_sampler <- function(data, ...) {
-    data.table::data.table(data = list(data))
+  # Assemble the full Stan data list (and prior-based initialisation) by
+  # routing through epinowcast() with a capturing sampler. This reuses
+  # epinowcast()'s module assembly, prior handling, and init construction so
+  # the simulated and fitted data paths are identical.
+  capture_sampler <- function(data, init, ...) {
+    data.table::data.table(data = list(data), init = list(init))
   }
   capture_fit <- epinowcast::enw_fit_opts(
     sampler = capture_sampler, nowcast = TRUE, pp = TRUE, likelihood = FALSE
@@ -118,12 +116,17 @@ enw_simulate <- function(data, growth_rate,
   data_list$expr_r_override <- 1L
   data_list$expr_r_override_value <- as.numeric(growth_rate)
 
+  # Merge any user-supplied fixed parameters over the prior-based init so
+  # parameters that are not supplied are still initialised from their prior.
+  prior_init <- enw_get_data(prepared, "init")()
+  init_values <- utils::modifyList(prior_init, parameters)
+
   # Fixed-parameter generation: parameters are taken from `parameters` where
-  # supplied and from prior-based initialisation otherwise.
+  # supplied and from the prior-based initialisation otherwise.
   gq <- model$sample(
     data = data_list, fixed_param = TRUE, chains = 1,
     iter_sampling = 1, iter_warmup = 0, seed = seed,
-    threads_per_chain = 1, init = function() parameters, ...
+    threads_per_chain = 1, init = function() init_values, ...
   )
 
   out <- data.table::copy(prepared)
@@ -171,7 +174,8 @@ enw_simulate <- function(data, growth_rate,
 #' )
 enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = NULL) {
   obs <- enw_filter_reference_dates_by_report_start(
-    obs, by = by, copy = FALSE
+    obs,
+    by = by, copy = FALSE
   )
   obs <- enw_add_incidence(obs, by = by)
 

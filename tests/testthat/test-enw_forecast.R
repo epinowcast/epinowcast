@@ -27,7 +27,7 @@ test_that("enw_forecast() rejects non-epinowcast input", {
   )
 })
 
-test_that("enw_forecast() re-driving with the posterior matches the fit", {
+test_that("enw_forecast() with NULL growth rate uses the posterior mean", {
   skip_on_cran()
   skip_on_local()
 
@@ -35,10 +35,22 @@ test_that("enw_forecast() re-driving with the posterior matches the fit", {
   forecast <- suppressMessages(enw_forecast(fit, model = model))
 
   expect_s3_class(forecast, "epinowcast")
+
+  # The injected override is exactly the posterior-mean growth rate, not the
+  # per-draw posterior, so this is a like-for-like re-driving rather than a
+  # reproduction of the original per-draw nowcast.
+  posterior_r_mean <- fit$fit[[1]]$summary("r", mean)$mean
+  expect_equal(
+    forecast$data[[1]]$expr_r_override_value, posterior_r_mean,
+    tolerance = 1e-8
+  )
+  expect_identical(forecast$data[[1]]$expr_r_override, 1L)
+
   orig <- fit$fit[[1]]$summary("pp_inf_obs")$mean
   redriven <- forecast$fit[[1]]$summary("pp_inf_obs")$mean
   expect_identical(length(orig), length(redriven))
-  # Re-driving redraws the observation model so allow Monte Carlo noise
+  # Re-driving with the posterior-mean trajectory and a redrawn observation
+  # model stays in the neighbourhood of the original nowcast
   expect_lt(max(abs(orig - redriven)) / mean(orig), 0.5)
 })
 

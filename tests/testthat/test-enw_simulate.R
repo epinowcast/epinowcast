@@ -44,9 +44,12 @@ test_that("enw_simulate() forward-generates from fixed parameters", {
     tolerance = 1e-6
   )
 
-  # Synthetic nowcast observations were generated
+  # Synthetic nowcast observations were generated. The nowcast spans
+  # min(dmax, t) time points per group.
+  data_list <- sims$data[[1]]
+  expected_rows <- min(data_list$dmax, data_list$t) * data_list$g
   pp_inf <- sims$fit[[1]]$summary("pp_inf_obs")
-  expect_identical(nrow(pp_inf), 20L)
+  expect_identical(nrow(pp_inf), as.integer(expected_rows))
   expect_true(all(pp_inf$mean >= 0))
 })
 

@@ -9,10 +9,11 @@ enw_forecast(fit, growth_rate = NULL, model = epinowcast::enw_model(), ...)
 \arguments{
 \item{fit}{A fitted \code{\link[=epinowcast]{epinowcast()}} object.}
 
-\item{growth_rate}{Either \code{NULL} (the default, re-uses the posterior growth
-rate unchanged, useful as a check), or a numeric vector of log growth rates
-of length 1 (recycled) or \code{expr_t * g}. \code{NA} elements re-use the posterior
-mean of the fitted growth rate at that position.}
+\item{growth_rate}{Either \code{NULL} (the default, re-uses the posterior-mean
+growth rate, useful as a check), or a numeric vector of log growth rates of
+length 1 (recycled) or \code{expr_t * g}. \code{NA} elements re-use the posterior mean
+of the fitted growth rate at that position, so partial overrides (for
+example only the most recent period) are supported.}
 
 \item{model}{The compiled model to use, as returned by \code{\link[=enw_model]{enw_model()}}.}
 
@@ -44,15 +45,23 @@ number when a generation time is supplied, or the log growth rate otherwise
 (see \code{\link[=enw_expectation]{enw_expectation()}}). It is supplied here on the same scale as the
 fitted \code{r} parameter, with one value per modelled time point and group
 (\code{expr_t * g} values, ordered by group then time). A single value is
-recycled across all time points and groups. \code{NA} elements re-use the
-posterior mean of the fitted growth rate at that position, so partial
-overrides (for example only the most recent period) are supported.
+recycled across all time points and groups.
 
 A single growth rate trajectory is applied across all posterior draws. The
 uncertainty in the delay, report, and observation components is propagated
-because those parameters are taken unchanged from the posterior. Per-draw
-growth rate trajectories and extending the modelled window to add new future
-time points are tracked as follow-up work.
+because those parameters are taken unchanged from the posterior. The latent
+process itself is fixed to the one supplied trajectory and so does not carry
+the posterior uncertainty in the growth rate. Per-draw growth rate
+trajectories and extending the modelled window to add new future time points
+are tracked as follow-up work (see #838); they require a redesign rather than
+an extension of the current single-trajectory override.
+
+When \code{growth_rate} is \code{NULL} or contains \code{NA} values, the missing positions
+are filled with the \strong{posterior mean} of the fitted growth rate. With
+\code{growth_rate = NULL} this means the forecast substitutes the posterior-mean
+growth rate trajectory, not the per-draw posterior, so it does not exactly
+reproduce the original fit's nowcast; it is a like-for-like re-driving useful
+as a check rather than a reproduction.
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
@@ -63,6 +72,8 @@ summary(forecast)
 \dontshow{\}) # examplesIf}
 }
 \seealso{
+\code{\link[=enw_simulate]{enw_simulate()}} which forward-generates from known parameters.
+
 Functions used to help convert models into the format required for stan
 \code{\link{enw_formula_as_data_list}()},
 \code{\link{enw_get_cache}()},
@@ -72,6 +83,7 @@ Functions used to help convert models into the format required for stan
 \code{\link{enw_replace_priors}()},
 \code{\link{enw_sample}()},
 \code{\link{enw_set_cache}()},
+\code{\link{enw_simulate}()},
 \code{\link{enw_stan_to_r}()},
 \code{\link{enw_unset_cache}()},
 \code{\link{remove_profiling}()},
