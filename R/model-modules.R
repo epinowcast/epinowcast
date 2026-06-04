@@ -439,7 +439,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
                                           population_uncertain, population_cv,
                                           generation_time, groups) {
   if (!is.numeric(population_floor) || length(population_floor) != 1 ||
-        population_floor < 0) {
+    population_floor < 0) {
     cli::cli_abort(
       "`population_floor` must be a single non-negative number."
     )
@@ -475,17 +475,66 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   out$use <- if (population_period == "forecast") 1L else 2L
   out$fixed <- rep(as.numeric(population), groups)
   if (isTRUE(population_uncertain)) {
-    if (!is.numeric(population_cv) || length(population_cv) != 1 ||
-          population_cv <= 0) {
-      cli::cli_abort("`population_cv` must be a single positive number.")
-    }
-    out$uncertain <- 1L
-    # LogNormal parameters such that the median equals `population` and the
-    # natural-scale coefficient of variation equals `population_cv`.
-    out$prior_sdlog <- sqrt(log1p(population_cv^2))
-    out$prior_meanlog <- log(population)
+    out <- .expectation_population_prior(out, population, population_cv)
   }
   out
+}
+
+#' Add the LogNormal population prior to the population settings
+#'
+#' Internal helper for [.check_expectation_population()] that validates
+#' `population_cv` and adds the LogNormal prior parameters for an estimated
+#' initial susceptible population.
+#'
+#' @param out The population settings list under construction.
+#' @param population The supplied (positive) population mean.
+#' @param population_cv The natural-scale coefficient of variation.
+#'
+#' @return `out` with `uncertain`, `prior_meanlog` and `prior_sdlog` set.
+#'
+#' @noRd
+.expectation_population_prior <- function(out, population, population_cv) {
+  if (!is.numeric(population_cv) || length(population_cv) != 1 ||
+    population_cv <= 0) {
+    cli::cli_abort("`population_cv` must be a single positive number.")
+  }
+  out$uncertain <- 1L
+  # LogNormal parameters such that the median equals `population` and the
+  # natural-scale coefficient of variation equals `population_cv`.
+  out$prior_sdlog <- sqrt(log1p(population_cv^2))
+  out$prior_meanlog <- log(population)
+  out
+}
+
+#' Assemble susceptible-depletion Stan data entries
+#'
+#' Internal helper for [enw_expectation()] that turns the validated population
+#' settings (from [.check_expectation_population()]) into the Stan data entries
+#' controlling the susceptible-depletion adjustment.
+#'
+#' @param pop A list returned by [.check_expectation_population()].
+#' @param t Number of modelled (post-seed) time points per group.
+#' @param max_delay Maximum reporting delay, used to size the forecast horizon
+#' when the adjustment is restricted to the `"forecast"` period.
+#'
+#' @return A named list of Stan data entries (`pop_use`, `pop_uncertain`,
+#' `pop_fixed`, `pop_floor`, `pop_nht`).
+#'
+#' @noRd
+.expectation_population_data <- function(pop, t, max_delay) {
+  forecast_horizon <- min(max_delay, t)
+  pop_nht <- if (pop$period == "forecast") {
+    as.integer(max(t - forecast_horizon, 0L))
+  } else {
+    0L
+  }
+  list(
+    pop_use = pop$use,
+    pop_uncertain = pop$uncertain,
+    pop_fixed = pop$fixed,
+    pop_floor = pop$floor,
+    pop_nht = pop_nht
+  )
 }
 
 #' Expectation model module
@@ -526,11 +575,12 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #'
 #' @param population Optional initial susceptible population size used to adjust
 #' the renewal process for susceptible depletion. Defaults to `NULL`, meaning no
-#' adjustment is applied and the unadjusted renewal equation is used (this is the
-#' default and is backwards compatible). When a positive numeric value is
+#' adjustment is applied and the unadjusted renewal equation is used (the
+#' default and backwards compatible). When a positive numeric value is
 #' supplied, the effective reproduction number bends down as the susceptible
-#' pool is depleted by modelled latent cases: at each step transmission is scaled
-#' by the remaining susceptible fraction `S_t / population`, where `S_t` is the
+#' pool is depleted by modelled latent cases. At each step transmission is
+#' scaled by the remaining susceptible fraction `S_t / population`, where
+#' `S_t` is the
 #' initial susceptible population minus cumulative modelled latent cases. The
 #' adjustment only applies to the renewal path (i.e. when `generation_time` has
 #' length greater than 1); it is ignored for the daily growth rate model
@@ -629,13 +679,9 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   # Susceptible-depletion (population) adjustment data. For the "forecast"
   # period the adjustment is restricted to the right-truncated nowcast horizon
   # (the most recent min(dmax, t) post-seed time points).
-  forecast_horizon <- min(data$max_delay[[1]], r_list$t)
-  r_list$pop_use <- pop$use
-  r_list$pop_uncertain <- pop$uncertain
-  r_list$pop_fixed <- pop$fixed
-  r_list$pop_floor <- pop$floor
-  r_list$pop_nht <- as.integer(
-    if (pop$period == "forecast") max(r_list$t - forecast_horizon, 0L) else 0L
+  r_list <- c(
+    r_list,
+    .expectation_population_data(pop, r_list$t, data$max_delay[[1]])
   )
 
   # Initial prior for seeding observations
@@ -694,8 +740,8 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   # always supplied as data (so `expr_pop_p` exists in the Stan data) but is
   # only used when the population is estimated (`pop$uncertain == 1`). When the
   # population is fixed or absent a placeholder prior is used.
-  pop_meanlog <- if (is.null(pop$prior_meanlog)) 0 else pop$prior_meanlog
-  pop_sdlog <- if (is.null(pop$prior_sdlog)) 1 else pop$prior_sdlog
+  pop_meanlog <- rlang::`%||%`(pop$prior_meanlog, 0)
+  pop_sdlog <- rlang::`%||%`(pop$prior_sdlog, 1)
 
   out$priors <- data.table::data.table(
     variable = c(

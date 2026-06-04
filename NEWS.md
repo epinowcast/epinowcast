@@ -8,6 +8,11 @@
   An integer `d` argument (matching `arima()`'s `d`) integrates the process `d` times: `d = 0` is stationary (the default, like EpiNow2's `gp_on = "R0"`), `d = 1` gives a smoothly drifting trend (like EpiNow2's default `gp_on = "R_t-1"`), and `d >= 2` integrates further, anchoring the first `d` values to zero so the level and slope are carried by the fixed effects.
   The Stan implementation is adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2, MIT licensed).
   See #824.
+- Added an optional susceptible-depletion (population) adjustment to the renewal expectation model via the new `population`, `population_period`, `population_floor`, `population_uncertain`, and `population_cv` arguments to `enw_expectation()`.
+  When a population size is supplied the effective reproduction number bends down as the susceptible pool is depleted by modelled latent cases, scaling transmission by the remaining susceptible fraction.
+  The population can be fixed or fitted (uncertain) via a LogNormal prior.
+  The adjustment is opt-in and applies to the renewal path only; the renewal logic is adapted from `EpiNow2` (`rt_opts(pop = ...)`, MIT licence).
+  See #826.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
 

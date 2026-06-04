@@ -55,11 +55,12 @@ length of the generation time if supplied.}
 
 \item{population}{Optional initial susceptible population size used to adjust
 the renewal process for susceptible depletion. Defaults to \code{NULL}, meaning no
-adjustment is applied and the unadjusted renewal equation is used (this is the
-default and is backwards compatible). When a positive numeric value is
+adjustment is applied and the unadjusted renewal equation is used (the
+default and backwards compatible). When a positive numeric value is
 supplied, the effective reproduction number bends down as the susceptible
-pool is depleted by modelled latent cases: at each step transmission is scaled
-by the remaining susceptible fraction \code{S_t / population}, where \code{S_t} is the
+pool is depleted by modelled latent cases. At each step transmission is
+scaled by the remaining susceptible fraction \code{S_t / population}, where
+\code{S_t} is the
 initial susceptible population minus cumulative modelled latent cases. The
 adjustment only applies to the renewal path (i.e. when \code{generation_time} has
 length greater than 1); it is ignored for the daily growth rate model
