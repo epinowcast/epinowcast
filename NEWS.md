@@ -8,6 +8,11 @@
   An integer `d` argument (matching `arima()`'s `d`) integrates the process `d` times: `d = 0` is stationary (the default, like EpiNow2's `gp_on = "R0"`), `d = 1` gives a smoothly drifting trend (like EpiNow2's default `gp_on = "R_t-1"`), and `d >= 2` integrates further, anchoring the first `d` values to zero so the level and slope are carried by the fixed effects.
   The Stan implementation is adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2, MIT licensed).
   See #824.
+- Added `enw_simulate()` and `enw_forecast()` for forward simulation and forecasting separate from fitting.
+  `enw_simulate()` forward-generates synthetic observations from known/fixed parameters and a supplied growth rate, for prior or posterior predictive checks, synthetic-recovery tests, and scenario analysis.
+  `enw_forecast()` projects a fitted nowcast forward under a new growth rate trajectory, propagating posterior uncertainty in the unchanged delay, report, and observation components.
+  Both reuse the existing Stan generated-quantities machinery via a new `expr_r_override` data hook so simulated, forecast, and fitted outputs are directly comparable.
+  See #829 by @seabbs.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
 

@@ -56,6 +56,7 @@ prob_to_hazard(c(0.5, 0.1, 0.1))
 }
 \seealso{
 Functions used to help convert models into the format required for stan
+\code{\link{enw_forecast}()},
 \code{\link{enw_formula_as_data_list}()},
 \code{\link{enw_get_cache}()},
 \code{\link{enw_model}()},

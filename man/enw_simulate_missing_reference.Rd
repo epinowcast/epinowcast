@@ -54,4 +54,8 @@ enw_simulate_missing_reference(
   proportion = 0.35, by = c("location", "age_group")
 )
 }
+\seealso{
+Tools for data simulation
+\code{\link{enw_simulate}()}
+}
 \concept{simulate}
