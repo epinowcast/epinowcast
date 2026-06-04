@@ -1023,7 +1023,7 @@ enw_secondary_opts <- function(type = c("incidence", "prevalence"),
   for (nm in names(overrides)) {
     if (!is.null(overrides[[nm]])) {
       val <- overrides[[nm]]
-      if (length(val) != 1 || !val %in% c(0L, 1L, 0, 1)) {
+      if (length(val) != 1 || !isTRUE(val %in% c(0L, 1L, 0, 1))) {
         cli::cli_abort(
           "`{nm}` must be a single value of 0 or 1."
         )

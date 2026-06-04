@@ -31,6 +31,13 @@ test_that("enw_secondary_opts() validates inputs", {
   expect_error(enw_secondary_opts(cumulative = 2L))
 })
 
+test_that("enw_secondary_opts() aborts cleanly on NA overrides", {
+  expect_error(
+    enw_secondary_opts(cumulative = NA_integer_),
+    "must be a single value of 0 or 1"
+  )
+})
+
 test_that("enw_secondary() returns a model module structure", {
   secondary <- enw_secondary(
     data = enw_example("preprocessed")
