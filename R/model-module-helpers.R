@@ -92,6 +92,41 @@ latest_obs_as_matrix <- function(latest) {
   latest_matrix <- as.matrix(latest_matrix[, -1])
 }
 
+#' Known per-reference-date totals for the delay-only model
+#'
+#' Builds the `dlo_ltotal` data entry for the delay-only model (issues #775
+#' and #776). The known totals are the latest available `confirm` value for
+#' each reference date and group, taken as fixed truth and supplied to Stan
+#' on the log scale. The Stan layout is `array[g] vector[t]`, which cmdstanr
+#' expects as a `g` by `t` matrix.
+#'
+#' @param data Output from [enw_preprocess_data()].
+#'
+#' @param delay_only Logical; if `FALSE` an empty (`g` by `0`) matrix is
+#' returned so the model carries no delay-only totals.
+#'
+#' @return A `g` by `t` matrix of log totals (or `g` by `0` when not in
+#' delay-only mode).
+#' @family modelmodulehelpers
+delay_only_ltotal <- function(data, delay_only) {
+  g <- data$groups[[1]]
+  if (!delay_only) {
+    return(matrix(numeric(0), nrow = g, ncol = 0))
+  }
+  # latest_obs_as_matrix returns reference dates (t) by group (g); transpose
+  # to the array[g] vector[t] layout cmdstanr expects.
+  totals <- t(latest_obs_as_matrix(data$latest[[1]]))
+  if (any(totals <= 0, na.rm = TRUE)) {
+    cli::cli_abort(
+      paste0(
+        "All known totals must be strictly positive for the delay-only ",
+        "model; found a total of zero or less."
+      )
+    )
+  }
+  log(totals)
+}
+
 #' Construct a convolution matrix
 #'
 #' This function allows the construction of convolution matrices which can be

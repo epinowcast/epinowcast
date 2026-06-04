@@ -840,6 +840,20 @@ enw_missing <- function(formula = ~1, data) {
 #' [enw_flag_observed_observations()]. If either of these approaches are used
 #' then the variable will be name `.observed`. Default is `NULL`.
 #'
+#' @param delay_only Logical, defaults to `FALSE`. If `TRUE`, fit only the
+#' reporting-delay distribution conditional on the known per-reference-date
+#' totals, treating those totals as fixed truth (issues #775 and #776). The
+#' latent process and per-cell observation model are bypassed and replaced by
+#' a (truncated) multinomial likelihood over the reported cells of each
+#' reference date (Kalbfleisch & Lawless, 1989; Hoehle & an der Heiden,
+#' 2014). The known totals are taken from the latest available data: when
+#' these are the final retrospective totals this is the multinomial of #775,
+#' and when they are running totals observed only up to some horizon the
+#' renormalisation over the observed delay range gives the truncated
+#' multinomial of #776. Use with `expectation = enw_expectation(~0, data =
+#' data)` so the (now unused) latent process is switched off. Not compatible
+#' with an `observation_indicator` or with the missing reference model.
+#'
 #' @param data Output from [enw_preprocess_data()].
 #'
 #' @return A list as required by stan.
@@ -847,9 +861,21 @@ enw_missing <- function(formula = ~1, data) {
 #' @export
 #' @examples
 #' enw_obs(data = enw_example("preprocessed"))
+#' # Delay-only model conditional on known totals (issues #775, #776)
+#' enw_obs(delay_only = TRUE, data = enw_example("preprocessed"))
 enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
-                    observation_indicator = NULL, data) {
+                    observation_indicator = NULL, delay_only = FALSE, data) {
   family <- match.arg(family)
+
+  if (delay_only && !is.null(observation_indicator)) {
+    cli::cli_abort(
+      paste0(
+        "{.arg delay_only} is not compatible with an ",
+        "{.arg observation_indicator}: the delay-only likelihood uses every ",
+        "reported cell of each reference date."
+      )
+    )
+  }
 
   # copy new confirm for processing
   new_confirm <- coerce_dt(
@@ -919,6 +945,15 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
     family == "negbin", 1,
     family == "negbin1d", 2
   )
+
+  # Delay-only model (issues #775, #776). When enabled the reporting-delay
+  # distribution is fit conditional on the known per-reference-date totals
+  # via a (truncated) multinomial likelihood; the latent process and per-cell
+  # observation model are bypassed. The known totals are taken from the
+  # latest available data and supplied to Stan on the log scale as the
+  # expected total by reference date.
+  proc_data$model_delay_only <- as.integer(delay_only)
+  proc_data$dlo_ltotal <- delay_only_ltotal(data, delay_only)
 
   out <- list()
   out$family <- family

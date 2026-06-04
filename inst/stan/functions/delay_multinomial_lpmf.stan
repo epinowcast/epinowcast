@@ -34,3 +34,39 @@ real delay_multinomial_lpmf(array[] int obs, vector log_exp_obs) {
   // offset cancels, leaving the (truncated) delay PMF on the log scale.
   return multinomial_logit_lpmf(obs | log_softmax(log_exp_obs));
 }
+
+/**
+ * Delay-only multinomial likelihood over a range of snapshots
+ *
+ * Sums `delay_multinomial_lpmf` over each snapshot in a contiguous range,
+ * treating each reference date's observed cells as one (truncated)
+ * multinomial conditional on its total. Reuses the flat snapshot layout
+ * (`sl`/`csl`) shared with the Poisson delay likelihood so no parallel data
+ * structures are needed.
+ *
+ * @param start First snapshot in the range.
+ * @param end Last snapshot in the range.
+ * @param obs Flat array of observed cell counts (by snapshot).
+ * @param log_exp_obs Flat log expected cells aligned with `obs`.
+ * @param obs_offset Index of `obs` corresponding to the first cell of the
+ * range within the wider flat vector (so a range can start mid-vector).
+ * @param sl Number of observed cells per snapshot.
+ * @param csl Cumulative `sl`.
+ *
+ * @return Summed log probability mass over the snapshots in the range.
+ */
+real delay_multinomial_snaps(int start, int end, array[] int obs,
+                             vector log_exp_obs, int obs_offset,
+                             array[] int sl, array[] int csl) {
+  real tar = 0;
+  for (i in start:end) {
+    if (sl[i]) {
+      array[3] int l = filt_obs_indexes(i, i, csl, sl);
+      int lo = l[1] - obs_offset + 1;
+      tar += delay_multinomial_lpmf(
+        segment(obs, l[1], sl[i]) | segment(log_exp_obs, lo, sl[i])
+      );
+    }
+  }
+  return tar;
+}

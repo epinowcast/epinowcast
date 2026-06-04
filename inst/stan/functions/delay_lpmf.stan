@@ -35,21 +35,14 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
                      int model_obs, vector refnp_lh, int ref_np,
                      array[] int sdmax, array[] int csdmax,
                      int rep_agg_p, array[,,] int rep_agg_n_selected,
-                     array[,,,] int rep_agg_selected_idx) {
+                     array[,,,] int rep_agg_selected_idx,
+                     int model_delay_only) {
   real tar = 0;
   // Where am I in the observed data?
   array[3] int nc = filt_obs_indexes(start, end, cnsl, nsl);
   // Where am I in the observed data filling in gaps?
   array[3] int n = filt_obs_indexes(start, end, csl, sl);
   if (nc[3]) {
-    // Filter observed data and observed data lookup
-    array[nc[3]] int filt_obs = segment(obs, nc[1], nc[3]);
-    array[nc[3]] int filt_obs_lookup = segment(obs_lookup, nc[1], nc[3]);
-    array[nc[3]] int filt_obs_lookup_local;
-    for (i in 1:nc[3]) {
-      filt_obs_lookup_local[i] = filt_obs_lookup[i] - n[1] + 1;
-    }
-  
     // What is going to be used for storage
     vector[n[3]] log_exp_obs;
 
@@ -59,11 +52,28 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
       rep_agg_selected_idx
     );
 
-    // observation error model (across all reference dates and groups)
-    profile("model_likelihood_neg_binomial") {
-    tar = obs_lpmf(
-      filt_obs | log_exp_obs[filt_obs_lookup_local], phi, model_obs
-    );
+    if (model_delay_only) {
+      // Delay-only mode: a (truncated) multinomial per reference date,
+      // conditioning on the known total instead of the Poisson obs model.
+      profile("model_likelihood_delay_multinomial") {
+      tar = delay_multinomial_snaps(
+        start, end, obs, log_exp_obs, n[1], sl, csl
+      );
+      }
+    } else {
+      // Filter observed data and observed data lookup
+      array[nc[3]] int filt_obs = segment(obs, nc[1], nc[3]);
+      array[nc[3]] int filt_obs_lookup = segment(obs_lookup, nc[1], nc[3]);
+      array[nc[3]] int filt_obs_lookup_local;
+      for (i in 1:nc[3]) {
+        filt_obs_lookup_local[i] = filt_obs_lookup[i] - n[1] + 1;
+      }
+      // observation error model (across all reference dates and groups)
+      profile("model_likelihood_neg_binomial") {
+      tar = obs_lpmf(
+        filt_obs | log_exp_obs[filt_obs_lookup_local], phi, model_obs
+      );
+      }
     }
   }
   return(tar);
@@ -136,7 +146,8 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
                       array[] int miss_st, array[] int miss_cst,
                       vector refnp_lh, int ref_np,
                       int rep_agg_p, array[,,] int rep_agg_n_selected,
-                      array[,,,] int rep_agg_selected_idx) {
+                      array[,,,] int rep_agg_selected_idx,
+                      int model_delay_only) {
   // Where am I?
   real tar = 0;
   int i_start = ts[1, start];
@@ -186,6 +197,19 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
       i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax, rep_agg_p, rep_agg_n_selected,
       rep_agg_selected_idx
     );
+  }
+  // Delay-only mode: a (truncated) multinomial per reference date,
+  // conditioning on the known total. Incompatible with the missing
+  // reference model, which is guarded against on the R side.
+  if (model_delay_only) {
+    profile("model_likelihood_delay_multinomial") {
+    if (nc[3]) {
+      tar = delay_multinomial_snaps(
+        i_start, i_end, obs, log_exp_obs, n[1], sl, csl
+      );
+    }
+    }
+    return(tar);
   }
   // Observation error model (across all reference dates and groups)
   profile("model_likelihood_neg_binomial") {

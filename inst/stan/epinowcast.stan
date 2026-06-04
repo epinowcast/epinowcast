@@ -18,6 +18,7 @@ functions {
 #include functions/allocate_observed_obs.stan
 #include functions/apply_missing_reference_effects.stan
 #include functions/log_expected_by_report.stan
+#include functions/delay_multinomial_lpmf.stan
 #include functions/delay_lpmf.stan
 }
 
@@ -318,6 +319,15 @@ data {
   int model_obs; // control parameter for the observation model
   array[2, 1] real sqrt_phi_p; // 1/sqrt (overdispersion)
 
+  // Delay-only model (issues #775, #776)
+  // When 1, the reporting-delay distribution is fit conditional on known
+  // per-reference-date totals via a (truncated) multinomial likelihood; the
+  // latent process and per-cell observation model are bypassed.
+  int<lower=0, upper=1> model_delay_only;
+  // Known totals per group and time on the log scale, used as fixed truth
+  // for exp_lobs in delay-only mode. Empty (t = 0) otherwise.
+  array[g] vector[model_delay_only ? t : 0] dlo_ltotal;
+
   // Control parameters
   int debug; // should debug information be shown?
   int likelihood; // should the likelihood be included?
@@ -503,6 +513,12 @@ transformed parameters{
     );
   } else {
     exp_lobs = exp_llatent; // assume latent cases and obs are identical
+  }
+  // Delay-only mode: use the supplied known totals as the expected total by
+  // reference date. The multinomial likelihood is invariant to this offset
+  // (it cancels in renormalisation) but it is used for posterior prediction.
+  if (model_delay_only) {
+    exp_lobs = dlo_ltotal;
   }
   }
 
@@ -754,7 +770,7 @@ model {
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
           obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
           refnp_lh, model_refnp, rep_agg_p, rep_agg_n_selected,
-          rep_agg_selected_idx
+          rep_agg_selected_idx, model_delay_only
         );
       } else {
         target += reduce_sum(
@@ -762,7 +778,7 @@ model {
           flat_obs_lookup, exp_lobs, sg, st, rep_findex, srdlh, refp_lh,
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, refnp_lh,
           model_refnp, sdmax, csdmax, rep_agg_p, rep_agg_n_selected,
-          rep_agg_selected_idx
+          rep_agg_selected_idx, model_delay_only
         );
       }
     } else {
@@ -772,7 +788,7 @@ model {
         ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
         obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
         refnp_lh, model_refnp, rep_agg_p, rep_agg_n_selected,
-        rep_agg_selected_idx
+        rep_agg_selected_idx, model_delay_only
       );
     }
   }

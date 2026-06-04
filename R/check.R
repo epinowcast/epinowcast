@@ -101,6 +101,18 @@ check_module <- function(module) {
 #' @family check
 check_modules_compatible <- function(modules) {
   if (
+    isTRUE(modules[[5]]$data$model_delay_only == 1) &&
+      modules[[4]]$data$model_miss
+  ) {
+    cli::cli_abort(
+      paste0(
+        "The delay-only model (set via `delay_only` in `enw_obs`) is not ",
+        "compatible with the missing reference model. The delay-only ",
+        "likelihood conditions on the known totals of fully referenced cells."
+      )
+    )
+  }
+  if (
     modules[[4]]$data$model_miss &&
       !modules[[6]]$data$likelihood_aggregation
   ) {
