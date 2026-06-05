@@ -155,7 +155,7 @@ attack <- rbind(
 )
 
 attack_summary <- attack[, .(
-  mean = mean(attack),
+  median = median(attack),
   q5 = quantile(attack, 0.05),
   q95 = quantile(attack, 0.95)
 ), by = model]
@@ -164,19 +164,21 @@ knitr::kable(attack_summary, digits = 0, caption = paste(
 ))
 ```
 
-We also plot the posterior of the attack size under each model against the
-realised truth.
+We also plot each model's attack-size posterior median and 90% credible
+interval against the realised truth.
+We show intervals rather than densities here because the adjusted model's
+posterior is pinned at the population cap, so a density would collapse to a
+spike and hide the unadjusted model's spread.
 
-```{r plot-attack, fig.cap = "Posterior of the cumulative attack size under each model against the realised truth (dashed line)."}
-ggplot(attack, aes(x = attack, fill = model)) +
-  geom_density(alpha = 0.4) +
+```{r plot-attack, fig.cap = "Posterior median and 90% credible interval of the cumulative attack size under each model against the realised truth (dashed line)."}
+ggplot(attack_summary, aes(x = median, y = model, colour = model)) +
+  geom_pointrange(aes(xmin = q5, xmax = q95)) +
   geom_vline(
     aes(xintercept = sim$attack_size, linetype = "truth"), colour = "black"
   ) +
   scale_linetype_manual(values = c(truth = "dashed")) +
   labs(
-    x = "Cumulative attack size", y = "Posterior density", fill = NULL,
-    linetype = NULL
+    x = "Cumulative attack size", y = NULL, colour = NULL, linetype = NULL
   ) +
   theme_bw()
 ```
