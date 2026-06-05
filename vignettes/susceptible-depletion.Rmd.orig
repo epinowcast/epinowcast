@@ -51,9 +51,11 @@ set.seed(2024)
 We simulate a single well-mixed population of `N = 4000` susceptibles seeded
 with a few cases and driven by a renewal process with a fixed generation time
 and a constant reproduction number.
-Because the population is small, the susceptible pool is meaningfully depleted
-over the epidemic and the realised growth slows even though transmissibility is
+Because the population is small, the susceptible pool is depleted over the
+epidemic, so the wave peaks and then declines even though transmissibility is
 constant.
+We observe the wave to near completion, so the realised final size is
+informative about the susceptible population.
 
 ```{r simulate}
 simulate_depleting <- function(population, rt, generation_time, n_days,
@@ -73,8 +75,8 @@ simulate_depleting <- function(population, rt, generation_time, n_days,
 
 population <- 4000
 gt <- c(0.3, 0.4, 0.3)
-sim <- simulate_depleting(population, rt = 1.7, generation_time = gt,
-                          n_days = 45)
+sim <- simulate_depleting(population, rt = 1.4, generation_time = gt,
+                          n_days = 34)
 
 obs <- data.table(
   reference_date = as.Date("2021-01-01") + seq_along(sim$incidence) - 1,
@@ -86,8 +88,8 @@ cat("Realised attack size:", round(sim$attack_size),
     "of", population, "susceptibles\n")
 ```
 
-The realised attack size consumes a large fraction of the population, so
-depletion is not negligible.
+The realised attack size consumes almost the whole population, so depletion
+drives the dynamics and the wave is not explained by transmissibility alone.
 
 ## Preprocessing
 
@@ -104,7 +106,9 @@ pobs <- enw_preprocess_data(
 
 We fit the same renewal model twice: once with the susceptible-depletion
 adjustment (`population = N`) and once without it (the default).
-Both use a weekly random walk on the log reproduction number.
+Both use a constant reproduction number (`~1`), matching the data-generating
+process, so the only way the unadjusted model can explain the observed slowdown
+is by inferring a lower reproduction number than the truth.
 
 ```{r fit}
 fit_opts <- enw_fit_opts(
@@ -116,7 +120,7 @@ fit_opts <- enw_fit_opts(
 nowcast_adjusted <- epinowcast(
   pobs,
   expectation = enw_expectation(
-    r = ~ rw(week), generation_time = gt, population = population, data = pobs
+    r = ~1, generation_time = gt, population = population, data = pobs
   ),
   obs = enw_obs(family = "poisson", data = pobs),
   fit = fit_opts
@@ -125,7 +129,7 @@ nowcast_adjusted <- epinowcast(
 nowcast_unadjusted <- epinowcast(
   pobs,
   expectation = enw_expectation(
-    r = ~ rw(week), generation_time = gt, data = pobs
+    r = ~1, generation_time = gt, data = pobs
   ),
   obs = enw_obs(family = "poisson", data = pobs),
   fit = fit_opts
@@ -136,50 +140,96 @@ nowcast_unadjusted <- epinowcast(
 
 We extract the posterior latent cases (`exp_llatent`) from each fit and compare
 the recovered cumulative attack size with the known truth.
+We work from the posterior draws rather than a single summary, so the
+comparison reflects the full posterior.
 
 ```{r attack-size}
-attack_size <- function(nowcast, label) {
+attack_draws <- function(nowcast, label) {
   draws <- posterior::as_draws_matrix(nowcast$fit[[1]]$draws("exp_llatent"))
-  total <- rowSums(exp(draws))
-  data.table(
-    model = label, mean = mean(total),
-    q5 = quantile(total, 0.05), q95 = quantile(total, 0.95)
-  )
+  data.table(model = label, attack = rowSums(exp(draws)))
 }
 
 attack <- rbind(
-  attack_size(nowcast_adjusted, "adjusted"),
-  attack_size(nowcast_unadjusted, "unadjusted")
+  attack_draws(nowcast_adjusted, "adjusted"),
+  attack_draws(nowcast_unadjusted, "unadjusted")
 )
-knitr::kable(attack, digits = 0, caption = paste(
+
+attack_summary <- attack[, .(
+  mean = mean(attack),
+  q5 = quantile(attack, 0.05),
+  q95 = quantile(attack, 0.95)
+), by = model]
+knitr::kable(attack_summary, digits = 0, caption = paste(
   "Recovered cumulative attack size. True value:", round(sim$attack_size)
 ))
 ```
 
-The adjusted model recovers the realised attack size, attributing the slowdown
-to a shrinking susceptible pool.
-The unadjusted model has to explain the same slowdown through a falling
-reproduction number, which biases its reconstruction of the latent epidemic.
+We also plot the posterior of the attack size under each model against the
+realised truth.
+
+```{r plot-attack, fig.cap = "Posterior of the cumulative attack size under each model against the realised truth (dashed line)."}
+ggplot(attack, aes(x = attack, fill = model)) +
+  geom_density(alpha = 0.4) +
+  geom_vline(
+    aes(xintercept = sim$attack_size, linetype = "truth"), colour = "black"
+  ) +
+  scale_linetype_manual(values = c(truth = "dashed")) +
+  labs(
+    x = "Cumulative attack size", y = "Posterior density", fill = NULL,
+    linetype = NULL
+  ) +
+  theme_bw()
+```
+
+The adjusted model recovers the realised attack size, attributing the peak and
+decline to a shrinking susceptible pool.
+The unadjusted model has a constant reproduction number and no depletion, so it
+cannot produce a peak and instead has to compromise between the growth and the
+decline, biasing its reconstruction of the latent epidemic.
 
 ## Estimated latent epidemic
 
-```{r plot-latent, fig.cap = "Posterior mean latent cases under each model against the simulated truth."}
-latent_summary <- function(nowcast, label) {
-  s <- nowcast$fit[[1]]$summary("exp_llatent", mean = mean)
-  data.table(model = label, time = seq_len(nrow(s)), mean = exp(s$mean))
+We plot the full posterior of latent cases as a 90% credible ribbon rather than
+a single point estimate, so the spread of plausible trajectories is visible.
+The simulated truth is overlaid for comparison.
+
+```{r plot-latent, fig.cap = "Posterior latent cases (90% credible interval) under each model against the simulated truth."}
+latent_posterior <- function(nowcast, label) {
+  draws <- posterior::as_draws_matrix(
+    nowcast$fit[[1]]$draws("exp_llatent")
+  )
+  cases <- exp(draws)
+  data.table(
+    model = label,
+    time = seq_len(ncol(cases)),
+    median = apply(cases, 2, median),
+    lower = apply(cases, 2, quantile, 0.05),
+    upper = apply(cases, 2, quantile, 0.95)
+  )
 }
 
 latent <- rbind(
-  latent_summary(nowcast_adjusted, "adjusted"),
-  latent_summary(nowcast_unadjusted, "unadjusted")
+  latent_posterior(nowcast_adjusted, "adjusted"),
+  latent_posterior(nowcast_unadjusted, "unadjusted")
 )
 truth <- data.table(
-  model = "truth", time = seq_along(sim$incidence), mean = sim$incidence
+  time = seq_along(sim$incidence), incidence = sim$incidence
 )
 
-ggplot(rbind(latent, truth), aes(x = time, y = mean, colour = model)) +
-  geom_line() +
-  labs(x = "Time", y = "Latent cases", colour = NULL) +
+ggplot(latent, aes(x = time)) +
+  geom_ribbon(
+    aes(ymin = lower, ymax = upper, fill = model), alpha = 0.3
+  ) +
+  geom_line(aes(y = median, colour = model)) +
+  geom_line(
+    data = truth, aes(y = incidence, linetype = "truth"),
+    colour = "black"
+  ) +
+  scale_linetype_manual(values = c(truth = "dashed")) +
+  labs(
+    x = "Time", y = "Latent cases", colour = NULL, fill = NULL,
+    linetype = NULL
+  ) +
   theme_bw()
 ```
 
@@ -194,7 +244,7 @@ variation `population_cv`.
 nowcast_uncertain <- epinowcast(
   pobs,
   expectation = enw_expectation(
-    r = ~ rw(week), generation_time = gt, population = population,
+    r = ~1, generation_time = gt, population = population,
     population_uncertain = TRUE, population_cv = 0.5, data = pobs
   ),
   obs = enw_obs(family = "poisson", data = pobs),
@@ -208,8 +258,32 @@ knitr::kable(
 )
 ```
 
-The estimated population brackets the true value, recovering it from the
-depletion signal alone.
+Rather than only reporting summary statistics, we plot the full posterior of the
+estimated population against the true value used to simulate the data.
+The posterior concentrates around the truth, showing the population is
+recovered from the depletion signal alone.
+
+```{r plot-population, fig.cap = "Posterior of the estimated initial susceptible population against the true value (dashed line)."}
+pop_draws <- data.table(
+  pop_est = as.numeric(
+    posterior::as_draws_matrix(
+      nowcast_uncertain$fit[[1]]$draws("expr_pop_est")
+    )
+  )
+)
+
+ggplot(pop_draws, aes(x = pop_est)) +
+  geom_density(fill = "steelblue", alpha = 0.4) +
+  geom_vline(
+    aes(xintercept = population, linetype = "truth"), colour = "black"
+  ) +
+  scale_linetype_manual(values = c(truth = "dashed")) +
+  labs(
+    x = "Initial susceptible population", y = "Posterior density",
+    linetype = NULL
+  ) +
+  theme_bw()
+```
 
 ## Assumptions
 
@@ -217,5 +291,8 @@ The adjustment assumes a single well-mixed population per group with no waning
 of immunity and no births or deaths, so the susceptible pool is only ever
 depleted by modelled latent cases.
 It applies only to the renewal path (`length(generation_time) > 1`).
+The depletion logic follows `EpiNow2` [@EpiNow2; @Abbott2020].
 See `?enw_expectation` for the `population`, `population_floor`,
 `population_uncertain`, and `population_cv` arguments.
+
+## References
