@@ -40,6 +40,7 @@ Helper functions for model modules
 \code{\link{add_max_observed_delay}()},
 \code{\link{convolution_matrix}()},
 \code{\link{delay_only_ltotal}()},
+\code{\link{delay_only_total}()},
 \code{\link{enw_dayofweek_structural_reporting}()},
 \code{\link{enw_reference_by_report}()},
 \code{\link{enw_reps_with_complete_refs}()},

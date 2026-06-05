@@ -36,7 +36,7 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
                      array[] int sdmax, array[] int csdmax,
                      int rep_agg_p, array[,,] int rep_agg_n_selected,
                      array[,,,] int rep_agg_selected_idx,
-                     int model_delay_only) {
+                     int model_delay_only, array[] int dlo_total) {
   real tar = 0;
   // Where am I in the observed data?
   array[3] int nc = filt_obs_indexes(start, end, cnsl, nsl);
@@ -55,9 +55,12 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
     if (model_delay_only) {
       // Delay-only mode: a (truncated) multinomial per reference date,
       // conditioning on the known total instead of the Poisson obs model.
+      // Here `sl`/`csl` are the cutoff lengths (lsl/clsl) passed by the
+      // caller, so log_exp_obs already spans the cutoff range.
       profile("model_likelihood_delay_multinomial") {
       tar = delay_multinomial_snaps(
-        start, end, obs, log_exp_obs, n[1], obs_lookup, nsl, cnsl
+        start, end, obs, log_exp_obs, n[1], dlo_total, obs_lookup,
+        sl, csl, nsl, cnsl
       );
       }
     } else {
@@ -147,7 +150,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
                       vector refnp_lh, int ref_np,
                       int rep_agg_p, array[,,] int rep_agg_n_selected,
                       array[,,,] int rep_agg_selected_idx,
-                      int model_delay_only) {
+                      int model_delay_only, array[] int dlo_total) {
   // Where am I?
   real tar = 0;
   int i_start = ts[1, start];
@@ -205,7 +208,8 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
     profile("model_likelihood_delay_multinomial") {
     if (nc[3]) {
       tar = delay_multinomial_snaps(
-        i_start, i_end, obs, log_exp_obs, n[1], obs_lookup, nsl, cnsl
+        i_start, i_end, obs, log_exp_obs, n[1], dlo_total, obs_lookup,
+        sl, csl, nsl, cnsl
       );
     }
     }

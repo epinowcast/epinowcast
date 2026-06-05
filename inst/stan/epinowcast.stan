@@ -324,6 +324,9 @@ data {
   int<lower=0, upper=1> model_delay_only;
   // Known log totals by group and time (empty unless delay-only).
   array[g] vector[model_delay_only ? t : 0] dlo_ltotal;
+  // Known integer totals by snapshot (the cutoff running total), used to size
+  // the residual category when before-cutoff cells are unobserved.
+  array[model_delay_only ? s : 0] int dlo_total;
 
   // Control parameters
   int debug; // should debug information be shown?
@@ -766,7 +769,7 @@ model {
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
           obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
           refnp_lh, model_refnp, rep_agg_p, rep_agg_n_selected,
-          rep_agg_selected_idx, model_delay_only
+          rep_agg_selected_idx, model_delay_only, dlo_total
         );
       } else {
         target += reduce_sum(
@@ -774,7 +777,7 @@ model {
           flat_obs_lookup, exp_lobs, sg, st, rep_findex, srdlh, refp_lh,
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, refnp_lh,
           model_refnp, sdmax, csdmax, rep_agg_p, rep_agg_n_selected,
-          rep_agg_selected_idx, model_delay_only
+          rep_agg_selected_idx, model_delay_only, dlo_total
         );
       }
     } else {
@@ -784,7 +787,7 @@ model {
         ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
         obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
         refnp_lh, model_refnp, rep_agg_p, rep_agg_n_selected,
-        rep_agg_selected_idx, model_delay_only
+        rep_agg_selected_idx, model_delay_only, dlo_total
       );
     }
   }
@@ -803,14 +806,16 @@ generated quantities {
         cast && !model_delay_only ? g : 0] int pp_inf_obs;
   if (model_delay_only) {
     if (ologlik) {
-      vector[csl[s]] dlo_lexp = expected_obs_from_snaps(
+      // Expected cells over the cutoff range (lsl), matching the model block.
+      vector[clsl[s]] dlo_lexp = expected_obs_from_snaps(
         1, s, exp_lobs, rep_findex, srdlh, refp_lh, refp_findex, model_refp,
-        rep_fncol, ref_as_p, sl, csl, sg, st, csl[s], refnp_lh, model_refnp,
+        rep_fncol, ref_as_p, lsl, clsl, sg, st, clsl[s], refnp_lh, model_refnp,
         sdmax, csdmax, rep_agg_p, rep_agg_n_selected, rep_agg_selected_idx
       );
       for (i in 1:s) {
         log_lik[i] = delay_multinomial_snaps(
-          i, i, flat_obs, dlo_lexp, 1, flat_obs_lookup, nsl, cnsl
+          i, i, flat_obs, dlo_lexp, 1, dlo_total, flat_obs_lookup,
+          lsl, clsl, nsl, cnsl
         );
       }
     }

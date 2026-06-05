@@ -126,6 +126,30 @@ delay_only_ltotal <- function(data, delay_only) {
   log(totals)
 }
 
+#' Known integer totals per snapshot for the delay-only model
+#'
+#' Builds the `dlo_total` data entry: the known integer total per snapshot
+#' (the latest cumulative `confirm`, i.e. the cutoff running total), ordered
+#' by group then reference date to match the snapshot order. These totals
+#' size the residual category when an observation indicator leaves some
+#' before-cutoff cells unobserved.
+#'
+#' @inheritParams delay_only_ltotal
+#'
+#' @return An integer vector of length `snapshots` (or length 0 when not in
+#' delay-only mode).
+#' @family modelmodulehelpers
+delay_only_total <- function(data, delay_only) {
+  if (!delay_only) {
+    return(integer(0))
+  }
+  latest <- coerce_dt(data$latest[[1]], group = TRUE)
+  data.table::setkeyv(latest, c(".group", "reference_date"))
+  totals <- latest$confirm
+  totals[!is.finite(totals) | totals < 0] <- 0
+  as.integer(round(totals))
+}
+
 #' Construct a convolution matrix
 #'
 #' This function allows the construction of convolution matrices which can be

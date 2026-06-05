@@ -941,9 +941,11 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
   )
 
   # Delay-only model: fit the delay distribution conditional on the known
-  # totals (supplied as log totals by reference date) via a multinomial.
+  # totals (supplied as log totals by reference date, and as integer totals
+  # by snapshot for the residual category) via a multinomial.
   proc_data$model_delay_only <- as.integer(delay_only)
   proc_data$dlo_ltotal <- delay_only_ltotal(data, delay_only)
+  proc_data$dlo_total <- delay_only_total(data, delay_only)
 
   out <- list()
   out$family <- family

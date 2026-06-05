@@ -63,6 +63,7 @@ Helper functions for model modules
 \code{\link{add_pmfs}()},
 \code{\link{convolution_matrix}()},
 \code{\link{delay_only_ltotal}()},
+\code{\link{delay_only_total}()},
 \code{\link{enw_dayofweek_structural_reporting}()},
 \code{\link{enw_reps_with_complete_refs}()},
 \code{\link{enw_structural_reporting_metadata}()},
