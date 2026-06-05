@@ -1095,6 +1095,25 @@ enw_secondary_opts <- function(type = c("incidence", "prevalence"),
 #' @examples
 #' # Disabled secondary model (default)
 #' enw_secondary(data = enw_example("preprocessed"))
+#'
+#' @examplesIf interactive()
+#' # Simulate a secondary outcome from a known scaling of the primary series
+#' # and show the joint model recovers it.
+#' pobs <- enw_example("preprocessed")
+#' primary <- as.numeric(latest_obs_as_matrix(pobs$latest[[1]])[, 1])
+#' true_scale <- 0.3
+#' set.seed(1)
+#' deaths <- data.frame(
+#'   reference_date = pobs$metareference[[1]]$date,
+#'   confirm = rpois(length(primary), true_scale * primary)
+#' )
+#' secondary <- enw_secondary(
+#'   secondary = enw_secondary_opts("incidence"),
+#'   obs = deaths, scale = ~1, family = "poisson", data = pobs
+#' )
+#' nowcast <- epinowcast(pobs, secondary = secondary)
+#' # Recovered log-scaling vs the truth (log(0.3) ~ -1.2)
+#' nowcast$fit[[1]]$summary("sec_scale_int")
 enw_secondary <- function(secondary = enw_secondary_opts(), obs = NULL,
                           delay = 1, scale = ~1,
                           family = c("poisson", "negbin", "negbin1d"),

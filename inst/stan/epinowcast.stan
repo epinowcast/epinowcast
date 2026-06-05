@@ -661,7 +661,10 @@ transformed parameters{
       sec_sparse, sec_beta_sd, sec_rdesign, model_sec_scale, sparse_design,
       0, 0, 0, 0, 0, 0, 0,
       rep_matrix(0.0, 0, 0), rep_vector(0.0, 0), rep_vector(0.0, 0),
-      {0.0}, {0}
+      {0.0}, {0},
+      0, 0, 0, 0, 0.0, 0, 0.0, 0,
+      rep_matrix(0.0, 0, 0), rep_matrix(0.0, 0, 0),
+      {0.0}, {0.0}, {0}
     );
     exp_lsec = secondary_expected_obs(
       exp_lobs, sec_delay_n, sec_delay_sparse.1, sec_delay_sparse.2,
