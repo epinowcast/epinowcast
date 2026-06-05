@@ -659,6 +659,11 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
     }
     fn
   }
+  # Flag a minimal (intercept-only, no convolution) expectation so the
+  # delay-only path in `epinowcast()` can leave it untouched.
+  attr(out, "minimal") <- as_string_formula(r) == "~1" &&
+    length(generation_time) == 1 && length(latent_reporting_delay) == 1 &&
+    as_string_formula(observation) == "~1"
   out
 }
 
@@ -848,12 +853,14 @@ enw_missing <- function(formula = ~1, data) {
 #' this is the plain multinomial; with running totals observed up to some
 #' horizon the renormalisation over the observed delay range gives the
 #' truncated multinomial. An `observation_indicator` is supported and
-#' renormalises over the observed delay slots. Supply a minimal expectation,
-#' e.g. `expectation = enw_expectation(~1, data = data)`; in delay-only mode
-#' its expected observations are overridden by the known totals, so the latent
-#' process is inert. This mode estimates delays and does not nowcast (refit
-#' with the full model for a nowcast). Not compatible with the missing
-#' reference model. See the delay estimation vignette for a worked example.
+#' renormalises over all delays up to the observation cutoff. Because the
+#' known totals override the expected observations, the latent process is
+#' inert; [epinowcast()] therefore minimises the expectation automatically, so
+#' a delay-only fit is just `epinowcast(data, obs = enw_obs(delay_only = TRUE,
+#' data = data))` with no separate expectation module to configure. This mode
+#' estimates delays and does not nowcast (refit with the full model for a
+#' nowcast). Not compatible with the missing reference model. See the delay
+#' estimation vignette for a worked example.
 #' Based on the conditional delay likelihood of Kalbfleisch and Lawless
 #' (\doi{10.1080/01621459.1989.10478780}) and Höhle and an der Heiden
 #' (\doi{10.1111/biom.12194}).

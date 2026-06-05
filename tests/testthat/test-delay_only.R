@@ -72,6 +72,36 @@ test_that("delay_only enw_obs() sets the expected data entries", {
   expect_identical(ncol(o0$data$dlo_ltotal), 0L)
 })
 
+test_that("enw_expectation() flags a minimal expectation", {
+  pobs <- enw_example("preprocessed")
+  expect_true(attr(enw_expectation(r = ~1, data = pobs), "minimal"))
+  expect_false(
+    attr(enw_expectation(r = ~ 1 + (1 | day), data = pobs), "minimal")
+  )
+})
+
+test_that("epinowcast() minimises the expectation for a delay_only fit", {
+  pobs <- enw_example("preprocessed")
+  # The flexible default expectation is swapped for a minimal one so a
+  # delay-only fit needs no separately neutered expectation module. We use a
+  # stub sampler to capture the assembled data list without fitting.
+  nowcast <- suppressMessages(epinowcast(
+    pobs,
+    obs = enw_obs(delay_only = TRUE, data = pobs),
+    fit = enw_fit_opts(
+      sampler = function(init, data, ...) {
+        data.table::data.table(data = list(data))
+      }
+    ),
+    model = NULL
+  ))
+  data_list <- nowcast$data[[1]]
+  expect_identical(data_list$model_delay_only, 1L)
+  # Minimal growth model: no random-effect columns (the flexible default has
+  # day:.group random effects).
+  expect_equal(data_list$expr_rncol, 0)
+})
+
 test_that("delay_only supports an observation indicator", {
   sim <- simulate_delay_triangle(
     meanlog = 1.6, sdlog = 0.5, max_delay = 10, n_dates = 20, total = 2000

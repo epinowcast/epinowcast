@@ -158,6 +158,16 @@ epinowcast <- function(data,
                        model = epinowcast::enw_model(),
                        priors,
                        ...) {
+  # Delay-only mode conditions on known totals and overrides the expected
+  # observations, so the latent process is inert. Minimise the expectation
+  # automatically (unless the user already passed a minimal one) so a single
+  # `epinowcast(data, obs = enw_obs(delay_only = TRUE, data = data))` call
+  # works without a separately neutered expectation module.
+  if (isTRUE(obs$data$model_delay_only == 1) &&
+        !isTRUE(attr(expectation, "minimal"))) {
+    expectation <- enw_expectation(r = ~1, data = data)
+  }
+
   modules <- list(
     expectation, reference, report, missing, obs, fit, ...
   )

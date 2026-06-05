@@ -36,12 +36,13 @@ the reported cells of each reference date. With final retrospective totals
 this is the plain multinomial; with running totals observed up to some
 horizon the renormalisation over the observed delay range gives the
 truncated multinomial. An \code{observation_indicator} is supported and
-renormalises over the observed delay slots. Supply a minimal expectation,
-e.g. \code{expectation = enw_expectation(~1, data = data)}; in delay-only mode
-its expected observations are overridden by the known totals, so the latent
-process is inert. This mode estimates delays and does not nowcast (refit
-with the full model for a nowcast). Not compatible with the missing
-reference model. See the delay estimation vignette for a worked example.
+renormalises over all delays up to the observation cutoff. Because the
+known totals override the expected observations, the latent process is
+inert; \code{\link[=epinowcast]{epinowcast()}} therefore minimises the expectation automatically, so
+a delay-only fit is just \code{epinowcast(data, obs = enw_obs(delay_only = TRUE, data = data))} with no separate expectation module to configure. This mode
+estimates delays and does not nowcast (refit with the full model for a
+nowcast). Not compatible with the missing reference model. See the delay
+estimation vignette for a worked example.
 Based on the conditional delay likelihood of Kalbfleisch and Lawless
 (\doi{10.1080/01621459.1989.10478780}) and Höhle and an der Heiden
 (\doi{10.1111/biom.12194}).}

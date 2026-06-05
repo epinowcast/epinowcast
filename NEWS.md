@@ -9,10 +9,12 @@
   The Stan implementation is adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2, MIT licensed).
   See #824.
 - Added a delay-only model that fits the reporting-delay distribution conditional on known per-reference-date totals, treating those totals as fixed truth (the standard delay-estimation pattern of Kalbfleisch & Lawless, 1989; Höhle & an der Heiden, 2014).
-  Enable it with `enw_obs(delay_only = TRUE)`: the latent process and per-cell observation model are bypassed and replaced by a (truncated) multinomial likelihood over the reported cells of each reference date.
-  When the known totals are final retrospective totals this is the plain multinomial; when they are running totals observed only up to some horizon the likelihood renormalises over the observed delay range to give the truncated multinomial.
-  An `observation_indicator` is supported and renormalises over the observed delay slots.
+  Enable it with `enw_obs(delay_only = TRUE)`: a delay-only fit is just `epinowcast(data, obs = enw_obs(delay_only = TRUE, data = data))`, as `epinowcast()` minimises the (now inert) expectation automatically.
+  The latent process and per-cell observation model are replaced by a (truncated) multinomial likelihood over the reported cells of each reference date.
+  When the known totals are final retrospective totals this is the plain multinomial; when they are running totals observed only up to some horizon the likelihood renormalises over all delays up to the observation cutoff to give the truncated multinomial.
+  An `observation_indicator` is supported (interior cells unobserved but before the cutoff keep their weight).
   See the delay estimation vignette and #775 and #776.
+  Also adds `enw_posterior_delay()` to extract posterior samples of the parametric delay distribution.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
 
