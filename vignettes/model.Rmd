@@ -205,8 +205,8 @@ where $r_0^{c}$ is the sampled (centred) intercept.
 The original-scale intercept reported to the user is recovered as $r_0 = r_0^{c} - \bar X_r \beta_{f,r}$, and the user's prior is placed on $r_0$.
 The shift is additive, so the change of variables has unit Jacobian, the posterior is unchanged, and the prior keeps its meaning; this is the parameterisation `brms` uses for population-level intercepts by default.
 
-The same idea applies to the integrated drift of an autoregressive term.
-An integrated `arima()` residual has a free overall level (the cumulative sum lets the first shock shift the whole path) that trades off against the intercept, so its grand mean is removed and recovered into the intercept in the same way.
+The same idea applies to the integrated drift of an autoregressive or Gaussian process term.
+An integrated `arima()` residual or `gp(d >= 1)` term has a free overall level (the cumulative sum lets the early values shift the whole path) that trades off against the intercept, so its grand mean is removed and recovered into the intercept in the same way.
 Only that shared level is removed, so each group keeps its own level and drift and the reparameterisation stays exact for any number of groups; see the ARIMA vignette for the term-specific form.
 Modules without a free intercept are left uncentred.
 
