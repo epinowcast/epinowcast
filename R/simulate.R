@@ -41,6 +41,12 @@
 #' [epinowcast()]), so any parameter not supplied is initialised from its prior
 #' rather than from `cmdstanr`'s default.
 #'
+#' @param draws Integer number of independent synthetic replicates to draw from
+#' the observation model given the fixed parameters. Default: 1. Values greater
+#' than 1 produce a posterior-predictive spread (the observation-model
+#' uncertainty around the fixed expectation), so summaries and plots show
+#' uncertainty rather than a single deterministic realisation.
+#'
 #' @param seed Integer random seed for reproducible simulation. Default: 1.
 #'
 #' @inheritParams epinowcast
@@ -87,6 +93,7 @@ enw_simulate <- function(data, growth_rate,
                          ),
                          model = epinowcast::enw_model(),
                          priors,
+                         draws = 1L,
                          seed = 1, ...) {
   if (missing(growth_rate)) {
     cli::cli_abort(
@@ -128,10 +135,12 @@ enw_simulate <- function(data, growth_rate,
   init_values <- utils::modifyList(prior_init, parameters)
 
   # Fixed-parameter generation: parameters are taken from `parameters` where
-  # supplied and from the prior-based initialisation otherwise.
+  # supplied and from the prior-based initialisation otherwise. Each iteration
+  # is an independent synthetic replicate from the observation model, so
+  # `draws > 1` yields a posterior-predictive spread.
   gq <- model$sample(
     data = data_list, fixed_param = TRUE, chains = 1,
-    iter_sampling = 1, iter_warmup = 0, seed = seed,
+    iter_sampling = as.integer(draws), iter_warmup = 0, seed = seed,
     threads_per_chain = 1, init = function() init_values, ...
   )
 

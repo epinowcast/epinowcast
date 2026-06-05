@@ -43,6 +43,7 @@ We start from a preprocessed data object that defines the dates, groups, and max
 We then forward-generate observations from a known, time-varying growth rate and a known reporting delay.
 The growth rate is supplied directly.
 Every other component is fixed through `parameters`, which can set any model parameter.
+We draw many synthetic replicates with `draws` so the observation-model uncertainty around the fixed expectation is retained.
 
 
 ``` r
@@ -58,16 +59,22 @@ sims <- enw_simulate(
     refp_mean_int = 1.6, refp_sd_int = 0.6, sqrt_phi = 0.4
   ),
   reference = enw_reference(~1, data = pobs),
-  expectation = enw_expectation(r = ~ 1 + rw(week), data = pobs)
+  expectation = enw_expectation(r = ~ 1 + rw(week), data = pobs),
+  draws = 500
 )
 #> Running MCMC with 1 chain, with 1 thread(s) per chain...
 #> 
-#> Chain 1 Iteration: 1 / 1 [100%]  (Sampling) 
-#> Chain 1 finished in 0.0 seconds.
+#> Chain 1 Iteration:   1 / 500 [  0%]  (Sampling) 
+#> Chain 1 Iteration: 100 / 500 [ 20%]  (Sampling) 
+#> Chain 1 Iteration: 200 / 500 [ 40%]  (Sampling) 
+#> Chain 1 Iteration: 300 / 500 [ 60%]  (Sampling) 
+#> Chain 1 Iteration: 400 / 500 [ 80%]  (Sampling) 
+#> Chain 1 Iteration: 500 / 500 [100%]  (Sampling) 
+#> Chain 1 finished in 0.2 seconds.
 ```
 
 The simulated object carries synthetic observations in the same shape as a real fit, so the standard summaries and plots apply.
-The simulated final counts follow the rise-and-fall we imposed on the growth rate.
+The simulated final counts follow the rise-and-fall we imposed on the growth rate, with a spread from the negative-binomial observation model.
 
 
 ``` r
@@ -81,7 +88,7 @@ ggplot(simulated_nowcast) +
   theme_bw()
 ```
 
-![Simulated nowcast under the known rise-and-fall growth rate. The expected final count grows and then declines, as imposed.](figures/simulate-and-forecast-simulate-plot-1.png)
+![Simulated nowcast under the known rise-and-fall growth rate. The line is the mean and the band the 5-95% posterior-predictive interval across replicates.](figures/simulate-and-forecast-simulate-plot-1.png)
 
 # Fit a model
 
@@ -118,14 +125,14 @@ nowcast_samples <- function(object, scenario) {
 redriven <- enw_forecast(fit)
 #> Running standalone generated quantities after 2 MCMC chains, all chains in parallel , with 1 thread(s) per chain...
 #> 
-#> Chain 1  Elapsed Time: 0.155 seconds (Generated Quantities) 
-#> Chain 2  Elapsed Time: 0.153 seconds (Generated Quantities) 
+#> Chain 1  Elapsed Time: 0.147 seconds (Generated Quantities) 
+#> Chain 2  Elapsed Time: 0.149 seconds (Generated Quantities) 
 #> Chain 1 finished in 0.0 seconds.
 #> Chain 2 finished in 0.0 seconds.
 #> 
 #> Both chains finished successfully.
 #> Mean chain execution time: 0.0 seconds.
-#> Total execution time: 0.3 seconds.
+#> Total execution time: 0.2 seconds.
 
 recovery <- rbindlist(list(
   nowcast_samples(fit, "fit"),
@@ -151,9 +158,9 @@ We again plot posterior sample trajectories, so the spread between draws is visi
 growing <- enw_forecast(fit, overrides = list(r = 0.2))
 #> Running standalone generated quantities after 2 MCMC chains, all chains in parallel , with 1 thread(s) per chain...
 #> 
-#> Chain 1  Elapsed Time: 0.164 seconds (Generated Quantities) 
+#> Chain 1  Elapsed Time: 0.168 seconds (Generated Quantities) 
 #> Chain 1 finished in 0.0 seconds.
-#> Chain 2  Elapsed Time: 0.165 seconds (Generated Quantities) 
+#> Chain 2  Elapsed Time: 0.169 seconds (Generated Quantities) 
 #> Chain 2 finished in 0.0 seconds.
 #> 
 #> Both chains finished successfully.
@@ -162,14 +169,14 @@ growing <- enw_forecast(fit, overrides = list(r = 0.2))
 declining <- enw_forecast(fit, overrides = list(r = -0.2))
 #> Running standalone generated quantities after 2 MCMC chains, all chains in parallel , with 1 thread(s) per chain...
 #> 
-#> Chain 1  Elapsed Time: 0.122 seconds (Generated Quantities) 
-#> Chain 2  Elapsed Time: 0.126 seconds (Generated Quantities) 
+#> Chain 1  Elapsed Time: 0.128 seconds (Generated Quantities) 
+#> Chain 2  Elapsed Time: 0.128 seconds (Generated Quantities) 
 #> Chain 1 finished in 0.0 seconds.
 #> Chain 2 finished in 0.0 seconds.
 #> 
 #> Both chains finished successfully.
 #> Mean chain execution time: 0.0 seconds.
-#> Total execution time: 0.3 seconds.
+#> Total execution time: 0.2 seconds.
 
 scenarios <- rbindlist(list(
   nowcast_samples(redriven, "posterior"),

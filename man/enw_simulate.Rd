@@ -17,6 +17,7 @@ enw_simulate(
   obs = epinowcast::enw_obs(family = "negbin", data = data),
   model = epinowcast::enw_model(),
   priors,
+  draws = 1L,
   seed = 1,
   ...
 )
@@ -63,6 +64,12 @@ and \code{sd} describing normal priors that replace the module
 defaults.
 Custom priors are merged with the defaults automatically.
 See Details for how to inspect and modify priors.}
+
+\item{draws}{Integer number of independent synthetic replicates to draw from
+the observation model given the fixed parameters. Default: 1. Values greater
+than 1 produce a posterior-predictive spread (the observation-model
+uncertainty around the fixed expectation), so summaries and plots show
+uncertainty rather than a single deterministic realisation.}
 
 \item{seed}{Integer random seed for reproducible simulation. Default: 1.}
 

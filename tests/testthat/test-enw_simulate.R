@@ -53,6 +53,31 @@ test_that("enw_simulate() forward-generates from fixed parameters", {
   expect_true(all(pp_inf$mean >= 0))
 })
 
+test_that("enw_simulate() draws > 1 gives replicate spread with fixed params", {
+  skip_on_cran()
+  skip_on_local()
+
+  pobs <- enw_example("preprocessed")
+  sims <- suppressMessages(enw_simulate(
+    pobs,
+    growth_rate = 0.05,
+    parameters = list(refp_mean_int = 1.5, refp_sd_int = 0.5),
+    reference = enw_reference(~1, data = pobs),
+    expectation = enw_expectation(r = ~1, data = pobs),
+    model = model,
+    draws = 100
+  ))
+
+  # The fixed parameter is identical across replicates
+  expect_equal(
+    sims$fit[[1]]$summary("refp_mean_int")$sd, 0,
+    tolerance = 1e-8
+  )
+  # The observation model produces a spread across replicates
+  pp_inf <- as.data.table(sims$fit[[1]]$summary("pp_inf_obs", sd))
+  expect_true(any(pp_inf$sd > 0))
+})
+
 test_that("enw_simulate() growth rate sets the trajectory direction", {
   skip_on_cran()
   skip_on_local()

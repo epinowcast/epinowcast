@@ -53,6 +53,7 @@ We start from a preprocessed data object that defines the dates, groups, and max
 We then forward-generate observations from a known, time-varying growth rate and a known reporting delay.
 The growth rate is supplied directly.
 Every other component is fixed through `parameters`, which can set any model parameter.
+We draw many synthetic replicates with `draws` so the observation-model uncertainty around the fixed expectation is retained.
 
 ```{r simulate}
 pobs <- enw_example("preprocessed")
@@ -67,14 +68,15 @@ sims <- enw_simulate(
     refp_mean_int = 1.6, refp_sd_int = 0.6, sqrt_phi = 0.4
   ),
   reference = enw_reference(~1, data = pobs),
-  expectation = enw_expectation(r = ~ 1 + rw(week), data = pobs)
+  expectation = enw_expectation(r = ~ 1 + rw(week), data = pobs),
+  draws = 500
 )
 ```
 
 The simulated object carries synthetic observations in the same shape as a real fit, so the standard summaries and plots apply.
-The simulated final counts follow the rise-and-fall we imposed on the growth rate.
+The simulated final counts follow the rise-and-fall we imposed on the growth rate, with a spread from the negative-binomial observation model.
 
-```{r simulate-plot, fig.cap = "Simulated nowcast under the known rise-and-fall growth rate. The expected final count grows and then declines, as imposed."}
+```{r simulate-plot, fig.cap = "Simulated nowcast under the known rise-and-fall growth rate. The line is the mean and the band the 5-95% posterior-predictive interval across replicates."}
 simulated_nowcast <- summary(sims, type = "nowcast")
 
 ggplot(simulated_nowcast) +
