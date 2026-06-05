@@ -71,6 +71,7 @@ enw_reference(
 }
 \seealso{
 Model modules
+\code{\link{.expectation_is_minimal}()},
 \code{\link{enw_expectation}()},
 \code{\link{enw_fit_opts}()},
 \code{\link{enw_missing}()},

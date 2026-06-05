@@ -659,11 +659,6 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
     }
     fn
   }
-  # Flag a minimal (intercept-only, no convolution) expectation so the
-  # delay-only path in `epinowcast()` can leave it untouched.
-  attr(out, "minimal") <- as_string_formula(r) == "~1" &&
-    length(generation_time) == 1 && length(latent_reporting_delay) == 1 &&
-    as_string_formula(observation) == "~1"
   out
 }
 

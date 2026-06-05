@@ -62,6 +62,7 @@ enw_obs(delay_only = TRUE, data = enw_example("preprocessed"))
 }
 \seealso{
 Model modules
+\code{\link{.expectation_is_minimal}()},
 \code{\link{enw_expectation}()},
 \code{\link{enw_fit_opts}()},
 \code{\link{enw_missing}()},

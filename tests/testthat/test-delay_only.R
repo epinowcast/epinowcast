@@ -72,12 +72,17 @@ test_that("delay_only enw_obs() sets the expected data entries", {
   expect_identical(ncol(o0$data$dlo_ltotal), 0L)
 })
 
-test_that("enw_expectation() flags a minimal expectation", {
+test_that(".expectation_is_minimal() detects an intercept-only expectation", {
   pobs <- enw_example("preprocessed")
-  expect_true(attr(enw_expectation(r = ~1, data = pobs), "minimal"))
-  expect_false(
-    attr(enw_expectation(r = ~ 1 + (1 | day), data = pobs), "minimal")
+  expect_true(
+    .expectation_is_minimal(enw_expectation(r = ~1, data = pobs))
   )
+  expect_false(
+    .expectation_is_minimal(
+      enw_expectation(r = ~ 1 + (1 | day), data = pobs)
+    )
+  )
+  expect_false(.expectation_is_minimal(enw_expectation(data = pobs)))
 })
 
 test_that("epinowcast() minimises the expectation for a delay_only fit", {
