@@ -95,7 +95,7 @@ vector regression_predictor(
     arima_flat_idx
   );
   return apply_gp_term(
-    base, gp_present, gp_T, gp_G, gp_M, gp_L, gp_type, gp_nu, gp_d,
+    base, gp_present, centre, gp_T, gp_G, gp_M, gp_L, gp_type, gp_nu, gp_d,
     gp_PHI, gp_eta, gp_rho, gp_alpha, gp_flat_idx
   );
 }

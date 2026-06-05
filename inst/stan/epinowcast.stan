@@ -503,10 +503,16 @@ transformed parameters{
       expr_arima_p, expr_arima_d, expr_arima_q,
       expr_arima_z, expr_arima_pacf, expr_arima_theta, expr_arima_sigma
     );
+    real expr_gp_offset = gp_latent_mean_offset(
+      expr_gp_present, expr_fintercept, expr_gp_T, expr_gp_G, expr_gp_M,
+      expr_gp_L, expr_gp_type, expr_gp_nu, expr_gp_d, expr_gp_PHI,
+      expr_gp_eta, expr_gp_rho, expr_gp_alpha
+    );
     r = r - expr_offset;            // centre the design contribution
-    // recover raw intercept: undo both the design and latent centring so
+    // recover raw intercept: undo the design, ARIMA and GP centring so
     // the prior stays on the original-scale level (unit Jacobian)
-    expr_r_int[1] = expr_r_int_c[1] - expr_offset - expr_lat_offset;
+    expr_r_int[1] =
+      expr_r_int_c[1] - expr_offset - expr_lat_offset - expr_gp_offset;
   }
   exp_llatent = log_expected_latent_from_r(
     expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
@@ -562,9 +568,14 @@ transformed parameters{
         refp_arima_p, refp_arima_d, refp_arima_q,
         refp_arima_z, refp_arima_pacf, refp_arima_theta, refp_arima_sigma
       );
+      real refp_mean_gp_offset = gp_latent_mean_offset(
+        refp_gp_present, 1, refp_gp_T, refp_gp_G, refp_gp_M,
+        refp_gp_L, refp_gp_type, refp_gp_nu, refp_gp_d, refp_gp_PHI,
+        refp_gp_eta, refp_gp_rho, refp_gp_alpha
+      );
       refp_mean = refp_mean - refp_mean_offset;
-      refp_mean_int[1] =
-        refp_mean_int_c[1] - refp_mean_offset - refp_mean_lat_offset;
+      refp_mean_int[1] = refp_mean_int_c[1] - refp_mean_offset
+        - refp_mean_lat_offset - refp_mean_gp_offset;
     }
     if (model_refp > 1) {
       // refp_sd uses a log-link intercept; centring it would need a
@@ -621,8 +632,14 @@ transformed parameters{
         refnp_arima_p, refnp_arima_d, refnp_arima_q,
         refnp_arima_z, refnp_arima_pacf, refnp_arima_theta, refnp_arima_sigma
       );
+      real refnp_gp_offset = gp_latent_mean_offset(
+        refnp_gp_present, refnp_fintercept, refnp_gp_T, refnp_gp_G,
+        refnp_gp_M, refnp_gp_L, refnp_gp_type, refnp_gp_nu, refnp_gp_d,
+        refnp_gp_PHI, refnp_gp_eta, refnp_gp_rho, refnp_gp_alpha
+      );
       refnp_lh = refnp_lh - refnp_offset;
-      refnp_int[1] = refnp_int_c[1] - refnp_offset - refnp_lat_offset;
+      refnp_int[1] =
+        refnp_int_c[1] - refnp_offset - refnp_lat_offset - refnp_gp_offset;
     }
     }
   }
@@ -663,7 +680,13 @@ transformed parameters{
       miss_arima_p, miss_arima_d, miss_arima_q,
       miss_arima_z, miss_arima_pacf, miss_arima_theta, miss_arima_sigma
     );
-    miss_int[1] = miss_int_c[1] - miss_offset - miss_lat_offset;
+    real miss_gp_offset = gp_latent_mean_offset(
+      miss_gp_present, 1, miss_gp_T, miss_gp_G, miss_gp_M,
+      miss_gp_L, miss_gp_type, miss_gp_nu, miss_gp_d, miss_gp_PHI,
+      miss_gp_eta, miss_gp_rho, miss_gp_alpha
+    );
+    miss_int[1] =
+      miss_int_c[1] - miss_offset - miss_lat_offset - miss_gp_offset;
     miss_ref_lprop = log_inv_logit(miss_lp - miss_offset);
   }
   // Observation model
