@@ -114,6 +114,9 @@
           
       [1,]
       
+      $data$dlo_total
+      integer(0)
+      
       
       $priors
          variable                                              description
@@ -239,6 +242,9 @@
       $data$dlo_ltotal
           
       [1,]
+      
+      $data$dlo_total
+      integer(0)
       
       
       $priors
