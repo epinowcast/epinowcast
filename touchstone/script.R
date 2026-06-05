@@ -161,16 +161,19 @@ touchstone::benchmark_run(
 )
 
 # Latent-dominated growth-rate models (no renewal), where the intercept
-# centring of the integrated random-walk drift has the most effect. The
-# shared and grouped variants together show the centring helps and that a
-# grouped latent (each group its own series) still benefits.
+# centring of the integrated random-walk / GP drift has the most effect.
+# The shared and grouped random-walk variants show the centring helps and
+# that a grouped latent (each group its own series) still benefits; the
+# integrated GP variant exercises the gp() centring. The centred geometry
+# is sharper, so these run at the adapt_delta these models use (>= 0.95)
+# rather than the cmdstanr default of 0.8.
 touchstone::benchmark_run(
   expr_before_benchmark = { source("touchstone/setup.R") },
   rw_growth_model = { epinowcast(
     data = pobs,
     expectation = enw_expectation(r = ~ 1 + rw(week), data = pobs),
     fit = enw_fit_opts(
-      save_warmup = FALSE, pp = FALSE,
+      save_warmup = FALSE, pp = FALSE, adapt_delta = 0.95,
       chains = 2, iter_warmup = 500, iter_sampling = 500,
       parallel_chains = 2
     ),
@@ -188,7 +191,25 @@ touchstone::benchmark_run(
       r = ~ 1 + rw(week, by = .group), data = pobs
     ),
     fit = enw_fit_opts(
-      save_warmup = FALSE, pp = FALSE,
+      save_warmup = FALSE, pp = FALSE, adapt_delta = 0.95,
+      chains = 2, iter_warmup = 500, iter_sampling = 500,
+      parallel_chains = 2
+    ),
+    obs = enw_obs(family = "negbin", data = pobs),
+    model = model
+  ) },
+  n = 3
+)
+
+touchstone::benchmark_run(
+  expr_before_benchmark = { source("touchstone/setup.R") },
+  gp_integrated_growth_model = { epinowcast(
+    data = pobs,
+    expectation = enw_expectation(
+      r = ~ 1 + gp(week, d = 1), data = pobs
+    ),
+    fit = enw_fit_opts(
+      save_warmup = FALSE, pp = FALSE, adapt_delta = 0.99,
       chains = 2, iter_warmup = 500, iter_sampling = 500,
       parallel_chains = 2
     ),
