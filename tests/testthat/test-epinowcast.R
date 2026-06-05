@@ -508,12 +508,12 @@ test_that("epinowcast() can fit a simple combined parametric and non-parametric
       nowcast,
       type = "fit", variables = c("refnp_beta_sd", "refnp_beta")
     )$mean,
-    c(0.27, -0.47, 0.57, 0.56, -0.64),
+    c(0.26, -0.36, 0.51, 0.54, -0.71),
     tolerance = 0.1
   )
   expect_equal(
     summary(nowcast, type = "fit", variables = c("refp_mean", "refp_sd"))$mean,
-    c(1.5, 3.29),
+    c(1.53, 3.02),
     tolerance = 0.1
   )
   expect_error(

@@ -330,12 +330,16 @@ test_that(
       expectation = exp,
       fit = enw_fit_opts(
         save_warmup = FALSE, pp = FALSE, chains = 2, parallel_chains = 2,
-        iter_warmup = 250, iter_sampling = 250, show_messages = FALSE,
-        show_exceptions = FALSE, refresh = 0, adapt_delta = 0.95
+        iter_warmup = 500, iter_sampling = 500, show_messages = FALSE,
+        show_exceptions = FALSE, refresh = 0, adapt_delta = 0.95,
+        max_treedepth = 12
       )
     )
     # Posterior may cap ESS for the small-iter integration fit and emit
     # a benign warning; the convergence check below is what matters.
+    # The integrated ARIMA(1, 1) residual scale is weakly identified; more
+    # warmup/sampling iterations and max_treedepth = 12 give it headroom now
+    # that the primarycensored reference delay sharpens the posterior geometry.
     draws <- suppressWarnings(summary(fit, type = "fit"))
     arima_pars <- draws[grepl("expr_arima_(pacf|sigma)", variable)]
     expect_true(nrow(arima_pars) >= 2)

@@ -297,7 +297,8 @@ test_that("epinowcast() fits a gp() growth-rate term in compiled Stan", {
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE, chains = 2, parallel_chains = 2,
       iter_warmup = 250, iter_sampling = 250, show_messages = FALSE,
-      show_exceptions = FALSE, refresh = 0, adapt_delta = 0.95
+      show_exceptions = FALSE, refresh = 0, adapt_delta = 0.95,
+      max_treedepth = 12
     )
   ))
   expect_convergence(nowcast_gp, rhat = 1.1)
@@ -316,7 +317,8 @@ test_that("gp(d = 0) reproduces the stationary fit and d = 1 integrates", {
   fit_opts <- enw_fit_opts(
     save_warmup = FALSE, pp = FALSE, chains = 2, parallel_chains = 2,
     iter_warmup = 250, iter_sampling = 250, show_messages = FALSE,
-    show_exceptions = FALSE, refresh = 0, adapt_delta = 0.95, seed = 1
+    show_exceptions = FALSE, refresh = 0, adapt_delta = 0.95, seed = 1,
+    max_treedepth = 12
   )
   # d = 0 must reproduce the default stationary gp() exactly: same data
   # shipped to Stan (the differencing path is inert).
