@@ -385,6 +385,109 @@ enw_quantiles_to_long <- function(posterior) {
   long[]
 }
 
+#' Discretise a parametric delay distribution
+#'
+#' Computes the discretised probability mass function of a parametric delay
+#' distribution under the same double-censored, uniform-interval scheme used
+#' by the Stan model (`discretised_logit_hazard`, `max_strat = 2`). This lets
+#' R-side helpers reconstruct the delay distribution implied by posterior
+#' parameter draws.
+#'
+#' @param mu Location parameter (per the distribution's parameterisation).
+#'
+#' @param sigma Scale parameter. Ignored for the exponential distribution.
+#'
+#' @param max_delay Maximum delay (number of delay slots, delays `0:(max_delay
+#'   - 1)`).
+#'
+#' @param distribution One of "lognormal", "gamma", "exponential", or
+#'   "loglogistic".
+#'
+#' @return A numeric vector of length `max_delay` summing to 1.
+#' @family postprocess
+.discretise_parametric_pmf <- function(mu, sigma, max_delay,
+                                       distribution = "lognormal") {
+  u <- max_delay
+  lcdf <- switch(distribution,
+    lognormal = stats::plnorm(1:u, mu, sigma, log.p = TRUE),
+    gamma = stats::pgamma(1:u, shape = exp(mu), rate = sigma, log.p = TRUE),
+    exponential = stats::pexp(1:u, rate = exp(-mu), log.p = TRUE),
+    loglogistic = log1p((1:u / exp(mu))^-sigma) * -1,
+    cli::cli_abort("Unknown {.arg distribution}: {.val {distribution}}.")
+  )
+  # Normalise for double censoring: divide by cdf[u] + cdf[u - 1].
+  if (u > 1) {
+    m <- max(lcdf[u], lcdf[u - 1])
+    lcdf <- lcdf - (m + log(sum(exp(c(lcdf[u], lcdf[u - 1]) - m))))
+  } else {
+    lcdf <- lcdf - lcdf[1]
+  }
+  p <- numeric(u)
+  p[1] <- exp(lcdf[1])
+  if (u > 1) {
+    p[2] <- exp(lcdf[2])
+  }
+  if (u > 2) {
+    p[3:u] <- exp(lcdf[3:u]) - exp(lcdf[1:(u - 2)])
+  }
+  p
+}
+
+#' Posterior samples of the parametric reporting-delay distribution
+#'
+#' Extracts posterior draws of the parametric reporting-delay distribution
+#' from a fit (e.g. a delay-only fit, see the delay estimation vignette) and
+#' returns the discretised delay probability mass function for each draw. This
+#' supports comparing the estimated distribution against a known truth and
+#' plotting posterior samples rather than only summaries.
+#'
+#' @param fit A `cmdstanr` fit object (the `fit[[1]]` element of an
+#'   `epinowcast` output).
+#'
+#' @param max_delay Maximum delay (number of delay slots). Defaults to the
+#'   length of the delay PMF implied by the fit's `refp_mean` if available,
+#'   otherwise must be supplied.
+#'
+#' @param distribution The parametric distribution used in [enw_reference()].
+#'   Defaults to "lognormal".
+#'
+#' @param draws Optional integer; if supplied, a random subset of this many
+#'   posterior draws is returned (useful for plotting).
+#'
+#' @return A long `data.table` with columns `.draw`, `delay`, and `pmf`.
+#' @family postprocess
+#' @export
+#' @importFrom data.table data.table rbindlist
+#' @examplesIf interactive()
+#' fit <- enw_example("nowcast")
+#' enw_posterior_delay(fit$fit[[1]], max_delay = 20, draws = 50)
+enw_posterior_delay <- function(fit, max_delay, distribution = "lognormal",
+                                draws = NULL) {
+  mean_draws <- posterior::as_draws_df(fit$draws("refp_mean_int"))
+  sd_draws <- posterior::as_draws_df(fit$draws("refp_sd_int"))
+  mu <- mean_draws[["refp_mean_int[1]"]]
+  sigma <- sd_draws[["refp_sd_int[1]"]]
+  if (is.null(sigma)) {
+    sigma <- rep(NA_real_, length(mu))
+  }
+  n <- length(mu)
+  idx <- seq_len(n)
+  if (!is.null(draws) && draws < n) {
+    idx <- sort(sample.int(n, draws))
+  }
+  delays <- 0:(max_delay - 1)
+  out <- data.table::rbindlist(lapply(idx, function(i) {
+    data.table::data.table(
+      .draw = i,
+      delay = delays,
+      pmf = .discretise_parametric_pmf(
+        mu[i], sigma[i], max_delay, distribution
+      )
+    )
+  }))
+  out[]
+}
+
 #' Build the ord_obs `data.table`.
 #'
 #' @param obs Observations as pulled from `nowcast$latest[[1]]`.

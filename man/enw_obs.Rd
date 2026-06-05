@@ -43,7 +43,7 @@ process is inert. This mode estimates delays and does not nowcast (refit
 with the full model for a nowcast). Not compatible with the missing
 reference model. See the delay estimation vignette for a worked example.
 Based on the conditional delay likelihood of Kalbfleisch and Lawless
-(\doi{10.1002/sim.4780081004}) and Höhle and an der Heiden
+(\doi{10.1080/01621459.1989.10478780}) and Höhle and an der Heiden
 (\doi{10.1111/biom.12194}).}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
