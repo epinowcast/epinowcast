@@ -116,6 +116,9 @@
       $data$expr_lrgt
       [1] 0
       
+      $data$expr_gt_dist
+      [1] 0
+      
       $data$expr_t
       [1] 39
       
@@ -665,6 +668,15 @@
       [39,]     0     1     0
       [40,]     0     0     1
       
+      $data$expl_lrd_dist
+      [1] 0
+      
+      $data$expl_lrd_w_idx
+      [1] 1
+      
+      $data$expl_lrd_w_n
+      [1] 1
+      
       $data$expl_obs
       [1] 0
       
@@ -791,6 +803,26 @@
       
       $data$expl_gp_flat_idx
       integer(0)
+      
+      $data$expr_gt_mean_p
+           [,1]
+      [1,]    1
+      [2,]    1
+      
+      $data$expr_gt_sd_p
+           [,1]
+      [1,]  0.5
+      [2,]  1.0
+      
+      $data$expl_lrd_mean_p
+           [,1]
+      [1,]    1
+      [2,]    1
+      
+      $data$expl_lrd_sd_p
+           [,1]
+      [1,]  0.5
+      [2,]  1.0
       
       
       $priors
@@ -947,6 +979,9 @@
       [1] 1
       
       $data$expr_lrgt
+      [1] 0
+      
+      $data$expr_gt_dist
       [1] 0
       
       $data$expr_t
@@ -1300,6 +1335,15 @@
       [39,]     0     1     0
       [40,]     0     0     1
       
+      $data$expl_lrd_dist
+      [1] 0
+      
+      $data$expl_lrd_w_idx
+      [1] 1
+      
+      $data$expl_lrd_w_n
+      [1] 1
+      
       $data$expl_obs
       [1] 0
       
@@ -1426,6 +1470,26 @@
       
       $data$expl_gp_flat_idx
       integer(0)
+      
+      $data$expr_gt_mean_p
+           [,1]
+      [1,]    1
+      [2,]    1
+      
+      $data$expr_gt_sd_p
+           [,1]
+      [1,]  0.5
+      [2,]  1.0
+      
+      $data$expl_lrd_mean_p
+           [,1]
+      [1,]    1
+      [2,]    1
+      
+      $data$expl_lrd_sd_p
+           [,1]
+      [1,]  0.5
+      [2,]  1.0
       
       
       $priors
@@ -1589,6 +1653,9 @@
       $data$expr_lrgt
       [1] -0.1053605 -2.3025851
       
+      $data$expr_gt_dist
+      [1] 0
+      
       $data$expr_t
       [1] 9
       
@@ -1731,6 +1798,15 @@
        [9,]  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.9  0.1   0.0   0.0
       [10,]  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.9   0.1   0.0
       [11,]  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0   0.9   0.1
+      
+      $data$expl_lrd_dist
+      [1] 0
+      
+      $data$expl_lrd_w_idx
+      [1] 1
+      
+      $data$expl_lrd_w_n
+      [1] 1
       
       $data$expl_obs
       [1] 1
@@ -1885,6 +1961,26 @@
       
       $data$expl_gp_flat_idx
       integer(0)
+      
+      $data$expr_gt_mean_p
+           [,1]
+      [1,]    1
+      [2,]    1
+      
+      $data$expr_gt_sd_p
+           [,1]
+      [1,]  0.5
+      [2,]  1.0
+      
+      $data$expl_lrd_mean_p
+           [,1]
+      [1,]    1
+      [2,]    1
+      
+      $data$expl_lrd_sd_p
+           [,1]
+      [1,]  0.5
+      [2,]  1.0
       
       
       $priors
