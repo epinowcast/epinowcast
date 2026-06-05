@@ -4,25 +4,30 @@
  * `regression_predictor()` composes `combine_effects()` (fixed +
  * partially-pooled random effects via the design matrices) with
  * `apply_arima_residual()` (parameter-dependent ARIMA(p, d, q) latent
- * residual). Each module that owns a per-observation predictor calls
- * this once instead of calling the two layers separately.
+ * residual) and `apply_gp_term()` (Hilbert-space approximate Gaussian
+ * process). Each module that owns a per-observation predictor calls
+ * this once instead of calling the layers separately, so every module
+ * routed through it gains the ARIMA and GP latent terms for free.
  *
  * `regression_priors_lp()` is the matching one-shot priors helper:
  * effect priors plus ARIMA priors (shocks, MA coefficients, latent
  * standard deviation; partial autocorrelations get an implicit
- * uniform prior via their parameter bounds).
+ * uniform prior via their parameter bounds). GP priors are supplied by
+ * the separate `gp_priors_lp()` helper so the long argument list stays
+ * manageable.
  *
- * Both functions are inert with respect to the ARIMA term when
- * `arima_present == 0`: in that case `regression_predictor()` returns
- * the bare `combine_effects()` result, and `regression_priors_lp()`
- * skips the ARIMA prior block.
+ * Both layers are inert when their term is absent: when
+ * `arima_present == 0` and `gp_present == 0`, `regression_predictor()`
+ * returns the bare `combine_effects()` result; each `apply_*` call
+ * short-circuits on its own presence flag.
  *
  * Every per-observation module routes through these helpers: `expr`,
- * `expl`, `refnp`, and `miss` apply the ARIMA residual directly at the
+ * `expl`, `refnp`, and `miss` apply the latent terms directly at the
  * observation level, while the sparse-row modules `refp` and `rep`
- * supply a `flat_idx` built from the joint (covariate row x ARIMA time
- * x ARIMA group) deduplication so the same gather works at sparse-row
- * granularity. See `vignettes/arima.Rmd` for the joint scheme.
+ * supply a `flat_idx` built from the joint (covariate row x time x
+ * group) deduplication so the same gather works at sparse-row
+ * granularity. The ARIMA and GP terms share this scheme. See
+ * `vignettes/arima.Rmd` and `vignettes/gaussian-process.Rmd`.
  */
 /**
  * Intercept centring offset for a fixed-effects design.
@@ -57,15 +62,19 @@ vector regression_predictor(
   int arima_p, int arima_d, int arima_q, int arima_n_obs,
   matrix arima_z, vector arima_pacf, vector arima_theta,
   array[] real arima_sigma,
-  array[] int arima_flat_idx
+  array[] int arima_flat_idx,
+  int gp_present, int gp_T, int gp_G, int gp_M, real gp_L,
+  int gp_type, real gp_nu, int gp_d, matrix gp_PHI, matrix gp_eta,
+  array[] real gp_rho, array[] real gp_alpha,
+  array[] int gp_flat_idx
 ) {
-  // Short-circuit the no-ARIMA path (arima_present == 0): return
+  // Short-circuit when neither latent term is present: return
   // combine_effects() directly so we skip materialising the
-  // intermediate `base` vector and the apply_arima_residual() call
-  // frame on every gradient evaluation. Behaviour is identical when an
-  // ARIMA term is present. Design centring (the `- offset` shift) is a
-  // constant and is applied by the caller, so it does not enter here.
-  if (!arima_present) {
+  // intermediate `base` vector and the apply_* call frames on every
+  // gradient evaluation. Behaviour is identical when a term is present.
+  // Design centring (the `- offset` shift) is a constant applied by the
+  // caller, so it does not enter here.
+  if (!arima_present && !gp_present) {
     return combine_effects(
       intercept, beta, nobs, neffs, fdesign, sparse, beta_sd, rdesign,
       add_intercept, sparse_design
@@ -76,14 +85,18 @@ vector regression_predictor(
     add_intercept, sparse_design
   );
   // `centre` is the free-intercept flag: an integrated residual is only
-  // mean-centred when a free intercept exists to absorb the level it
-  // gives up. Intercept-less modules keep the raw series so no signal is
-  // lost.
-  return apply_arima_residual(
+  // mean-centred when a free intercept exists to absorb the level it gives
+  // up. ARIMA and GP compose additively; each `apply_*` is inert on its
+  // own presence flag, so passing both through is safe when only one is set.
+  base = apply_arima_residual(
     base, arima_n_obs, arima_present, centre, arima_T, arima_G,
     arima_p, arima_d, arima_q,
     arima_z, arima_pacf, arima_theta, arima_sigma,
     arima_flat_idx
+  );
+  return apply_gp_term(
+    base, gp_present, gp_T, gp_G, gp_M, gp_L, gp_type, gp_nu, gp_d,
+    gp_PHI, gp_eta, gp_rho, gp_alpha, gp_flat_idx
   );
 }
 
@@ -111,5 +124,25 @@ void regression_priors_lp(
     arima_sigma[1] ~ normal(
       arima_sigma_p[1, 1], arima_sigma_p[2, 1]
     ) T[0, ];
+  }
+}
+
+/**
+ * Priors for an approximate Gaussian process latent term.
+ *
+ * The spectral coefficients `eta` get a unit-normal (non-centred)
+ * prior. The length scale `rho` gets a log-normal prior and the
+ * magnitude `alpha` a half-normal prior, with each prior (mean, sd)
+ * supplied as data. Inert when `gp_present == 0`.
+ */
+void gp_priors_lp(
+  int gp_present, matrix gp_eta,
+  array[] real gp_rho, array[] real gp_alpha,
+  array[,] real gp_rho_p, array[,] real gp_alpha_p
+) {
+  if (gp_present) {
+    to_vector(gp_eta) ~ std_normal();
+    gp_rho[1] ~ lognormal(gp_rho_p[1, 1], gp_rho_p[2, 1]);
+    gp_alpha[1] ~ normal(gp_alpha_p[1, 1], gp_alpha_p[2, 1]) T[0, ];
   }
 }

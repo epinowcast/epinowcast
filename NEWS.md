@@ -2,12 +2,18 @@
 
 ## Model
 
-- The fixed-effects design and integrated (`d >= 1`) `arima()` residuals are now centred against the module intercept, decorrelating the intercept from the slopes and from the latent drift to improve sampling geometry.
+- The fixed-effects design and integrated (`d >= 1`) `arima()` and `gp()` residuals are now centred against the module intercept, decorrelating the intercept from the slopes and from the latent drift to improve sampling geometry.
   For modules with a free intercept (`expr`, `refp` mean, `refnp`, `miss`) the design is centred on its observation-weighted column means, as `brms` does by default, and the integrated residual's grand mean (over time and groups) is removed.
   The sampled intercept (`<prefix>_int_c`) is on the centred scale; the original-scale intercept the prior applies to is recovered as `<prefix>_int` by undoing both the design and latent centring (a unit-Jacobian shift, so the prior keeps its meaning and the posterior is unchanged, as in EpiNow2's reproduction-number centring).
   Only the shared grand-mean level is removed, so each group keeps its own level and drift: a grouped latent (`arima(time, group, ...)`, `G > 1`) is unchanged in meaning and the reparameterisation is exact for any number of groups.
   On a weekly random-walk growth model the centred form samples roughly twice as fast at the `adapt_delta` these models use (it is sharper, so benefits from `adapt_delta >= 0.95`).
   Modules without a free intercept (`expl`, `rep`) and the log-link `refp` standard deviation are left uncentred.
+- Added a `gp()` formula helper that places an approximate Gaussian process on any module's linear predictor, the same way `arima()` and `rw()` work.
+  It uses a Hilbert-space reduced-rank (spectral) approximation with selectable kernels (Matern 3/2 default, Matern 5/2, Ornstein-Uhlenbeck, squared exponential, periodic) and a `basis_prop` accuracy-speed control.
+  A `gp()` term can be placed on the growth rate (`expr`), the latent-to-obs proportion (`expl`), the parametric (`refp`) and non-parametric (`refnp`) reference delay, the report-time hazards (`rep`), and the missing-reference proportion (`miss`).
+  An integer `d` argument (matching `arima()`'s `d`) integrates the process `d` times: `d = 0` is stationary (the default, like EpiNow2's `gp_on = "R0"`), `d = 1` gives a smoothly drifting trend (like EpiNow2's default `gp_on = "R_t-1"`), and `d >= 2` integrates further, anchoring the first `d` values to zero so the level and slope are carried by the fixed effects.
+  The Stan implementation is adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2, MIT licensed).
+  See #824.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
 
@@ -19,6 +25,8 @@
 
 ## Documentation
 
+- Added a Gaussian process vignette (`gaussian-process.Rmd`) covering the Hilbert-space spectral approximation, the available kernels, the priors, and the modules a `gp()` term can be placed on, ported from `EpiNow2`'s implementation notes.
+  See #824.
 - Added a temporal aggregation guide vignette covering the weekly timestep, daily-process / weekly-reporting (fitted and structural variants), and a daily benchmark, with weekly-scale CRPS comparison via `scoringutils`.
   Replaces the standalone scripts at `inst/examples/germany_weekly_process_model.R` and `inst/examples/germany_weekly_reporting_daily_process_model.R`.
   See #668 by @seabbs.

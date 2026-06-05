@@ -229,6 +229,54 @@ remove_arima_terms <- function(formula) {
   form
 }
 
+#' Finds Gaussian process terms in a formula object
+#'
+#' @description This function extracts Gaussian process terms denoted
+#' using [gp()] from a formula so that they can be processed on their
+#' own.
+#'
+#' @return A character vector containing the Gaussian process terms
+#' identified in the supplied formula.
+#'
+#' @inheritParams enw_formula
+#' @family formulatools
+#' @examples
+#' epinowcast:::gp_terms(~ 1 + age_group + gp(week))
+#' epinowcast:::gp_terms(~ 1 + gp(week, kernel = "se") + gp(day))
+gp_terms <- function(formula) {
+  trms <- attr(terms(formula), "term.labels")
+  match <- grepl("^gp\\(.*\\)$", trms)
+  match <- match & !grepl("|", trms, fixed = TRUE)
+  trms[match]
+}
+
+#' Remove Gaussian process terms from a formula object
+#'
+#' @description This function removes Gaussian process terms denoted
+#' using [gp()] from a formula so they can be processed on their own.
+#'
+#' @inheritParams split_formula_to_terms
+#' @return A formula object with the Gaussian process terms removed.
+#' @family formulatools
+#' @examples
+#' epinowcast:::remove_gp_terms(~ 1 + age_group + gp(week))
+remove_gp_terms <- function(formula) {
+  form <- as_string_formula(formula)
+  form <- gsub("gp\\(.*?\\) \\+ ", "", form)
+  form <- gsub("\\+ gp\\(.*?\\)", "", form)
+  form <- gsub("gp\\(.*?\\)", "", form)
+
+  form <- tryCatch(
+    {
+      as.formula(form)
+    },
+    error = function(cond) {
+      as.formula(paste(form, 1))
+    }
+  )
+  form
+}
+
 #' Parse a formula into components
 #'
 #' @description This function uses a series internal functions
@@ -247,6 +295,7 @@ remove_arima_terms <- function(formula) {
 #'  - `random`: A list of of \link[lme4]{lme4} style random effects
 #'  - `rw`: A character vector of [rw()] random walk terms.
 #'  - `arima`: A character vector of [arima()] ARIMA(p, d, q) terms.
+#'  - `gp`: A character vector of [gp()] Gaussian process terms.
 #' @inheritParams enw_formula
 #' @importFrom reformulas nobars findbars
 #' @importFrom cli cli_abort
@@ -267,6 +316,8 @@ parse_formula <- function(formula) {
   formula <- remove_rw_terms(formula)
   arima <- arima_terms(formula)
   formula <- remove_arima_terms(formula)
+  gp <- gp_terms(formula)
+  formula <- remove_gp_terms(formula)
   fixed <- reformulas::nobars(formula)
   random <- reformulas::findbars(formula)
 
@@ -274,7 +325,8 @@ parse_formula <- function(formula) {
     fixed = split_formula_to_terms(fixed),
     random = random,
     rw = rw,
-    arima = arima
+    arima = arima,
+    gp = gp
   )
   model_terms
 }
@@ -474,8 +526,140 @@ arma <- function(time, by, p = 1, q = 1) {
 # threshold without changing its public behaviour.
 .check_arima_order <- function(value, name) {
   if (!is.numeric(value) || length(value) != 1L || is.na(value) ||
-      !is.finite(value) || value < 0 || value != as.integer(value)) {
+    !is.finite(value) || value < 0 || value != as.integer(value)) {
     cli::cli_abort("`{name}` must be a non-negative integer scalar.")
+  }
+  invisible(NULL)
+}
+
+#' Adds an approximate Gaussian process to the model.
+#'
+#' @description A call to `gp()` can be used in the `formula` argument of
+#' model construction functions in the `epinowcast` package such as
+#' [enw_formula()]. It declares a Hilbert-space reduced-rank
+#' (spectral) approximate Gaussian process indexed by `time` (and
+#' optionally a grouping variable `by`) whose value at each observation
+#' is added to the linear predictor. As with [arima()], arguments are
+#' not evaluated; they are passed by name for use in model construction.
+#'
+#' Like [arima()] and [rw()], a `gp()` term works on every module that
+#' takes a formula, each with its own prior prefix:
+#' - [enw_expectation()] — the growth rate (`expr`) and the latent-to-obs
+#'   proportion (`expl`).
+#' - [enw_reference()] — the parametric delay mean (`refp`) and the
+#'   non-parametric logit hazards (`refnp`).
+#' - [enw_report()] — report-date logit hazards (`rep`).
+#' - [enw_missing()] — the missing-reference proportion (`miss`).
+#'
+#' At most one `gp()` term is currently supported per formula (the
+#' multiple-term example shown for [gp_terms()] only illustrates term
+#' detection, not a supported model). The default `alpha` (magnitude)
+#' and length-scale priors are inherited from `EpiNow2` and are set on
+#' `EpiNow2`'s scale; on a given module's scale (for example the log
+#' growth rate or a logit hazard) they may need tuning with
+#' [enw_replace_priors()].
+#'
+#' @section Reference:
+#' The Stan implementation of the approximate Gaussian process is
+#' adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2,
+#' MIT licensed). The Hilbert-space approximation follows
+#' Riutort-Mayol et al. (2023), doi:10.1007/s11222-022-10167-2.
+#'
+#' @param time Defines the time index of the Gaussian process. Must be
+#' numeric.
+#'
+#' @param by Optional grouping variable. If supplied, an independent
+#' Gaussian process is fitted for each level of `by` (sharing the
+#' length scale and magnitude hyperparameters). Currently limited to a
+#' single variable.
+#'
+#' @param d Non-negative integer, defaults to `0`. Order of
+#' differencing, matching the `d` of [arima()]: the per-group
+#' realisation is integrated (cumulative-summed) `d` times before it is
+#' added to the predictor. `d = 0` gives stationary deviations (the
+#' default, equivalent to EpiNow2's `gp_on = "R0"`). `d = 1` integrates
+#' once, giving a smoothly drifting, random-walk-like trajectory
+#' (equivalent to EpiNow2's default `gp_on = "R_t-1"`). For `d >= 1` the
+#' first `d` values of the realisation are anchored to zero, so the free
+#' level (and, for `d >= 2`, slope) is carried by the module's fixed
+#' effects rather than the GP. Differencing is intended for the latent
+#' expectation modules (the growth rate `expr` and latent-to-obs
+#' proportion `expl`); integrating a logit-hazard term (`refnp`, `rep`,
+#' `miss`) is unusual but permitted for API consistency with [arima()].
+#'
+#' @param kernel Character string selecting the covariance kernel. One
+#' of `"matern32"` (the default, a Matern 3/2 kernel), `"matern52"`
+#' (Matern 5/2), `"ou"` (Ornstein-Uhlenbeck, equivalent to Matern
+#' 1/2), `"se"` (squared exponential), or `"periodic"`.
+#'
+#' @param basis_prop Numeric in `(0, 1]`. Proportion of time points to
+#' use as basis functions, controlling the accuracy-speed trade-off of
+#' the reduced-rank approximation. Defaults to `0.2` (the `EpiNow2`
+#' default). The number of basis functions is
+#' `ceiling(basis_prop * T)`.
+#'
+#' @param boundary_scale Numeric, defaults to `1.5`. Boundary factor
+#' `L` of the Hilbert-space approximation; the process is approximated
+#' on the interval scaled by this factor. This has no effect when
+#' `kernel = "periodic"`, which uses a fundamental-frequency basis
+#' rather than the boundary-scaled basis.
+#'
+#' @return A list of class `enw_gp_term` describing the Gaussian
+#' process term, interpretable by [construct_gp()].
+#' @export
+#' @importFrom cli cli_abort
+#' @importFrom rlang arg_match
+#' @family formulatools
+#' @examples
+#' gp(time)
+#' gp(time, location)
+#' gp(time, kernel = "se", basis_prop = 0.3)
+#' gp(time, d = 1)
+gp <- function(time, by, d = 0, kernel = c(
+                 "matern32", "matern52", "ou", "se", "periodic"
+               ), basis_prop = 0.2, boundary_scale = 1.5) {
+  if (missing(time)) {
+    cli::cli_abort("`time` must be present")
+  }
+  time <- deparse(substitute(time))
+  by <- if (missing(by)) NULL else deparse(substitute(by))
+  kernel <- rlang::arg_match(kernel)
+  # `d` shares the non-negative-integer validation with arima()'s orders.
+  .check_arima_order(d, "d")
+  .check_gp_basis_prop(basis_prop)
+  if (!is.numeric(boundary_scale) || length(boundary_scale) != 1L ||
+    !is.finite(boundary_scale) || boundary_scale <= 0) {
+    cli::cli_abort("`boundary_scale` must be a positive numeric scalar.")
+  }
+  # Map the user-facing kernel name to the Stan-side gp_type / nu that
+  # the EpiNow2-derived `update_gp()` switch expects. gp_type: 0 = SE,
+  # 1 = periodic, 2 = Matern; nu selects the Matern order.
+  gp_type <- switch(kernel,
+    se = 0L,
+    periodic = 1L,
+    2L
+  )
+  nu <- switch(kernel,
+    ou = 0.5,
+    matern32 = 1.5,
+    matern52 = 2.5,
+    1.5
+  )
+  out <- list(
+    time = time, by = by, kernel = kernel,
+    gp_type = gp_type, nu = nu, d = as.integer(d),
+    basis_prop = basis_prop, boundary_scale = boundary_scale
+  )
+  class(out) <- "enw_gp_term"
+  out
+}
+
+# Internal helper: validate that the GP `basis_prop` is a numeric scalar
+# in (0, 1].
+.check_gp_basis_prop <- function(value) {
+  if (!is.numeric(value) || length(value) != 1L || is.na(value) ||
+    !is.finite(value) || value <= 0 || value > 1) {
+    cli::cli_abort("`basis_prop` must be a numeric scalar in (0, 1].")
   }
   invisible(NULL)
 }
@@ -606,8 +790,11 @@ construct_arima <- function(arima, data) {
         "Grouping variable `{arima$by}` contains missing values."
       )
     }
-    group_levels <- if (is.factor(by_vals)) levels(droplevels(by_vals)) else
+    group_levels <- if (is.factor(by_vals)) {
+      levels(droplevels(by_vals))
+    } else {
       sort(unique(by_vals))
+    }
     G <- length(group_levels)
     if (G < 2) {
       cli::cli_inform(paste0(
@@ -642,6 +829,170 @@ construct_arima <- function(arima, data) {
     time_idx = time_idx, group_idx = group_idx,
     time_vals = time_vals, group_levels = group_levels,
     name = name
+  )
+}
+
+#' Hilbert-space basis functions for the approximate Gaussian process
+#'
+#' @description Builds the `T x M` matrix of basis functions used by the
+#' reduced-rank (spectral) approximate Gaussian process, mirroring the
+#' `PHI()` / `PHI_periodic()` Stan functions adapted from `EpiNow2`. The
+#' time index is rescaled to the symmetric interval used by the
+#' approximation before evaluating the basis.
+#'
+#' @param T_len Integer number of distinct time points.
+#' @param M Integer number of basis functions.
+#' @param boundary_scale Numeric boundary factor `L`.
+#' @param is_periodic Logical, whether to use the periodic basis.
+#' @param w0 Numeric fundamental frequency for the periodic basis.
+#'
+#' @return A numeric matrix of basis functions with `T_len` rows.
+#' @noRd
+.gp_basis_matrix <- function(T_len, M, boundary_scale, is_periodic = FALSE,
+                             w0 = 1.0) {
+  x <- seq_len(T_len)
+  x <- 2 * (x - mean(x)) / (max(x) - 1)
+  if (is_periodic) {
+    w0xk <- outer(w0 * x, seq_len(M))
+    cbind(cos(w0xk), sin(w0xk))
+  } else {
+    sin(outer(pi / (2 * boundary_scale) * (x + boundary_scale), seq_len(M))) /
+      sqrt(boundary_scale)
+  }
+}
+
+#' Constructs Gaussian process term metadata
+#'
+#' @description Takes a Gaussian process term as defined by [gp()] and
+#' returns the metadata required to wire the term into a Stan model.
+#' Like [construct_arima()], this does not modify the data or produce
+#' design matrix columns; the Gaussian process enters the linear
+#' predictor through a Hilbert-space reduced-rank approximation (see
+#' `inst/stan/functions/gaussian_process.stan`).
+#'
+#' @param gp A Gaussian process term as defined by [gp()].
+#'
+#' @param data A `data.frame` of observations used to define the term.
+#' Must contain the time and (if specified) grouping variable.
+#'
+#' @return A list with the following elements:
+#'   - `time`, `by`, `kernel`, `gp_type`, `nu`, `d`, `basis_prop`,
+#'     `boundary_scale`: passed through from the [gp()] term.
+#'   - `T`: number of distinct time points in the integrated series.
+#'   - `G`: number of groups (1 if `by` is unspecified).
+#'   - `M`: number of basis functions, `ceiling(basis_prop * (T - d))`.
+#'   - `PHI`: the `(T - d) x M` basis matrix. For `d >= 1` the basis is
+#'     built on the `T - d` free values that are integrated `d` times in
+#'     Stan; the first `d` values of the realisation are anchored to
+#'     zero.
+#'   - `time_idx`, `group_idx`: per-observation lookup indices.
+#'   - `time_vals`, `group_levels`: lookup vectors so the indices can
+#'     be inverted.
+#'   - `name`: a label for the term, suitable as a parameter prefix.
+#' @family formulatools
+#' @importFrom cli cli_abort
+#' @examples
+#' data <- enw_example("preproc")$metareference[[1]]
+#' epinowcast:::construct_gp(gp(week), data)
+#' epinowcast:::construct_gp(gp(week, day_of_week, kernel = "se"), data)
+construct_gp <- function(gp, data) {
+  if (!inherits(gp, "enw_gp_term")) {
+    cli::cli_abort(
+      "Argument `gp` must be constructed by `epinowcast::gp()`."
+    )
+  }
+  idx <- .time_group_index(data, gp$time, gp$by, what = "Gaussian process")
+  d <- gp$d
+  # For d-fold differencing the GP generates the T - d free values that
+  # are integrated d times in Stan (the first d values are anchored to
+  # zero), so the basis is built on T - d points.
+  n_free <- idx$T - d
+  if (n_free < 2L) {
+    cli::cli_abort(paste0(
+      "Gaussian process series has only {idx$T} time points; need at ",
+      "least {d + 2} for a `gp()` term with `d = {d}`."
+    ))
+  }
+  M <- as.integer(ceiling(gp$basis_prop * n_free))
+  PHI <- .gp_basis_matrix(
+    n_free, M, gp$boundary_scale,
+    is_periodic = gp$gp_type == 1L, w0 = 1.0
+  )
+
+  name <- paste0(
+    "gp__", gp$time,
+    if (!is.null(gp$by)) paste0("__", gp$by) else ""
+  )
+
+  list(
+    time = gp$time, by = gp$by, kernel = gp$kernel,
+    gp_type = gp$gp_type, nu = gp$nu, d = d,
+    basis_prop = gp$basis_prop, boundary_scale = gp$boundary_scale,
+    T = idx$T, G = idx$G, M = M, PHI = PHI,
+    time_idx = idx$time_idx, group_idx = idx$group_idx,
+    time_vals = idx$time_vals, group_levels = idx$group_levels,
+    name = name
+  )
+}
+
+# Internal: shared per-observation time/group indexing used by
+# construct_arima() and construct_gp(). Validates the (numeric) time
+# variable and the optional grouping variable, returning the distinct
+# time/group counts and the per-row lookup indices.
+.time_group_index <- function(data, time, by, what = "term") {
+  data <- coerce_dt(data)
+  if (is.null(data[[time]])) {
+    cli::cli_abort(
+      "Time variable `{time}` is not present in the supplied data."
+    )
+  }
+  if (!is.numeric(data[[time]])) {
+    cli::cli_abort(
+      "Time variable `{time}` must be numeric for a {what} term."
+    )
+  }
+  if (anyNA(data[[time]])) {
+    cli::cli_abort("Time variable `{time}` contains missing values.")
+  }
+
+  time_vals <- sort(unique(data[[time]]))
+  T_len <- length(time_vals)
+  time_idx <- match(data[[time]], time_vals)
+
+  if (is.null(by)) {
+    return(list(
+      T = T_len, G = 1L, time_idx = time_idx,
+      group_idx = rep(1L, nrow(data)),
+      time_vals = time_vals, group_levels = "1"
+    ))
+  }
+  if (is.null(data[[by]])) {
+    cli::cli_abort("Grouping variable `{by}` is not present in the data.")
+  }
+  by_vals <- data[[by]]
+  if (anyNA(by_vals)) {
+    cli::cli_abort("Grouping variable `{by}` contains missing values.")
+  }
+  group_levels <- if (is.factor(by_vals)) {
+    levels(droplevels(by_vals))
+  } else {
+    sort(unique(by_vals))
+  }
+  G <- length(group_levels)
+  if (G < 2) {
+    cli::cli_inform(
+      "Grouping variable `{by}` has fewer than 2 levels; ignoring `by`."
+    )
+    return(list(
+      T = T_len, G = 1L, time_idx = time_idx,
+      group_idx = rep(1L, nrow(data)),
+      time_vals = time_vals, group_levels = "1"
+    ))
+  }
+  list(
+    T = T_len, G = G, time_idx = time_idx,
+    group_idx = match(as.character(by_vals), as.character(group_levels)),
+    time_vals = time_vals, group_levels = group_levels
   )
 }
 
@@ -759,7 +1110,8 @@ re <- function(formula) {
 #' @noRd
 .add_pooling_single_interaction <- function(effects, k) {
   enw_add_pooling_effect(
-    effects, var_name = gsub(":", "__", k, fixed = TRUE),
+    effects,
+    var_name = gsub(":", "__", k, fixed = TRUE),
     finder_fn = function(effect, pattern) {
       grepl(pattern[1], effect) &
         grepl(pattern[2], effect, fixed = TRUE) &
@@ -780,7 +1132,8 @@ re <- function(formula) {
 #' @noRd
 .add_pooling_single_no_interaction <- function(effects, k) {
   enw_add_pooling_effect(
-    effects, var_name = k,
+    effects,
+    var_name = k,
     finder_fn = function(effect, pattern) {
       grepl(pattern, effect) & !grepl(":", effect, fixed = TRUE)
     },
@@ -816,7 +1169,8 @@ re <- function(formula) {
 #' @noRd
 .add_pooling_multi_no_interaction <- function(effects, k) {
   enw_add_pooling_effect(
-    effects, var_name = paste(k, collapse = "__"),
+    effects,
+    var_name = paste(k, collapse = "__"),
     finder_fn = function(effect, pattern) {
       grepl(pattern[1], effect) & grepl(pattern[2], effect)
     },
@@ -1096,12 +1450,13 @@ construct_re <- function(re, data) {
 #' )
 #' obs <- enw_filter_reference_dates(obs, include_days = 40)
 #' pobs <- enw_preprocess_data(
-#'   obs, by = c("age_group", "location"), max_delay = 20
-#'   )
+#'   obs,
+#'   by = c("age_group", "location"), max_delay = 20
+#' )
 #' data <- pobs$metareference[[1]]
 #'
 #' # Intercept only
-#' enw_formula(~ 1, data)
+#' enw_formula(~1, data)
 #'
 #' # Fixed effect
 #' enw_formula(~ 1 + age_group, data)
@@ -1145,6 +1500,19 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     arima_specs <- purrr::map(arima_specs, construct_arima, data = data)
   } else {
     arima_specs <- list()
+  }
+
+  # Gaussian process terms enter the linear predictor through a
+  # Hilbert-space reduced-rank approximation. Like arima() terms they
+  # carry per-observation lookup metadata rather than design columns.
+  if (length(parsed_formula$gp) > 0) {
+    gp_specs <- purrr::map(
+      parsed_formula$gp,
+      ~ eval(parse(text = paste0("epinowcast::", .)))
+    )
+    gp_specs <- purrr::map(gp_specs, construct_gp, data = data)
+  } else {
+    gp_specs <- list()
   }
 
   # Get random effects for all specified random effects
@@ -1194,24 +1562,41 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # covariate row alone. This lets downstream consumers that loop over
   # fdesign rows (for example a per-row PMF call) benefit from
   # coarse-time ARIMA without paying per-snapshot cost.
-  if (sparse && length(arima_specs) > 0) {
-    arima_spec <- arima_specs[[1]]
-    # Joint key over (covariate row, ARIMA time, ARIMA group) using a
-    # data.table group id; avoids round-tripping through string keys.
-    joint <- data.table::data.table(
-      cov = fixed$index,
-      t = arima_spec$time_idx,
-      g = arima_spec$group_idx
-    )
-    joint[, "uniq" := .GRP, by = c("cov", "t", "g")]
+  # Both ARIMA and GP terms gather a per-observation latent value from a
+  # (time x group) matrix using a column-major `flat_idx`. Under a sparse
+  # design the fdesign rows are deduplicated, so the latent gather has to
+  # be keyed at the joint (covariate row x time x group) granularity for
+  # every latent term that is present. Build a single joint key over all
+  # present terms' time/group columns so the deduplicated `fixed$index`
+  # stays aligned for ARIMA and GP simultaneously, then remap each term's
+  # `time_idx`/`group_idx` onto the deduplicated rows.
+  if (sparse && (length(arima_specs) > 0 || length(gp_specs) > 0)) {
+    joint <- data.table::data.table(cov = fixed$index)
+    key_cols <- "cov"
+    if (length(arima_specs) > 0) {
+      joint[, "at" := arima_specs[[1]]$time_idx]
+      joint[, "ag" := arima_specs[[1]]$group_idx]
+      key_cols <- c(key_cols, "at", "ag")
+    }
+    if (length(gp_specs) > 0) {
+      joint[, "gt" := gp_specs[[1]]$time_idx]
+      joint[, "gg" := gp_specs[[1]]$group_idx]
+      key_cols <- c(key_cols, "gt", "gg")
+    }
+    joint[, "uniq" := .GRP, by = key_cols]
     new_index <- joint[["uniq"]]
-    uniq <- unique(joint, by = c("cov", "t", "g"))
+    uniq <- unique(joint, by = key_cols)
     data.table::setorderv(uniq, "uniq")
     fixed$design <- fixed$design[uniq[["cov"]], , drop = FALSE]
     fixed$index <- new_index
-    arima_spec$time_idx <- uniq[["t"]]
-    arima_spec$group_idx <- uniq[["g"]]
-    arima_specs[[1]] <- arima_spec
+    if (length(arima_specs) > 0) {
+      arima_specs[[1]]$time_idx <- uniq[["at"]]
+      arima_specs[[1]]$group_idx <- uniq[["ag"]]
+    }
+    if (length(gp_specs) > 0) {
+      gp_specs[[1]]$time_idx <- uniq[["gt"]]
+      gp_specs[[1]]$group_idx <- uniq[["gg"]]
+    }
   }
   # Extract fixed effects metadata
   metadata <- enw_effects_metadata(fixed$design)
@@ -1240,7 +1625,8 @@ enw_formula <- function(formula, data, sparse = TRUE) {
       paste0(
         "~ 0 + ",
         paste(
-          paste0("`", colnames(metadata)[-1], "`"), collapse = " + "
+          paste0("`", colnames(metadata)[-1], "`"),
+          collapse = " + "
         )
       )
     )
@@ -1253,7 +1639,8 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     expanded_formula = as_string_formula(expanded_formula),
     fixed = fixed,
     random = random,
-    arima = arima_specs
+    arima = arima_specs,
+    gp = gp_specs
   )
   class(out) <- c("enw_formula", class(out))
   out

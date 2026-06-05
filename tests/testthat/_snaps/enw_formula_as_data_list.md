@@ -62,6 +62,39 @@
       $simple_arima_flat_idx
       integer(0)
       
+      $simple_gp_present
+      [1] 0
+      
+      $simple_gp_T
+      [1] 0
+      
+      $simple_gp_G
+      [1] 0
+      
+      $simple_gp_M
+      [1] 0
+      
+      $simple_gp_type
+      [1] 0
+      
+      $simple_gp_nu
+      [1] 0
+      
+      $simple_gp_d
+      [1] 0
+      
+      $simple_gp_L
+      [1] 0
+      
+      $simple_gp_n_obs
+      [1] 0
+      
+      $simple_gp_PHI
+      <0 x 0 matrix>
+      
+      $simple_gp_flat_idx
+      integer(0)
+      
 
 ---
 
@@ -125,6 +158,39 @@
       [1] 0
       
       $simple_arima_flat_idx
+      integer(0)
+      
+      $simple_gp_present
+      [1] 0
+      
+      $simple_gp_T
+      [1] 0
+      
+      $simple_gp_G
+      [1] 0
+      
+      $simple_gp_M
+      [1] 0
+      
+      $simple_gp_type
+      [1] 0
+      
+      $simple_gp_nu
+      [1] 0
+      
+      $simple_gp_d
+      [1] 0
+      
+      $simple_gp_L
+      [1] 0
+      
+      $simple_gp_n_obs
+      [1] 0
+      
+      $simple_gp_PHI
+      <0 x 0 matrix>
+      
+      $simple_gp_flat_idx
       integer(0)
       
 
@@ -191,6 +257,39 @@
       [1] 0
       
       $simple_arima_flat_idx
+      integer(0)
+      
+      $simple_gp_present
+      [1] 0
+      
+      $simple_gp_T
+      [1] 0
+      
+      $simple_gp_G
+      [1] 0
+      
+      $simple_gp_M
+      [1] 0
+      
+      $simple_gp_type
+      [1] 0
+      
+      $simple_gp_nu
+      [1] 0
+      
+      $simple_gp_d
+      [1] 0
+      
+      $simple_gp_L
+      [1] 0
+      
+      $simple_gp_n_obs
+      [1] 0
+      
+      $simple_gp_PHI
+      <0 x 0 matrix>
+      
+      $simple_gp_flat_idx
       integer(0)
       
 
@@ -267,6 +366,39 @@
       $complex_arima_flat_idx
       integer(0)
       
+      $complex_gp_present
+      [1] 0
+      
+      $complex_gp_T
+      [1] 0
+      
+      $complex_gp_G
+      [1] 0
+      
+      $complex_gp_M
+      [1] 0
+      
+      $complex_gp_type
+      [1] 0
+      
+      $complex_gp_nu
+      [1] 0
+      
+      $complex_gp_d
+      [1] 0
+      
+      $complex_gp_L
+      [1] 0
+      
+      $complex_gp_n_obs
+      [1] 0
+      
+      $complex_gp_PHI
+      <0 x 0 matrix>
+      
+      $complex_gp_flat_idx
+      integer(0)
+      
 
 ---
 
@@ -339,6 +471,39 @@
       [1] 0
       
       $comple_arima_flat_idx
+      integer(0)
+      
+      $comple_gp_present
+      [1] 0
+      
+      $comple_gp_T
+      [1] 0
+      
+      $comple_gp_G
+      [1] 0
+      
+      $comple_gp_M
+      [1] 0
+      
+      $comple_gp_type
+      [1] 0
+      
+      $comple_gp_nu
+      [1] 0
+      
+      $comple_gp_d
+      [1] 0
+      
+      $comple_gp_L
+      [1] 0
+      
+      $comple_gp_n_obs
+      [1] 0
+      
+      $comple_gp_PHI
+      <0 x 0 matrix>
+      
+      $comple_gp_flat_idx
       integer(0)
       
 
