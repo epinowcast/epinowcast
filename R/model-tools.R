@@ -55,7 +55,18 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     arima_d = 0L,
     arima_q = 0L,
     arima_n_obs = 0L,
-    arima_flat_idx = integer(0)
+    arima_flat_idx = integer(0),
+    gp_present = 0L,
+    gp_T = 0L,
+    gp_G = 0L,
+    gp_M = 0L,
+    gp_type = 0L,
+    gp_nu = 0,
+    gp_d = 0L,
+    gp_L = 0,
+    gp_n_obs = 0L,
+    gp_PHI = matrix(numeric(0), 0, 0),
+    gp_flat_idx = integer(0)
   )
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
@@ -66,8 +77,9 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
         )
       )
     }
-    fintercept <-  as.numeric(any(grepl(
-      "(Intercept)", colnames(formula$fixed$design), fixed = TRUE
+    fintercept <- as.numeric(any(grepl(
+      "(Intercept)", colnames(formula$fixed$design),
+      fixed = TRUE
     )))
     data$fintercept <- fintercept
     data$fnrow <- nrow(formula$fixed$design)
@@ -103,6 +115,31 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
       # per-observation lookup loop.
       data$arima_flat_idx <- as.integer(
         (a$group_idx - 1L) * a$T + a$time_idx
+      )
+    }
+
+    if (length(formula$gp) > 1L) {
+      cli::cli_abort(
+        "Only one `gp()` term per formula is currently supported."
+      )
+    }
+    if (length(formula$gp) == 1L) {
+      g <- formula$gp[[1]]
+      data$gp_present <- 1L
+      data$gp_T <- g$T
+      data$gp_G <- g$G
+      data$gp_M <- g$M
+      data$gp_type <- g$gp_type
+      data$gp_nu <- g$nu
+      data$gp_d <- g$d
+      data$gp_L <- g$boundary_scale
+      data$gp_n_obs <- length(g$time_idx)
+      data$gp_PHI <- g$PHI
+      # Column-major (T x G) flatten, identical to the ARIMA scheme, so
+      # the Stan side can gather the per-observation GP contribution
+      # with `to_vector(gp_eps)[flat_idx]`.
+      data$gp_flat_idx <- as.integer(
+        (g$group_idx - 1L) * g$T + g$time_idx
       )
     }
   }
@@ -174,29 +211,34 @@ enw_priors_as_data_list <- function(priors) {
 #'
 #' # Update priors from a previous model fit
 #' default_priors <- enw_reference(
-#'  distribution = "lognormal",
-#'  data = enw_example("preprocessed"),
+#'   distribution = "lognormal",
+#'   data = enw_example("preprocessed"),
 #' )$priors
 #' print(default_priors)
 #'
 #' fit_priors <- summary(
-#'  enw_example("nowcast"), type = "fit",
-#'  variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
+#'   enw_example("nowcast"),
+#'   type = "fit",
+#'   variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
 #' )
 #' fit_priors
 #'
 #' enw_replace_priors(default_priors, fit_priors)
 enw_replace_priors <- function(priors, custom_priors) {
   custom_priors <- coerce_dt(
-    custom_priors, select = c("variable", "mean", "sd")
+    custom_priors,
+    select = c("variable", "mean", "sd")
   )[
     ,
-    .(variable = gsub("\\[([^]]*)\\]", "", variable),
-      mean = as.numeric(mean), sd = as.numeric(sd))
+    .(
+      variable = gsub("\\[([^]]*)\\]", "", variable),
+      mean = as.numeric(mean), sd = as.numeric(sd)
+    )
   ]
   variables <- custom_priors$variable
   priors <- coerce_dt(
-    priors, required_cols = "variable"
+    priors,
+    required_cols = "variable"
   )[!(variable %in% variables)]
   priors <- rbind(priors, custom_priors, fill = TRUE)
   priors[]
@@ -320,18 +362,18 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' pobs <- enw_example("preprocessed")
 #'
 #' nowcast <- epinowcast(pobs,
-#'  expectation = enw_expectation(~1, data = pobs),
-#'  fit = enw_fit_opts(enw_sample, pp = TRUE),
-#'  obs = enw_obs(family = "poisson", data = pobs),
+#'   expectation = enw_expectation(~1, data = pobs),
+#'   fit = enw_fit_opts(enw_sample, pp = TRUE),
+#'   obs = enw_obs(family = "poisson", data = pobs),
 #' )
 #'
 #' summary(nowcast)
 #'
 #' # Use pathfinder initialization
 #' nowcast_pathfinder <- epinowcast(pobs,
-#'  expectation = enw_expectation(~1, data = pobs),
-#'  fit = enw_fit_opts(enw_sample, pp = TRUE, init_method = "pathfinder"),
-#'  obs = enw_obs(family = "poisson", data = pobs),
+#'   expectation = enw_expectation(~1, data = pobs),
+#'   fit = enw_fit_opts(enw_sample, pp = TRUE, init_method = "pathfinder"),
+#'   obs = enw_obs(family = "poisson", data = pobs),
 #' )
 #'
 #' summary(nowcast_pathfinder)
@@ -440,9 +482,9 @@ update_inits <- function(data, model, init,
 #' pobs <- enw_example("preprocessed")
 #'
 #' nowcast <- epinowcast(pobs,
-#'  expectation = enw_expectation(~1, data = pobs),
-#'  fit = enw_fit_opts(enw_pathfinder, pp = TRUE),
-#'  obs = enw_obs(family = "poisson", data = pobs),
+#'   expectation = enw_expectation(~1, data = pobs),
+#'   fit = enw_fit_opts(enw_pathfinder, pp = TRUE),
+#'   obs = enw_obs(family = "poisson", data = pobs),
 #' )
 #'
 #' summary(nowcast)
@@ -616,7 +658,7 @@ enw_stan_to_r <- function(
   if (any(files %in% overloaded_fns)) {
     cli::cli_warn(c(
       "The following functions are overloaded and cannot be exposed: ",
-       toString(overloaded_fns)
+      toString(overloaded_fns)
     ))
     files <- files[!files %in% overloaded_fns]
   }
@@ -681,14 +723,13 @@ enw_stan_to_r <- function(
 #' \dontrun{
 #' # Use the package cache in R >= 4.0
 #' if (R.version.string >= "4.0.0") {
-#'  enw_set_cache(
-#'    tools::R_user_dir(package = "epinowcast", "cache"), type = "all"
-#'  )
-#'}
-#'
-#'}
+#'   enw_set_cache(
+#'     tools::R_user_dir(package = "epinowcast", "cache"),
+#'     type = "all"
+#'   )
+#' }
+#' }
 enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
-
   type <- rlang::arg_match(type, multiple = TRUE)
 
   if (!is.character(path)) {

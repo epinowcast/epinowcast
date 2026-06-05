@@ -3,6 +3,7 @@ functions {
 #include functions/combine_effects.stan
 #include functions/effects_priors_lp.stan
 #include functions/arima_kernel.stan
+#include functions/gaussian_process.stan
 #include functions/regression.stan
 #include functions/log_expected_latent_from_r.stan
 #include functions/log_expected_obs_from_latent.stan
@@ -77,6 +78,21 @@ data {
   array[expr_arima_n_obs] int<lower=1> expr_arima_flat_idx;
   array[2, 1] real expr_arima_sigma_p;
   array[2, 1] real expr_arima_pacf_p;
+  // Gaussian process latent term on growth rate
+  int<lower=0, upper=1> expr_gp_present;
+  int<lower=0> expr_gp_T;
+  int<lower=0> expr_gp_G;
+  int<lower=0> expr_gp_M;
+  int<lower=0> expr_gp_type;
+  real<lower=0> expr_gp_nu;
+  int<lower=0> expr_gp_d;
+  real<lower=0> expr_gp_L;
+  int<lower=0> expr_gp_n_obs;
+  matrix[expr_gp_T - expr_gp_d,
+    expr_gp_type == 1 ? 2 * expr_gp_M : expr_gp_M] expr_gp_PHI;
+  array[expr_gp_n_obs] int<lower=1> expr_gp_flat_idx;
+  array[2, 1] real expr_gp_rho_p;
+  array[2, 1] real expr_gp_alpha_p;
   // ---- Latent case submodule ----
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
   // Partial PMF of the latent delay distribution as a convolution matrix
@@ -102,6 +118,21 @@ data {
   array[expl_arima_n_obs] int<lower=1> expl_arima_flat_idx;
   array[2, 1] real expl_arima_sigma_p;
   array[2, 1] real expl_arima_pacf_p;
+  // Gaussian process latent term on log latent-to-obs proportion
+  int<lower=0, upper=1> expl_gp_present;
+  int<lower=0> expl_gp_T;
+  int<lower=0> expl_gp_G;
+  int<lower=0> expl_gp_M;
+  int<lower=0> expl_gp_type;
+  real<lower=0> expl_gp_nu;
+  int<lower=0> expl_gp_d;
+  real<lower=0> expl_gp_L;
+  int<lower=0> expl_gp_n_obs;
+  matrix[expl_gp_T - expl_gp_d,
+    expl_gp_type == 1 ? 2 * expl_gp_M : expl_gp_M] expl_gp_PHI;
+  array[expl_gp_n_obs] int<lower=1> expl_gp_flat_idx;
+  array[2, 1] real expl_gp_rho_p;
+  array[2, 1] real expl_gp_alpha_p;
 
   // Reference time model
   // Parametric reference model
@@ -133,6 +164,25 @@ data {
   array[2, 1] real refp_arima_sigma_p;     // mean scale prior
   array[2, 1] real refp_arima_pacf_p;
   array[2, 1] real refp_arima_sd_sigma_p;  // sd scale prior
+  // Gaussian process latent term on the parametric reference. Basis,
+  // length scale and spectral coefficients are shared between mean and
+  // sd; each quantity has its own magnitude (alpha) so they can grow
+  // time-varying structure independently.
+  int<lower=0, upper=1> refp_gp_present;
+  int<lower=0> refp_gp_T;
+  int<lower=0> refp_gp_G;
+  int<lower=0> refp_gp_M;
+  int<lower=0> refp_gp_type;
+  real<lower=0> refp_gp_nu;
+  int<lower=0> refp_gp_d;
+  real<lower=0> refp_gp_L;
+  int<lower=0> refp_gp_n_obs;
+  matrix[refp_gp_T - refp_gp_d,
+    refp_gp_type == 1 ? 2 * refp_gp_M : refp_gp_M] refp_gp_PHI;
+  array[refp_gp_n_obs] int<lower=1> refp_gp_flat_idx;
+  array[2, 1] real refp_gp_rho_p;
+  array[2, 1] real refp_gp_alpha_p;     // mean magnitude prior
+  array[2, 1] real refp_gp_sd_alpha_p;  // sd magnitude prior
   // Non-parametric reference model
   int model_refnp;
   int refnp_fnindex;
@@ -154,6 +204,22 @@ data {
   array[refnp_arima_n_obs] int<lower=1> refnp_arima_flat_idx;
   array[2, 1] real refnp_arima_sigma_p;
   array[2, 1] real refnp_arima_pacf_p;
+  // Gaussian process latent term on non-parametric reference logit hazards
+  int<lower=0, upper=1> refnp_gp_present;
+  int<lower=0> refnp_gp_T;
+  int<lower=0> refnp_gp_G;
+  int<lower=0> refnp_gp_M;
+  int<lower=0> refnp_gp_type;
+  real<lower=0> refnp_gp_nu;
+  int<lower=0> refnp_gp_d;
+  real<lower=0> refnp_gp_L;
+  int<lower=0> refnp_gp_n_obs;
+  matrix[refnp_gp_T - refnp_gp_d,
+    refnp_gp_type == 1 ? 2 * refnp_gp_M : refnp_gp_M]
+    refnp_gp_PHI;
+  array[refnp_gp_n_obs] int<lower=1> refnp_gp_flat_idx;
+  array[2, 1] real refnp_gp_rho_p;
+  array[2, 1] real refnp_gp_alpha_p;
 
   // Reporting time model
   int model_rep;
@@ -177,6 +243,22 @@ data {
   array[rep_arima_n_obs] int<lower=1> rep_arima_flat_idx;
   array[2, 1] real rep_arima_sigma_p;
   array[2, 1] real rep_arima_pacf_p;
+  // Gaussian process latent term on report-time logit hazards (joint
+  // sparse dedup as for refp).
+  int<lower=0, upper=1> rep_gp_present;
+  int<lower=0> rep_gp_T;
+  int<lower=0> rep_gp_G;
+  int<lower=0> rep_gp_M;
+  int<lower=0> rep_gp_type;
+  real<lower=0> rep_gp_nu;
+  int<lower=0> rep_gp_d;
+  real<lower=0> rep_gp_L;
+  int<lower=0> rep_gp_n_obs;
+  matrix[rep_gp_T - rep_gp_d,
+    rep_gp_type == 1 ? 2 * rep_gp_M : rep_gp_M] rep_gp_PHI;
+  array[rep_gp_n_obs] int<lower=1> rep_gp_flat_idx;
+  array[2, 1] real rep_gp_rho_p;
+  array[2, 1] real rep_gp_alpha_p;
   // Reporting probability aggregation: precomputed indices for log_sum_exp
   int rep_agg_p;
   array[rep_agg_p ? g : 0, rep_agg_p ? t : 0, rep_agg_p ? dmax : 0] int rep_agg_n_selected;
@@ -216,6 +298,21 @@ data {
   array[miss_arima_n_obs] int<lower=1> miss_arima_flat_idx;
   array[2, 1] real miss_arima_sigma_p;
   array[2, 1] real miss_arima_pacf_p;
+  // Gaussian process latent term on missing-reference logit proportion
+  int<lower=0, upper=1> miss_gp_present;
+  int<lower=0> miss_gp_T;
+  int<lower=0> miss_gp_G;
+  int<lower=0> miss_gp_M;
+  int<lower=0> miss_gp_type;
+  real<lower=0> miss_gp_nu;
+  int<lower=0> miss_gp_d;
+  real<lower=0> miss_gp_L;
+  int<lower=0> miss_gp_n_obs;
+  matrix[miss_gp_T - miss_gp_d,
+    miss_gp_type == 1 ? 2 * miss_gp_M : miss_gp_M] miss_gp_PHI;
+  array[miss_gp_n_obs] int<lower=1> miss_gp_flat_idx;
+  array[2, 1] real miss_gp_rho_p;
+  array[2, 1] real miss_gp_alpha_p;
 
   // Observation model
   int model_obs; // control parameter for the observation model
@@ -258,6 +355,10 @@ parameters {
   vector<lower=-1, upper=1>[expr_arima_p] expr_arima_pacf;
   vector[expr_arima_q] expr_arima_theta;
   array[expr_arima_present ? 1 : 0] real<lower=0> expr_arima_sigma;
+  // Growth rate Gaussian process parameters
+  matrix[expr_gp_type == 1 ? 2 * expr_gp_M : expr_gp_M, expr_gp_G] expr_gp_eta;
+  array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_rho;
+  array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_alpha;
   // ---- Latent case submodule ----
   vector[expl_fncol] expl_beta;
   vector<lower=0>[expl_rncol] expl_beta_sd;
@@ -266,6 +367,10 @@ parameters {
   vector<lower=-1, upper=1>[expl_arima_p] expl_arima_pacf;
   vector[expl_arima_q] expl_arima_theta;
   array[expl_arima_present ? 1 : 0] real<lower=0> expl_arima_sigma;
+  // Latent-to-obs proportion Gaussian process parameters
+  matrix[expl_gp_type == 1 ? 2 * expl_gp_M : expl_gp_M, expl_gp_G] expl_gp_eta;
+  array[expl_gp_present ? 1 : 0] real<lower=0> expl_gp_rho;
+  array[expl_gp_present ? 1 : 0] real<lower=0> expl_gp_alpha;
 
   // Reference model
   // Parametric reference model
@@ -283,6 +388,14 @@ parameters {
   array[refp_arima_present ? 1 : 0] real<lower=0> refp_arima_sigma;
   array[refp_arima_present && model_refp > 1 ? 1 : 0]
     real<lower=0> refp_arima_sd_sigma;
+  // Parametric reference Gaussian process parameters. Basis / length
+  // scale / spectral coefficients shared between mean and sd; per-
+  // quantity magnitudes (alpha) independent.
+  matrix[refp_gp_type == 1 ? 2 * refp_gp_M : refp_gp_M, refp_gp_G] refp_gp_eta;
+  array[refp_gp_present ? 1 : 0] real<lower=0> refp_gp_rho;
+  array[refp_gp_present ? 1 : 0] real<lower=0> refp_gp_alpha;
+  array[refp_gp_present && model_refp > 1 ? 1 : 0]
+    real<lower=0> refp_gp_sd_alpha;
   // Non-parametric reference model
   array[model_refnp && refnp_fintercept ? 1 : 0] real refnp_int;
   vector[model_refnp ? refnp_fncol : 0] refnp_beta;
@@ -292,6 +405,11 @@ parameters {
   vector<lower=-1, upper=1>[refnp_arima_p] refnp_arima_pacf;
   vector[refnp_arima_q] refnp_arima_theta;
   array[refnp_arima_present ? 1 : 0] real<lower=0> refnp_arima_sigma;
+  // Non-parametric reference Gaussian process parameters
+  matrix[refnp_gp_type == 1 ? 2 * refnp_gp_M : refnp_gp_M, refnp_gp_G]
+    refnp_gp_eta;
+  array[refnp_gp_present ? 1 : 0] real<lower=0> refnp_gp_rho;
+  array[refnp_gp_present ? 1 : 0] real<lower=0> refnp_gp_alpha;
 
   // Report model
   vector[rep_fncol] rep_beta;
@@ -301,6 +419,10 @@ parameters {
   vector<lower=-1, upper=1>[rep_arima_p] rep_arima_pacf;
   vector[rep_arima_q] rep_arima_theta;
   array[rep_arima_present ? 1 : 0] real<lower=0> rep_arima_sigma;
+  // Report-time Gaussian process parameters
+  matrix[rep_gp_type == 1 ? 2 * rep_gp_M : rep_gp_M, rep_gp_G] rep_gp_eta;
+  array[rep_gp_present ? 1 : 0] real<lower=0> rep_gp_rho;
+  array[rep_gp_present ? 1 : 0] real<lower=0> rep_gp_alpha;
 
   // Missing reference date model
   array[model_miss] real miss_int;
@@ -311,6 +433,10 @@ parameters {
   vector<lower=-1, upper=1>[miss_arima_p] miss_arima_pacf;
   vector[miss_arima_q] miss_arima_theta;
   array[miss_arima_present ? 1 : 0] real<lower=0> miss_arima_sigma;
+  // Missing-reference Gaussian process parameters
+  matrix[miss_gp_type == 1 ? 2 * miss_gp_M : miss_gp_M, miss_gp_G] miss_gp_eta;
+  array[miss_gp_present ? 1 : 0] real<lower=0> miss_gp_rho;
+  array[miss_gp_present ? 1 : 0] real<lower=0> miss_gp_alpha;
 
   // Observation model
   array[model_obs > 0 ? 1 : 0] real<lower=0> sqrt_phi; // overdispersion
@@ -349,7 +475,10 @@ transformed parameters{
     expr_arima_present, expr_arima_T, expr_arima_G,
     expr_arima_p, expr_arima_d, expr_arima_q, expr_arima_n_obs,
     expr_arima_z, expr_arima_pacf, expr_arima_theta, expr_arima_sigma,
-    expr_arima_flat_idx
+    expr_arima_flat_idx,
+    expr_gp_present, expr_gp_T, expr_gp_G, expr_gp_M, expr_gp_L,
+    expr_gp_type, expr_gp_nu, expr_gp_d, expr_gp_PHI, expr_gp_eta,
+    expr_gp_rho, expr_gp_alpha, expr_gp_flat_idx
   );
   exp_llatent = log_expected_latent_from_r(
     expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
@@ -363,7 +492,10 @@ transformed parameters{
       expl_arima_present, expl_arima_T, expl_arima_G,
       expl_arima_p, expl_arima_d, expl_arima_q, expl_arima_n_obs,
       expl_arima_z, expl_arima_pacf, expl_arima_theta, expl_arima_sigma,
-      expl_arima_flat_idx
+      expl_arima_flat_idx,
+      expl_gp_present, expl_gp_T, expl_gp_G, expl_gp_M, expl_gp_L,
+      expl_gp_type, expl_gp_nu, expl_gp_d, expl_gp_PHI, expl_gp_eta,
+      expl_gp_rho, expl_gp_alpha, expl_gp_flat_idx
     );
     exp_lobs = log_expected_obs_from_latent(
       exp_llatent, expl_lrd_n, expl_lrd_sparse.1, expl_lrd_sparse.2,
@@ -387,7 +519,10 @@ transformed parameters{
       refp_arima_present, refp_arima_T, refp_arima_G,
       refp_arima_p, refp_arima_d, refp_arima_q, refp_arima_n_obs,
       refp_arima_z, refp_arima_pacf, refp_arima_theta, refp_arima_sigma,
-      refp_arima_flat_idx
+      refp_arima_flat_idx,
+      refp_gp_present, refp_gp_T, refp_gp_G, refp_gp_M, refp_gp_L,
+      refp_gp_type, refp_gp_nu, refp_gp_d, refp_gp_PHI, refp_gp_eta,
+      refp_gp_rho, refp_gp_alpha, refp_gp_flat_idx
     );
     if (model_refp > 1) {
       refp_sd = regression_predictor(
@@ -398,7 +533,10 @@ transformed parameters{
         refp_arima_p, refp_arima_d, refp_arima_q, refp_arima_n_obs,
         refp_arima_z, refp_arima_pacf, refp_arima_theta,
         refp_arima_sd_sigma,
-        refp_arima_flat_idx
+        refp_arima_flat_idx,
+        refp_gp_present, refp_gp_T, refp_gp_G, refp_gp_M, refp_gp_L,
+        refp_gp_type, refp_gp_nu, refp_gp_d, refp_gp_PHI, refp_gp_eta,
+        refp_gp_rho, refp_gp_sd_alpha, refp_gp_flat_idx
       );
       refp_sd = exp(refp_sd);
     }
@@ -424,7 +562,10 @@ transformed parameters{
       refnp_arima_present, refnp_arima_T, refnp_arima_G,
       refnp_arima_p, refnp_arima_d, refnp_arima_q, refnp_arima_n_obs,
       refnp_arima_z, refnp_arima_pacf, refnp_arima_theta, refnp_arima_sigma,
-      refnp_arima_flat_idx
+      refnp_arima_flat_idx,
+      refnp_gp_present, refnp_gp_T, refnp_gp_G, refnp_gp_M, refnp_gp_L,
+      refnp_gp_type, refnp_gp_nu, refnp_gp_d, refnp_gp_PHI, refnp_gp_eta,
+      refnp_gp_rho, refnp_gp_alpha, refnp_gp_flat_idx
     );
     }
   }
@@ -437,7 +578,10 @@ transformed parameters{
     rep_arima_present, rep_arima_T, rep_arima_G,
     rep_arima_p, rep_arima_d, rep_arima_q, rep_arima_n_obs,
     rep_arima_z, rep_arima_pacf, rep_arima_theta, rep_arima_sigma,
-    rep_arima_flat_idx
+    rep_arima_flat_idx,
+    rep_gp_present, rep_gp_T, rep_gp_G, rep_gp_M, rep_gp_L,
+    rep_gp_type, rep_gp_nu, rep_gp_d, rep_gp_PHI, rep_gp_eta,
+    rep_gp_rho, rep_gp_alpha, rep_gp_flat_idx
   );
   }
 
@@ -449,7 +593,10 @@ transformed parameters{
       miss_arima_present, miss_arima_T, miss_arima_G,
       miss_arima_p, miss_arima_d, miss_arima_q, miss_arima_n_obs,
       miss_arima_z, miss_arima_pacf, miss_arima_theta, miss_arima_sigma,
-      miss_arima_flat_idx
+      miss_arima_flat_idx,
+      miss_gp_present, miss_gp_T, miss_gp_G, miss_gp_M, miss_gp_L,
+      miss_gp_type, miss_gp_nu, miss_gp_d, miss_gp_PHI, miss_gp_eta,
+      miss_gp_rho, miss_gp_alpha, miss_gp_flat_idx
     ));
   }
   // Observation model
@@ -484,6 +631,10 @@ model {
     expr_arima_z, expr_arima_pacf, expr_arima_theta,
     expr_arima_sigma, expr_arima_sigma_p, expr_arima_pacf_p
   );
+  gp_priors_lp(
+    expr_gp_present, expr_gp_eta, expr_gp_rho, expr_gp_alpha,
+    expr_gp_rho_p, expr_gp_alpha_p
+  );
   // ---- Latent case submodule ----
   // latent-to-obs proportion effect + ARIMA priors
   regression_priors_lp(
@@ -491,6 +642,10 @@ model {
     expl_arima_present, expl_arima_p, expl_arima_q,
     expl_arima_z, expl_arima_pacf, expl_arima_theta,
     expl_arima_sigma, expl_arima_sigma_p, expl_arima_pacf_p
+  );
+  gp_priors_lp(
+    expl_gp_present, expl_gp_eta, expl_gp_rho, expl_gp_alpha,
+    expl_gp_rho_p, expl_gp_alpha_p
   );
   
   // Reference model
@@ -507,6 +662,10 @@ model {
       refp_arima_z, refp_arima_pacf, refp_arima_theta,
       refp_arima_sigma, refp_arima_sigma_p, refp_arima_pacf_p
     );
+    gp_priors_lp(
+      refp_gp_present, refp_gp_eta, refp_gp_rho, refp_gp_alpha,
+      refp_gp_rho_p, refp_gp_alpha_p
+    );
     if (model_refp > 1) {
       effect_priors_lp(
         refp_sd_beta, refp_sd_beta_sd, refp_sd_beta_sd_p, refp_fncol,
@@ -522,6 +681,15 @@ model {
         refp_arima_sd_sigma_p[1, 1], refp_arima_sd_sigma_p[2, 1]
       ) T[0, ];
     }
+    // Per-quantity sd magnitude for the shared GP latent. The basis,
+    // length scale and spectral coefficients are already priored by the
+    // mean-side gp_priors_lp() above, so only the sd magnitude needs a
+    // prior here.
+    if (refp_gp_present && model_refp > 1) {
+      refp_gp_sd_alpha[1] ~ normal(
+        refp_gp_sd_alpha_p[1, 1], refp_gp_sd_alpha_p[2, 1]
+      ) T[0, ];
+    }
   }
   // Non-parametric reference model
   if (model_refnp) {
@@ -534,6 +702,10 @@ model {
       refnp_arima_z, refnp_arima_pacf, refnp_arima_theta,
       refnp_arima_sigma, refnp_arima_sigma_p, refnp_arima_pacf_p
     );
+    gp_priors_lp(
+      refnp_gp_present, refnp_gp_eta, refnp_gp_rho, refnp_gp_alpha,
+      refnp_gp_rho_p, refnp_gp_alpha_p
+    );
   }
 
   // Report model
@@ -543,7 +715,11 @@ model {
     rep_arima_z, rep_arima_pacf, rep_arima_theta,
     rep_arima_sigma, rep_arima_sigma_p, rep_arima_pacf_p
   );
-  
+  gp_priors_lp(
+    rep_gp_present, rep_gp_eta, rep_gp_rho, rep_gp_alpha,
+    rep_gp_rho_p, rep_gp_alpha_p
+  );
+
   // Missing reference date model
   if (model_miss) {
     miss_int ~ normal(miss_int_p[1], miss_int_p[2]);
@@ -552,6 +728,10 @@ model {
       miss_arima_present, miss_arima_p, miss_arima_q,
       miss_arima_z, miss_arima_pacf, miss_arima_theta,
       miss_arima_sigma, miss_arima_sigma_p, miss_arima_pacf_p
+    );
+    gp_priors_lp(
+      miss_gp_present, miss_gp_eta, miss_gp_rho, miss_gp_alpha,
+      miss_gp_rho_p, miss_gp_alpha_p
     );
   }
   

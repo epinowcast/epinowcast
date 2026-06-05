@@ -12,7 +12,8 @@ test_that("enw_missing produces the expected model components", {
     miss$inits(miss$data, miss$priors)(),
     c(
       "miss_int", "miss_beta", "miss_beta_sd",
-      "miss_arima_pacf", "miss_arima_theta", "miss_arima_sigma"
+      "miss_arima_pacf", "miss_arima_theta", "miss_arima_sigma",
+      "miss_gp_rho", "miss_gp_alpha"
     )
   )
 })
