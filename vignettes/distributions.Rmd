@@ -21,6 +21,11 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r libraries}
+library(data.table)
+library(ggplot2)
+```
+
 ## Available distributions
 
 The currently available parametric delay distributions are continuous probability distributions with (up to) two parameters $\mu_{g,t}$ and $\upsilon_{g,t}$. The table below provides a link to the definition of each distribution, specifies how the parameters $\mu_{g,t}$ and $\upsilon_{g,t}$ are mapped to the parameters of the distribution (according to the referenced definition), and states the resulting mean of the distribution (before discretization and adjustment for the assumed maximum delay).
@@ -92,8 +97,6 @@ The chunk below contrasts the two epinowcast discretisations against that refere
 The default uniform-interval approximation diverges from the reference at short delays, while the `"primarycensored"` method matches it.
 
 ```{r recovery}
-library(data.table)
-
 dmax <- 15
 meanlog <- 1
 sdlog <- 0.5
@@ -126,8 +129,6 @@ print(pmf[delay <= 3])
 The largest discrepancy is at the shortest delays, exactly where the uniform-interval approximation is least accurate:
 
 ```{r recovery-plot}
-library(ggplot2)
-
 ggplot(pmf, aes(x = delay, y = probability, colour = method)) +
   geom_point() +
   geom_line() +
