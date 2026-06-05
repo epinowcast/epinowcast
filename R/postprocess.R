@@ -388,14 +388,17 @@ enw_quantiles_to_long <- function(posterior) {
 #' Discretise a parametric delay distribution
 #'
 #' Computes the discretised probability mass function of a parametric delay
-#' distribution under the same double-censored, uniform-interval scheme used
-#' by the Stan model (`discretised_logit_hazard`, `max_strat = 2`). This lets
-#' R-side helpers reconstruct the delay distribution implied by posterior
-#' parameter draws.
+#' distribution using primary-event censoring via
+#' [primarycensored::dprimarycensored()], the same method `epinowcast` relies
+#' on for delay distributions. The PMF is over delays `0:(max_delay - 1)`,
+#' truncated at `max_delay`. Parameters use the distribution's natural
+#' parameterisation (e.g. `meanlog`/`sdlog` for the lognormal); the
+#' `refp_mean_int`/`refp_sd_int` parameters are mapped accordingly.
 #'
-#' @param mu Location parameter (per the distribution's parameterisation).
+#' @param mu Location parameter on the modelled scale (`refp_mean_int`).
 #'
-#' @param sigma Scale parameter. Ignored for the exponential distribution.
+#' @param sigma Scale parameter on the modelled scale (`refp_sd_int`). Ignored
+#'   for the exponential distribution.
 #'
 #' @param max_delay Maximum delay (number of delay slots, delays `0:(max_delay
 #'   - 1)`).
@@ -407,30 +410,45 @@ enw_quantiles_to_long <- function(posterior) {
 #' @family postprocess
 .discretise_parametric_pmf <- function(mu, sigma, max_delay,
                                        distribution = "lognormal") {
-  u <- max_delay
-  lcdf <- switch(distribution,
-    lognormal = stats::plnorm(1:u, mu, sigma, log.p = TRUE),
-    gamma = stats::pgamma(1:u, shape = exp(mu), rate = sigma, log.p = TRUE),
-    exponential = stats::pexp(1:u, rate = exp(-mu), log.p = TRUE),
-    loglogistic = log1p((1:u / exp(mu))^-sigma) * -1,
+  .check_primarycensored("`.discretise_parametric_pmf()`")
+  delays <- 0:(max_delay - 1)
+  # Map the modelled (mu, sigma) to each distribution's pdist arguments.
+  spec <- switch(distribution,
+    lognormal = list(stats::plnorm, list(meanlog = mu, sdlog = sigma)),
+    gamma = list(stats::pgamma, list(shape = exp(mu), rate = sigma)),
+    exponential = list(stats::pexp, list(rate = exp(-mu))),
+    loglogistic = list(
+      function(q, shape, scale) {
+        ifelse(q <= 0, 0, 1 / (1 + (q / scale)^-shape))
+      },
+      list(shape = sigma, scale = exp(mu))
+    ),
     cli::cli_abort("Unknown {.arg distribution}: {.val {distribution}}.")
   )
-  # Normalise for double censoring: divide by cdf[u] + cdf[u - 1].
-  if (u > 1) {
-    m <- max(lcdf[u], lcdf[u - 1])
-    lcdf <- lcdf - (m + log(sum(exp(c(lcdf[u], lcdf[u - 1]) - m))))
-  } else {
-    lcdf <- lcdf - lcdf[1]
+  do.call(
+    primarycensored::dprimarycensored,
+    c(
+      list(delays, pdist = spec[[1]], pwindow = 1, swindow = 1, D = max_delay),
+      spec[[2]]
+    )
+  )
+}
+
+#' Error if the primarycensored package is not installed
+#'
+#' @param caller A string naming the calling function for the error message.
+#' @return Invisibly `TRUE`; called for its side effect.
+#' @family postprocess
+.check_primarycensored <- function(caller) {
+  if (!requireNamespace("primarycensored", quietly = TRUE)) {
+    cli::cli_abort(
+      c(
+        "{caller} requires the {.pkg primarycensored} package.",
+        i = "Install it with {.code install.packages(\"primarycensored\")}."
+      )
+    )
   }
-  p <- numeric(u)
-  p[1] <- exp(lcdf[1])
-  if (u > 1) {
-    p[2] <- exp(lcdf[2])
-  }
-  if (u > 2) {
-    p[3:u] <- exp(lcdf[3:u]) - exp(lcdf[1:(u - 2)])
-  }
-  p
+  invisible(TRUE)
 }
 
 #' Posterior samples of the parametric reporting-delay distribution

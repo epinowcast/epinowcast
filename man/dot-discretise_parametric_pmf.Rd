@@ -7,9 +7,10 @@
 .discretise_parametric_pmf(mu, sigma, max_delay, distribution = "lognormal")
 }
 \arguments{
-\item{mu}{Location parameter (per the distribution's parameterisation).}
+\item{mu}{Location parameter on the modelled scale (\code{refp_mean_int}).}
 
-\item{sigma}{Scale parameter. Ignored for the exponential distribution.}
+\item{sigma}{Scale parameter on the modelled scale (\code{refp_sd_int}). Ignored
+for the exponential distribution.}
 
 \item{max_delay}{Maximum delay (number of delay slots, delays `0:(max_delay
 \itemize{
@@ -24,13 +25,16 @@ A numeric vector of length \code{max_delay} summing to 1.
 }
 \description{
 Computes the discretised probability mass function of a parametric delay
-distribution under the same double-censored, uniform-interval scheme used
-by the Stan model (\code{discretised_logit_hazard}, \code{max_strat = 2}). This lets
-R-side helpers reconstruct the delay distribution implied by posterior
-parameter draws.
+distribution using primary-event censoring via
+\code{\link[primarycensored:dprimarycensored]{primarycensored::dprimarycensored()}}, the same method \code{epinowcast} relies
+on for delay distributions. The PMF is over delays \code{0:(max_delay - 1)},
+truncated at \code{max_delay}. Parameters use the distribution's natural
+parameterisation (e.g. \code{meanlog}/\code{sdlog} for the lognormal); the
+\code{refp_mean_int}/\code{refp_sd_int} parameters are mapped accordingly.
 }
 \seealso{
 Functions used for postprocessing of model fits
+\code{\link{.check_primarycensored}()},
 \code{\link{build_ord_obs}()},
 \code{\link{enw_add_latest_obs_to_nowcast}()},
 \code{\link{enw_nowcast_samples}()},

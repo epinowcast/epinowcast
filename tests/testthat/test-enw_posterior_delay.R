@@ -1,31 +1,25 @@
 test_that(".discretise_parametric_pmf() returns a normalised PMF", {
+  skip_if_not_installed("primarycensored")
   p <- .discretise_parametric_pmf(1.6, 0.5, 15, "lognormal")
   expect_length(p, 15)
   expect_equal(sum(p), 1, tolerance = 1e-8)
   expect_true(all(p >= 0))
 })
 
-test_that(".discretise_parametric_pmf() matches the double-censored scheme", {
-  # Reference implementation of the max_strat = 2 double-censored lognormal.
-  ref <- function(meanlog, sdlog, dmax) {
-    u <- dmax
-    lcdf <- stats::plnorm(1:u, meanlog, sdlog, log.p = TRUE)
-    m <- max(lcdf[u], lcdf[u - 1])
-    lcdf <- lcdf - (m + log(sum(exp(c(lcdf[u], lcdf[u - 1]) - m))))
-    p <- numeric(u)
-    p[1] <- exp(lcdf[1])
-    p[2] <- exp(lcdf[2])
-    for (i in 3:u) p[i] <- exp(lcdf[i]) - exp(lcdf[i - 2])
-    p
-  }
+test_that(".discretise_parametric_pmf() matches primarycensored", {
+  skip_if_not_installed("primarycensored")
   expect_equal(
     .discretise_parametric_pmf(1.6, 0.5, 15, "lognormal"),
-    ref(1.6, 0.5, 15),
+    primarycensored::dprimarycensored(
+      0:14, pdist = stats::plnorm, pwindow = 1, swindow = 1, D = 15,
+      meanlog = 1.6, sdlog = 0.5
+    ),
     tolerance = 1e-10
   )
 })
 
 test_that(".discretise_parametric_pmf() supports other distributions", {
+  skip_if_not_installed("primarycensored")
   for (dist in c("gamma", "exponential", "loglogistic")) {
     p <- .discretise_parametric_pmf(1, 1, 10, dist)
     expect_equal(sum(p), 1, tolerance = 1e-8)

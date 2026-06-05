@@ -30,6 +30,7 @@ Build the ord_obs \code{data.table}.
 }
 \seealso{
 Functions used for postprocessing of model fits
+\code{\link{.check_primarycensored}()},
 \code{\link{.discretise_parametric_pmf}()},
 \code{\link{enw_add_latest_obs_to_nowcast}()},
 \code{\link{enw_nowcast_samples}()},

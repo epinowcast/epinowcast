@@ -31,6 +31,7 @@ or not-modelled earlier dates.
 }
 \seealso{
 Functions used for postprocessing of model fits
+\code{\link{.check_primarycensored}()},
 \code{\link{.discretise_parametric_pmf}()},
 \code{\link{build_ord_obs}()},
 \code{\link{enw_add_latest_obs_to_nowcast}()},
