@@ -13,6 +13,14 @@ vignette: >
 
 This vignette describes the parametric delay distributions that are currently available in `epinowcast` and explains how they are internally discretised.
 
+```{r setup, include = FALSE}
+has_deps <- requireNamespace("primarycensored", quietly = TRUE) &&
+  requireNamespace("ggplot2", quietly = TRUE)
+knitr::opts_chunk$set(
+  echo = TRUE, eval = has_deps, fig.width = 7, fig.height = 4
+)
+```
+
 ## Available distributions
 
 The currently available parametric delay distributions are continuous probability distributions with (up to) two parameters $\mu_{g,t}$ and $\upsilon_{g,t}$. The table below provides a link to the definition of each distribution, specifies how the parameters $\mu_{g,t}$ and $\upsilon_{g,t}$ are mapped to the parameters of the distribution (according to the referenced definition), and states the resulting mean of the distribution (before discretization and adjustment for the assumed maximum delay).
@@ -62,6 +70,10 @@ The Stan implementation is vendored from the [primarycensored](https://primaryce
 This avoids the uniform-interval approximation used by the default method and so recovers the double interval censored distribution more exactly, including at short delays.
 It is currently available for the exponential, lognormal and gamma distributions.
 
+The same `primarycensored` machinery underpins delay handling elsewhere in the ecosystem.
+[`epidist`](https://epidist.epinowcast.org) estimates delay distributions from individual line-list data, and [`EpiNow2::estimate_dist()`](https://epiforecasts.io/EpiNow2/) fits them from aggregated count data; both are powered by `primarycensored`, with the main difference being the data structure they expect.
+Estimating a delay with one of those tools and then passing it to `enw_reference()` with `discretisation = "primarycensored"` keeps the censoring assumptions consistent across the workflow.
+
 To use it, pass `discretisation = "primarycensored"` to `enw_reference()`:
 
 ```r
@@ -72,5 +84,62 @@ reference <- enw_reference(
   data = pobs
 )
 ```
+
+### Recovering the double interval censored distribution
+
+The `"primarycensored"` discretisation reproduces the reference probability mass function computed directly by `primarycensored::dprimarycensored()`.
+The chunk below contrasts the two epinowcast discretisations against that reference for a lognormal delay (`meanlog = 1`, `sdlog = 0.5`) truncated at a maximum delay of 15 days.
+The default uniform-interval approximation diverges from the reference at short delays, while the `"primarycensored"` method matches it.
+
+```{r recovery}
+library(data.table)
+
+dmax <- 15
+meanlog <- 1
+sdlog <- 0.5
+
+# Reference double interval censored PMF from primarycensored: a uniform
+# primary window (pwindow = 1) and daily secondary censoring (swindow = 1),
+# right truncated at D = dmax.
+reference <- primarycensored::dprimarycensored(
+  0:(dmax - 1), plnorm, pwindow = 1, swindow = 1, D = dmax,
+  meanlog = meanlog, sdlog = sdlog
+)
+
+# epinowcast default uniform-interval discretisation (overlapping 2-day
+# intervals, normalised to sum to 1), matching discretised_logit_hazard().
+cdf <- plnorm(0:dmax, meanlog, sdlog)
+default <- numeric(dmax)
+default[1] <- cdf[2]
+if (dmax > 1) default[2] <- cdf[3]
+if (dmax > 2) default[3:dmax] <- cdf[4:(dmax + 1)] - cdf[1:(dmax - 2)]
+default <- default / sum(default)
+
+pmf <- data.table(
+  delay = rep(0:(dmax - 1), 2),
+  probability = c(default, reference),
+  method = rep(c("logit_hazard (default)", "primarycensored"), each = dmax)
+)
+print(pmf[delay <= 3])
+```
+
+The largest discrepancy is at the shortest delays, exactly where the uniform-interval approximation is least accurate:
+
+```{r recovery-plot}
+library(ggplot2)
+
+ggplot(pmf, aes(x = delay, y = probability, colour = method)) +
+  geom_point() +
+  geom_line() +
+  labs(
+    x = "Delay (days)", y = "Probability",
+    colour = "Discretisation",
+    title = "Discretised lognormal delay (meanlog = 1, sdlog = 0.5)"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+The `"primarycensored"` curve is the double interval censored target; the default curve is an approximation to it.
 
 
