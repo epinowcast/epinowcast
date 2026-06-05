@@ -1,6 +1,6 @@
 ---
 title: "Simulating, fitting, and forecasting"
-description: "Forward-simulate synthetic data from known parameters, fit it back to check recovery, and forecast from the fit under new latent-process assumptions."
+description: "Forward-simulate synthetic data from known parameters, fit a model, and forecast from the fit under new latent-process assumptions."
 author: Epinowcast Team
 output:
   bookdown::html_vignette2:
@@ -30,11 +30,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-`epinowcast` exposes the same model for three tasks that are usually separate.
-`enw_simulate()` forward-generates synthetic data from known parameters.
-`epinowcast()` fits the model to data.
-`enw_forecast()` re-drives a fit, optionally under new latent-process assumptions.
-All three share the model code, so their outputs are directly comparable.
+`epinowcast` uses one model for three tasks that are usually kept separate.
+[`enw_simulate()`](../reference/enw_simulate.html) forward-generates synthetic data from known parameters.
+[`epinowcast()`](../reference/epinowcast.html) fits the model to data.
+[`enw_forecast()`](../reference/enw_forecast.html) re-drives a fit, optionally under new latent-process assumptions.
+All three share the same generated-quantities code, so their outputs are directly comparable.
+
+This pattern mirrors the separation in `EpiNow2` between [`simulate_infections()`](https://epiforecasts.io/EpiNow2/reference/simulate_infections.html) and [`forecast_infections()`](https://epiforecasts.io/EpiNow2/reference/forecast_infections.html), generalised here so that any model component can be fixed or overridden.
 
 ```{r setup}
 library(epinowcast)
@@ -47,86 +49,114 @@ options(mc.cores = 2)
 
 # Simulate from known parameters
 
-We start from a preprocessed data object that defines the dates, groups, and
-maximum delay to simulate over, then forward-generate observations from a known
-growth rate and a known reporting delay.
-The growth rate is supplied directly; every other component is fixed through
-`parameters`, which can set any model parameter.
+We start from a preprocessed data object that defines the dates, groups, and maximum delay to simulate over.
+We then forward-generate observations from a known, time-varying growth rate and a known reporting delay.
+The growth rate is supplied directly.
+Every other component is fixed through `parameters`, which can set any model parameter.
 
 ```{r simulate}
 pobs <- enw_example("preprocessed")
 
+# A known growth rate that rises and then falls
+true_r <- c(rep(0.15, 20), rep(-0.1, 19))
+
 sims <- enw_simulate(
   pobs,
-  growth_rate = 0.1,
+  growth_rate = true_r,
   parameters = list(
     refp_mean_int = 1.6, refp_sd_int = 0.6, sqrt_phi = 0.4
   ),
   reference = enw_reference(~1, data = pobs),
-  expectation = enw_expectation(r = ~1, data = pobs)
+  expectation = enw_expectation(r = ~ 1 + rw(week), data = pobs)
 )
-
-simulated_nowcast <- summary(sims, type = "nowcast")
-head(simulated_nowcast[, .(reference_date, mean, q5, q95)])
 ```
 
-# Fit the simulated data back
+The simulated object carries synthetic observations in the same shape as a real fit, so the standard summaries and plots apply.
+The simulated final counts follow the rise-and-fall we imposed on the growth rate.
 
-Because the simulated object carries the synthetic observations, we can fit the
-same model structure back to them and check that the known parameters are
-recovered.
+```{r simulate-plot, fig.cap = "Simulated nowcast under the known rise-and-fall growth rate. The expected final count grows and then declines, as imposed."}
+simulated_nowcast <- summary(sims, type = "nowcast")
+
+ggplot(simulated_nowcast) +
+  aes(x = reference_date, y = mean) +
+  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2) +
+  geom_line() +
+  labs(x = "Reference date", y = "Simulated final count") +
+  theme_bw()
+```
+
+# Fit a model
+
+We fit the same model structure to the example data so that we have a posterior to forecast from.
 
 ```{r fit}
 fit <- epinowcast(
   pobs,
   reference = enw_reference(~1, data = pobs),
-  expectation = enw_expectation(r = ~1, data = pobs),
+  expectation = enw_expectation(r = ~ 1 + rw(week), data = pobs),
   fit = enw_fit_opts(
     pp = TRUE, chains = 2, iter_warmup = 500, iter_sampling = 500,
     show_messages = FALSE, refresh = 0
   )
 )
-
-summary(fit, type = "fit", variables = c("refp_mean_int", "refp_sd_int"))
 ```
 
 # Forecast from the fit
 
-`enw_forecast()` re-runs the generated quantities using the posterior draws.
-With no override the growth rate is taken per draw from the posterior, so the
-forecast reproduces the fitted nowcast up to the observation-model redraw.
+[`enw_forecast()`](../reference/enw_forecast.html) re-runs the generated quantities using the posterior draws.
+With no override the growth rate is taken per draw from the posterior, so the forecast reproduces the fitted nowcast up to the observation-model redraw.
+We show this by overlaying the re-driven sample trajectories on the fit, rather than comparing point estimates.
 
-```{r redrive}
+```{r recovery, fig.cap = "Posterior nowcast sample trajectories from the original fit (grey) and from a no-override re-driving (blue). The re-driving reproduces the fit per draw."}
+nowcast_samples <- function(object, scenario) {
+  s <- as.data.table(summary(object, type = "nowcast_sample"))
+  s <- s[, .(reference_date, .draw, sample)]
+  s[, scenario := scenario]
+  s[.draw %in% sample(unique(.draw), min(50, uniqueN(.draw)))]
+}
+
 redriven <- enw_forecast(fit)
+
+recovery <- rbindlist(list(
+  nowcast_samples(fit, "fit"),
+  nowcast_samples(redriven, "re-driven")
+))
+
+ggplot(recovery) +
+  aes(x = reference_date, y = sample, colour = scenario) +
+  geom_line(aes(group = interaction(.draw, scenario)), alpha = 0.15) +
+  scale_colour_manual(values = c(fit = "grey40", `re-driven` = "steelblue")) +
+  labs(x = "Reference date", y = "Predicted final count", colour = NULL) +
+  theme_bw()
 ```
 
-Supplying an override replaces a model component with a new trajectory while the
-other components keep their posterior uncertainty.
+Supplying an override replaces a model component with a new trajectory while the other components keep their posterior uncertainty.
 Here we compare a growing and a declining counterfactual growth rate.
+We again plot posterior sample trajectories, so the spread between draws is visible.
 
-```{r counterfactual}
+```{r counterfactual, fig.cap = "Posterior nowcast sample trajectories under the re-driven posterior and two counterfactual growth rates. Each thin line is one posterior draw."}
 growing <- enw_forecast(fit, overrides = list(r = 0.2))
 declining <- enw_forecast(fit, overrides = list(r = -0.2))
 
 scenarios <- rbindlist(list(
-  posterior = summary(redriven, type = "nowcast"),
-  growing = summary(growing, type = "nowcast"),
-  declining = summary(declining, type = "nowcast")
-), idcol = "scenario")
+  nowcast_samples(redriven, "posterior"),
+  nowcast_samples(growing, "growing"),
+  nowcast_samples(declining, "declining")
+))
 
 ggplot(scenarios) +
-  aes(x = reference_date, y = mean, colour = scenario, fill = scenario) +
-  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, colour = NA) +
-  geom_line() +
-  labs(x = "Reference date", y = "Expected final count") +
+  aes(x = reference_date, y = sample, colour = scenario) +
+  geom_line(aes(group = interaction(.draw, scenario)), alpha = 0.15) +
+  labs(x = "Reference date", y = "Predicted final count", colour = "Scenario") +
   theme_bw()
 ```
 
+The growing scenario sits above the re-driven posterior and the declining scenario below it.
+The within-scenario spread comes from the retained delay, report, and observation uncertainty.
+
 # Status of forward extension
 
-`enw_forecast()` currently re-drives the fitted window.
-Projecting genuinely beyond the last fitted date (a forecast horizon driven by a
-new growth rate) extends the modelled reference dates and is exposed through the
-`horizon` argument; full support is in development.
-Until then, extend the data with future reference dates before fitting to obtain
-predictions past the latest observation.
+[`enw_forecast()`](../reference/enw_forecast.html) currently re-drives the fitted window.
+Projecting genuinely beyond the last fitted date (a forecast horizon driven by a new growth rate) extends the modelled reference dates and is exposed through the `horizon` argument.
+Full support is in development.
+Until then, extend the data with future reference dates before fitting to obtain predictions past the latest observation.
