@@ -80,7 +80,8 @@ enw_set_cache(tempdir(check = TRUE))
 ## Simulating a reporting triangle
 
 We simulate hospitalisations with a known lognormal reporting delay so we can check that each model recovers the truth.
-Each reference date has a known total split across delays by the delay PMF.
+Each reference date has a known total, and its cells are a multinomial draw of that total across delays using the delay PMF.
+We use a modest number of reference dates and a modest total per date so the posterior has visible uncertainty rather than collapsing to a point.
 
 ```{r simulate}
 set.seed(890)
@@ -88,8 +89,8 @@ set.seed(890)
 meanlog <- 1.6
 sdlog <- 0.5
 max_delay <- 15
-n_dates <- 60
-total <- 2000
+n_dates <- 30
+total <- 200
 
 # The true delay PMF under the package's double-censored discretisation.
 # (This is the same scheme epinowcast uses internally; we reproduce it here
@@ -108,9 +109,9 @@ delay_pmf <- discretise_lognormal(meanlog, sdlog, max_delay)
 
 dates <- as.Date("2021-01-01") + 0:(n_dates - 1)
 delays <- 0:(max_delay - 1)
-counts <- round(total * delay_pmf)
 
 obs <- rbindlist(lapply(seq_along(dates), function(i) {
+  counts <- as.vector(rmultinom(1, total, delay_pmf))
   data.table(
     reference_date = dates[i],
     report_date = dates[i] + delays,
@@ -174,10 +175,10 @@ param_summary <- rbind(
 param_summary <- merge(
   param_summary, truth, by = "variable"
 )[, .(model, variable, truth, mean, q5, q95)]
-param_summary[]
+knitr::kable(param_summary, digits = 3)
 ```
 
-The posterior means sit on the simulated truth for both models, demonstrating recovery.
+The posterior means sit close to the simulated truth for both models, and the truth lies within each 90% credible interval, demonstrating recovery.
 
 ## Comparing the recovered delay distribution
 
@@ -213,7 +214,44 @@ ggplot() +
   theme(legend.position = "none")
 ```
 
-The posterior samples (coloured) bracket the simulated truth (dashed), so both models recover the delay; the delay-only posterior is the tighter of the two because it does not carry latent-process uncertainty.
+Each coloured line is one posterior draw, so the spread of lines is the posterior uncertainty in the delay distribution.
+The draws bracket the simulated truth (dashed) for both models, so both recover the delay; the delay-only posterior is the tighter of the two because it does not carry latent-process uncertainty.
+
+## Recovering the delay from data with missing cells
+
+Real reporting triangles often have gaps: some delay cells are never observed even though earlier and later ones are.
+The delay-only model handles this through an observation indicator (a `.observed` column), renormalising over all delays up to the observation cutoff so that interior cells which are unobserved but before the cutoff still contribute.
+Here we mask delays 3 and 6 in every reference date and confirm the delay is still recovered.
+
+```{r fit-missing}
+comp <- enw_complete_dates(obs, flag_observation = TRUE)
+comp[, .observed :=
+  .observed & !(as.integer(report_date - reference_date) %in% c(3L, 6L))]
+pobs_missing <- enw_preprocess_data(comp, max_delay = max_delay)
+
+missing_fit <- epinowcast(
+  pobs_missing,
+  reference = enw_reference(~1, distribution = "lognormal", data = pobs_missing),
+  obs = enw_obs(
+    family = "poisson", delay_only = TRUE,
+    observation_indicator = ".observed", data = pobs_missing
+  ),
+  fit = enw_fit_opts(
+    nowcast = FALSE, save_warmup = FALSE, chains = 2,
+    iter_warmup = 500, iter_sampling = 500,
+    show_messages = FALSE, refresh = 0
+  )
+)
+```
+
+```{r missing-params}
+missing_summary <- merge(
+  data.table(missing_fit$fit[[1]]$summary(pars)), truth, by = "variable"
+)[, .(variable, truth, mean, q5, q95)]
+knitr::kable(missing_summary, digits = 3)
+```
+
+Even with the masked interior cells the delay is recovered, because those cells keep their weight in the renormalisation rather than being dropped.
 
 ## Using the delay-only estimate to set priors
 
