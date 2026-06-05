@@ -6,8 +6,7 @@
 \usage{
 enw_reference(
   parametric = ~1,
-  distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
-  discretisation = c("logit_hazard", "primarycensored"),
+  distribution = c("lognormal", "none", "exponential", "gamma"),
   non_parametric = ~0,
   data
 )
@@ -25,19 +24,14 @@ random effects, and random walks.}
 
 \item{distribution}{A character vector describing the parametric delay
 distribution to use. Current options are: "none", "lognormal", "gamma",
-"exponential", and "loglogistic", with the default being "lognormal".}
-
-\item{discretisation}{A character string describing how the parametric
-delay distribution is discretised. The default, "logit_hazard", uses the
-uniform-interval approximation implemented in \code{discretised_logit_hazard()}.
-The "primarycensored" option uses the double interval censoring
-discretisation vendored from the
+and "exponential", with the default being "lognormal". These distributions
+are discretised using the double interval censoring approach from the
 \href{https://primarycensored.epinowcast.org}{primarycensored} package, which
-more exactly accounts for primary event censoring, secondary interval
-censoring, and right truncation. The "primarycensored" option currently
-supports the "exponential", "lognormal" and "gamma" distributions only; it
-is not available for "loglogistic". See \code{vignette("distributions")} for
-details on the two approaches.}
+accounts for primary event censoring, secondary interval censoring, and
+right truncation. The log-logistic distribution was previously available but
+has been dropped pending log-logistic support in \code{primarycensored} (see
+\url{https://github.com/epinowcast/primarycensored/issues/321}). See
+\code{vignette("distributions")} for details.}
 
 \item{non_parametric}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}})
 describing the non-parametric logit hazard model. This can use features

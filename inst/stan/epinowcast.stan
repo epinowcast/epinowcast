@@ -139,10 +139,6 @@ data {
   // Reference time model
   // Parametric reference model
   int model_refp;
-  // Discretisation method for the parametric reference delay: 0 uses the
-  // uniform-interval logit hazard approximation (discretised_logit_hazard),
-  // 1 uses the vendored primarycensored double interval censoring approach.
-  int refp_pcens;
   int refp_fnrow;
   array[s] int refp_findex;
   int refp_fncol;
@@ -530,6 +526,10 @@ transformed parameters{
       refp_gp_type, refp_gp_nu, refp_gp_d, refp_gp_PHI, refp_gp_eta,
       refp_gp_rho, refp_gp_alpha, refp_gp_flat_idx
     );
+    // Default the (unused) sd to 1 for single-parameter distributions such as
+    // the exponential (model_refp == 1) so the discretisation functions below
+    // always receive a defined value.
+    refp_sd = rep_vector(1.0, refp_fnrow);
     if (model_refp > 1) {
       refp_sd = regression_predictor(
         {log(refp_sd_int[1])}, refp_sd_beta, refp_fnrow, refp_fncol,
@@ -548,18 +548,14 @@ transformed parameters{
     }
     }
     // calculate parametric reference date logit hazards (unless no reporting
-    // effects)
+    // effects). The parametric reference delay is discretised with the
+    // primarycensored double interval censoring approach for every supported
+    // distribution (lognormal, gamma, exponential).
     profile("transformed_delay_reference_time_hazards") {
     for (i in 1:refp_fnrow) {
-      if (refp_pcens) {
-        refp_lh[, i] = discretised_pcens_logit_hazard(
-          refp_mean[i], refp_sd[i], dmax, model_refp, ref_as_p
-        );
-      } else {
-        refp_lh[, i] = discretised_logit_hazard(
-          refp_mean[i], refp_sd[i], dmax, model_refp, 2, ref_as_p
-        );
-      }
+      refp_lh[, i] = discretised_pcens_logit_hazard(
+        refp_mean[i], refp_sd[i], dmax, model_refp, ref_as_p
+      );
     }
     }
   }

@@ -191,9 +191,6 @@
       $data$model_refp
       [1] 2
       
-      $data$refp_pcens
-      [1] 0
-      
       $data$refnp_fintercept
       [1] 1
       
@@ -1280,9 +1277,6 @@
       integer(0)
       
       $data$model_refp
-      [1] 0
-      
-      $data$refp_pcens
       [1] 0
       
       $data$refnp_fintercept
@@ -4017,9 +4011,6 @@
       
       $data$model_refp
       [1] 2
-      
-      $data$refp_pcens
-      [1] 0
       
       $data$refnp_fintercept
       [1] 0

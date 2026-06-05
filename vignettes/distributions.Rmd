@@ -35,25 +35,40 @@ The currently available parametric delay distributions are continuous probabilit
 | [Log-normal](https://mc-stan.org/docs/functions-reference/lognormal.html)  | $\mu=\mu_{g,t}$, $\sigma = \upsilon_{g,t}$	| $\exp(\mu_{g,t}+\frac{\upsilon_{g,t}^2}{2})$ 	|
 | [Exponential](https://mc-stan.org/docs/functions-reference/exponential-distribution.html)  | $\beta = \exp(-\mu_{g,t})$	| $\exp(\mu_{g,t})$ |
 | [Gamma](https://mc-stan.org/docs/functions-reference/gamma-distribution.html)        |	$\alpha = \exp(\mu_{g,t})$, $\beta = \upsilon_{g,t}$ | $\exp(\mu_{g,t})/\upsilon_{g,t}$ |
-| [Log-logistic](https://en.wikipedia.org/wiki/Log-logistic_distribution) |	$\alpha = \exp(\mu_{g,t})$, $\beta = \upsilon_{g,t}$ | $\frac{\exp(\mu_{g,t})\,\pi/\upsilon_{g,t}}{\sin(\pi/\upsilon_{g,t})}$ |
+
+The log-logistic distribution was previously available but has been dropped pending log-logistic support in `primarycensored` ([epinowcast/primarycensored#321](https://github.com/epinowcast/primarycensored/issues/321)).
 
 ## Discretisation and adjustment for maximum delay
 
 In `epinowcast`, delays are modelled in discrete time and with an assumed maximum delay (specified via the `max_delay` argument).
 The continuous delay distributions must therefore be discretised and adjusted for the maximum delay.
-`epinowcast` provides two discretisation methods, selected with the `discretisation` argument of `enw_reference()`.
-The default (`"logit_hazard"`) uses a uniform-interval approximation.
-The `"primarycensored"` method uses the double interval censoring discretisation from the [primarycensored](https://primarycensored.epinowcast.org) package [@primarycensored].
 
 It is helpful to separate two distinct adjustments.
 The first is discretisation: turning the continuous delay into a probability mass over integer delays $d = 0, 1, 2, \dots$, with each $p_d$ defined for an infinite maximum delay so that $\sum_{d=0}^{\infty} p_d = 1$.
 The second is conditioning on the maximum delay $D$: restricting attention to delays $d \le D$ and renormalising so that the truncated probabilities sum to 1, i.e. $p^{\prime}_{d} = p_d / \sum_{j=0}^{D} p_j$.
 The first step is about how a continuous distribution becomes discrete; the second is about right truncation at $D$.
 
-### Default uniform-interval approximation (`"logit_hazard"`)
+### Double interval censoring with `primarycensored`
+
+`epinowcast` discretises the parametric reference delay using the double interval censoring approach from the [primarycensored](https://primarycensored.epinowcast.org) package [@primarycensored].
+This computes the double interval censored probability mass directly, accounting for the primary event window, the secondary (reporting) interval, and right truncation at $D$.
+Writing the delay as the time between a primary event (e.g. infection), assumed uniform over a window of width 1, and a secondary event observed in a daily interval, the probability of a censored delay $d$ is obtained by integrating the continuous delay density over both the primary window and the secondary interval, then conditioning on the maximum delay $D$.
+The Stan implementation is vendored from `primarycensored` and uses analytical solutions for the supported distributions (the exponential is handled as a gamma with shape one).
+
+This is applied automatically; no argument is needed.
+It is used for all of the available parametric distributions (lognormal, gamma and exponential).
+
+The same `primarycensored` machinery underpins delay handling elsewhere in the ecosystem.
+[`epidist`](https://epidist.epinowcast.org) estimates delay distributions from individual line-list data, and [`EpiNow2::estimate_dist()`](https://epiforecasts.io/EpiNow2/) fits them from aggregated count data; both are powered by `primarycensored`, with the main difference being the data structure they expect.
+Estimating a delay with one of those tools and then passing it to `enw_reference()` keeps the censoring assumptions consistent across the workflow.
+
+### Legacy uniform-interval approximation
+
+Before `primarycensored` was adopted, `epinowcast` discretised delays with a uniform-interval approximation.
+This approach is no longer used but is described here for reference and to motivate the comparison below.
 
 The exact form of the discretisation is complex due to the interaction between primary and secondary events.
-Rather than modelling this explicitly, the default method approximates it by assuming a uniform censoring interval of 2 days for each delay.
+Rather than modelling this explicitly, the uniform-interval method approximates it by assuming a uniform censoring interval of 2 days for each delay.
 This comes from assuming daily censoring of both the primary and secondary events, which together define the delay distribution, and ignoring potential interactions between primary and secondary events.
 As a result, the probability of reporting a delay of $d$ days equals the probability of reporting a delay of $d+1$ days or less, minus the probability of reporting a delay of $d-1$ days or less.
 
@@ -67,34 +82,11 @@ This ensures that the conditioned probabilities sum to 1 and can be interpreted 
 
 Because of the uniform-interval discretisation, the discrete delay distribution obtained this way only approximates the original double interval censored distribution, and the approximation is worse for shorter delays.
 
-### Primary event censored discretisation (`"primarycensored"`)
-
-The `"primarycensored"` method instead computes the double interval censored probability mass directly, accounting for the primary event window, the secondary (reporting) interval, and right truncation at $D$ [@primarycensored].
-Writing the delay as the time between a primary event (e.g. infection), assumed uniform over a window of width 1, and a secondary event observed in a daily interval, the probability of a censored delay $d$ is obtained by integrating the continuous delay density over both the primary window and the secondary interval, then conditioning on the maximum delay $D$.
-The Stan implementation is vendored from the [primarycensored](https://primarycensored.epinowcast.org) package and uses analytical solutions for the supported distributions (the exponential is handled as a gamma with shape one).
-This avoids the uniform-interval approximation used by the default method and so recovers the double interval censored distribution more exactly, including at short delays.
-It is currently available for the exponential, lognormal and gamma distributions.
-
-The same `primarycensored` machinery underpins delay handling elsewhere in the ecosystem.
-[`epidist`](https://epidist.epinowcast.org) estimates delay distributions from individual line-list data, and [`EpiNow2::estimate_dist()`](https://epiforecasts.io/EpiNow2/) fits them from aggregated count data; both are powered by `primarycensored`, with the main difference being the data structure they expect.
-Estimating a delay with one of those tools and then passing it to `enw_reference()` with `discretisation = "primarycensored"` keeps the censoring assumptions consistent across the workflow.
-
-To use it, pass `discretisation = "primarycensored"` to `enw_reference()`:
-
-```r
-reference <- enw_reference(
-  ~1,
-  distribution = "lognormal",
-  discretisation = "primarycensored",
-  data = pobs
-)
-```
-
 ### Recovering the double interval censored distribution
 
-The `"primarycensored"` discretisation reproduces the reference probability mass function computed directly by `primarycensored::dprimarycensored()`.
-The chunk below contrasts the two epinowcast discretisations against that reference for a lognormal delay (`meanlog = 1`, `sdlog = 0.5`) truncated at a maximum delay of 15 days.
-The default uniform-interval approximation diverges from the reference at short delays, while the `"primarycensored"` method matches it.
+The `primarycensored` discretisation reproduces the reference probability mass function computed directly by `primarycensored::dprimarycensored()`.
+The chunk below contrasts the `primarycensored` discretisation that `epinowcast` now uses against the legacy uniform-interval approximation for a lognormal delay (`meanlog = 1`, `sdlog = 0.5`) truncated at a maximum delay of 15 days.
+The legacy approximation diverges from the reference at short delays, while the `primarycensored` method matches it.
 
 ```{r recovery}
 dmax <- 15
@@ -109,19 +101,19 @@ reference <- primarycensored::dprimarycensored(
   meanlog = meanlog, sdlog = sdlog
 )
 
-# epinowcast default uniform-interval discretisation (overlapping 2-day
-# intervals, normalised to sum to 1), matching discretised_logit_hazard().
+# Legacy uniform-interval discretisation (overlapping 2-day intervals,
+# normalised to sum to 1), matching discretised_logit_hazard().
 cdf <- plnorm(0:dmax, meanlog, sdlog)
-default <- numeric(dmax)
-default[1] <- cdf[2]
-if (dmax > 1) default[2] <- cdf[3]
-if (dmax > 2) default[3:dmax] <- cdf[4:(dmax + 1)] - cdf[1:(dmax - 2)]
-default <- default / sum(default)
+legacy <- numeric(dmax)
+legacy[1] <- cdf[2]
+if (dmax > 1) legacy[2] <- cdf[3]
+if (dmax > 2) legacy[3:dmax] <- cdf[4:(dmax + 1)] - cdf[1:(dmax - 2)]
+legacy <- legacy / sum(legacy)
 
 pmf <- data.table(
   delay = rep(0:(dmax - 1), 2),
-  probability = c(default, reference),
-  method = rep(c("logit_hazard (default)", "primarycensored"), each = dmax)
+  probability = c(legacy, reference),
+  method = rep(c("legacy uniform-interval", "primarycensored"), each = dmax)
 )
 print(pmf[delay <= 3])
 ```
@@ -141,6 +133,6 @@ ggplot(pmf, aes(x = delay, y = probability, colour = method)) +
   theme(legend.position = "bottom")
 ```
 
-The `"primarycensored"` curve is the double interval censored target; the default curve is an approximation to it.
+The `primarycensored` curve is the double interval censored distribution that `epinowcast` uses; the legacy curve is an approximation to it.
 
 

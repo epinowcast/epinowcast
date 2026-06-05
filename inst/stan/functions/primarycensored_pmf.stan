@@ -15,10 +15,10 @@
 /**
  * Translate an epinowcast distribution id to a primarycensored dist_id
  *
- * epinowcast uses model_refp ids (1: exponential, 2: lognormal, 3: gamma,
- * 4: loglogistic) which differ from primarycensored's pcd_stan_dist_id()
- * convention (1: lognormal, 2: gamma, 3: weibull, 4: exponential). This
- * function maps the supported epinowcast ids onto the primarycensored ids.
+ * epinowcast uses model_refp ids (1: exponential, 2: lognormal, 3: gamma)
+ * which differ from primarycensored's pcd_stan_dist_id() convention
+ * (1: lognormal, 2: gamma, 3: weibull, 4: exponential). This function maps the
+ * supported epinowcast ids onto the primarycensored ids.
  *
  * @param dist epinowcast model_refp distribution id.
  *
@@ -30,8 +30,10 @@
  * per-delay ODE integration that primarycensored's standalone exponential id
  * (4) would require, which is substantially faster inside the sampler.
  *
- * @note loglogistic (epinowcast id 4) is not currently supported by the
- * primarycensored Stan functions and triggers a reject.
+ * @note The log-logistic distribution was dropped from epinowcast pending
+ * support in primarycensored
+ * (see https://github.com/epinowcast/primarycensored/issues/321); any other
+ * id is rejected.
  */
 int enw_to_pcens_dist_id(int dist) {
   if (dist == 1) return 2;  // exponential -> primarycensored gamma (shape 1)
@@ -122,6 +124,11 @@ vector lprob_to_log_hazard(vector lprob, int u) {
       log_surv = log_diff_exp(log_surv, lprob[d]);
     }
   }
+  // Pin the terminal hazard to exactly 1 (log(1) = 0) so that
+  // log_hazard_to_logit_hazard() yields +inf and all remaining mass is
+  // reported at the maximum delay, rather than relying on floating-point
+  // cancellation in the final iteration above.
+  lhaz[u] = 0;
   return log_hazard_to_logit_hazard(lhaz);
 }
 

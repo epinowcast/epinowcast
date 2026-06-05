@@ -90,8 +90,6 @@ test_that("enw_reference supports parametric models", {
   expect_identical(lognormal_ref$data$model_refp, 2)
   gamma_ref <- enw_reference(distribution = "gamma", data = pobs)
   expect_identical(gamma_ref$data$model_refp, 3)
-  loglogistic_ref <- enw_reference(distribution = "loglogistic", data = pobs)
-  expect_identical(loglogistic_ref$data$model_refp, 4)
   no_ref <- suppressWarnings(
     enw_reference(distribution = "none", non_parametric = ~1, data = pobs)
   )
@@ -105,38 +103,24 @@ test_that("enw_reference supports parametric models", {
   )
 })
 
-test_that("enw_reference supports the primarycensored discretisation", {
-  default_ref <- enw_reference(data = pobs)
-  expect_identical(default_ref$data$refp_pcens, 0L)
-
-  pcens_ref <- enw_reference(
-    distribution = "lognormal", discretisation = "primarycensored",
-    data = pobs
-  )
-  expect_identical(pcens_ref$data$refp_pcens, 1L)
-  expect_identical(pcens_ref$data$model_refp, 2)
+test_that("enw_reference no longer exposes a discretisation toggle", {
+  # The primarycensored discretisation is now used unconditionally for the
+  # supported parametric distributions, so there is no discretisation argument
+  # and no refp_pcens data flag.
+  expect_false("discretisation" %in% names(formals(enw_reference)))
 
   for (dist in c("exponential", "lognormal", "gamma")) {
-    ref <- enw_reference(
-      distribution = dist, discretisation = "primarycensored", data = pobs
-    )
-    expect_identical(ref$data$refp_pcens, 1L)
+    ref <- enw_reference(distribution = dist, data = pobs)
+    expect_null(ref$data$refp_pcens)
   }
 })
 
-test_that("enw_reference rejects unsupported primarycensored distributions", {
+test_that("enw_reference no longer accepts the dropped loglogistic option", {
+  # loglogistic was dropped pending primarycensored support
+  # (epinowcast/primarycensored#321).
+  expect_false("loglogistic" %in% eval(formals(enw_reference)$distribution))
   expect_error(
-    enw_reference(
-      distribution = "loglogistic", discretisation = "primarycensored",
-      data = pobs
-    ),
-    "does not support"
-  )
-})
-
-test_that("enw_reference validates the discretisation argument", {
-  expect_error(
-    enw_reference(discretisation = "not_a_method", data = pobs)
+    enw_reference(distribution = "loglogistic", data = pobs)
   )
 })
 
