@@ -296,6 +296,9 @@ Functions that assist with interpreting model formulas
 - [`construct_arima()`](https://package.epinowcast.org/dev/reference/construct_arima.md)
   : Constructs ARIMA term metadata
 
+- [`construct_gp()`](https://package.epinowcast.org/dev/reference/construct_gp.md)
+  : Constructs Gaussian process term metadata
+
 - [`construct_re()`](https://package.epinowcast.org/dev/reference/construct_re.md)
   : Constructs random effect terms
 
@@ -307,6 +310,12 @@ Functions that assist with interpreting model formulas
 
 - [`enw_manual_formula()`](https://package.epinowcast.org/dev/reference/enw_manual_formula.md)
   : Define a model manually using fixed and random effects
+
+- [`gp()`](https://package.epinowcast.org/dev/reference/gp.md) : Adds an
+  approximate Gaussian process to the model.
+
+- [`gp_terms()`](https://package.epinowcast.org/dev/reference/gp_terms.md)
+  : Finds Gaussian process terms in a formula object
 
 - [`ma()`](https://package.epinowcast.org/dev/reference/ma.md) :
 
@@ -321,6 +330,9 @@ Functions that assist with interpreting model formulas
 
 - [`remove_arima_terms()`](https://package.epinowcast.org/dev/reference/remove_arima_terms.md)
   : Remove ARIMA terms from a formula object
+
+- [`remove_gp_terms()`](https://package.epinowcast.org/dev/reference/remove_gp_terms.md)
+  : Remove Gaussian process terms from a formula object
 
 - [`remove_rw_terms()`](https://package.epinowcast.org/dev/reference/remove_rw_terms.md)
   : Remove random walk terms from a formula object

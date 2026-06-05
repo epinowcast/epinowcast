@@ -1,11 +1,13 @@
-# Split formula into individual terms
+# Finds Gaussian process terms in a formula object
 
-Split formula into individual terms
+This function extracts Gaussian process terms denoted using
+[`gp()`](https://package.epinowcast.org/dev/reference/gp.md) from a
+formula so that they can be processed on their own.
 
 ## Usage
 
 ``` r
-split_formula_to_terms(formula)
+gp_terms(formula)
 ```
 
 ## Arguments
@@ -22,7 +24,8 @@ split_formula_to_terms(formula)
 
 ## Value
 
-A character vector of formula terms
+A character vector containing the Gaussian process terms identified in
+the supplied formula.
 
 ## See also
 
@@ -39,7 +42,6 @@ Functions used to help convert formulas into model designs
 [`enw_formula()`](https://package.epinowcast.org/dev/reference/enw_formula.md),
 [`enw_manual_formula()`](https://package.epinowcast.org/dev/reference/enw_manual_formula.md),
 [`gp()`](https://package.epinowcast.org/dev/reference/gp.md),
-[`gp_terms()`](https://package.epinowcast.org/dev/reference/gp_terms.md),
 [`ma()`](https://package.epinowcast.org/dev/reference/ma.md),
 [`parse_formula()`](https://package.epinowcast.org/dev/reference/parse_formula.md),
 [`re()`](https://package.epinowcast.org/dev/reference/re.md),
@@ -47,11 +49,14 @@ Functions used to help convert formulas into model designs
 [`remove_gp_terms()`](https://package.epinowcast.org/dev/reference/remove_gp_terms.md),
 [`remove_rw_terms()`](https://package.epinowcast.org/dev/reference/remove_rw_terms.md),
 [`rw()`](https://package.epinowcast.org/dev/reference/rw.md),
-[`rw_terms()`](https://package.epinowcast.org/dev/reference/rw_terms.md)
+[`rw_terms()`](https://package.epinowcast.org/dev/reference/rw_terms.md),
+[`split_formula_to_terms()`](https://package.epinowcast.org/dev/reference/split_formula_to_terms.md)
 
 ## Examples
 
 ``` r
-epinowcast:::split_formula_to_terms(~ 1 + age_group + location)
-#> [1] "1"         "age_group" "location" 
+epinowcast:::gp_terms(~ 1 + age_group + gp(week))
+#> [1] "gp(week)"
+epinowcast:::gp_terms(~ 1 + gp(week, kernel = "se") + gp(day))
+#> [1] "gp(week, kernel = \"se\")" "gp(day)"                  
 ```

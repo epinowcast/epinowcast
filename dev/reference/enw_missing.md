@@ -146,6 +146,39 @@ enw_missing(data = enw_example("preprocessed"))
 #> $data$miss_arima_flat_idx
 #> integer(0)
 #> 
+#> $data$miss_gp_present
+#> [1] 0
+#> 
+#> $data$miss_gp_T
+#> [1] 0
+#> 
+#> $data$miss_gp_G
+#> [1] 0
+#> 
+#> $data$miss_gp_M
+#> [1] 0
+#> 
+#> $data$miss_gp_type
+#> [1] 0
+#> 
+#> $data$miss_gp_nu
+#> [1] 0
+#> 
+#> $data$miss_gp_d
+#> [1] 0
+#> 
+#> $data$miss_gp_L
+#> [1] 0
+#> 
+#> $data$miss_gp_n_obs
+#> [1] 0
+#> 
+#> $data$miss_gp_PHI
+#> <0 x 0 matrix>
+#> 
+#> $data$miss_gp_flat_idx
+#> integer(0)
+#> 
 #> $data$miss_st
 #> [1] 21
 #> 
@@ -215,18 +248,24 @@ enw_missing(data = enw_example("preprocessed"))
 #> 2:     miss_beta_sd
 #> 3: miss_arima_sigma
 #> 4:  miss_arima_pacf
+#> 5:      miss_gp_rho
+#> 6:    miss_gp_alpha
 #>                                                                                                                                                                     description
 #>                                                                                                                                                                          <char>
 #> 1:                                                                                                      Intercept on the logit scale for the proportion missing reference dates
 #> 2:                                                                                                     Standard deviation of scaled pooled logit missing reference date effects
 #> 3:                                                                                        Standard deviation of the ARIMA latent residual on missing-reference logit proportion
 #> 4: Partial autocorrelations of the ARIMA latent residual on the missing-reference logit proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
-#>             distribution  mean    sd
-#>                   <char> <num> <num>
-#> 1:                Normal     0   1.0
-#> 2: Zero truncated normal     0   1.0
-#> 3: Zero truncated normal     0   0.2
-#> 4:               Uniform     0   0.0
+#> 5:                                              Length scale of the Gaussian process on the missing-reference logit proportion; log-normal prior on the (positive) length scale
+#> 6:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the missing-reference logit proportion; half-normal prior
+#>             distribution     mean    sd
+#>                   <char>    <num> <num>
+#> 1:                Normal 0.000000  1.00
+#> 2: Zero truncated normal 0.000000  1.00
+#> 3: Zero truncated normal 0.000000  0.20
+#> 4:               Uniform 0.000000  0.00
+#> 5:            Log normal 1.098612  0.50
+#> 6: Zero truncated normal 0.000000  0.05
 #> 
 #> $inits
 #> function (data, priors) 
@@ -248,12 +287,13 @@ enw_missing(data = enw_example("preprocessed"))
 #>             }
 #>         }
 #>         init <- c(init, .arima_inits(data, priors, "miss"))
+#>         init <- c(init, .gp_inits(data, priors, "miss"))
 #>         init
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x55716a77df58>
-#> <environment: 0x55716a781078>
+#> <bytecode: 0x55733a8c8f90>
+#> <environment: 0x55733a8c0740>
 #> 
 
 # No missingness model specified
@@ -310,6 +350,39 @@ enw_missing(~0, data = enw_example("preprocessed"))
 #> $data$miss_arima_flat_idx
 #> integer(0)
 #> 
+#> $data$miss_gp_present
+#> [1] 0
+#> 
+#> $data$miss_gp_T
+#> [1] 0
+#> 
+#> $data$miss_gp_G
+#> [1] 0
+#> 
+#> $data$miss_gp_M
+#> [1] 0
+#> 
+#> $data$miss_gp_type
+#> [1] 0
+#> 
+#> $data$miss_gp_nu
+#> [1] 0
+#> 
+#> $data$miss_gp_d
+#> [1] 0
+#> 
+#> $data$miss_gp_L
+#> [1] 0
+#> 
+#> $data$miss_gp_n_obs
+#> [1] 0
+#> 
+#> $data$miss_gp_PHI
+#> <0 x 0 matrix>
+#> 
+#> $data$miss_gp_flat_idx
+#> integer(0)
+#> 
 #> $data$missing_reference
 #> numeric(0)
 #> 
@@ -336,18 +409,24 @@ enw_missing(~0, data = enw_example("preprocessed"))
 #> 2:     miss_beta_sd
 #> 3: miss_arima_sigma
 #> 4:  miss_arima_pacf
+#> 5:      miss_gp_rho
+#> 6:    miss_gp_alpha
 #>                                                                                                                                                                     description
 #>                                                                                                                                                                          <char>
 #> 1:                                                                                                      Intercept on the logit scale for the proportion missing reference dates
 #> 2:                                                                                                     Standard deviation of scaled pooled logit missing reference date effects
 #> 3:                                                                                        Standard deviation of the ARIMA latent residual on missing-reference logit proportion
 #> 4: Partial autocorrelations of the ARIMA latent residual on the missing-reference logit proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
-#>             distribution  mean    sd
-#>                   <char> <num> <num>
-#> 1:                Normal     0   1.0
-#> 2: Zero truncated normal     0   1.0
-#> 3: Zero truncated normal     0   0.2
-#> 4:               Uniform     0   0.0
+#> 5:                                              Length scale of the Gaussian process on the missing-reference logit proportion; log-normal prior on the (positive) length scale
+#> 6:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the missing-reference logit proportion; half-normal prior
+#>             distribution     mean    sd
+#>                   <char>    <num> <num>
+#> 1:                Normal 0.000000  1.00
+#> 2: Zero truncated normal 0.000000  1.00
+#> 3: Zero truncated normal 0.000000  0.20
+#> 4:               Uniform 0.000000  0.00
+#> 5:            Log normal 1.098612  0.50
+#> 6: Zero truncated normal 0.000000  0.05
 #> 
 #> $inits
 #> function (data, priors) 
@@ -369,11 +448,12 @@ enw_missing(~0, data = enw_example("preprocessed"))
 #>             }
 #>         }
 #>         init <- c(init, .arima_inits(data, priors, "miss"))
+#>         init <- c(init, .gp_inits(data, priors, "miss"))
 #>         init
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x55716a77df58>
-#> <environment: 0x5571712cd4f8>
+#> <bytecode: 0x55733a8c8f90>
+#> <environment: 0x5573371a7c60>
 #> 
 ```

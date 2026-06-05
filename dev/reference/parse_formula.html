@@ -96,6 +96,7 @@ section below for a comprehensive explanation of the supported syntax.</p></dd>
 <li><p><code>random</code>: A list of of <a href="https://rdrr.io/pkg/lme4/man/lme4-package.html" class="external-link">lme4</a> style random effects</p></li>
 <li><p><code>rw</code>: A character vector of <code><a href="rw.html">rw()</a></code> random walk terms.</p></li>
 <li><p><code>arima</code>: A character vector of <code><a href="arima.html">arima()</a></code> ARIMA(p, d, q) terms.</p></li>
+<li><p><code>gp</code>: A character vector of <code><a href="gp.html">gp()</a></code> Gaussian process terms.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a></h2>
@@ -114,13 +115,17 @@ the <code>epidemia</code> package (https://github.com/ImperialCollegeLondon/epid
 <code><a href="arma.html">arma()</a></code>,
 <code><a href="as_string_formula.html">as_string_formula()</a></code>,
 <code><a href="construct_arima.html">construct_arima()</a></code>,
+<code><a href="construct_gp.html">construct_gp()</a></code>,
 <code><a href="construct_re.html">construct_re()</a></code>,
 <code><a href="construct_rw.html">construct_rw()</a></code>,
 <code><a href="enw_formula.html">enw_formula()</a></code>,
 <code><a href="enw_manual_formula.html">enw_manual_formula()</a></code>,
+<code><a href="gp.html">gp()</a></code>,
+<code><a href="gp_terms.html">gp_terms()</a></code>,
 <code><a href="ma.html">ma()</a></code>,
 <code><a href="re.html">re()</a></code>,
 <code><a href="remove_arima_terms.html">remove_arima_terms()</a></code>,
+<code><a href="remove_gp_terms.html">remove_gp_terms()</a></code>,
 <code><a href="remove_rw_terms.html">remove_rw_terms()</a></code>,
 <code><a href="rw.html">rw()</a></code>,
 <code><a href="rw_terms.html">rw_terms()</a></code>,
@@ -142,6 +147,9 @@ the <code>epidemia</code> package (https://github.com/ImperialCollegeLondon/epid
 <span class="r-out co"><span class="r-pr">#&gt;</span> $arima</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $gp</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">parse_formula</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age_group</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">location</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed</span>
@@ -156,6 +164,9 @@ the <code>epidemia</code> package (https://github.com/ImperialCollegeLondon/epid
 <span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $arima</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $gp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
@@ -174,6 +185,9 @@ the <code>epidemia</code> package (https://github.com/ImperialCollegeLondon/epid
 <span class="r-out co"><span class="r-pr">#&gt;</span> $arima</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $gp</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">parse_formula</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="rw.html">rw</a></span><span class="op">(</span><span class="va">week</span>, <span class="va">location</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed</span>
@@ -188,6 +202,9 @@ the <code>epidemia</code> package (https://github.com/ImperialCollegeLondon/epid
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "rw(week, location)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $arima</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $gp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>

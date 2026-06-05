@@ -1,45 +1,56 @@
-# Constructs random walk terms
+# Constructs Gaussian process term metadata
 
-This function takes random walks as defined by
-[`rw()`](https://package.epinowcast.org/dev/reference/rw.md), produces
-the required additional variables (denoted using a "c" prefix and
-constructed using
-[`enw_add_cumulative_membership()`](https://package.epinowcast.org/dev/reference/enw_add_cumulative_membership.md)),
-and then returns the extended `data.frame` along with the new fixed
-effects and the random effect structure.
+Takes a Gaussian process term as defined by
+[`gp()`](https://package.epinowcast.org/dev/reference/gp.md) and returns
+the metadata required to wire the term into a Stan model. Like
+[`construct_arima()`](https://package.epinowcast.org/dev/reference/construct_arima.md),
+this does not modify the data or produce design matrix columns; the
+Gaussian process enters the linear predictor through a Hilbert-space
+reduced-rank approximation (see
+`inst/stan/functions/gaussian_process.stan`).
 
 ## Usage
 
 ``` r
-construct_rw(rw, data)
+construct_gp(gp, data)
 ```
 
 ## Arguments
 
-- rw:
+- gp:
 
-  A random walk term as defined by
-  [`rw()`](https://package.epinowcast.org/dev/reference/rw.md).
+  A Gaussian process term as defined by
+  [`gp()`](https://package.epinowcast.org/dev/reference/gp.md).
 
 - data:
 
-  A `data.frame` of observations used to define the random walk term.
-  Must contain the time and grouping variables defined in the
-  [`rw()`](https://package.epinowcast.org/dev/reference/rw.md) term
-  specified.
+  A `data.frame` of observations used to define the term. Must contain
+  the time and (if specified) grouping variable.
 
 ## Value
 
-A list containing the following:
+A list with the following elements:
 
-- `data`: The input `data.frame` with the addition of the new variables
-  required by the specified random walk. These are added using
-  [`enw_add_cumulative_membership()`](https://package.epinowcast.org/dev/reference/enw_add_cumulative_membership.md).
-  -`terms`: A character vector of new fixed effects terms to add to a
-  model formula.
+- `time`, `by`, `kernel`, `gp_type`, `nu`, `d`, `basis_prop`,
+  `boundary_scale`: passed through from the
+  [`gp()`](https://package.epinowcast.org/dev/reference/gp.md) term.
 
-- `effects`: A `data.frame` describing the random effect structure of
-  the new effects.
+- `T`: number of distinct time points in the integrated series.
+
+- `G`: number of groups (1 if `by` is unspecified).
+
+- `M`: number of basis functions, `ceiling(basis_prop * (T - d))`.
+
+- `PHI`: the `(T - d) x M` basis matrix. For `d >= 1` the basis is built
+  on the `T - d` free values that are integrated `d` times in Stan; the
+  first `d` values of the realisation are anchored to zero.
+
+- `time_idx`, `group_idx`: per-observation lookup indices.
+
+- `time_vals`, `group_levels`: lookup vectors so the indices can be
+  inverted.
+
+- `name`: a label for the term, suitable as a parameter prefix.
 
 ## See also
 
@@ -50,8 +61,8 @@ Functions used to help convert formulas into model designs
 [`arma()`](https://package.epinowcast.org/dev/reference/arma.md),
 [`as_string_formula()`](https://package.epinowcast.org/dev/reference/as_string_formula.md),
 [`construct_arima()`](https://package.epinowcast.org/dev/reference/construct_arima.md),
-[`construct_gp()`](https://package.epinowcast.org/dev/reference/construct_gp.md),
 [`construct_re()`](https://package.epinowcast.org/dev/reference/construct_re.md),
+[`construct_rw()`](https://package.epinowcast.org/dev/reference/construct_rw.md),
 [`enw_formula()`](https://package.epinowcast.org/dev/reference/enw_formula.md),
 [`enw_manual_formula()`](https://package.epinowcast.org/dev/reference/enw_manual_formula.md),
 [`gp()`](https://package.epinowcast.org/dev/reference/gp.md),
@@ -70,28 +81,48 @@ Functions used to help convert formulas into model designs
 
 ``` r
 data <- enw_example("preproc")$metareference[[1]]
-
-epinowcast:::construct_rw(rw(week), data)
+epinowcast:::construct_gp(gp(week), data)
 #> $time
 #> [1] "week"
 #> 
 #> $by
 #> NULL
 #> 
-#> $p
-#> [1] 0
+#> $kernel
+#> [1] "matern32"
+#> 
+#> $gp_type
+#> [1] 2
+#> 
+#> $nu
+#> [1] 1.5
 #> 
 #> $d
-#> [1] 1
-#> 
-#> $q
 #> [1] 0
+#> 
+#> $basis_prop
+#> [1] 0.2
+#> 
+#> $boundary_scale
+#> [1] 1.5
 #> 
 #> $T
 #> [1] 6
 #> 
 #> $G
 #> [1] 1
+#> 
+#> $M
+#> [1] 2
+#> 
+#> $PHI
+#>           [,1]       [,2]
+#> [1,] 0.4082483  0.7071068
+#> [2,] 0.6605596  0.7765344
+#> [3,] 0.7986542  0.3320991
+#> [4,] 0.7986542 -0.3320991
+#> [5,] 0.6605596 -0.7765344
+#> [6,] 0.4082483 -0.7071068
 #> 
 #> $time_idx
 #>  [1] 1 1 1 1 1 1 1 2 2 2 2 2 2 2 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 6 6 6
@@ -108,30 +139,50 @@ epinowcast:::construct_rw(rw(week), data)
 #> [1] "1"
 #> 
 #> $name
-#> [1] "arima__week"
+#> [1] "gp__week"
 #> 
-
-epinowcast:::construct_rw(rw(week, day_of_week), data)
+epinowcast:::construct_gp(gp(week, day_of_week, kernel = "se"), data)
 #> $time
 #> [1] "week"
 #> 
 #> $by
 #> [1] "day_of_week"
 #> 
-#> $p
+#> $kernel
+#> [1] "se"
+#> 
+#> $gp_type
 #> [1] 0
+#> 
+#> $nu
+#> [1] 1.5
 #> 
 #> $d
-#> [1] 1
-#> 
-#> $q
 #> [1] 0
+#> 
+#> $basis_prop
+#> [1] 0.2
+#> 
+#> $boundary_scale
+#> [1] 1.5
 #> 
 #> $T
 #> [1] 6
 #> 
 #> $G
 #> [1] 7
+#> 
+#> $M
+#> [1] 2
+#> 
+#> $PHI
+#>           [,1]       [,2]
+#> [1,] 0.4082483  0.7071068
+#> [2,] 0.6605596  0.7765344
+#> [3,] 0.7986542  0.3320991
+#> [4,] 0.7986542 -0.3320991
+#> [5,] 0.6605596 -0.7765344
+#> [6,] 0.4082483 -0.7071068
 #> 
 #> $time_idx
 #>  [1] 1 1 1 1 1 1 1 2 2 2 2 2 2 2 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 6 6 6
@@ -149,6 +200,6 @@ epinowcast:::construct_rw(rw(week, day_of_week), data)
 #> [7] "Wednesday"
 #> 
 #> $name
-#> [1] "arima__week__day_of_week"
+#> [1] "gp__week__day_of_week"
 #> 
 ```

@@ -612,6 +612,39 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_arima_flat_idx</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_gp_present</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_gp_T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_gp_G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_gp_M</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_gp_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_gp_nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_gp_d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_gp_L</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_gp_n_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_gp_PHI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 x 0 matrix&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_gp_flat_idx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_lrd_n</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -875,38 +908,83 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_arima_flat_idx</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_gp_present</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_gp_T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_gp_G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_gp_M</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_gp_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_gp_nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_gp_d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_gp_L</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_gp_n_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_gp_PHI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 x 0 matrix&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_gp_flat_idx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $priors</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             variable dimension</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;char&gt;     &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:        expr_r_int         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      expr_beta_sd         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: expr_lelatent_int         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  expr_arima_sigma         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:   expr_arima_pacf         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:      expl_beta_sd         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7:  expl_arima_sigma         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8:   expl_arima_pacf         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                               description</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                                    &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                                                                                                                                       Intercept of the log growth rate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:                                                                                                            Standard deviation of scaled pooled log growth rate effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                                                                                                Intercept for initial log observations (ordered by group and then time)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:                                                                                                     Standard deviation of the ARIMA latent residual on log growth rate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:              Partial autocorrelations of the ARIMA latent residual on the log growth rate; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:                                                                                                            Standard deviation of scaled pooled log growth rate effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7:                                                                                        Standard deviation of the ARIMA latent residual on log latent-to-obs proportion</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8: Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution  mean    sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;char&gt; &lt;num&gt; &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal   0.0   0.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal   0.0   1.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                Normal   4.3   1.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal   0.0   0.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:               Uniform   0.0   0.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Zero truncated normal   0.0   1.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7: Zero truncated normal   0.0   0.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8:               Uniform   0.0   0.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              variable dimension</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                &lt;char&gt;     &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:        expr_r_int         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:      expr_beta_sd         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: expr_lelatent_int         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:  expr_arima_sigma         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:   expr_arima_pacf         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:       expr_gp_rho         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     expr_gp_alpha         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:      expl_beta_sd         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:  expl_arima_sigma         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:   expl_arima_pacf         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:       expl_gp_rho         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:     expl_gp_alpha         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                                description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                                     &lt;char&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:                                                                                                                                       Intercept of the log growth rate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:                                                                                                            Standard deviation of scaled pooled log growth rate effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:                                                                                                Intercept for initial log observations (ordered by group and then time)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:                                                                                                     Standard deviation of the ARIMA latent residual on log growth rate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:              Partial autocorrelations of the ARIMA latent residual on the log growth rate; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:                                                           Length scale of the Gaussian process on the log growth rate; log-normal prior on the (positive) length scale</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:                                                              Magnitude (marginal standard deviation) of the Gaussian process on the log growth rate; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:                                                                                                            Standard deviation of scaled pooled log growth rate effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:                                                                                        Standard deviation of the ARIMA latent residual on log latent-to-obs proportion</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:                                              Length scale of the Gaussian process on the log latent-to-obs proportion; log-normal prior on the (positive) length scale</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the log latent-to-obs proportion; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              distribution     mean    sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                    &lt;char&gt;    &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:                Normal 0.000000  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: Zero truncated normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:                Normal 4.300000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: Zero truncated normal 0.000000  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:               Uniform 0.000000  0.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:            Log normal 1.098612  0.50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7: Zero truncated normal 0.000000  0.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8: Zero truncated normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: Zero truncated normal 0.000000  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:               Uniform 0.000000  0.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:            Log normal 1.098612  0.50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: Zero truncated normal 0.000000  0.05</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inits</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function (data, priors) </span>
@@ -933,11 +1011,13 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 priors$expr_r_int_p[2] * 0.1))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .arima_inits(data, priors, "expr"))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .gp_inits(data, priors, "expr"))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         if (data$expl_fncol &gt; 0) {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             init$expl_beta &lt;- array(rnorm(data$expl_fncol, 0, </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 0.01))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .arima_inits(data, priors, "expl"))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .gp_inits(data, priors, "expl"))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         if (data$expl_rncol &gt; 0) {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             init$expl_beta_sd &lt;- array(abs(rnorm(data$expl_rncol, </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 priors$expl_beta_sd_p[1], priors$expl_beta_sd_p[2]/10)))</span>
@@ -946,8 +1026,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fn</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55716e0b61c0&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55716e098990&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55733ef46098&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55733eacc388&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>

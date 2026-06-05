@@ -1,11 +1,13 @@
-# Split formula into individual terms
+# Remove Gaussian process terms from a formula object
 
-Split formula into individual terms
+This function removes Gaussian process terms denoted using
+[`gp()`](https://package.epinowcast.org/dev/reference/gp.md) from a
+formula so they can be processed on their own.
 
 ## Usage
 
 ``` r
-split_formula_to_terms(formula)
+remove_gp_terms(formula)
 ```
 
 ## Arguments
@@ -22,7 +24,7 @@ split_formula_to_terms(formula)
 
 ## Value
 
-A character vector of formula terms
+A formula object with the Gaussian process terms removed.
 
 ## See also
 
@@ -44,14 +46,15 @@ Functions used to help convert formulas into model designs
 [`parse_formula()`](https://package.epinowcast.org/dev/reference/parse_formula.md),
 [`re()`](https://package.epinowcast.org/dev/reference/re.md),
 [`remove_arima_terms()`](https://package.epinowcast.org/dev/reference/remove_arima_terms.md),
-[`remove_gp_terms()`](https://package.epinowcast.org/dev/reference/remove_gp_terms.md),
 [`remove_rw_terms()`](https://package.epinowcast.org/dev/reference/remove_rw_terms.md),
 [`rw()`](https://package.epinowcast.org/dev/reference/rw.md),
-[`rw_terms()`](https://package.epinowcast.org/dev/reference/rw_terms.md)
+[`rw_terms()`](https://package.epinowcast.org/dev/reference/rw_terms.md),
+[`split_formula_to_terms()`](https://package.epinowcast.org/dev/reference/split_formula_to_terms.md)
 
 ## Examples
 
 ``` r
-epinowcast:::split_formula_to_terms(~ 1 + age_group + location)
-#> [1] "1"         "age_group" "location" 
+epinowcast:::remove_gp_terms(~ 1 + age_group + gp(week))
+#> ~1 + age_group
+#> <environment: 0x55733dbb4770>
 ```

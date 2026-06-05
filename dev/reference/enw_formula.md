@@ -197,13 +197,17 @@ Functions used to help convert formulas into model designs
 [`arma()`](https://package.epinowcast.org/dev/reference/arma.md),
 [`as_string_formula()`](https://package.epinowcast.org/dev/reference/as_string_formula.md),
 [`construct_arima()`](https://package.epinowcast.org/dev/reference/construct_arima.md),
+[`construct_gp()`](https://package.epinowcast.org/dev/reference/construct_gp.md),
 [`construct_re()`](https://package.epinowcast.org/dev/reference/construct_re.md),
 [`construct_rw()`](https://package.epinowcast.org/dev/reference/construct_rw.md),
 [`enw_manual_formula()`](https://package.epinowcast.org/dev/reference/enw_manual_formula.md),
+[`gp()`](https://package.epinowcast.org/dev/reference/gp.md),
+[`gp_terms()`](https://package.epinowcast.org/dev/reference/gp_terms.md),
 [`ma()`](https://package.epinowcast.org/dev/reference/ma.md),
 [`parse_formula()`](https://package.epinowcast.org/dev/reference/parse_formula.md),
 [`re()`](https://package.epinowcast.org/dev/reference/re.md),
 [`remove_arima_terms()`](https://package.epinowcast.org/dev/reference/remove_arima_terms.md),
+[`remove_gp_terms()`](https://package.epinowcast.org/dev/reference/remove_gp_terms.md),
 [`remove_rw_terms()`](https://package.epinowcast.org/dev/reference/remove_rw_terms.md),
 [`rw()`](https://package.epinowcast.org/dev/reference/rw.md),
 [`rw_terms()`](https://package.epinowcast.org/dev/reference/rw_terms.md),
@@ -240,6 +244,9 @@ enw_formula(~ 1, data)
 #> character(0)
 #> 
 #> $parsed_formula$arima
+#> character(0)
+#> 
+#> $parsed_formula$gp
 #> character(0)
 #> 
 #> 
@@ -281,6 +288,9 @@ enw_formula(~ 1, data)
 #> $arima
 #> list()
 #> 
+#> $gp
+#> list()
+#> 
 #> attr(,"class")
 #> [1] "enw_formula" "list"       
 
@@ -300,6 +310,9 @@ enw_formula(~ 1 + age_group, data)
 #> character(0)
 #> 
 #> $parsed_formula$arima
+#> character(0)
+#> 
+#> $parsed_formula$gp
 #> character(0)
 #> 
 #> 
@@ -361,6 +374,9 @@ enw_formula(~ 1 + age_group, data)
 #> $arima
 #> list()
 #> 
+#> $gp
+#> list()
+#> 
 #> attr(,"class")
 #> [1] "enw_formula" "list"       
 
@@ -382,6 +398,9 @@ enw_formula(~ 1 + (1 | age_group), data)
 #> character(0)
 #> 
 #> $parsed_formula$arima
+#> character(0)
+#> 
+#> $parsed_formula$gp
 #> character(0)
 #> 
 #> 
@@ -444,6 +463,9 @@ enw_formula(~ 1 + (1 | age_group), data)
 #> $arima
 #> list()
 #> 
+#> $gp
+#> list()
+#> 
 #> attr(,"class")
 #> [1] "enw_formula" "list"       
 
@@ -463,6 +485,9 @@ enw_formula(~ 1 + rw(week), data)
 #> [1] "rw(week)"
 #> 
 #> $parsed_formula$arima
+#> character(0)
+#> 
+#> $parsed_formula$gp
 #> character(0)
 #> 
 #> 
@@ -546,6 +571,9 @@ enw_formula(~ 1 + rw(week), data)
 #> 
 #> 
 #> 
+#> $gp
+#> list()
+#> 
 #> attr(,"class")
 #> [1] "enw_formula" "list"       
 
@@ -567,6 +595,9 @@ enw_formula(~ 1 + (1 | age_group) + rw(week), data)
 #> [1] "rw(week)"
 #> 
 #> $parsed_formula$arima
+#> character(0)
+#> 
+#> $parsed_formula$gp
 #> character(0)
 #> 
 #> 
@@ -742,6 +773,9 @@ enw_formula(~ 1 + (1 | age_group) + rw(week), data)
 #> 
 #> 
 #> 
+#> $gp
+#> list()
+#> 
 #> attr(,"class")
 #> [1] "enw_formula" "list"       
 
@@ -761,6 +795,9 @@ enw_formula(~1, data[1:20, ], sparse = FALSE)
 #> character(0)
 #> 
 #> $parsed_formula$arima
+#> character(0)
+#> 
+#> $parsed_formula$gp
 #> character(0)
 #> 
 #> 
@@ -816,6 +853,9 @@ enw_formula(~1, data[1:20, ], sparse = FALSE)
 #> $arima
 #> list()
 #> 
+#> $gp
+#> list()
+#> 
 #> attr(,"class")
 #> [1] "enw_formula" "list"       
 
@@ -838,6 +878,9 @@ enw_formula(~ (1 + day | week:month), data = data)
 #> character(0)
 #> 
 #> $parsed_formula$arima
+#> character(0)
+#> 
+#> $parsed_formula$gp
 #> character(0)
 #> 
 #> 
@@ -1149,6 +1192,9 @@ enw_formula(~ (1 + day | week:month), data = data)
 #> 
 #> 
 #> $arima
+#> list()
+#> 
+#> $gp
 #> list()
 #> 
 #> attr(,"class")

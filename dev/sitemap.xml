@@ -5,6 +5,7 @@
 <url><loc>https://package.epinowcast.org/dev/articles/distributions.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/epinowcast.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/features.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/articles/gaussian-process.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/germany-age-stratified-nowcasting.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/index.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/inference-methods.html</loc></url>
@@ -46,6 +47,7 @@
 <url><loc>https://package.epinowcast.org/dev/reference/coerce_date.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/coerce_dt.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/construct_arima.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/construct_gp.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/construct_re.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/construct_rw.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/convolution_matrix.html</loc></url>
@@ -147,6 +149,8 @@
 <url><loc>https://package.epinowcast.org/dev/reference/germany_covid19_hosp.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/get_internal_timestep.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/get_renviron_contents.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/gp.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/gp_terms.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/index.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/is.Date.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/latest_obs_as_matrix.html</loc></url>
@@ -159,6 +163,7 @@
 <url><loc>https://package.epinowcast.org/dev/reference/print.summary.enw_preprocess_data.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/re.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/remove_arima_terms.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/remove_gp_terms.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/remove_profiling.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/remove_rw_terms.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/rw.html</loc></url>

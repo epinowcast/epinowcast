@@ -4,6 +4,30 @@
 
 ### Model
 
+- Added a [`gp()`](https://package.epinowcast.org/dev/reference/gp.md)
+  formula helper that places an approximate Gaussian process on any
+  module’s linear predictor, the same way
+  [`arima()`](https://package.epinowcast.org/dev/reference/arima.md) and
+  [`rw()`](https://package.epinowcast.org/dev/reference/rw.md) work. It
+  uses a Hilbert-space reduced-rank (spectral) approximation with
+  selectable kernels (Matern 3/2 default, Matern 5/2,
+  Ornstein-Uhlenbeck, squared exponential, periodic) and a `basis_prop`
+  accuracy-speed control. A
+  [`gp()`](https://package.epinowcast.org/dev/reference/gp.md) term can
+  be placed on the growth rate (`expr`), the latent-to-obs proportion
+  (`expl`), the parametric (`refp`) and non-parametric (`refnp`)
+  reference delay, the report-time hazards (`rep`), and the
+  missing-reference proportion (`miss`). An integer `d` argument
+  (matching
+  [`arima()`](https://package.epinowcast.org/dev/reference/arima.md)’s
+  `d`) integrates the process `d` times: `d = 0` is stationary (the
+  default, like EpiNow2’s `gp_on = "R0"`), `d = 1` gives a smoothly
+  drifting trend (like EpiNow2’s default `gp_on = "R_t-1"`), and
+  `d >= 2` integrates further, anchoring the first `d` values to zero so
+  the level and slope are carried by the fixed effects. The Stan
+  implementation is adapted from `EpiNow2`
+  (<https://github.com/epiforecasts/EpiNow2>, MIT licensed). See
+  [\#824](https://github.com/epinowcast/epinowcast/issues/824).
 - The autoregressive part of an
   [`arima()`](https://package.epinowcast.org/dev/reference/arima.md)
   latent residual now takes an optional prior on its partial
@@ -23,6 +47,12 @@
 
 ### Documentation
 
+- Added a Gaussian process vignette (`gaussian-process.Rmd`) covering
+  the Hilbert-space spectral approximation, the available kernels, the
+  priors, and the modules a
+  [`gp()`](https://package.epinowcast.org/dev/reference/gp.md) term can
+  be placed on, ported from `EpiNow2`’s implementation notes. See
+  [\#824](https://github.com/epinowcast/epinowcast/issues/824).
 - Added a temporal aggregation guide vignette covering the weekly
   timestep, daily-process / weekly-reporting (fitted and structural
   variants), and a daily benchmark, with weekly-scale CRPS comparison

@@ -85,10 +85,15 @@ print(default_priors)
 #>  5:    refp_arima_sigma
 #>  6: refp_arima_sd_sigma
 #>  7:     refp_arima_pacf
-#>  8:           refnp_int
-#>  9:       refnp_beta_sd
-#> 10:   refnp_arima_sigma
-#> 11:    refnp_arima_pacf
+#>  8:         refp_gp_rho
+#>  9:       refp_gp_alpha
+#> 10:    refp_gp_sd_alpha
+#> 11:           refnp_int
+#> 12:       refnp_beta_sd
+#> 13:   refnp_arima_sigma
+#> 14:    refnp_arima_pacf
+#> 15:        refnp_gp_rho
+#> 16:      refnp_gp_alpha
 #>                                                                                                                                                            description
 #>                                                                                                                                                                 <char>
 #>  1:                                                                                                             Log mean intercept for parametric reference date delay
@@ -98,23 +103,33 @@ print(default_priors)
 #>  5:                                                                                                Scale of the ARIMA latent residual on the parametric reference mean
 #>  6:                                                                                                  Scale of the ARIMA latent residual on the parametric reference sd
 #>  7:     Partial autocorrelations of the ARIMA latent residual on the parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
-#>  8:                                                                                                                  Intercept for non-parametric reference date delay
-#>  9:                                                                                                         Standard deviation of scaled pooled non-parametric effects
-#> 10:                                                                          Standard deviation of the ARIMA latent residual on non-parametric reference logit hazards
-#> 11: Partial autocorrelations of the ARIMA latent residual on the non-parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
-#>              distribution  mean    sd
-#>                    <char> <num> <num>
-#>  1:                Normal   1.0   1.0
-#>  2: Zero truncated normal   0.5   1.0
-#>  3: Zero truncated normal   0.0   1.0
-#>  4: Zero truncated normal   0.0   1.0
-#>  5: Zero truncated normal   0.0   0.2
-#>  6: Zero truncated normal   0.0   0.2
-#>  7:               Uniform   0.0   0.0
-#>  8:                Normal   0.0   1.0
-#>  9: Zero truncated normal   0.0   1.0
-#> 10: Zero truncated normal   0.0   0.2
-#> 11:               Uniform   0.0   0.0
+#>  8:                                                  Length scale of the Gaussian process on the parametric reference; log-normal prior on the (positive) length scale
+#>  9:                                                Magnitude (marginal standard deviation) of the Gaussian process on the parametric reference mean; half-normal prior
+#> 10:                                                  Magnitude (marginal standard deviation) of the Gaussian process on the parametric reference sd; half-normal prior
+#> 11:                                                                                                                  Intercept for non-parametric reference date delay
+#> 12:                                                                                                         Standard deviation of scaled pooled non-parametric effects
+#> 13:                                                                          Standard deviation of the ARIMA latent residual on non-parametric reference logit hazards
+#> 14: Partial autocorrelations of the ARIMA latent residual on the non-parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+#> 15:                                              Length scale of the Gaussian process on the non-parametric reference; log-normal prior on the (positive) length scale
+#> 16:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the non-parametric reference; half-normal prior
+#>              distribution     mean    sd
+#>                    <char>    <num> <num>
+#>  1:                Normal 1.000000  1.00
+#>  2: Zero truncated normal 0.500000  1.00
+#>  3: Zero truncated normal 0.000000  1.00
+#>  4: Zero truncated normal 0.000000  1.00
+#>  5: Zero truncated normal 0.000000  0.20
+#>  6: Zero truncated normal 0.000000  0.20
+#>  7:               Uniform 0.000000  0.00
+#>  8:            Log normal 1.098612  0.50
+#>  9: Zero truncated normal 0.000000  0.05
+#> 10: Zero truncated normal 0.000000  0.05
+#> 11:                Normal 0.000000  1.00
+#> 12: Zero truncated normal 0.000000  1.00
+#> 13: Zero truncated normal 0.000000  0.20
+#> 14:               Uniform 0.000000  0.00
+#> 15:            Log normal 1.098612  0.50
+#> 16: Zero truncated normal 0.000000  0.05
 
 fit_priors <- summary(
  enw_example("nowcast"), type = "fit",
@@ -140,13 +155,18 @@ enw_replace_priors(default_priors, fit_priors)
 #>  3:    refp_arima_sigma
 #>  4: refp_arima_sd_sigma
 #>  5:     refp_arima_pacf
-#>  6:           refnp_int
-#>  7:       refnp_beta_sd
-#>  8:   refnp_arima_sigma
-#>  9:    refnp_arima_pacf
-#> 10:       refp_mean_int
-#> 11:         refp_sd_int
-#> 12:            sqrt_phi
+#>  6:         refp_gp_rho
+#>  7:       refp_gp_alpha
+#>  8:    refp_gp_sd_alpha
+#>  9:           refnp_int
+#> 10:       refnp_beta_sd
+#> 11:   refnp_arima_sigma
+#> 12:    refnp_arima_pacf
+#> 13:        refnp_gp_rho
+#> 14:      refnp_gp_alpha
+#> 15:       refp_mean_int
+#> 16:         refp_sd_int
+#> 17:            sqrt_phi
 #>                                                                                                                                                            description
 #>                                                                                                                                                                 <char>
 #>  1:                                                                                                        Standard deviation of scaled pooled parametric mean effects
@@ -154,13 +174,18 @@ enw_replace_priors(default_priors, fit_priors)
 #>  3:                                                                                                Scale of the ARIMA latent residual on the parametric reference mean
 #>  4:                                                                                                  Scale of the ARIMA latent residual on the parametric reference sd
 #>  5:     Partial autocorrelations of the ARIMA latent residual on the parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
-#>  6:                                                                                                                  Intercept for non-parametric reference date delay
-#>  7:                                                                                                         Standard deviation of scaled pooled non-parametric effects
-#>  8:                                                                          Standard deviation of the ARIMA latent residual on non-parametric reference logit hazards
-#>  9: Partial autocorrelations of the ARIMA latent residual on the non-parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
-#> 10:                                                                                                                                                               <NA>
-#> 11:                                                                                                                                                               <NA>
-#> 12:                                                                                                                                                               <NA>
+#>  6:                                                  Length scale of the Gaussian process on the parametric reference; log-normal prior on the (positive) length scale
+#>  7:                                                Magnitude (marginal standard deviation) of the Gaussian process on the parametric reference mean; half-normal prior
+#>  8:                                                  Magnitude (marginal standard deviation) of the Gaussian process on the parametric reference sd; half-normal prior
+#>  9:                                                                                                                  Intercept for non-parametric reference date delay
+#> 10:                                                                                                         Standard deviation of scaled pooled non-parametric effects
+#> 11:                                                                          Standard deviation of the ARIMA latent residual on non-parametric reference logit hazards
+#> 12: Partial autocorrelations of the ARIMA latent residual on the non-parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+#> 13:                                              Length scale of the Gaussian process on the non-parametric reference; log-normal prior on the (positive) length scale
+#> 14:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the non-parametric reference; half-normal prior
+#> 15:                                                                                                                                                               <NA>
+#> 16:                                                                                                                                                               <NA>
+#> 17:                                                                                                                                                               <NA>
 #>              distribution      mean         sd
 #>                    <char>     <num>      <num>
 #>  1: Zero truncated normal 0.0000000 1.00000000
@@ -168,11 +193,16 @@ enw_replace_priors(default_priors, fit_priors)
 #>  3: Zero truncated normal 0.0000000 0.20000000
 #>  4: Zero truncated normal 0.0000000 0.20000000
 #>  5:               Uniform 0.0000000 0.00000000
-#>  6:                Normal 0.0000000 1.00000000
-#>  7: Zero truncated normal 0.0000000 1.00000000
-#>  8: Zero truncated normal 0.0000000 0.20000000
-#>  9:               Uniform 0.0000000 0.00000000
-#> 10:                  <NA> 2.8538466 0.60299691
-#> 11:                  <NA> 3.6893646 0.30337736
-#> 12:                  <NA> 0.3492024 0.03164753
+#>  6:            Log normal 1.0986123 0.50000000
+#>  7: Zero truncated normal 0.0000000 0.05000000
+#>  8: Zero truncated normal 0.0000000 0.05000000
+#>  9:                Normal 0.0000000 1.00000000
+#> 10: Zero truncated normal 0.0000000 1.00000000
+#> 11: Zero truncated normal 0.0000000 0.20000000
+#> 12:               Uniform 0.0000000 0.00000000
+#> 13:            Log normal 1.0986123 0.50000000
+#> 14: Zero truncated normal 0.0000000 0.05000000
+#> 15:                  <NA> 2.8538466 0.60299691
+#> 16:                  <NA> 3.6893646 0.30337736
+#> 17:                  <NA> 0.3492024 0.03164753
 ```

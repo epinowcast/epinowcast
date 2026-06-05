@@ -139,6 +139,39 @@ enw_formula_as_data_list(f, "mtcars")
 #> $mtcars_arima_flat_idx
 #> integer(0)
 #> 
+#> $mtcars_gp_present
+#> [1] 0
+#> 
+#> $mtcars_gp_T
+#> [1] 0
+#> 
+#> $mtcars_gp_G
+#> [1] 0
+#> 
+#> $mtcars_gp_M
+#> [1] 0
+#> 
+#> $mtcars_gp_type
+#> [1] 0
+#> 
+#> $mtcars_gp_nu
+#> [1] 0
+#> 
+#> $mtcars_gp_d
+#> [1] 0
+#> 
+#> $mtcars_gp_L
+#> [1] 0
+#> 
+#> $mtcars_gp_n_obs
+#> [1] 0
+#> 
+#> $mtcars_gp_PHI
+#> <0 x 0 matrix>
+#> 
+#> $mtcars_gp_flat_idx
+#> integer(0)
+#> 
 
 # A missing formula produces the default list
 enw_formula_as_data_list(prefix = "missing")
@@ -188,6 +221,39 @@ enw_formula_as_data_list(prefix = "missing")
 #> [1] 0
 #> 
 #> $missing_arima_flat_idx
+#> integer(0)
+#> 
+#> $missing_gp_present
+#> [1] 0
+#> 
+#> $missing_gp_T
+#> [1] 0
+#> 
+#> $missing_gp_G
+#> [1] 0
+#> 
+#> $missing_gp_M
+#> [1] 0
+#> 
+#> $missing_gp_type
+#> [1] 0
+#> 
+#> $missing_gp_nu
+#> [1] 0
+#> 
+#> $missing_gp_d
+#> [1] 0
+#> 
+#> $missing_gp_L
+#> [1] 0
+#> 
+#> $missing_gp_n_obs
+#> [1] 0
+#> 
+#> $missing_gp_PHI
+#> <0 x 0 matrix>
+#> 
+#> $missing_gp_flat_idx
 #> integer(0)
 #> 
 ```

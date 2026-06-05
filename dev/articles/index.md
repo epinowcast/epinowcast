@@ -24,6 +24,13 @@
 
   Quick reference to package capabilities
 
+- [Gaussian process latent terms: maths, priors, and
+  usage](https://package.epinowcast.org/dev/articles/gaussian-process.md):
+
+  The maths behind the Hilbert-space approximate Gaussian process latent
+  terms in epinowcast, how to use them in any module’s formula, and how
+  to set their priors.
+
 - [Hierarchical nowcasting of age stratified COVID-19 hospitalisations
   in
   Germany](https://package.epinowcast.org/dev/articles/germany-age-stratified-nowcasting.md):

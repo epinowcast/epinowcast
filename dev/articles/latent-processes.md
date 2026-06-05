@@ -12,15 +12,18 @@ general
 [`arima()`](https://package.epinowcast.org/dev/reference/arima.md) share
 one backend.
 
-- **Random walk** via `rw(week)`. The growth rate drifts: each step
-  builds on the last with no pull back towards a mean. This is ARIMA(0,
-  1, 0).
+- **Random walk** via `rw(week, age_group)`. The growth rate drifts:
+  each step builds on the last with no pull back towards a mean. This is
+  ARIMA(0, 1, 0).
 - **Integrated AR** via `arima(week, age_group, p = 1, d = 1)`. The same
   drift, but with autocorrelated increments, so the path is smoother
   than a plain random walk.
 - **Stationary AR** via `ar(day, age_group, p = 1)`. The growth rate
   reverts to a fixed mean, with autocorrelated departures that decay
   rather than accumulate. This is ARIMA(1, 0, 0).
+- **Gaussian process** via `gp(week, age_group)`. A smooth function of
+  time with a length scale that controls how quickly the growth rate can
+  change; a flexible non-parametric smoother.
 
 The last two impose no time correlation at all.
 
@@ -152,7 +155,7 @@ Code
 
 nowcast_rw <- epinowcast(
   pobs,
-  expectation = enw_expectation(r = ~ rw(week), data = pobs),
+  expectation = enw_expectation(r = ~ rw(week, age_group), data = pobs),
   reference = reference_mod,
   obs = enw_obs(family = "negbin", data = pobs),
   fit = fit
@@ -244,8 +247,8 @@ kable(arima_pars, digits = 3)
 
 | variable              |   mean |     q5 |   q95 |
 |:----------------------|-------:|-------:|------:|
-| expr_arima_pacf\[1\]  | -0.014 | -0.852 | 0.826 |
-| expr_arima_sigma\[1\] |  0.029 |  0.011 | 0.055 |
+| expr_arima_pacf\[1\]  | -0.023 | -0.800 | 0.819 |
+| expr_arima_sigma\[1\] |  0.030 |  0.011 | 0.055 |
 
 ## Stationary AR
 
@@ -285,6 +288,83 @@ plot(nowcast_ar, latest_obs = latest_obs) +
 day.](figures/latent-processes-ar-plot-1.png)
 
 Nowcast under a stationary AR(1) residual on day.
+
+## Gaussian process on weeks
+
+`gp(time, by, d, kernel, basis_prop)` adds an approximate Gaussian
+process to the growth rate. Where the random walk and AR terms build
+memory from one step to the next, a Gaussian process places a smooth
+prior over the whole trajectory at once: nearby time points are
+correlated, with a length scale that the model learns from the data. The
+result is a flexible smoother that can capture curvature a random walk
+would only reach through accumulated noise. By default the process is
+stationary; `gp(week, d = 1)` integrates it once for a smoothly
+drifting, random-walk-like trend (mirroring
+[`arima()`](https://package.epinowcast.org/dev/reference/arima.md)’s
+`d`), as detailed in the [implementation
+notes](https://package.epinowcast.org/dev/articles/gaussian-process.html#differencing).
+
+The process is fitted using the Hilbert-space reduced-rank (spectral)
+approximation, so the cost is controlled by the number of basis
+functions rather than the number of time points. `basis_prop` sets that
+number as a proportion of the series length (the default `0.2` follows
+`EpiNow2`); a larger value is more accurate but slower. The default
+`kernel = "matern32"` is a Matern 3/2 kernel; `"matern52"`, `"ou"`
+(Ornstein-Uhlenbeck), `"se"` (squared exponential), and `"periodic"` are
+also available. The Stan implementation is adapted from
+[`EpiNow2`](https://github.com/epiforecasts/EpiNow2) (MIT licensed). The
+[Gaussian process implementation
+notes](https://package.epinowcast.org/dev/articles/gaussian-process.md)
+cover the spectral approximation, the kernels, and the priors in detail.
+
+Code
+
+``` r
+
+nowcast_gp <- epinowcast(
+  pobs,
+  expectation = enw_expectation(
+    r = ~ 1 + gp(week, age_group),
+    data = pobs
+  ),
+  reference = reference_mod,
+  obs = enw_obs(family = "negbin", data = pobs),
+  fit = fit
+)
+```
+
+Code
+
+``` r
+
+plot(nowcast_gp, latest_obs = latest_obs) +
+  facet_wrap(vars(age_group), scales = "free_y")
+```
+
+![Nowcast under a Gaussian process on
+weeks.](figures/latent-processes-gp-plot-1.png)
+
+Nowcast under a Gaussian process on weeks.
+
+The Gaussian-process-specific posterior summaries are the length scale
+`rho` (how quickly the growth rate can change) and the magnitude `alpha`
+(how far it can depart from the mean):
+
+Code
+
+``` r
+
+gp_pars <- summary(nowcast_gp, type = "fit")[
+  grepl("expr_gp_(rho|alpha)", variable),
+  .(variable, mean, q5, q95)
+]
+kable(gp_pars, digits = 3)
+```
+
+| variable           |  mean |    q5 |   q95 |
+|:-------------------|------:|------:|------:|
+| expr_gp_rho\[1\]   | 3.229 | 1.327 | 6.027 |
+| expr_gp_alpha\[1\] | 0.041 | 0.013 | 0.086 |
 
 ## Independent per-(week, group) effects
 
@@ -449,9 +529,10 @@ Code
 ``` r
 
 fits <- list(
-  "rw(week)" = nowcast_rw,
+  "rw(week, age_group)" = nowcast_rw,
   "arima(week, age_group, 1, 1, 0)" = nowcast_arima,
   "ar(day, age_group, 1)" = nowcast_ar,
+  "gp(week, age_group)" = nowcast_gp,
   "(1 | week:.group)" = nowcast_re,
   "(1 | day_of_week)" = nowcast_dow,
   "(1 | day_of_week) + arima(week, ...)" = nowcast_combined
@@ -467,19 +548,32 @@ diagnostics <- rbindlist(lapply(names(fits), function(model) {
     runtime_s = round(fits[[model]]$fit[[1]]$time()$total)
   )
 }))
-#> Warning: 1 of 1000 (0.0%) transitions hit the maximum treedepth limit of 12.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: The ESS has been capped to avoid unstable estimates.
+#> Warning: 2 of 1000 (0.0%) transitions ended with a divergence.
+#> See https://mc-stan.org/misc/warnings for details.
+#> Warning: 2 of 1000 (0.0%) transitions hit the maximum treedepth limit of 12.
 #> See https://mc-stan.org/misc/warnings for details.
 kable(diagnostics)
 ```
 
 | model | max_rhat | min_ess_bulk | divergences | runtime_s |
 |:---|---:|---:|---:|---:|
-| rw(week) | 1.013 | 169 | 0 | 106 |
-| arima(week, age_group, 1, 1, 0) | 1.015 | 205 | 0 | 88 |
-| ar(day, age_group, 1) | 1.016 | 214 | 0 | 93 |
-| (1 \| week:.group) | 1.014 | 208 | 0 | 84 |
-| (1 \| day_of_week) | 1.023 | 166 | 0 | 231 |
-| (1 \| day_of_week) + arima(week, …) | 1.015 | 183 | 0 | 295 |
+| rw(week, age_group) | 1.012 | 259 | 0 | 99 |
+| arima(week, age_group, 1, 1, 0) | 1.011 | 177 | 0 | 111 |
+| ar(day, age_group, 1) | 1.019 | 222 | 0 | 98 |
+| gp(week, age_group) | 1.008 | 237 | 0 | 77 |
+| (1 \| week:.group) | 1.035 | 185 | 2 | 74 |
+| (1 \| day_of_week) | 1.014 | 150 | 0 | 224 |
+| (1 \| day_of_week) + arima(week, …) | 1.011 | 209 | 0 | 283 |
 
 ## When to reach for which
 
@@ -488,9 +582,10 @@ its past, from full drift to none.
 
 | Option | Memory of the growth rate | Formula example | Useful when |
 |----|----|----|----|
-| Random walk | Full drift, no mean | `rw(week)` | The growth rate evolves smoothly with no preferred direction; the standard non-stationary smoother. |
+| Random walk | Full drift, no mean | `rw(week, by)` | The growth rate evolves smoothly with no preferred direction; the standard non-stationary smoother. |
 | Integrated AR | Drift, smoother | `arima(week, by, p = 1, d = 1)` | You want a drifting trend but with autocorrelated, more persistent increments than a plain random walk. |
 | Stationary AR | Reverts to a mean | `ar(day, by, p = 1)` | Growth is stable on average and you want to model autocorrelated departures from that level rather than drift. |
+| Gaussian process | Smooth, learned length scale | `gp(week, by)` | You want a flexible non-parametric smoother whose smoothness is learned from the data rather than fixed by the differencing order. |
 | Independent week effects | None | `(1 \| week:.group)` | Weekly fluctuations look like noise around a stable mean; no time correlation is imposed. |
 | Day-of-week effects | Fixed weekly cycle | `(1 \| day_of_week)` | Within-week variation is structurally periodic and you want pooled rather than fixed weekday effects. |
 
@@ -510,10 +605,23 @@ parameters are a planned extension).
 These terms are not specific to the growth rate. The same
 [`rw()`](https://package.epinowcast.org/dev/reference/rw.md),
 [`ar()`](https://package.epinowcast.org/dev/reference/ar.md),
-[`arima()`](https://package.epinowcast.org/dev/reference/arima.md), and
-random-effect terms can be placed on any module’s formula: an
-[`arima()`](https://package.epinowcast.org/dev/reference/arima.md) term
-on the reference delay mean, for instance, models a reporting delay that
-drifts over time. See the [implementation
-notes](https://package.epinowcast.org/dev/articles/arima.md) for the
-full list of modules that accept them.
+[`arima()`](https://package.epinowcast.org/dev/reference/arima.md),
+[`gp()`](https://package.epinowcast.org/dev/reference/gp.md), and
+random-effect terms can be placed on any module’s formula, each routed
+through the shared regression layer: the growth rate (`expr`) and
+latent-to-obs proportion (`expl`) in
+\[[`enw_expectation()`](https://package.epinowcast.org/dev/reference/enw_expectation.md)\],
+the parametric (`refp`) and non-parametric (`refnp`) reference delay in
+\[[`enw_reference()`](https://package.epinowcast.org/dev/reference/enw_reference.md)\],
+the report-date hazards (`rep`) in
+\[[`enw_report()`](https://package.epinowcast.org/dev/reference/enw_report.md)\],
+and the missing-reference proportion (`miss`) in
+\[[`enw_missing()`](https://package.epinowcast.org/dev/reference/enw_missing.md)\].
+An [`arima()`](https://package.epinowcast.org/dev/reference/arima.md) or
+[`gp()`](https://package.epinowcast.org/dev/reference/gp.md) term on the
+reference delay mean, for instance, models a reporting delay that drifts
+over time. See the
+[ARIMA](https://package.epinowcast.org/dev/articles/arima.md) and
+[Gaussian
+process](https://package.epinowcast.org/dev/articles/gaussian-process.md)
+implementation notes for the per-module details.

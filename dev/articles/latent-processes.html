@@ -106,11 +106,13 @@ This vignette walks through them from most to least persistent.</p>
 <p>The first three are time-series terms built from the same ARIMA(p, d, q) machinery; <code><a href="../reference/rw.html">rw()</a></code>, <code><a href="../reference/ar.html">ar()</a></code>, and the general <code><a href="../reference/arima.html">arima()</a></code> share one backend.</p>
 <ul>
 <li>
-<strong>Random walk</strong> via <code>rw(week)</code>. The growth rate drifts: each step builds on the last with no pull back towards a mean. This is ARIMA(0, 1, 0).</li>
+<strong>Random walk</strong> via <code>rw(week, age_group)</code>. The growth rate drifts: each step builds on the last with no pull back towards a mean. This is ARIMA(0, 1, 0).</li>
 <li>
 <strong>Integrated AR</strong> via <code>arima(week, age_group, p = 1, d = 1)</code>. The same drift, but with autocorrelated increments, so the path is smoother than a plain random walk.</li>
 <li>
 <strong>Stationary AR</strong> via <code>ar(day, age_group, p = 1)</code>. The growth rate reverts to a fixed mean, with autocorrelated departures that decay rather than accumulate. This is ARIMA(1, 0, 0).</li>
+<li>
+<strong>Gaussian process</strong> via <code>gp(week, age_group)</code>. A smooth function of time with a length scale that controls how quickly the growth rate can change; a flexible non-parametric smoother.</li>
 </ul>
 <p>The last two impose no time correlation at all.</p>
 <ul>
@@ -179,7 +181,7 @@ The growth rate drifts smoothly with no preferred direction and no mean to rever
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast_rw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span></span>
 <span>  <span class="va">pobs</span>,</span>
-<span>  expectation <span class="op">=</span> <span class="fu"><a href="../reference/enw_expectation.html">enw_expectation</a></span><span class="op">(</span>r <span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="../reference/rw.html">rw</a></span><span class="op">(</span><span class="va">week</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span>
+<span>  expectation <span class="op">=</span> <span class="fu"><a href="../reference/enw_expectation.html">enw_expectation</a></span><span class="op">(</span>r <span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="../reference/rw.html">rw</a></span><span class="op">(</span><span class="va">week</span>, <span class="va">age_group</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span>
 <span>  reference <span class="op">=</span> <span class="va">reference_mod</span>,</span>
 <span>  obs <span class="op">=</span> <span class="fu"><a href="../reference/enw_obs.html">enw_obs</a></span><span class="op">(</span>family <span class="op">=</span> <span class="st">"negbin"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span></span>
@@ -237,13 +239,13 @@ Here we model the trend at weekly resolution, matching <code>rw(week)</code>, so
 <tbody>
 <tr class="odd">
 <td align="left">expr_arima_pacf[1]</td>
-<td align="right">-0.014</td>
-<td align="right">-0.852</td>
-<td align="right">0.826</td>
+<td align="right">-0.023</td>
+<td align="right">-0.800</td>
+<td align="right">0.819</td>
 </tr>
 <tr class="even">
 <td align="left">expr_arima_sigma[1]</td>
-<td align="right">0.029</td>
+<td align="right">0.030</td>
 <td align="right">0.011</td>
 <td align="right">0.055</td>
 </tr>
@@ -276,13 +278,72 @@ Stationary AR is the right choice when growth is stable on average and you want 
 </div>
 </div>
 <div class="section level2">
+<h2 id="gaussian-process-on-weeks">Gaussian process on weeks<a class="anchor" aria-label="anchor" href="#gaussian-process-on-weeks"></a>
+</h2>
+<p><code>gp(time, by, d, kernel, basis_prop)</code> adds an approximate Gaussian process to the growth rate.
+Where the random walk and AR terms build memory from one step to the next, a Gaussian process places a smooth prior over the whole trajectory at once: nearby time points are correlated, with a length scale that the model learns from the data.
+The result is a flexible smoother that can capture curvature a random walk would only reach through accumulated noise.
+By default the process is stationary; <code>gp(week, d = 1)</code> integrates it once for a smoothly drifting, random-walk-like trend (mirroring <code><a href="../reference/arima.html">arima()</a></code>’s <code>d</code>), as detailed in the <a href="gaussian-process.html#differencing">implementation notes</a>.</p>
+<p>The process is fitted using the Hilbert-space reduced-rank (spectral) approximation, so the cost is controlled by the number of basis functions rather than the number of time points.
+<code>basis_prop</code> sets that number as a proportion of the series length (the default <code>0.2</code> follows <code>EpiNow2</code>); a larger value is more accurate but slower.
+The default <code>kernel = "matern32"</code> is a Matern 3/2 kernel; <code>"matern52"</code>, <code>"ou"</code> (Ornstein-Uhlenbeck), <code>"se"</code> (squared exponential), and <code>"periodic"</code> are also available.
+The Stan implementation is adapted from <a href="https://github.com/epiforecasts/EpiNow2" class="external-link"><code>EpiNow2</code></a> (MIT licensed).
+The <a href="gaussian-process.html">Gaussian process implementation notes</a> cover the spectral approximation, the kernels, and the priors in detail.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nowcast_gp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span></span>
+<span>  <span class="va">pobs</span>,</span>
+<span>  expectation <span class="op">=</span> <span class="fu"><a href="../reference/enw_expectation.html">enw_expectation</a></span><span class="op">(</span></span>
+<span>    r <span class="op">=</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="../reference/gp.html">gp</a></span><span class="op">(</span><span class="va">week</span>, <span class="va">age_group</span><span class="op">)</span>,</span>
+<span>    data <span class="op">=</span> <span class="va">pobs</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  reference <span class="op">=</span> <span class="va">reference_mod</span>,</span>
+<span>  obs <span class="op">=</span> <span class="fu"><a href="../reference/enw_obs.html">enw_obs</a></span><span class="op">(</span>family <span class="op">=</span> <span class="st">"negbin"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span>
+<span>  fit <span class="op">=</span> <span class="va">fit</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</details><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast_gp</span>, latest_obs <span class="op">=</span> <span class="va">latest_obs</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
+</details><div class="float">
+<img src="figures/latent-processes-gp-plot-1.png" alt="Nowcast under a Gaussian process on weeks."><div class="figcaption">Nowcast under a Gaussian process on weeks.</div>
+</div>
+<p>The Gaussian-process-specific posterior summaries are the length scale <code>rho</code> (how quickly the growth rate can change) and the magnitude <code>alpha</code> (how far it can depart from the mean):</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">gp_pars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nowcast_gp</span>, type <span class="op">=</span> <span class="st">"fit"</span><span class="op">)</span><span class="op">[</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"expr_gp_(rho|alpha)"</span>, <span class="va">variable</span><span class="op">)</span>,</span>
+<span>  <span class="fu">.</span><span class="op">(</span><span class="va">variable</span>, <span class="va">mean</span>, <span class="va">q5</span>, <span class="va">q95</span><span class="op">)</span></span>
+<span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">gp_pars</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+</details><table class="table">
+<thead><tr class="header">
+<th align="left">variable</th>
+<th align="right">mean</th>
+<th align="right">q5</th>
+<th align="right">q95</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">expr_gp_rho[1]</td>
+<td align="right">3.229</td>
+<td align="right">1.327</td>
+<td align="right">6.027</td>
+</tr>
+<tr class="even">
+<td align="left">expr_gp_alpha[1]</td>
+<td align="right">0.041</td>
+<td align="right">0.013</td>
+<td align="right">0.086</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level2">
 <h2 id="independent-per-week-group-effects">Independent per-(week, group) effects<a class="anchor" aria-label="anchor" href="#independent-per-week-group-effects"></a>
 </h2>
 <p><code>(1 | week:.group)</code> adds a separate random level for every (week, group) cell, drawn from a shared Gaussian.
 The <code>(1 | group)</code> notation follows the same random-effect convention as <a href="https://cran.r-project.org/package=lme4" class="external-link"><code>lme4</code></a> and <a href="https://paulbuerkner.com/brms/" class="external-link"><code>brms</code></a>.
 Unlike the time-series terms there is no correlation across weeks; each week is an independent draw.
 This is the natural choice when weekly fluctuations look like noise rather than drift.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast_re</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span></span>
 <span>  <span class="va">pobs</span>,</span>
 <span>  expectation <span class="op">=</span> <span class="fu"><a href="../reference/enw_expectation.html">enw_expectation</a></span><span class="op">(</span></span>
@@ -292,7 +353,7 @@ This is the natural choice when weekly fluctuations look like noise rather than 
 <span>  obs <span class="op">=</span> <span class="fu"><a href="../reference/enw_obs.html">enw_obs</a></span><span class="op">(</span>family <span class="op">=</span> <span class="st">"negbin"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</details><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+</details><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast_re</span>, latest_obs <span class="op">=</span> <span class="va">latest_obs</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="float">
@@ -308,7 +369,7 @@ The most common case in surveillance data is day-of-week reporting: weekends loo
 The same Monday offset enters every Monday, the same Tuesday offset enters every Tuesday, and so on — exactly periodic across weeks.
 The shared Gaussian pools information across the seven weekday levels, which is preferable to seven independent fixed effects whenever the dataset is short.
 Swap <code>(1 | day_of_week)</code> for <code>day_of_week</code> if you would rather have unpooled fixed effects.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast_dow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span></span>
 <span>  <span class="va">pobs</span>,</span>
 <span>  expectation <span class="op">=</span> <span class="fu"><a href="../reference/enw_expectation.html">enw_expectation</a></span><span class="op">(</span></span>
@@ -318,7 +379,7 @@ Swap <code>(1 | day_of_week)</code> for <code>day_of_week</code> if you would ra
 <span>  obs <span class="op">=</span> <span class="fu"><a href="../reference/enw_obs.html">enw_obs</a></span><span class="op">(</span>family <span class="op">=</span> <span class="st">"negbin"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</details><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+</details><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast_dow</span>, latest_obs <span class="op">=</span> <span class="va">latest_obs</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="float">
@@ -331,7 +392,7 @@ Swap <code>(1 | day_of_week)</code> for <code>day_of_week</code> if you would ra
 <p>Latent and periodic terms compose in the same formula, which is the usual surveillance model: a slowly evolving trend plus a repeating weekly pattern.
 Here an integrated AR term carries the trend at weekly resolution while a day-of-week effect captures the within-week reporting cycle.
 Each term is identified by what it explains — the trend by the latent series, the weekday structure by the periodic effect — so they can be read off separately in the fit.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span></span>
 <span>  <span class="va">pobs</span>,</span>
 <span>  expectation <span class="op">=</span> <span class="fu"><a href="../reference/enw_expectation.html">enw_expectation</a></span><span class="op">(</span></span>
@@ -342,7 +403,7 @@ Each term is identified by what it explains — the trend by the latent series, 
 <span>  obs <span class="op">=</span> <span class="fu"><a href="../reference/enw_obs.html">enw_obs</a></span><span class="op">(</span>family <span class="op">=</span> <span class="st">"negbin"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</details><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+</details><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast_combined</span>, latest_obs <span class="op">=</span> <span class="va">latest_obs</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="float">
@@ -366,11 +427,12 @@ The <a href="arima.html">implementation notes</a> cover the invertibility trade-
 <p>Because these are NUTS fits we can read off standard convergence diagnostics for each model: the largest R-hat and smallest bulk effective sample size across all parameters, the number of divergent transitions, and the total sampler runtime.
 Values close to 1 for R-hat, bulk effective sample sizes in the hundreds, and zero divergences indicate the short chains have converged; if not, lengthen the chains or raise <code>adapt_delta</code>.
 The runtime column makes the accuracy-versus-cost trade-off explicit: the more flexible latent processes generally cost more to fit, so it is worth checking that the extra structure earns its keep.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  <span class="st">"rw(week)"</span> <span class="op">=</span> <span class="va">nowcast_rw</span>,</span>
+<span>  <span class="st">"rw(week, age_group)"</span> <span class="op">=</span> <span class="va">nowcast_rw</span>,</span>
 <span>  <span class="st">"arima(week, age_group, 1, 1, 0)"</span> <span class="op">=</span> <span class="va">nowcast_arima</span>,</span>
 <span>  <span class="st">"ar(day, age_group, 1)"</span> <span class="op">=</span> <span class="va">nowcast_ar</span>,</span>
+<span>  <span class="st">"gp(week, age_group)"</span> <span class="op">=</span> <span class="va">nowcast_gp</span>,</span>
 <span>  <span class="st">"(1 | week:.group)"</span> <span class="op">=</span> <span class="va">nowcast_re</span>,</span>
 <span>  <span class="st">"(1 | day_of_week)"</span> <span class="op">=</span> <span class="va">nowcast_dow</span>,</span>
 <span>  <span class="st">"(1 | day_of_week) + arima(week, ...)"</span> <span class="op">=</span> <span class="va">nowcast_combined</span></span>
@@ -386,7 +448,19 @@ The runtime column makes the accuracy-versus-cost trade-off explicit: the more f
 <span>    runtime_s <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">fits</span><span class="op">[[</span><span class="va">model</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">time</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">total</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: 1 of 1000 (0.0%) transitions hit the maximum treedepth limit of 12.</span></span>
+<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
+<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
+<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
+<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
+<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
+<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
+<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
+<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
+<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
+<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
+<span><span class="co">#&gt; Warning: 2 of 1000 (0.0%) transitions ended with a divergence.</span></span>
+<span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span>
+<span><span class="co">#&gt; Warning: 2 of 1000 (0.0%) transitions hit the maximum treedepth limit of 12.</span></span>
 <span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">diagnostics</span><span class="op">)</span></span></code></pre></div>
 </details><table class="table">
@@ -406,46 +480,53 @@ The runtime column makes the accuracy-versus-cost trade-off explicit: the more f
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">rw(week)</td>
-<td align="right">1.013</td>
-<td align="right">169</td>
+<td align="left">rw(week, age_group)</td>
+<td align="right">1.012</td>
+<td align="right">259</td>
 <td align="right">0</td>
-<td align="right">106</td>
+<td align="right">99</td>
 </tr>
 <tr class="even">
 <td align="left">arima(week, age_group, 1, 1, 0)</td>
-<td align="right">1.015</td>
-<td align="right">205</td>
+<td align="right">1.011</td>
+<td align="right">177</td>
 <td align="right">0</td>
-<td align="right">88</td>
+<td align="right">111</td>
 </tr>
 <tr class="odd">
 <td align="left">ar(day, age_group, 1)</td>
-<td align="right">1.016</td>
-<td align="right">214</td>
+<td align="right">1.019</td>
+<td align="right">222</td>
 <td align="right">0</td>
-<td align="right">93</td>
+<td align="right">98</td>
 </tr>
 <tr class="even">
-<td align="left">(1 | week:.group)</td>
-<td align="right">1.014</td>
-<td align="right">208</td>
+<td align="left">gp(week, age_group)</td>
+<td align="right">1.008</td>
+<td align="right">237</td>
 <td align="right">0</td>
-<td align="right">84</td>
+<td align="right">77</td>
 </tr>
 <tr class="odd">
-<td align="left">(1 | day_of_week)</td>
-<td align="right">1.023</td>
-<td align="right">166</td>
-<td align="right">0</td>
-<td align="right">231</td>
+<td align="left">(1 | week:.group)</td>
+<td align="right">1.035</td>
+<td align="right">185</td>
+<td align="right">2</td>
+<td align="right">74</td>
 </tr>
 <tr class="even">
-<td align="left">(1 | day_of_week) + arima(week, …)</td>
-<td align="right">1.015</td>
-<td align="right">183</td>
+<td align="left">(1 | day_of_week)</td>
+<td align="right">1.014</td>
+<td align="right">150</td>
 <td align="right">0</td>
-<td align="right">295</td>
+<td align="right">224</td>
+</tr>
+<tr class="odd">
+<td align="left">(1 | day_of_week) + arima(week, …)</td>
+<td align="right">1.011</td>
+<td align="right">209</td>
+<td align="right">0</td>
+<td align="right">283</td>
 </tr>
 </tbody>
 </table>
@@ -471,7 +552,7 @@ The runtime column makes the accuracy-versus-cost trade-off explicit: the more f
 <tr class="odd">
 <td>Random walk</td>
 <td>Full drift, no mean</td>
-<td><code>rw(week)</code></td>
+<td><code>rw(week, by)</code></td>
 <td>The growth rate evolves smoothly with no preferred direction; the standard non-stationary smoother.</td>
 </tr>
 <tr class="even">
@@ -487,12 +568,18 @@ The runtime column makes the accuracy-versus-cost trade-off explicit: the more f
 <td>Growth is stable on average and you want to model autocorrelated departures from that level rather than drift.</td>
 </tr>
 <tr class="even">
+<td>Gaussian process</td>
+<td>Smooth, learned length scale</td>
+<td><code>gp(week, by)</code></td>
+<td>You want a flexible non-parametric smoother whose smoothness is learned from the data rather than fixed by the differencing order.</td>
+</tr>
+<tr class="odd">
 <td>Independent week effects</td>
 <td>None</td>
 <td><code>(1 \| week:.group)</code></td>
 <td>Weekly fluctuations look like noise around a stable mean; no time correlation is imposed.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Day-of-week effects</td>
 <td>Fixed weekly cycle</td>
 <td><code>(1 \| day_of_week)</code></td>
@@ -504,8 +591,9 @@ The runtime column makes the accuracy-versus-cost trade-off explicit: the more f
 A typical surveillance pattern mixes one latent option for the trend with a periodic term for calendar effects, for example <code>~ 1 + (1 | day_of_week) + arima(week, p = 1, d = 1)</code>.
 The <code>by</code> argument on <code><a href="../reference/arima.html">arima()</a></code>, the aliases <code><a href="../reference/ar.html">ar()</a></code> / <code><a href="../reference/ma.html">ma()</a></code> / <code><a href="../reference/arma.html">arma()</a></code>, and <code><a href="../reference/rw.html">rw()</a></code> lets each group draw its own innovation series; the AR/MA parameters and latent standard deviation are currently shared across groups (per-group parameters are a planned extension).</p>
 <p>These terms are not specific to the growth rate.
-The same <code><a href="../reference/rw.html">rw()</a></code>, <code><a href="../reference/ar.html">ar()</a></code>, <code><a href="../reference/arima.html">arima()</a></code>, and random-effect terms can be placed on any module’s formula: an <code><a href="../reference/arima.html">arima()</a></code> term on the reference delay mean, for instance, models a reporting delay that drifts over time.
-See the <a href="arima.html">implementation notes</a> for the full list of modules that accept them.</p>
+The same <code><a href="../reference/rw.html">rw()</a></code>, <code><a href="../reference/ar.html">ar()</a></code>, <code><a href="../reference/arima.html">arima()</a></code>, <code><a href="../reference/gp.html">gp()</a></code>, and random-effect terms can be placed on any module’s formula, each routed through the shared regression layer: the growth rate (<code>expr</code>) and latent-to-obs proportion (<code>expl</code>) in [<code><a href="../reference/enw_expectation.html">enw_expectation()</a></code>], the parametric (<code>refp</code>) and non-parametric (<code>refnp</code>) reference delay in [<code><a href="../reference/enw_reference.html">enw_reference()</a></code>], the report-date hazards (<code>rep</code>) in [<code><a href="../reference/enw_report.html">enw_report()</a></code>], and the missing-reference proportion (<code>miss</code>) in [<code><a href="../reference/enw_missing.html">enw_missing()</a></code>].
+An <code><a href="../reference/arima.html">arima()</a></code> or <code><a href="../reference/gp.html">gp()</a></code> term on the reference delay mean, for instance, models a reporting delay that drifts over time.
+See the <a href="arima.html">ARIMA</a> and <a href="gaussian-process.html">Gaussian process</a> implementation notes for the per-module details.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
