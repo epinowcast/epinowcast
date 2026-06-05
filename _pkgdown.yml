@@ -46,7 +46,6 @@ navbar:
       - text: "Gaussian process latent terms: maths, priors, and usage"
         href: articles/gaussian-process.html
       - text: Case studies
-      - text: Case studies
         href: articles/package-use-cases.html
       - text: Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany
         href: articles/germany-age-stratified-nowcasting.html
