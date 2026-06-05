@@ -108,76 +108,101 @@ $(function(){initNavTree('regression_8stan_source.html',''); initResizable(true)
 </div><!--header-->
 <div class="contents">
 <a href="regression_8stan.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
-<div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="regression_8stan.html#af67c424b28559a8343764d8296166389">   27</a></span>vector <a class="code hl_function" href="regression_8stan.html#af67c424b28559a8343764d8296166389">regression_predictor</a>(</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>  array[] real intercept, vector beta, <span class="keywordtype">int</span> nobs, <span class="keywordtype">int</span> neffs,</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>  matrix fdesign,</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  tuple(vector, array[] <span class="keywordtype">int</span>, array[] <span class="keywordtype">int</span>) sparse,</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>  vector beta_sd, matrix rdesign,</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>  <span class="keywordtype">int</span> add_intercept, <span class="keywordtype">int</span> sparse_design,</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  <span class="keywordtype">int</span> arima_present, <span class="keywordtype">int</span> arima_T, <span class="keywordtype">int</span> arima_G,</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  <span class="keywordtype">int</span> arima_p, <span class="keywordtype">int</span> arima_d, <span class="keywordtype">int</span> arima_q, <span class="keywordtype">int</span> arima_n_obs,</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  matrix arima_z, vector arima_pacf, vector arima_theta,</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  array[] real arima_sigma,</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  array[] <span class="keywordtype">int</span> arima_flat_idx</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>) {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  <span class="comment">// Short-circuit the no-ARIMA path (arima_present == 0): return</span></div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  <span class="comment">// combine_effects() directly so we skip materialising the</span></div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <span class="comment">// intermediate `base` vector and the apply_arima_residual() call</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  <span class="comment">// frame on every gradient evaluation. Behaviour is identical when an</span></div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <span class="comment">// ARIMA term is present.</span></div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  <span class="keywordflow">if</span> (!arima_present) {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9">combine_effects</a>(</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>      intercept, beta, nobs, neffs, fdesign, sparse, beta_sd, rdesign,</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>      add_intercept, sparse_design</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    );</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  }</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  vector[nobs] base = <a class="code hl_function" href="combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9">combine_effects</a>(</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    intercept, beta, nobs, neffs, fdesign, sparse, beta_sd, rdesign,</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    add_intercept, sparse_design</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  );</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="arima__kernel_8stan.html#a1ec078fff6873a85bb953faa4a10e96c">apply_arima_residual</a>(</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    base, arima_n_obs, arima_present, arima_T, arima_G,</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    arima_p, arima_d, arima_q,</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    arima_z, arima_pacf, arima_theta, arima_sigma,</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    arima_flat_idx</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>  );</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="regression_8stan.html#a756cfcb49836278bfa91052ae1e79d13">   32</a></span>vector <a class="code hl_function" href="regression_8stan.html#a756cfcb49836278bfa91052ae1e79d13">regression_predictor</a>(</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  array[] real intercept, vector beta, <span class="keywordtype">int</span> nobs, <span class="keywordtype">int</span> neffs,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  matrix fdesign,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  tuple(vector, array[] <span class="keywordtype">int</span>, array[] <span class="keywordtype">int</span>) sparse,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  vector beta_sd, matrix rdesign,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  <span class="keywordtype">int</span> add_intercept, <span class="keywordtype">int</span> sparse_design,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  <span class="keywordtype">int</span> arima_present, <span class="keywordtype">int</span> arima_T, <span class="keywordtype">int</span> arima_G,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  <span class="keywordtype">int</span> arima_p, <span class="keywordtype">int</span> arima_d, <span class="keywordtype">int</span> arima_q, <span class="keywordtype">int</span> arima_n_obs,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  matrix arima_z, vector arima_pacf, vector arima_theta,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  array[] real arima_sigma,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  array[] <span class="keywordtype">int</span> arima_flat_idx,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <span class="keywordtype">int</span> gp_present, <span class="keywordtype">int</span> gp_T, <span class="keywordtype">int</span> gp_G, <span class="keywordtype">int</span> gp_M, real gp_L,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  <span class="keywordtype">int</span> gp_type, real gp_nu, <span class="keywordtype">int</span> gp_d, matrix gp_PHI, matrix gp_eta,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  array[] real gp_rho, array[] real gp_alpha,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  array[] <span class="keywordtype">int</span> gp_flat_idx</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="comment">// Short-circuit when neither latent term is present: return</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  <span class="comment">// combine_effects() directly so we skip materialising the</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  <span class="comment">// intermediate `base` vector and the apply_* call frames on every</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  <span class="comment">// gradient evaluation. Behaviour is identical when a term is present.</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  <span class="keywordflow">if</span> (!arima_present &amp;&amp; !gp_present) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9">combine_effects</a>(</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>      intercept, beta, nobs, neffs, fdesign, sparse, beta_sd, rdesign,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>      add_intercept, sparse_design</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    );</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>  }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  vector[nobs] base = <a class="code hl_function" href="combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9">combine_effects</a>(</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    intercept, beta, nobs, neffs, fdesign, sparse, beta_sd, rdesign,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    add_intercept, sparse_design</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>  );</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>  <span class="comment">// ARIMA and GP compose additively; each `apply_*` is inert on its own</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  <span class="comment">// presence flag, so passing both through is safe when only one is set.</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>  base = <a class="code hl_function" href="arima__kernel_8stan.html#a1ec078fff6873a85bb953faa4a10e96c">apply_arima_residual</a>(</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    base, arima_n_obs, arima_present, arima_T, arima_G,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    arima_p, arima_d, arima_q,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    arima_z, arima_pacf, arima_theta, arima_sigma,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    arima_flat_idx</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  );</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="gaussian__process_8stan.html#a54a3a63c0ce8d61c069d416ca9fe5305">apply_gp_term</a>(</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    base, gp_present, gp_T, gp_G, gp_M, gp_L, gp_type, gp_nu, gp_d,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    gp_PHI, gp_eta, gp_rho, gp_alpha, gp_flat_idx</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  );</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
 </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="regression_8stan.html#ab0b351b6b2f09959bf1db7a89b0782bc">   62</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="regression_8stan.html#ab0b351b6b2f09959bf1db7a89b0782bc">regression_priors_lp</a>(</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  vector beta, vector beta_sd, array[,] real beta_sd_p,</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>  <span class="keywordtype">int</span> fixed, <span class="keywordtype">int</span> random,</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>  <span class="keywordtype">int</span> arima_present, <span class="keywordtype">int</span> arima_p, <span class="keywordtype">int</span> arima_q,</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  matrix arima_z, vector arima_pacf, vector arima_theta,</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>  array[] real arima_sigma, array[,] real arima_sigma_p,</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  array[,] real arima_pacf_p</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>) {</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  <a class="code hl_function" href="effects__priors__lp_8stan.html#aac4bdfbc86a1a47c11564c938282e8a0">effect_priors_lp</a>(beta, beta_sd, beta_sd_p, fixed, random);</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  <span class="keywordflow">if</span> (arima_present) {</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    to_vector(arima_z) ~ std_normal();</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="comment">// Partial autocorrelations are Uniform(-1, 1) by default via their</span></div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="comment">// parameter bounds. A positive prior sd switches to a Normal(mean, sd)</span></div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="comment">// truncated to (-1, 1); the truncation constant is fixed by the bounds</span></div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="comment">// and so is dropped. A non-positive sd leaves the Uniform default.</span></div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">if</span> (arima_p &gt; 0 &amp;&amp; arima_pacf_p[2, 1] &gt; 0) {</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>      arima_pacf ~ normal(arima_pacf_p[1, 1], arima_pacf_p[2, 1]);</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    }</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">if</span> (arima_q &gt; 0) {</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>      arima_theta ~ std_normal();</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    }</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    arima_sigma[1] ~ normal(</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>      arima_sigma_p[1, 1], arima_sigma_p[2, 1]</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    ) T[0, ];</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>  }</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>}</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="regression_8stan.html#ab0b351b6b2f09959bf1db7a89b0782bc">   76</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="regression_8stan.html#ab0b351b6b2f09959bf1db7a89b0782bc">regression_priors_lp</a>(</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  vector beta, vector beta_sd, array[,] real beta_sd_p,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>  <span class="keywordtype">int</span> fixed, <span class="keywordtype">int</span> random,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  <span class="keywordtype">int</span> arima_present, <span class="keywordtype">int</span> arima_p, <span class="keywordtype">int</span> arima_q,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>  matrix arima_z, vector arima_pacf, vector arima_theta,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>  array[] real arima_sigma, array[,] real arima_sigma_p,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  array[,] real arima_pacf_p</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>  <a class="code hl_function" href="effects__priors__lp_8stan.html#aac4bdfbc86a1a47c11564c938282e8a0">effect_priors_lp</a>(beta, beta_sd, beta_sd_p, fixed, random);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>  <span class="keywordflow">if</span> (arima_present) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    to_vector(arima_z) ~ std_normal();</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="comment">// Partial autocorrelations are Uniform(-1, 1) by default via their</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="comment">// parameter bounds. A positive prior sd switches to a Normal(mean, sd)</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="comment">// truncated to (-1, 1); the truncation constant is fixed by the bounds</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="comment">// and so is dropped. A non-positive sd leaves the Uniform default.</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">if</span> (arima_p &gt; 0 &amp;&amp; arima_pacf_p[2, 1] &gt; 0) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>      arima_pacf ~ normal(arima_pacf_p[1, 1], arima_pacf_p[2, 1]);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">if</span> (arima_q &gt; 0) {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>      arima_theta ~ std_normal();</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    arima_sigma[1] ~ normal(</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>      arima_sigma_p[1, 1], arima_sigma_p[2, 1]</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    ) T[0, ];</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>  }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}</div>
+</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="foldopen" id="foldopen00111" data-start="{" data-end="}">
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="regression_8stan.html#a3b18406a53a43dc0ee266bff09b39b05">  111</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="regression_8stan.html#a3b18406a53a43dc0ee266bff09b39b05">gp_priors_lp</a>(</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>  <span class="keywordtype">int</span> gp_present, matrix gp_eta,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>  array[] real gp_rho, array[] real gp_alpha,</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>  array[,] real gp_rho_p, array[,] real gp_alpha_p</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>  <span class="keywordflow">if</span> (gp_present) {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    to_vector(gp_eta) ~ std_normal();</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    gp_rho[1] ~ lognormal(gp_rho_p[1, 1], gp_rho_p[2, 1]);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    gp_alpha[1] ~ normal(gp_alpha_p[1, 1], gp_alpha_p[2, 1]) T[0, ];</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>  }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}</div>
 </div>
 <div class="ttc" id="aarima__kernel_8stan_html_a1ec078fff6873a85bb953faa4a10e96c"><div class="ttname"><a href="arima__kernel_8stan.html#a1ec078fff6873a85bb953faa4a10e96c">apply_arima_residual</a></div><div class="ttdeci">vector apply_arima_residual(vector base, int n_obs, int present, int T, int G, int p, int d, int q, matrix z, vector pacf, vector theta, array[] real sigma, array[] int flat_idx)</div><div class="ttdef"><b>Definition</b> <a href="arima__kernel_8stan_source.html#l00185">arima_kernel.stan:185</a></div></div>
 <div class="ttc" id="acombine__effects_8stan_html_ae491cd73e41a833998f8e7ff981281d9"><div class="ttname"><a href="combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9">combine_effects</a></div><div class="ttdeci">vector combine_effects(array[] real intercept, vector beta, int nobs, int neffs, matrix fdesign, tuple(vector, array[] int, array[] int) sparse, vector beta_sd, matrix rdesign, int add_intercept, int sparse_design)</div><div class="ttdef"><b>Definition</b> <a href="combine__effects_8stan_source.html#l00062">combine_effects.stan:62</a></div></div>
 <div class="ttc" id="aeffects__priors__lp_8stan_html_aac4bdfbc86a1a47c11564c938282e8a0"><div class="ttname"><a href="effects__priors__lp_8stan.html#aac4bdfbc86a1a47c11564c938282e8a0">effect_priors_lp</a></div><div class="ttdeci">void effect_priors_lp(vector beta, vector beta_sd, array[,] real beta_sd_p, int fixed, int random)</div><div class="ttdef"><b>Definition</b> <a href="effects__priors__lp_8stan_source.html#l00029">effects_priors_lp.stan:29</a></div></div>
-<div class="ttc" id="aregression_8stan_html_ab0b351b6b2f09959bf1db7a89b0782bc"><div class="ttname"><a href="regression_8stan.html#ab0b351b6b2f09959bf1db7a89b0782bc">regression_priors_lp</a></div><div class="ttdeci">void regression_priors_lp(vector beta, vector beta_sd, array[,] real beta_sd_p, int fixed, int random, int arima_present, int arima_p, int arima_q, matrix arima_z, vector arima_pacf, vector arima_theta, array[] real arima_sigma, array[,] real arima_sigma_p, array[,] real arima_pacf_p)</div><div class="ttdef"><b>Definition</b> <a href="#l00062">regression.stan:62</a></div></div>
-<div class="ttc" id="aregression_8stan_html_af67c424b28559a8343764d8296166389"><div class="ttname"><a href="regression_8stan.html#af67c424b28559a8343764d8296166389">regression_predictor</a></div><div class="ttdeci">vector regression_predictor(array[] real intercept, vector beta, int nobs, int neffs, matrix fdesign, tuple(vector, array[] int, array[] int) sparse, vector beta_sd, matrix rdesign, int add_intercept, int sparse_design, int arima_present, int arima_T, int arima_G, int arima_p, int arima_d, int arima_q, int arima_n_obs, matrix arima_z, vector arima_pacf, vector arima_theta, array[] real arima_sigma, array[] int arima_flat_idx)</div><div class="ttdef"><b>Definition</b> <a href="#l00027">regression.stan:27</a></div></div>
+<div class="ttc" id="agaussian__process_8stan_html_a54a3a63c0ce8d61c069d416ca9fe5305"><div class="ttname"><a href="gaussian__process_8stan.html#a54a3a63c0ce8d61c069d416ca9fe5305">apply_gp_term</a></div><div class="ttdeci">vector apply_gp_term(vector base, int present, int T, int G, int M, real L, int type, real nu, int d, matrix PHI, matrix eta, array[] real rho, array[] real alpha, array[] int flat_idx)</div><div class="ttdef"><b>Definition</b> <a href="gaussian__process_8stan_source.html#l00161">gaussian_process.stan:161</a></div></div>
+<div class="ttc" id="aregression_8stan_html_a3b18406a53a43dc0ee266bff09b39b05"><div class="ttname"><a href="regression_8stan.html#a3b18406a53a43dc0ee266bff09b39b05">gp_priors_lp</a></div><div class="ttdeci">void gp_priors_lp(int gp_present, matrix gp_eta, array[] real gp_rho, array[] real gp_alpha, array[,] real gp_rho_p, array[,] real gp_alpha_p)</div><div class="ttdef"><b>Definition</b> <a href="#l00111">regression.stan:111</a></div></div>
+<div class="ttc" id="aregression_8stan_html_a756cfcb49836278bfa91052ae1e79d13"><div class="ttname"><a href="regression_8stan.html#a756cfcb49836278bfa91052ae1e79d13">regression_predictor</a></div><div class="ttdeci">vector regression_predictor(array[] real intercept, vector beta, int nobs, int neffs, matrix fdesign, tuple(vector, array[] int, array[] int) sparse, vector beta_sd, matrix rdesign, int add_intercept, int sparse_design, int arima_present, int arima_T, int arima_G, int arima_p, int arima_d, int arima_q, int arima_n_obs, matrix arima_z, vector arima_pacf, vector arima_theta, array[] real arima_sigma, array[] int arima_flat_idx, int gp_present, int gp_T, int gp_G, int gp_M, real gp_L, int gp_type, real gp_nu, int gp_d, matrix gp_PHI, matrix gp_eta, array[] real gp_rho, array[] real gp_alpha, array[] int gp_flat_idx)</div><div class="ttdef"><b>Definition</b> <a href="#l00032">regression.stan:32</a></div></div>
+<div class="ttc" id="aregression_8stan_html_ab0b351b6b2f09959bf1db7a89b0782bc"><div class="ttname"><a href="regression_8stan.html#ab0b351b6b2f09959bf1db7a89b0782bc">regression_priors_lp</a></div><div class="ttdeci">void regression_priors_lp(vector beta, vector beta_sd, array[,] real beta_sd_p, int fixed, int random, int arima_present, int arima_p, int arima_q, matrix arima_z, vector arima_pacf, vector arima_theta, array[] real arima_sigma, array[,] real arima_sigma_p, array[,] real arima_pacf_p)</div><div class="ttdef"><b>Definition</b> <a href="#l00076">regression.stan:76</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

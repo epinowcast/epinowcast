@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['hazard_5fto_5flog_5fprob_0',['hazard_to_log_prob',['../hazard_8stan.html#ae596473f33916489e56f6e555d08f211',1,'hazard.stan']]]
+  ['gp_5fpriors_5flp_0',['gp_priors_lp',['../regression_8stan.html#a3b18406a53a43dc0ee266bff09b39b05',1,'regression.stan']]]
 ];

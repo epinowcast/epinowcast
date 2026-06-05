@@ -114,14 +114,61 @@ $(function(){initNavTree('regression_8stan.html',''); initResizable(true); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:af67c424b28559a8343764d8296166389" id="r_af67c424b28559a8343764d8296166389"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af67c424b28559a8343764d8296166389">regression_predictor</a> (array[] real intercept, vector beta, int nobs, int neffs, matrix fdesign, tuple(vector, array[] int, array[] int) sparse, vector beta_sd, matrix rdesign, int add_intercept, int sparse_design, int arima_present, int arima_T, int arima_G, int arima_p, int arima_d, int arima_q, int arima_n_obs, matrix arima_z, vector arima_pacf, vector arima_theta, array[] real arima_sigma, array[] int arima_flat_idx)</td></tr>
-<tr class="separator:af67c424b28559a8343764d8296166389"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a756cfcb49836278bfa91052ae1e79d13" id="r_a756cfcb49836278bfa91052ae1e79d13"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a756cfcb49836278bfa91052ae1e79d13">regression_predictor</a> (array[] real intercept, vector beta, int nobs, int neffs, matrix fdesign, tuple(vector, array[] int, array[] int) sparse, vector beta_sd, matrix rdesign, int add_intercept, int sparse_design, int arima_present, int arima_T, int arima_G, int arima_p, int arima_d, int arima_q, int arima_n_obs, matrix arima_z, vector arima_pacf, vector arima_theta, array[] real arima_sigma, array[] int arima_flat_idx, int gp_present, int gp_T, int gp_G, int gp_M, real gp_L, int gp_type, real gp_nu, int gp_d, matrix gp_PHI, matrix gp_eta, array[] real gp_rho, array[] real gp_alpha, array[] int gp_flat_idx)</td></tr>
+<tr class="separator:a756cfcb49836278bfa91052ae1e79d13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0b351b6b2f09959bf1db7a89b0782bc" id="r_ab0b351b6b2f09959bf1db7a89b0782bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab0b351b6b2f09959bf1db7a89b0782bc">regression_priors_lp</a> (vector beta, vector beta_sd, array[,] real beta_sd_p, int fixed, int random, int arima_present, int arima_p, int arima_q, matrix arima_z, vector arima_pacf, vector arima_theta, array[] real arima_sigma, array[,] real arima_sigma_p, array[,] real arima_pacf_p)</td></tr>
 <tr class="separator:ab0b351b6b2f09959bf1db7a89b0782bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b18406a53a43dc0ee266bff09b39b05" id="r_a3b18406a53a43dc0ee266bff09b39b05"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3b18406a53a43dc0ee266bff09b39b05">gp_priors_lp</a> (int gp_present, matrix gp_eta, array[] real gp_rho, array[] real gp_alpha, array[,] real gp_rho_p, array[,] real gp_alpha_p)</td></tr>
+<tr class="separator:a3b18406a53a43dc0ee266bff09b39b05"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="af67c424b28559a8343764d8296166389" name="af67c424b28559a8343764d8296166389"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af67c424b28559a8343764d8296166389">&#9670;&#160;</a></span>regression_predictor()</h2>
+<a id="a3b18406a53a43dc0ee266bff09b39b05" name="a3b18406a53a43dc0ee266bff09b39b05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b18406a53a43dc0ee266bff09b39b05">&#9670;&#160;</a></span>gp_priors_lp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void gp_priors_lp </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>gp_present</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">matrix</td>          <td class="paramname"><span class="paramname"><em>gp_eta</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array[]real</td>          <td class="paramname"><span class="paramname"><em>gp_rho</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array[]real</td>          <td class="paramname"><span class="paramname"><em>gp_alpha</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array real</td>          <td class="paramname"><span class="paramname"><em>gp_rho_p</em></span>[,], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array real</td>          <td class="paramname"><span class="paramname"><em>gp_alpha_p</em></span>[,]&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Priors for an approximate Gaussian process latent term.</p>
+<p>The spectral coefficients <code>eta</code> get a unit-normal (non-centred) prior. The length scale <code>rho</code> gets a log-normal prior and the magnitude <code>alpha</code> a half-normal prior, with each prior (mean, sd) supplied as data. Inert when <code>gp_present == 0</code>. </p>
+
+<p class="definition">Definition at line <a class="el" href="regression_8stan_source.html#l00111">111</a> of file <a class="el" href="regression_8stan_source.html">regression.stan</a>.</p>
+
+</div>
+</div>
+<a id="a756cfcb49836278bfa91052ae1e79d13" name="a756cfcb49836278bfa91052ae1e79d13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a756cfcb49836278bfa91052ae1e79d13">&#9670;&#160;</a></span>regression_predictor()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -234,17 +281,82 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">array[]int</td>          <td class="paramname"><span class="paramname"><em>arima_flat_idx</em></span>&#160;)</td>
+          <td class="paramtype">array[]int</td>          <td class="paramname"><span class="paramname"><em>arima_flat_idx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>gp_present</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>gp_T</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>gp_G</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>gp_M</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real</td>          <td class="paramname"><span class="paramname"><em>gp_L</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>gp_type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real</td>          <td class="paramname"><span class="paramname"><em>gp_nu</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>gp_d</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">matrix</td>          <td class="paramname"><span class="paramname"><em>gp_PHI</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">matrix</td>          <td class="paramname"><span class="paramname"><em>gp_eta</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array[]real</td>          <td class="paramname"><span class="paramname"><em>gp_rho</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array[]real</td>          <td class="paramname"><span class="paramname"><em>gp_alpha</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array[]int</td>          <td class="paramname"><span class="paramname"><em>gp_flat_idx</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>Single entry points for the regression layer.</p>
-<p><code><a class="el" href="#af67c424b28559a8343764d8296166389">regression_predictor()</a></code> composes <code><a class="el" href="combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9">combine_effects()</a></code> (fixed + partially-pooled random effects via the design matrices) with <code><a class="el" href="arima__kernel_8stan.html#a1ec078fff6873a85bb953faa4a10e96c">apply_arima_residual()</a></code> (parameter-dependent ARIMA(p, d, q) latent residual). Each module that owns a per-observation predictor calls this once instead of calling the two layers separately.</p>
-<p><code><a class="el" href="#ab0b351b6b2f09959bf1db7a89b0782bc">regression_priors_lp()</a></code> is the matching one-shot priors helper: effect priors plus ARIMA priors (shocks, MA coefficients, latent standard deviation; partial autocorrelations get an implicit uniform prior via their parameter bounds).</p>
-<p>Both functions are inert with respect to the ARIMA term when <code>arima_present == 0</code>: in that case <code><a class="el" href="#af67c424b28559a8343764d8296166389">regression_predictor()</a></code> returns the bare <code><a class="el" href="combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9">combine_effects()</a></code> result, and <code><a class="el" href="#ab0b351b6b2f09959bf1db7a89b0782bc">regression_priors_lp()</a></code> skips the ARIMA prior block.</p>
-<p>Every per-observation module routes through these helpers: <code>expr</code>, <code>expl</code>, <code>refnp</code>, and <code>miss</code> apply the ARIMA residual directly at the observation level, while the sparse-row modules <code>refp</code> and <code>rep</code> supply a <code>flat_idx</code> built from the joint (covariate row x ARIMA time x ARIMA group) deduplication so the same gather works at sparse-row granularity. See <code>vignettes/arima.Rmd</code> for the joint scheme. </p>
+<p><code><a class="el" href="#a756cfcb49836278bfa91052ae1e79d13">regression_predictor()</a></code> composes <code><a class="el" href="combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9">combine_effects()</a></code> (fixed + partially-pooled random effects via the design matrices) with <code><a class="el" href="arima__kernel_8stan.html#a1ec078fff6873a85bb953faa4a10e96c">apply_arima_residual()</a></code> (parameter-dependent ARIMA(p, d, q) latent residual) and <code><a class="el" href="gaussian__process_8stan.html#a54a3a63c0ce8d61c069d416ca9fe5305">apply_gp_term()</a></code> (Hilbert-space approximate Gaussian process). Each module that owns a per-observation predictor calls this once instead of calling the layers separately, so every module routed through it gains the ARIMA and GP latent terms for free.</p>
+<p><code><a class="el" href="#ab0b351b6b2f09959bf1db7a89b0782bc">regression_priors_lp()</a></code> is the matching one-shot priors helper: effect priors plus ARIMA priors (shocks, MA coefficients, latent standard deviation; partial autocorrelations get an implicit uniform prior via their parameter bounds). GP priors are supplied by the separate <code><a class="el" href="#a3b18406a53a43dc0ee266bff09b39b05">gp_priors_lp()</a></code> helper so the long argument list stays manageable.</p>
+<p>Both layers are inert when their term is absent: when <code>arima_present == 0</code> and <code>gp_present == 0</code>, <code><a class="el" href="#a756cfcb49836278bfa91052ae1e79d13">regression_predictor()</a></code> returns the bare <code><a class="el" href="combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9">combine_effects()</a></code> result; each <code>apply_*</code> call short-circuits on its own presence flag.</p>
+<p>Every per-observation module routes through these helpers: <code>expr</code>, <code>expl</code>, <code>refnp</code>, and <code>miss</code> apply the latent terms directly at the observation level, while the sparse-row modules <code>refp</code> and <code>rep</code> supply a <code>flat_idx</code> built from the joint (covariate row x time x group) deduplication so the same gather works at sparse-row granularity. The ARIMA and GP terms share this scheme. See <code>vignettes/arima.Rmd</code> and <code>vignettes/gaussian-process.Rmd</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="regression_8stan_source.html#l00027">27</a> of file <a class="el" href="regression_8stan_source.html">regression.stan</a>.</p>
+<p class="definition">Definition at line <a class="el" href="regression_8stan_source.html#l00032">32</a> of file <a class="el" href="regression_8stan_source.html">regression.stan</a>.</p>
 
 </div>
 </div>
@@ -327,7 +439,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="regression_8stan_source.html#l00062">62</a> of file <a class="el" href="regression_8stan_source.html">regression.stan</a>.</p>
+<p class="definition">Definition at line <a class="el" href="regression_8stan_source.html#l00076">76</a> of file <a class="el" href="regression_8stan_source.html">regression.stan</a>.</p>
 
 </div>
 </div>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['hazard_2estan_0',['hazard.stan',['../hazard_8stan.html',1,'']]]
+  ['gaussian_5fprocess_2estan_0',['gaussian_process.stan',['../gaussian__process_8stan.html',1,'']]]
 ];

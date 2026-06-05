@@ -12,6 +12,7 @@ var dir_35baea09d55bebfe17654fdf4bf061ce =
     [ "expected_obs.stan", "expected__obs_8stan.html", "expected__obs_8stan" ],
     [ "expected_obs_from.stan", "expected__obs__from_8stan.html", "expected__obs__from_8stan" ],
     [ "filt_obs_indexes.stan", "filt__obs__indexes_8stan.html", "filt__obs__indexes_8stan" ],
+    [ "gaussian_process.stan", "gaussian__process_8stan.html", "gaussian__process_8stan" ],
     [ "hazard.stan", "hazard_8stan.html", "hazard_8stan" ],
     [ "log_expected_by_report.stan", "log__expected__by__report_8stan.html", "log__expected__by__report_8stan" ],
     [ "log_expected_latent_from_r.stan", "log__expected__latent__from__r_8stan.html", "log__expected__latent__from__r_8stan" ],
