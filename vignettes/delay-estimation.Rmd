@@ -70,8 +70,11 @@ We simulate hospitalisations with a known lognormal reporting delay so we can ch
 Each reference date has a known total, and its cells are a multinomial draw of that total across delays using the delay PMF.
 We use a modest number of reference dates and a modest total per date so the posterior has visible uncertainty rather than collapsing to a point.
 
+We take the true delay PMF from `primarycensored::dprimarycensored()`, the same primary-event-censored discretisation `epinowcast` uses, so the simulated truth matches the model's parameterisation.
+
 
 ``` r
+library(primarycensored)
 set.seed(890)
 
 meanlog <- 1.6
@@ -80,23 +83,13 @@ max_delay <- 15
 n_dates <- 30
 total <- 200
 
-# The true delay PMF under the package's double-censored discretisation.
-# (This is the same scheme epinowcast uses internally; we reproduce it here
-# so the simulated truth matches the model's parameterisation.)
-discretise_lognormal <- function(meanlog, sdlog, dmax) {
-  lcdf <- plnorm(1:dmax, meanlog, sdlog, log.p = TRUE)
-  m <- max(lcdf[dmax], lcdf[dmax - 1])
-  lcdf <- lcdf - (m + log(sum(exp(c(lcdf[dmax], lcdf[dmax - 1]) - m))))
-  p <- numeric(dmax)
-  p[1] <- exp(lcdf[1])
-  p[2] <- exp(lcdf[2])
-  p[3:dmax] <- exp(lcdf[3:dmax]) - exp(lcdf[1:(dmax - 2)])
-  p
-}
-delay_pmf <- discretise_lognormal(meanlog, sdlog, max_delay)
+delays <- 0:(max_delay - 1)
+delay_pmf <- dprimarycensored(
+  delays, pdist = plnorm, pwindow = 1, swindow = 1, D = max_delay,
+  meanlog = meanlog, sdlog = sdlog
+)
 
 dates <- as.Date("2021-01-01") + 0:(n_dates - 1)
-delays <- 0:(max_delay - 1)
 
 obs <- rbindlist(lapply(seq_along(dates), function(i) {
   counts <- as.vector(rmultinom(1, total, delay_pmf))
@@ -129,13 +122,12 @@ full_fit <- epinowcast(
 ## Fitting the delay-only model
 
 The delay-only model uses the same reference-delay specification but sets `delay_only = TRUE` in `enw_obs()`.
-The expectation module is supplied but inert (its expected observations are overridden by the known totals), so we pass a minimal `~1` expectation.
+There is no expectation module to configure: because the known totals override the expected observations, `epinowcast()` minimises the (now inert) expectation automatically.
 
 
 ``` r
 delay_fit <- epinowcast(
   pobs,
-  expectation = enw_expectation(~1, data = pobs),
   reference = enw_reference(~1, distribution = "lognormal", data = pobs),
   obs = enw_obs(family = "poisson", delay_only = TRUE, data = pobs),
   fit = enw_fit_opts(
@@ -173,10 +165,10 @@ knitr::kable(param_summary, digits = 3)
 
 |model      |variable         | truth|  mean|    q5|   q95|
 |:----------|:----------------|-----:|-----:|-----:|-----:|
-|full       |refp_mean_int[1] |   1.6| 1.588| 1.578| 1.599|
-|delay-only |refp_mean_int[1] |   1.6| 1.588| 1.577| 1.600|
-|full       |refp_sd_int[1]   |   0.5| 0.501| 0.491| 0.511|
-|delay-only |refp_sd_int[1]   |   0.5| 0.501| 0.490| 0.511|
+|full       |refp_mean_int[1] |   1.6| 1.599| 1.587| 1.610|
+|delay-only |refp_mean_int[1] |   1.6| 1.599| 1.589| 1.609|
+|full       |refp_sd_int[1]   |   0.5| 0.482| 0.473| 0.492|
+|delay-only |refp_sd_int[1]   |   0.5| 0.482| 0.472| 0.491|
 
 
 
@@ -207,13 +199,11 @@ ggplot() +
     data = truth_dt, aes(x = delay, y = pmf), colour = "black",
     linewidth = 1, linetype = "dashed"
   ) +
-  facet_wrap(vars(model)) +
   labs(
     x = "Delay", y = "Probability", colour = NULL,
     caption = "Dashed black line is the simulated truth."
   ) +
-  theme_bw() +
-  theme(legend.position = "none")
+  theme_bw()
 ```
 
 <div class="figure">
@@ -222,7 +212,7 @@ ggplot() +
 </div>
 
 Each coloured line is one posterior draw, so the spread of lines is the posterior uncertainty in the delay distribution.
-The draws bracket the simulated truth (dashed) for both models, so both recover the delay; the delay-only posterior is the tighter of the two because it does not carry latent-process uncertainty.
+The draws bracket the simulated truth (dashed) for both models, so both recover the delay; the delay-only posterior (the tighter band) does not carry latent-process uncertainty.
 
 ## Recovering the delay from data with missing cells
 
@@ -264,8 +254,8 @@ knitr::kable(missing_summary, digits = 3)
 
 |variable         | truth|  mean|    q5|   q95|
 |:----------------|-----:|-----:|-----:|-----:|
-|refp_mean_int[1] |   1.6| 1.583| 1.571| 1.596|
-|refp_sd_int[1]   |   0.5| 0.503| 0.494| 0.513|
+|refp_mean_int[1] |   1.6| 1.606| 1.594| 1.617|
+|refp_sd_int[1]   |   0.5| 0.479| 0.470| 0.488|
 
 
 
