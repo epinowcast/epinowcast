@@ -641,7 +641,7 @@ enw_model <- function(model = system.file(
 #' # or exposed globally and used directly
 #' prob_to_hazard(c(0.5, 0.1, 0.1))
 enw_stan_to_r <- function(
-  files = list.files(include),
+  files = list.files(include, pattern = "\\.stan$"),
   include = system.file("stan", "functions", package = "epinowcast"),
   global = TRUE,
   verbose = TRUE,
