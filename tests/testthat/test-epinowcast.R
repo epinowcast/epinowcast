@@ -511,12 +511,12 @@ test_that("epinowcast() can fit a simple combined parametric and non-parametric
       nowcast,
       type = "fit", variables = c("refnp_beta_sd", "refnp_beta")
     )$mean,
-    c(0.27, -0.47, 0.57, 0.56, -0.64),
+    c(0.26, -0.36, 0.51, 0.54, -0.71),
     tolerance = 0.1
   )
   expect_equal(
     summary(nowcast, type = "fit", variables = c("refp_mean", "refp_sd"))$mean,
-    c(1.5, 3.29),
+    c(1.53, 3.02),
     tolerance = 0.1
   )
   expect_error(
@@ -570,10 +570,22 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
     day_of_week = "Wednesday"
   )
 
+  # This sparse fit (~7 weekly Wednesday observations at max_delay = 10) only
+  # weakly identifies the parametric reference delay, so under the package
+  # default prior it can become multimodal on some seeds. An informative delay
+  # prior regularises it and it converges reliably. See issue #856 on revisiting
+  # the package default prior.
+  weekly_priors <- data.table::data.table(
+    variable = c("refp_mean_int", "refp_sd_int"),
+    mean = c(2, 3),
+    sd = c(1, 1)
+  )
+
   # Fit model
   nowcast <- suppressMessages(epinowcast(pobs,
     expectation = enw_expectation(~1, data = pobs),
     report = enw_report(structural = structural, data = pobs),
+    priors = weekly_priors,
     fit = enw_fit_opts(
       sampler = silent_enw_sample,
       save_warmup = FALSE, pp = FALSE,

@@ -16,7 +16,14 @@
 #'
 #' @param distribution A character vector describing the parametric delay
 #' distribution to use. Current options are: "none", "lognormal", "gamma",
-#' "exponential", and "loglogistic", with the default being "lognormal".
+#' and "exponential", with the default being "lognormal". These distributions
+#' are discretised using the double interval censoring approach from the
+#' [primarycensored](https://primarycensored.epinowcast.org) package, which
+#' accounts for primary event censoring, secondary interval censoring, and
+#' right truncation. The log-logistic distribution is not currently supported,
+#' pending log-logistic support in `primarycensored` (see
+#' <https://github.com/epinowcast/primarycensored/issues/321>). See
+#' `vignette("distributions")` for details.
 #'
 #' @param non_parametric A formula (as implemented in [enw_formula()])
 #' describing the non-parametric logit hazard model. This can use features
@@ -59,7 +66,7 @@
 #' )
 enw_reference <- function(
   parametric = ~1,
-  distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
+  distribution = c("lognormal", "none", "exponential", "gamma"),
   non_parametric = ~0, data
 ) {
   # When max_delay = 1 (no delays), reject non-trivial delay models
@@ -97,8 +104,7 @@ enw_reference <- function(
     distribution == "none", 0,
     distribution == "exponential", 1,
     distribution == "lognormal", 2,
-    distribution == "gamma", 3,
-    distribution == "loglogistic", 4
+    distribution == "gamma", 3
   )
   # Define parametric model
   pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)

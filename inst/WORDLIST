@@ -45,8 +45,10 @@ difftime
 Discretise
 discretisation
 Discretisation
+discretisations
 discretised
 Discretised
+discretises
 doi
 dplyr
 dss
@@ -83,6 +85,7 @@ Höhle
 IDate
 ImperialCollegeLondon
 Inf
+infty
 INLA
 int
 iter
@@ -192,6 +195,7 @@ rceil
 readibility
 refp
 Reinsel
+renormalising
 Renviron
 renormalisation
 reparameterisation
@@ -240,6 +244,7 @@ unmodelled
 unpooled
 unsets
 Vehtari
+vendored
 Vscode
 WardBrian
 Wolffram

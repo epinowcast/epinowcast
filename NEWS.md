@@ -15,6 +15,12 @@
   An `observation_indicator` is supported (interior cells unobserved but before the cutoff keep their weight).
   See the delay estimation vignette and #775 and #776.
   Also adds `enw_posterior_delay()` to extract posterior samples of the parametric delay distribution.
+- The parametric reference delay is now discretised with the double interval censoring approach from the [primarycensored](https://primarycensored.epinowcast.org) package, replacing the previous uniform-interval approximation.
+  This more exactly accounts for primary event censoring, secondary interval censoring, and right truncation, and is used unconditionally for the lognormal, gamma, and exponential distributions.
+  The log-logistic distribution has been dropped from `enw_reference()` because `primarycensored` does not yet support it (epinowcast/primarycensored#321); it can be restored once upstream support lands.
+  The vendored Stan functions are generated from `primarycensored` by `inst/dev/vendor-primarycensored.R` and kept up to date by the `check-primarycensored` workflow, following the approach used by `EpiNow2`.
+  The now-unused legacy discretisation Stan functions (`discretised_logit_hazard()` and its uniform-interval helpers) have been removed.
+  See #848 (addressing #438 and #297) by @seabbs.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
 
