@@ -2,3 +2,4 @@
 *.hpp
 *.exe
 test_expected_obs
+test_calculate_secondary

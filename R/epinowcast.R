@@ -43,6 +43,11 @@
 #' @param obs The observation model as defined by [enw_obs()].
 #' Observations are also processed within this function for use in modelling.
 #'
+#' @param secondary The secondary observation model as defined by
+#' [enw_secondary()]. By default this is disabled. Supply a configured
+#' [enw_secondary()] with secondary observations to jointly model a secondary
+#' outcome (e.g. deaths from cases, or bed occupancy from admissions).
+#'
 #' @param fit Model fit options as defined using [enw_fit_opts()]. This includes
 #' the sampler function to use (with the package default being [enw_sample()]),
 #' whether or now a nowcast should be used, etc. See [enw_fit_opts()] for
@@ -149,6 +154,9 @@ epinowcast <- function(data,
                        obs = epinowcast::enw_obs(
                          family = "negbin", data = data
                        ),
+                       secondary = epinowcast::enw_secondary(
+                         secondary = ~0, data = data
+                       ),
                        fit = epinowcast::enw_fit_opts(
                          sampler = epinowcast::enw_sample,
                          nowcast = TRUE, pp = FALSE,
@@ -159,7 +167,7 @@ epinowcast <- function(data,
                        priors,
                        ...) {
   modules <- list(
-    expectation, reference, report, missing, obs, fit, ...
+    expectation, reference, report, missing, obs, fit, secondary, ...
   )
   names(modules) <- as.character(seq_along(modules))
   purrr::walk(modules, check_module)
