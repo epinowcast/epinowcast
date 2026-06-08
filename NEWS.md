@@ -13,6 +13,12 @@
   The population can be fixed or fitted via a LogNormal prior, and is per-group: groups are treated as independent well-mixed populations (a single value is recycled across groups with a warning, or a length-`groups` vector sets group-specific values).
   The adjustment is opt-in and applies to the renewal path only; the renewal logic is adapted from `EpiNow2` (`rt_opts(pop = ...)`, MIT licence).
   See #826.
+- The parametric reference delay is now discretised with the double interval censoring approach from the [primarycensored](https://primarycensored.epinowcast.org) package, replacing the previous uniform-interval approximation.
+  This more exactly accounts for primary event censoring, secondary interval censoring, and right truncation, and is used unconditionally for the lognormal, gamma, and exponential distributions.
+  The log-logistic distribution has been dropped from `enw_reference()` because `primarycensored` does not yet support it (epinowcast/primarycensored#321); it can be restored once upstream support lands.
+  The vendored Stan functions are generated from `primarycensored` by `inst/dev/vendor-primarycensored.R` and kept up to date by the `check-primarycensored` workflow, following the approach used by `EpiNow2`.
+  The now-unused legacy discretisation Stan functions (`discretised_logit_hazard()` and its uniform-interval helpers) have been removed.
+  See #848 (addressing #438 and #297) by @seabbs.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
 

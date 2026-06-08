@@ -42,8 +42,10 @@ deduplication
 difftime
 discretisation
 Discretisation
+discretisations
 discretised
 Discretised
+discretises
 doi
 dplyr
 dss
@@ -78,6 +80,7 @@ Höhle
 IDate
 ImperialCollegeLondon
 Inf
+infty
 INLA
 int
 iter
@@ -179,12 +182,14 @@ Precompute
 precomputes
 precomputing
 predictives
+primarycensored
 PSIS
 qquad
 rceil
 readibility
 refp
 Reinsel
+renormalising
 Renviron
 reparameterisation
 rhat
@@ -233,6 +238,7 @@ unmodelled
 unpooled
 unsets
 Vehtari
+vendored
 Vscode
 WardBrian
 Wolffram

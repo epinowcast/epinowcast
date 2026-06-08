@@ -38,7 +38,15 @@ navbar:
         href: articles/features.html
       - text: Discretised distributions
         href: articles/distributions.html
+      - text: Latent processes
+      - text: Latent process and periodic options for the growth-rate model
+        href: articles/latent-processes.html
+      - text: "ARIMA latent residuals: maths, priors, and usage"
+        href: articles/arima.html
+      - text: "Gaussian process latent terms: maths, priors, and usage"
+        href: articles/gaussian-process.html
       - text: Case studies
+        href: articles/package-use-cases.html
       - text: Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany
         href: articles/germany-age-stratified-nowcasting.html
       - text: Estimating the effective reproduction number in real-time for a single timeseries with reporting delays
