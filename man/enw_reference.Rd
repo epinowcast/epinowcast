@@ -6,7 +6,7 @@
 \usage{
 enw_reference(
   parametric = ~1,
-  distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
+  distribution = c("lognormal", "none", "exponential", "gamma"),
   non_parametric = ~0,
   data
 )
@@ -24,7 +24,14 @@ random effects, and random walks.}
 
 \item{distribution}{A character vector describing the parametric delay
 distribution to use. Current options are: "none", "lognormal", "gamma",
-"exponential", and "loglogistic", with the default being "lognormal".}
+and "exponential", with the default being "lognormal". These distributions
+are discretised using the double interval censoring approach from the
+\href{https://primarycensored.epinowcast.org}{primarycensored} package, which
+accounts for primary event censoring, secondary interval censoring, and
+right truncation. The log-logistic distribution is not currently supported,
+pending log-logistic support in \code{primarycensored} (see
+\url{https://github.com/epinowcast/primarycensored/issues/321}). See
+\code{vignette("distributions")} for details.}
 
 \item{non_parametric}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}})
 describing the non-parametric logit hazard model. This can use features
