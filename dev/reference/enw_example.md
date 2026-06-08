@@ -67,16 +67,16 @@ enw_example(type = "nowcast")
 #>   metadelay          :      20 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
-#>   priors : 14 x 6 
+#>   priors : 40 x 6 
 #>   fit : CmdStanMCMC 
-#>   data : list(112) 
+#>   data : list(255) 
 #>   fit_args : list(5) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 1,000 | Max Rhat: 1.01 
+#>   Samples: 1,000 | Max Rhat: 1.04 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 8 (3 at max, 0.3%) 
-#>   Run time: 26 secs 
+#>   Max treedepth: 8 (331 at max, 33.1%) 
+#>   Run time: 48.6 secs 
 
 # Load the preprocessed observations
 enw_example(type = "preprocessed_observations")

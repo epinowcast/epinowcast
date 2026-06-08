@@ -227,7 +227,7 @@ is the so-called reporting hazard. For a case in group <span class="math inline"
 <div class="section level5">
 <h5 id="parametric-baseline-hazard">Parametric baseline hazard<a class="anchor" aria-label="anchor" href="#parametric-baseline-hazard"></a>
 </h5>
-<p>The parametric baseline hazard <span class="math inline">\(\gamma_{g,t,d}\)</span> for a case in group <span class="math inline">\(g\)</span> with reference date <span class="math inline">\(t\)</span> is modelled according to a certain discretised parametric probability distribution with parameters <span class="math inline">\(\mu_{g,t}\)</span> and <span class="math inline">\(\upsilon_{g,t}\)</span>. Currently, <code>epinowcast</code> supports four different parametric distributions: (i) log-normal (default), (ii) exponential, (iii) gamma, and (iv) log-logistic. The distributions are discretised and adjusted for an assumed maximum delay, see <code><a href="../articles/distributions.html">vignette("distributions")</a></code> for details. The delay probabilities <span class="math inline">\(p^{\prime}_{g,t,d}\)</span> obtained from the discretised delay distribution are converted into hazards on the logit scale using</p>
+<p>The parametric baseline hazard <span class="math inline">\(\gamma_{g,t,d}\)</span> for a case in group <span class="math inline">\(g\)</span> with reference date <span class="math inline">\(t\)</span> is modelled according to a certain discretised parametric probability distribution with parameters <span class="math inline">\(\mu_{g,t}\)</span> and <span class="math inline">\(\upsilon_{g,t}\)</span>. Currently, <code>epinowcast</code> supports three different parametric distributions: (i) log-normal (default), (ii) exponential, and (iii) gamma. The distributions are discretised and adjusted for an assumed maximum delay using the double interval censoring discretisation from the <a href="https://primarycensored.epinowcast.org" class="external-link">primarycensored</a> package<span class="citation"><sup>[<a href="#ref-primarycensored">15</a>]</sup></span>; see <code><a href="../articles/distributions.html">vignette("distributions")</a></code> for details. The delay probabilities <span class="math inline">\(p^{\prime}_{g,t,d}\)</span> obtained from the discretised delay distribution are converted into hazards on the logit scale using</p>
 <p><span class="math display">\[\begin{equation}
   \gamma_{g,t,d} = \text{logit} \left(\frac{p^{\prime}_{g,t,d}}{\left(1 -\sum^{d-1}_{d^{\prime}=0} p^{\prime}_{g,t,d^{\prime}} \right)} \right).
 \end{equation}\]</span></p>
@@ -257,7 +257,7 @@ See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for deta
 <div class="section level2">
 <h2 id="observation-model-and-nowcast">Observation model and nowcast<a class="anchor" aria-label="anchor" href="#observation-model-and-nowcast"></a>
 </h2>
-<p>Expected notifications by date of reference (<span class="math inline">\(t\)</span>) and reporting delay can now be found by multiplying expected final notifications for each <span class="math inline">\(t\)</span> with the probability of reporting for each day of delay (<span class="math inline">\(p_{g,t,d}\)</span>). We assume a negative binomial observation model, by default, with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion<span class="citation"><sup>[<a href="#ref-stan_prior_wiki">15</a>]</sup></span>) and produce a nowcast of final observed notifications at each reference date by summing posterior estimates for unobserved notification and observed notifications for that reference date.</p>
+<p>Expected notifications by date of reference (<span class="math inline">\(t\)</span>) and reporting delay can now be found by multiplying expected final notifications for each <span class="math inline">\(t\)</span> with the probability of reporting for each day of delay (<span class="math inline">\(p_{g,t,d}\)</span>). We assume a negative binomial observation model, by default, with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion<span class="citation"><sup>[<a href="#ref-stan_prior_wiki">16</a>]</sup></span>) and produce a nowcast of final observed notifications at each reference date by summing posterior estimates for unobserved notification and observed notifications for that reference date.</p>
 <p><span class="math display">\[\begin{align}
   n_{g,t,d} \mid \lambda_{g,t},p_{g,t,d}  &amp;\sim \text{NB} \left((1 - \alpha_{g,t})\lambda_{g,t} \times p_{g,t,d}, \phi \right),\ t=1,...,T. \\
     \frac{1}{\sqrt{\phi}} &amp;\sim \text{Half-Normal}(0, 1) \\
@@ -282,7 +282,7 @@ See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for deta
 <div class="section level2">
 <h2 id="implementation">Implementation<a class="anchor" aria-label="anchor" href="#implementation"></a>
 </h2>
-<p>The model is implemented in the probabilistic programming language <code>stan</code> and we use <code>cmdstanr</code> to interact with the model<span class="citation"><sup>[<a href="#ref-stan">12</a>,<a href="#ref-cmdstanr">13</a>]</sup></span>. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. <code>epinowcast</code> incorporates additional functionality written in R<span class="citation"><sup>[<a href="#ref-R">16</a>]</sup></span> to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using <code>scoringutils</code><span class="citation"><sup>[<a href="#ref-scoringutils">17</a>]</sup></span>. A flexible formula interface is provided to enable easier implementation of complex user specified models without interacting with the underlying code base. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.</p>
+<p>The model is implemented in the probabilistic programming language <code>stan</code> and we use <code>cmdstanr</code> to interact with the model<span class="citation"><sup>[<a href="#ref-stan">12</a>,<a href="#ref-cmdstanr">13</a>]</sup></span>. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. <code>epinowcast</code> incorporates additional functionality written in R<span class="citation"><sup>[<a href="#ref-R">17</a>]</sup></span> to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using <code>scoringutils</code><span class="citation"><sup>[<a href="#ref-scoringutils">18</a>]</sup></span>. A flexible formula interface is provided to enable easier implementation of complex user specified models without interacting with the underlying code base. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.</p>
 </div>
 <div class="section level2">
 <h2 id="summary-of-module-parameter-mappings">Summary of module-parameter mappings<a class="anchor" aria-label="anchor" href="#summary-of-module-parameter-mappings"></a>
@@ -405,17 +405,22 @@ See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for deta
 <div class="csl-right-inline">Bastos, L. S., Economou, T., Gomes, M. F. C., Villela, D. A. M., Coelho, F. C., Cruz, O. G., Stoner, O., Bailey, T., &amp; Codeço, C. T. (2019). A modelling approach for correcting reporting delays in disease surveillance data. <em>Statistics in Medicine</em>, <em>38</em>(22), 4363–4377. <a href="https://doi.org/10.1002/sim.8303" class="external-link">https://doi.org/10.1002/sim.8303</a>
 </div>
 </div>
-<div id="ref-stan_prior_wiki" class="csl-entry">
+<div id="ref-primarycensored" class="csl-entry">
 <div class="csl-left-margin">15. </div>
+<div class="csl-right-inline">Abbott, S., Brand, S., Azam, J. M., Pearson, C., Funk, S., &amp; Charniga, K. (2024). <em>Primarycensored: Primary event censored distributions</em>. <a href="https://doi.org/10.5281/zenodo.13632839" class="external-link">https://doi.org/10.5281/zenodo.13632839</a>
+</div>
+</div>
+<div id="ref-stan_prior_wiki" class="csl-entry">
+<div class="csl-left-margin">16. </div>
 <div class="csl-right-inline">Team, S. D. (2020). <em>Prior choice recommendations</em>.</div>
 </div>
 <div id="ref-R" class="csl-entry">
-<div class="csl-left-margin">16. </div>
+<div class="csl-left-margin">17. </div>
 <div class="csl-right-inline">R Core Team. (2019). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="external-link">https://www.R-project.org/</a>
 </div>
 </div>
 <div id="ref-scoringutils" class="csl-entry">
-<div class="csl-left-margin">17. </div>
+<div class="csl-left-margin">18. </div>
 <div class="csl-right-inline">Bosse, N. (2020). <em>Scoringutils: A collection of proper scoring rules and metrics to assess predictions</em>. <a href="https://github.com/epiforecasts/scoringutils" class="external-link">https://github.com/epiforecasts/scoringutils</a>
 </div>
 </div>

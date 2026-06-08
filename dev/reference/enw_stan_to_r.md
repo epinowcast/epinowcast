@@ -16,7 +16,7 @@ with model functionalities.
 
 ``` r
 enw_stan_to_r(
-  files = list.files(include),
+  files = list.files(include, pattern = "\\.stan$"),
   include = system.file("stan", "functions", package = "epinowcast"),
   global = TRUE,
   verbose = TRUE,

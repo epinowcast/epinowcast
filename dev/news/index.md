@@ -28,6 +28,28 @@
   implementation is adapted from `EpiNow2`
   (<https://github.com/epiforecasts/EpiNow2>, MIT licensed). See
   [\#824](https://github.com/epinowcast/epinowcast/issues/824).
+- The parametric reference delay is now discretised with the double
+  interval censoring approach from the
+  [primarycensored](https://primarycensored.epinowcast.org) package,
+  replacing the previous uniform-interval approximation. This more
+  exactly accounts for primary event censoring, secondary interval
+  censoring, and right truncation, and is used unconditionally for the
+  lognormal, gamma, and exponential distributions. The log-logistic
+  distribution has been dropped from
+  [`enw_reference()`](https://package.epinowcast.org/dev/reference/enw_reference.md)
+  because `primarycensored` does not yet support it
+  (epinowcast/primarycensored#321); it can be restored once upstream
+  support lands. The vendored Stan functions are generated from
+  `primarycensored` by `inst/dev/vendor-primarycensored.R` and kept up
+  to date by the `check-primarycensored` workflow, following the
+  approach used by `EpiNow2`. The now-unused legacy discretisation Stan
+  functions (`discretised_logit_hazard()` and its uniform-interval
+  helpers) have been removed. See
+  [\#848](https://github.com/epinowcast/epinowcast/issues/848)
+  (addressing
+  [\#438](https://github.com/epinowcast/epinowcast/issues/438) and
+  [\#297](https://github.com/epinowcast/epinowcast/issues/297)) by
+  [@seabbs](https://github.com/seabbs).
 - The autoregressive part of an
   [`arima()`](https://package.epinowcast.org/dev/reference/arima.md)
   latent residual now takes an optional prior on its partial

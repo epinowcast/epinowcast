@@ -297,9 +297,12 @@ The parametric baseline hazard \\\gamma\_{g,t,d}\\ for a case in group
 \\g\\ with reference date \\t\\ is modelled according to a certain
 discretised parametric probability distribution with parameters
 \\\mu\_{g,t}\\ and \\\upsilon\_{g,t}\\. Currently, `epinowcast` supports
-four different parametric distributions: (i) log-normal (default), (ii)
-exponential, (iii) gamma, and (iv) log-logistic. The distributions are
-discretised and adjusted for an assumed maximum delay, see
+three different parametric distributions: (i) log-normal (default), (ii)
+exponential, and (iii) gamma. The distributions are discretised and
+adjusted for an assumed maximum delay using the double interval
+censoring discretisation from the
+[primarycensored](https://primarycensored.epinowcast.org)
+package^(\[[15](#ref-primarycensored)\]); see
 [`vignette("distributions")`](https://package.epinowcast.org/dev/articles/distributions.md)
 for details. The delay probabilities \\p^{\prime}\_{g,t,d}\\ obtained
 from the discretised delay distribution are converted into hazards on
@@ -377,7 +380,7 @@ can now be found by multiplying expected final notifications for each
 (\\p\_{g,t,d}\\). We assume a negative binomial observation model, by
 default, with a joint overdispersion parameter (with a standard half
 normal prior on 1 over square root of the
-overdispersion^(\[[15](#ref-stan_prior_wiki)\])) and produce a nowcast
+overdispersion^(\[[16](#ref-stan_prior_wiki)\])) and produce a nowcast
 of final observed notifications at each reference date by summing
 posterior estimates for unobserved notification and observed
 notifications for that reference date.
@@ -449,9 +452,9 @@ parallelisation is available across times of reference to reduce
 runtimes. Sparse design matrices have been used for all covariates to
 limit the number of probability mass functions that need to be
 calculated. `epinowcast` incorporates additional functionality written
-in R^(\[[16](#ref-R)\]) to enable plotting nowcasts and posterior
+in R^(\[[17](#ref-R)\]) to enable plotting nowcasts and posterior
 predictions, summarising nowcasts, and scoring them using
-`scoringutils`^(\[[17](#ref-scoringutils)\]). A flexible formula
+`scoringutils`^(\[[18](#ref-scoringutils)\]). A flexible formula
 interface is provided to enable easier implementation of complex user
 specified models without interacting with the underlying code base. All
 functionality is modular allowing users to extend and alter the
@@ -571,15 +574,21 @@ surveillance data. *Statistics in Medicine*, *38*(22), 4363–4377.
 
 15\.
 
-Team, S. D. (2020). *Prior choice recommendations*.
+Abbott, S., Brand, S., Azam, J. M., Pearson, C., Funk, S., & Charniga,
+K. (2024). *Primarycensored: Primary event censored distributions*.
+<https://doi.org/10.5281/zenodo.13632839>
 
 16\.
+
+Team, S. D. (2020). *Prior choice recommendations*.
+
+17\.
 
 R Core Team. (2019). *R: A language and environment for statistical
 computing*. R Foundation for Statistical Computing.
 <https://www.R-project.org/>
 
-17\.
+18\.
 
 Bosse, N. (2020). *Scoringutils: A collection of proper scoring rules
 and metrics to assess predictions*.

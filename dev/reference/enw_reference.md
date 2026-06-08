@@ -8,7 +8,7 @@ and/or non-parametric hazard formulations.
 ``` r
 enw_reference(
   parametric = ~1,
-  distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
+  distribution = c("lognormal", "none", "exponential", "gamma"),
   non_parametric = ~0,
   data
 )
@@ -35,8 +35,16 @@ enw_reference(
 - distribution:
 
   A character vector describing the parametric delay distribution to
-  use. Current options are: "none", "lognormal", "gamma", "exponential",
-  and "loglogistic", with the default being "lognormal".
+  use. Current options are: "none", "lognormal", "gamma", and
+  "exponential", with the default being "lognormal". These distributions
+  are discretised using the double interval censoring approach from the
+  [primarycensored](https://primarycensored.epinowcast.org) package,
+  which accounts for primary event censoring, secondary interval
+  censoring, and right truncation. The log-logistic distribution is not
+  currently supported, pending log-logistic support in `primarycensored`
+  (see <https://github.com/epinowcast/primarycensored/issues/321>). See
+  [`vignette("distributions")`](https://package.epinowcast.org/dev/articles/distributions.md)
+  for details.
 
 - non_parametric:
 
@@ -1227,8 +1235,8 @@ enw_reference(
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x55734d2d40a0>
-#> <environment: 0x55734d2e3ff8>
+#> <bytecode: 0x555c294973f0>
+#> <environment: 0x555c294a9118>
 #> 
 
 # Non-parametric model with a random effect per delay
@@ -4001,8 +4009,8 @@ enw_reference(
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x55734d2d40a0>
-#> <environment: 0x55734d7543c8>
+#> <bytecode: 0x555c294973f0>
+#> <environment: 0x555c245bd5b0>
 #> 
 
 # Combined parametric and non-parametric model
@@ -5166,7 +5174,7 @@ enw_reference(
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x55734d2d40a0>
-#> <environment: 0x557354937478>
+#> <bytecode: 0x555c294973f0>
+#> <environment: 0x555c228c2328>
 #> 
 ```

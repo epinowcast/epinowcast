@@ -37,16 +37,16 @@ Functions used for postprocessing of model fits
 fit <- enw_example("nowcast")
 posterior <- enw_posterior(fit$fit[[1]], var = "expr_lelatent_int[1,1]")
 enw_quantiles_to_long(posterior)
-#>                  variable     mean   median        sd       mad      rhat
-#>                    <char>    <num>    <num>     <num>     <num>     <num>
-#> 1: expr_lelatent_int[1,1] 4.313129 4.312379 0.1671607 0.1600364 0.9991704
-#> 2: expr_lelatent_int[1,1] 4.313129 4.312379 0.1671607 0.1600364 0.9991704
-#> 3: expr_lelatent_int[1,1] 4.313129 4.312379 0.1671607 0.1600364 0.9991704
-#> 4: expr_lelatent_int[1,1] 4.313129 4.312379 0.1671607 0.1600364 0.9991704
+#>                  variable    mean   median        sd       mad     rhat
+#>                    <char>   <num>    <num>     <num>     <num>    <num>
+#> 1: expr_lelatent_int[1,1] 4.29003 4.289716 0.1448255 0.1451874 1.002839
+#> 2: expr_lelatent_int[1,1] 4.29003 4.289716 0.1448255 0.1451874 1.002839
+#> 3: expr_lelatent_int[1,1] 4.29003 4.289716 0.1448255 0.1451874 1.002839
+#> 4: expr_lelatent_int[1,1] 4.29003 4.289716 0.1448255 0.1451874 1.002839
 #>    ess_bulk ess_tail quantile prediction
 #>       <num>    <num>    <num>      <num>
-#> 1: 1006.782 735.6759     0.05   4.022114
-#> 2: 1006.782 735.6759     0.20   4.180943
-#> 3: 1006.782 735.6759     0.80   4.457060
-#> 4: 1006.782 735.6759     0.95   4.588217
+#> 1:  872.377 684.6952     0.05   4.052370
+#> 2:  872.377 684.6952     0.20   4.168425
+#> 3:  872.377 684.6952     0.80   4.413531
+#> 4:  872.377 684.6952     0.95   4.524110
 ```
