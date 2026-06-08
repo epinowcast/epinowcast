@@ -5,7 +5,7 @@
 \title{Specify an uncertain parametric delay distribution}
 \usage{
 enw_uncertain(
-  distribution = c("lognormal", "exponential", "gamma", "loglogistic"),
+  distribution = c("lognormal", "exponential", "gamma"),
   mean = c(1, 1),
   sd = c(0.5, 1),
   max
@@ -13,7 +13,7 @@ enw_uncertain(
 }
 \arguments{
 \item{distribution}{A character string giving the parametric family. One of
-\code{"lognormal"} (the default), \code{"exponential"}, \code{"gamma"}, or \code{"loglogistic"}.
+\code{"lognormal"} (the default), \code{"exponential"}, or \code{"gamma"}.
 These match the families supported by \code{\link[=enw_reference]{enw_reference()}}.}
 
 \item{mean}{A length-2 numeric vector \code{c(mean, sd)} giving the mean and

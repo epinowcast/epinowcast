@@ -48,8 +48,8 @@ test_that("enw_uncertain maps distributions to Stan integer codes", {
   expect_identical(
     enw_uncertain(distribution = "gamma", max = 5)$dist_id, 3L
   )
-  expect_identical(
-    enw_uncertain(distribution = "loglogistic", max = 5)$dist_id, 4L
+  expect_error(
+    enw_uncertain(distribution = "loglogistic", max = 5)
   )
 })
 

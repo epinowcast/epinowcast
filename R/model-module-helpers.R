@@ -218,7 +218,7 @@ add_pmfs <- function(pmfs) {
 #' fixed numeric PMF.
 #'
 #' @param distribution A character string giving the parametric family. One of
-#' `"lognormal"` (the default), `"exponential"`, `"gamma"`, or `"loglogistic"`.
+#' `"lognormal"` (the default), `"exponential"`, or `"gamma"`.
 #' These match the families supported by [enw_reference()].
 #'
 #' @param mean A length-2 numeric vector `c(mean, sd)` giving the mean and
@@ -250,7 +250,7 @@ add_pmfs <- function(pmfs) {
 #'   mean = c(1.6, 0.05), sd = c(0.4, 0.05), max = 15
 #' )
 enw_uncertain <- function(distribution = c(
-                            "lognormal", "exponential", "gamma", "loglogistic"
+                            "lognormal", "exponential", "gamma"
                           ),
                           mean = c(1, 1), sd = c(0.5, 1), max) {
   distribution <- match.arg(distribution)
@@ -274,8 +274,7 @@ enw_uncertain <- function(distribution = c(
   dist_id <- data.table::fcase(
     distribution == "exponential", 1L,
     distribution == "lognormal", 2L,
-    distribution == "gamma", 3L,
-    distribution == "loglogistic", 4L
+    distribution == "gamma", 3L
   )
   out <- list(
     distribution = distribution,

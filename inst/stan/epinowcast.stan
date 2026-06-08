@@ -7,7 +7,8 @@ functions {
 #include functions/regression.stan
 #include functions/log_expected_latent_from_r.stan
 #include functions/log_expected_obs_from_latent.stan
-#include functions/discretised_logit_hazard.stan
+#include functions/primarycensored.stan
+#include functions/primarycensored_pmf.stan
 #include functions/hazard.stan
 #include functions/expected_obs.stan
 #include functions/combine_logit_hazards.stan
@@ -55,9 +56,9 @@ data {
   // PMF of the generation time distribution (reversed and on log scale)
   vector[expr_gt_n] expr_lrgt;
   // Uncertain generation time: 0 = fixed PMF (use expr_lrgt), else a
-  // distribution id (1 exp, 2 lognormal, 3 gamma, 4 loglogistic) whose
+  // distribution id (1 exp, 2 lognormal, 3 gamma) whose
   // parameters are sampled and discretised in-model.
-  int<lower=0, upper=4> expr_gt_dist;
+  int<lower=0, upper=3> expr_gt_dist;
   array[2, 1] real expr_gt_mean_p;
   array[2, 1] real expr_gt_sd_p;
   // Model for growth rate process. Currently, 0 = none
@@ -104,9 +105,9 @@ data {
   // Partial PMF of the latent delay distribution as a convolution matrix
   matrix[expr_ft,  expr_ft] expl_lrd;
   // Uncertain latent reporting delay: 0 = fixed PMF (use expl_lrd), else a
-  // distribution id (1 exp, 2 lognormal, 3 gamma, 4 loglogistic) whose
+  // distribution id (1 exp, 2 lognormal, 3 gamma) whose
   // parameters are sampled and discretised then convolved in-model.
-  int<lower=0, upper=4> expl_lrd_dist;
+  int<lower=0, upper=3> expl_lrd_dist;
   array[2, 1] real expl_lrd_mean_p;
   array[2, 1] real expl_lrd_sd_p;
   // For an uncertain delay, maps each nonzero of the convolution matrix (CSR
@@ -512,12 +513,13 @@ transformed parameters{
   {
   vector[expr_gt_n] expr_lrgt_use;
   vector[num_elements(expl_lrd_sparse.1)] expl_lrd_w;
-  // Reuse the parametric reference discretisation (discretised_logit_hazard
-  // with ref_as_p = 1 returns a log PMF) to rebuild distributions in-model.
+  // Reuse the parametric reference discretisation
+  // (discretised_pcens_logit_hazard with ref_as_p = 1 returns a log PMF) to
+  // rebuild distributions in-model.
   if (expr_gt_dist) {
     real gt_sigma = expr_gt_dist > 1 ? expr_gt_sd[1] : 0;
-    vector[expr_gt_n] gt_lpmf = discretised_logit_hazard(
-      expr_gt_mean[1], gt_sigma, expr_gt_n, expr_gt_dist, 2, 1
+    vector[expr_gt_n] gt_lpmf = discretised_pcens_logit_hazard(
+      expr_gt_mean[1], gt_sigma, expr_gt_n, expr_gt_dist, 1
     );
     // log_expected_latent_from_r expects the reversed log PMF.
     expr_lrgt_use = reverse(gt_lpmf);
@@ -526,8 +528,8 @@ transformed parameters{
   }
   if (expl_lrd_dist) {
     real lrd_sigma = expl_lrd_dist > 1 ? expl_lrd_sd[1] : 0;
-    vector[expl_lrd_n] lrd_pmf = exp(discretised_logit_hazard(
-      expl_lrd_mean[1], lrd_sigma, expl_lrd_n, expl_lrd_dist, 2, 1
+    vector[expl_lrd_n] lrd_pmf = exp(discretised_pcens_logit_hazard(
+      expl_lrd_mean[1], lrd_sigma, expl_lrd_n, expl_lrd_dist, 1
     ));
     // Fill the CSR weights from the sampled PMF using the precomputed
     // pattern-to-PMF index map (value-stable, so the nonzero count matches
@@ -593,6 +595,10 @@ transformed parameters{
       refp_gp_type, refp_gp_nu, refp_gp_d, refp_gp_PHI, refp_gp_eta,
       refp_gp_rho, refp_gp_alpha, refp_gp_flat_idx
     );
+    // Default the (unused) sd to 1 for single-parameter distributions such as
+    // the exponential (model_refp == 1) so the discretisation functions below
+    // always receive a defined value.
+    refp_sd = rep_vector(1.0, refp_fnrow);
     if (model_refp > 1) {
       refp_sd = regression_predictor(
         {log(refp_sd_int[1])}, refp_sd_beta, refp_fnrow, refp_fncol,
@@ -611,11 +617,13 @@ transformed parameters{
     }
     }
     // calculate parametric reference date logit hazards (unless no reporting
-    // effects)
+    // effects). The parametric reference delay is discretised with the
+    // primarycensored double interval censoring approach for every supported
+    // distribution (lognormal, gamma, exponential).
     profile("transformed_delay_reference_time_hazards") {
     for (i in 1:refp_fnrow) {
-      refp_lh[, i] = discretised_logit_hazard(
-        refp_mean[i], refp_sd[i], dmax, model_refp, 2, ref_as_p
+      refp_lh[, i] = discretised_pcens_logit_hazard(
+        refp_mean[i], refp_sd[i], dmax, model_refp, ref_as_p
       );
     }
     }
