@@ -2,23 +2,16 @@
 # conditional on known per-reference-date totals via a (truncated)
 # multinomial.
 
-# Discretised lognormal delay PMF matching the package's double-censored
-# scheme (max_strat = 2 in discretised_logit_hazard.stan). Simulating from
-# this means the recovered refp_mean_int / refp_sd_int are directly
+# Discretised lognormal delay PMF matching the package's primarycensored
+# double interval censoring discretisation (uniform primary window and daily
+# secondary censoring, truncated at dmax). Simulating from the same scheme the
+# model fits means the recovered refp_mean_int / refp_sd_int are directly
 # comparable to the simulation parameters.
 disc_lognormal_pmf <- function(meanlog, sdlog, dmax) {
-  u <- dmax
-  lcdf <- stats::plnorm(1:u, meanlog, sdlog, log.p = TRUE)
-  m <- max(lcdf[u], lcdf[u - 1])
-  denom <- m + log(sum(exp(c(lcdf[u], lcdf[u - 1]) - m)))
-  lcdf <- lcdf - denom
-  p <- numeric(u)
-  p[1] <- exp(lcdf[1])
-  if (u > 1) p[2] <- exp(lcdf[2])
-  if (u > 2) {
-    for (i in 3:u) p[i] <- exp(lcdf[i]) - exp(lcdf[i - 2])
-  }
-  p
+  primarycensored::dprimarycensored(
+    0:(dmax - 1), stats::plnorm, pwindow = 1, swindow = 1, D = dmax,
+    meanlog = meanlog, sdlog = sdlog
+  )
 }
 
 # Build a full reporting triangle from a known delay PMF and a constant
@@ -108,6 +101,7 @@ test_that("epinowcast() minimises the expectation for a delay_only fit", {
 })
 
 test_that("delay_only supports an observation indicator", {
+  skip_if_not_installed("primarycensored")
   sim <- simulate_delay_triangle(
     meanlog = 1.6, sdlog = 0.5, max_delay = 10, n_dates = 20, total = 2000
   )
