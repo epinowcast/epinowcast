@@ -1,5 +1,19 @@
 var searchData=
 [
   ['pacf_5fto_5fphi_0',['pacf_to_phi',['../arima__kernel_8stan.html#a69fe416e53cb8347a4ba7e9020897c8f',1,'arima_kernel.stan']]],
-  ['prob_5fto_5fhazard_1',['prob_to_hazard',['../hazard_8stan.html#a5ed5adf2b346feec0505225a6fc73cd6',1,'hazard.stan']]]
+  ['primary_5flpdf_1',['primary_lpdf',['../primarycensored_8stan.html#acfee86fff92c3be55fc4bfe7e5ea8fd3',1,'primarycensored.stan']]],
+  ['primarycensored_5fanalytical_5fcdf_2',['primarycensored_analytical_cdf',['../primarycensored_8stan.html#aedf79a16588b8a36e0304a01e7c060a7',1,'primarycensored.stan']]],
+  ['primarycensored_5fanalytical_5flcdf_3',['primarycensored_analytical_lcdf',['../primarycensored_8stan.html#ab34e087915f10297d0afc22245f7fee1',1,'primarycensored.stan']]],
+  ['primarycensored_5fanalytical_5flcdf_5fraw_4',['primarycensored_analytical_lcdf_raw',['../primarycensored_8stan.html#a3cc1a0a455342c3961224afe31db5416',1,'primarycensored.stan']]],
+  ['primarycensored_5fapply_5ftruncation_5',['primarycensored_apply_truncation',['../primarycensored_8stan.html#a1bd5e1e0fb7c8162729c535d4e1175d1',1,'primarycensored.stan']]],
+  ['primarycensored_5fcdf_6',['primarycensored_cdf',['../primarycensored_8stan.html#a1c048ace7a520e3d45670e4e4c14f585',1,'primarycensored.stan']]],
+  ['primarycensored_5fgamma_5funiform_5flcdf_7',['primarycensored_gamma_uniform_lcdf',['../primarycensored_8stan.html#acaf23c49145360658543b617ef155560',1,'primarycensored.stan']]],
+  ['primarycensored_5flcdf_8',['primarycensored_lcdf',['../primarycensored_8stan.html#a9e88f6f30a8f32d8e4771826bf72e463',1,'primarycensored.stan']]],
+  ['primarycensored_5flog_5fnormalizer_9',['primarycensored_log_normalizer',['../primarycensored_8stan.html#a265a7a4cb9d9f28774aa815d74570f47',1,'primarycensored.stan']]],
+  ['primarycensored_5flognormal_5funiform_5flcdf_10',['primarycensored_lognormal_uniform_lcdf',['../primarycensored_8stan.html#aa144386bb3c2a04524e4fe2e216c368d',1,'primarycensored.stan']]],
+  ['primarycensored_5fode_11',['primarycensored_ode',['../primarycensored_8stan.html#a36bcf9457dc8dca5bb617405733b2d0f',1,'primarycensored.stan']]],
+  ['primarycensored_5fsone_5flpmf_5fvectorized_12',['primarycensored_sone_lpmf_vectorized',['../primarycensored_8stan.html#a11d79d0886e7c1828c78e68aa74e67dc',1,'primarycensored.stan']]],
+  ['primarycensored_5ftruncation_5fbounds_13',['primarycensored_truncation_bounds',['../primarycensored_8stan.html#ae87aca017577bc03680c5f0bca4637e6',1,'primarycensored.stan']]],
+  ['primarycensored_5fweibull_5funiform_5flcdf_14',['primarycensored_weibull_uniform_lcdf',['../primarycensored_8stan.html#a435887da77ef71daacacddbaf3f1113f',1,'primarycensored.stan']]],
+  ['prob_5fto_5fhazard_15',['prob_to_hazard',['../hazard_8stan.html#a5ed5adf2b346feec0505225a6fc73cd6',1,'hazard.stan']]]
 ];

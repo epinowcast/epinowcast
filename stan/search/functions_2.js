@@ -7,5 +7,7 @@ var searchData=
   ['diagspd_5fmatern32_4',['diagSPD_Matern32',['../gaussian__process_8stan.html#ae443d4d2b3b752c07ed835b83ecd0e86',1,'gaussian_process.stan']]],
   ['diagspd_5fmatern52_5',['diagSPD_Matern52',['../gaussian__process_8stan.html#add4a066ad1281db47c82a5096af8099a',1,'gaussian_process.stan']]],
   ['diagspd_5fperiodic_6',['diagSPD_Periodic',['../gaussian__process_8stan.html#a56305a04b7b8ac024c83766cb6b6eafc',1,'gaussian_process.stan']]],
-  ['discretised_5flogit_5fhazard_7',['discretised_logit_hazard',['../discretised__logit__hazard_8stan.html#a92a86aaea1391034e8db98b6bf72e725',1,'discretised_logit_hazard.stan']]]
+  ['discretised_5fpcens_5flogit_5fhazard_7',['discretised_pcens_logit_hazard',['../primarycensored__pmf_8stan.html#a6cc05ea2169e67c6ec3d7ebb5ab46e7a',1,'primarycensored_pmf.stan']]],
+  ['dist_5fhas_5fpositive_5fsupport_8',['dist_has_positive_support',['../primarycensored_8stan.html#ac677200fa47a95f644537be481450960',1,'primarycensored.stan']]],
+  ['dist_5flcdf_9',['dist_lcdf',['../primarycensored_8stan.html#a0761ffd0ab06dc8b52d0ef30090941ce',1,'primarycensored.stan']]]
 ];
