@@ -38,5 +38,19 @@ jobs:
           num-cores: 2
 
       - name: Test coverage
-        run: covr::codecov(quiet = FALSE)
+        run: |
+          tryCatch(
+            covr::codecov(quiet = FALSE),
+            error = function(e) {
+              fails <- system(
+                "find /tmp /home/runner -name '*.Rout.fail' 2>/dev/null",
+                intern = TRUE
+              )
+              for (f in fails) {
+                cat("\n=========== ", f, " ===========\n")
+                cat(readLines(f, warn = FALSE), sep = "\n")
+              }
+              stop(e)
+            }
+          )
         shell: Rscript {0}
