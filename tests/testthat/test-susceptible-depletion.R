@@ -197,8 +197,8 @@ test_that(
       ),
       fit = enw_fit_opts(
         sampler = silent_enw_sample, save_warmup = FALSE, pp = FALSE,
-        chains = 2, iter_warmup = 500, iter_sampling = 500,
-        refresh = 0, show_messages = FALSE, adapt_delta = 0.95,
+        chains = 2, iter_warmup = 1000, iter_sampling = 500,
+        refresh = 0, show_messages = FALSE, adapt_delta = 0.99,
         max_treedepth = 12
       ),
       obs = enw_obs(family = "poisson", data = pobs),
