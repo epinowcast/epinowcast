@@ -201,6 +201,30 @@ add_pmfs <- function(pmfs) {
   })
 }
 
+#' Validate a length-2 prior for an uncertain delay distribution
+#'
+#' Internal helper for [enw_uncertain()]. Checks that a prior is a finite
+#' numeric vector of length 2 and, optionally, that its prior standard
+#' deviation (the second element) is strictly positive.
+#'
+#' @param prior The prior vector to validate.
+#' @param arg The argument name, used for error messages.
+#' @param require_pos Whether to require a positive prior standard deviation.
+#' @return Invisibly `NULL`; called for its side effect of erroring.
+#' @noRd
+.check_uncertain_prior <- function(prior, arg, require_pos = TRUE) {
+  if (
+    !is.numeric(prior) || length(prior) != 2 || !all(is.finite(prior)) ||
+      (require_pos && prior[2] <= 0)
+  ) {
+    cli::cli_abort(paste0(
+      "{.arg {arg}} must be a finite numeric vector of length 2 with a ",
+      "positive prior standard deviation ({.code {arg}[2]})"
+    ))
+  }
+  invisible(NULL)
+}
+
 #' Specify an uncertain parametric delay distribution
 #'
 #' @description
@@ -254,17 +278,18 @@ enw_uncertain <- function(distribution = c(
                           ),
                           mean = c(1, 1), sd = c(0.5, 1), max) {
   distribution <- match.arg(distribution)
-  if (missing(max) || length(max) != 1 || max < 2) {
+  if (
+    missing(max) || length(max) != 1 || !is.numeric(max) ||
+      !is.finite(max) || max < 2 || max != as.integer(max)
+  ) {
     cli::cli_abort(
-      "{.arg max} must be a single integer of at least 2"
+      "{.arg max} must be a single finite integer of at least 2"
     )
   }
-  if (length(mean) != 2) {
-    cli::cli_abort("{.arg mean} must be a numeric vector of length 2")
-  }
-  if (length(sd) != 2) {
-    cli::cli_abort("{.arg sd} must be a numeric vector of length 2")
-  }
+  .check_uncertain_prior(mean, "mean")
+  # The exponential ignores `sd`, so its prior standard deviation need
+  # not be positive (the parameter is fixed to 0 in-model).
+  .check_uncertain_prior(sd, "sd", require_pos = distribution != "exponential")
   if (distribution == "exponential" && !missing(sd)) {
     cli::cli_warn(paste0(
       "The exponential distribution has no scale parameter; the supplied ",

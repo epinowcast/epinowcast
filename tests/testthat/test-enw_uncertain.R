@@ -27,6 +27,25 @@ test_that("enw_uncertain rejects a max below 2", {
   )
 })
 
+test_that("enw_uncertain rejects a non-integer, non-finite, or NA max", {
+  expect_error(
+    enw_uncertain(distribution = "gamma", max = 10.5),
+    "max"
+  )
+  expect_error(
+    enw_uncertain(distribution = "gamma", max = Inf),
+    "max"
+  )
+  expect_error(
+    enw_uncertain(distribution = "gamma", max = NA_integer_),
+    "max"
+  )
+  expect_error(
+    enw_uncertain(distribution = "gamma", max = c(5, 10)),
+    "max"
+  )
+})
+
 test_that("enw_uncertain rejects malformed priors", {
   expect_error(
     enw_uncertain(distribution = "gamma", mean = 1, max = 10),
@@ -35,6 +54,38 @@ test_that("enw_uncertain rejects malformed priors", {
   expect_error(
     enw_uncertain(distribution = "gamma", sd = c(1, 2, 3), max = 10),
     "length 2"
+  )
+})
+
+test_that("enw_uncertain rejects non-finite priors", {
+  expect_error(
+    enw_uncertain(distribution = "gamma", mean = c(1, NA), max = 10),
+    "mean"
+  )
+  expect_error(
+    enw_uncertain(distribution = "gamma", mean = c(Inf, 1), max = 10),
+    "mean"
+  )
+  expect_error(
+    enw_uncertain(distribution = "gamma", sd = c(0.5, NaN), max = 10),
+    "sd"
+  )
+})
+
+test_that("enw_uncertain requires positive prior standard deviations", {
+  expect_error(
+    enw_uncertain(distribution = "gamma", mean = c(1, 0), max = 10),
+    "mean"
+  )
+  expect_error(
+    enw_uncertain(distribution = "gamma", sd = c(0.5, -1), max = 10),
+    "sd"
+  )
+  # The exponential ignores `sd`, so a non-positive `sd[2]` is accepted
+  # (with the usual warning) rather than rejected.
+  expect_warning(
+    enw_uncertain(distribution = "exponential", sd = c(0.5, 0), max = 10),
+    "exponential"
   )
 })
 

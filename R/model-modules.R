@@ -457,6 +457,23 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
       sd_p = x$sd_p
     ))
   }
+  .valid_pmf <- function(p) {
+    is.numeric(p) && length(p) > 0 && all(is.finite(p)) &&
+      all(p >= 0) && sum(p) > 0
+  }
+  if (is.list(x)) {
+    if (length(x) == 0 || !all(vapply(x, .valid_pmf, logical(1)))) {
+      cli::cli_abort(paste0(
+        "{.arg {arg}} must be a non-empty list of numeric PMFs with ",
+        "finite, non-negative values and a positive sum"
+      ))
+    }
+  } else if (!.valid_pmf(x)) {
+    cli::cli_abort(paste0(
+      "{.arg {arg}} must be a numeric PMF with finite, non-negative ",
+      "values and a positive sum"
+    ))
+  }
   n <- if (is.list(x)) length(x[[1]]) else length(x)
   scale <- if (is.list(x)) sum(x[[1]]) else sum(x)
   list(
@@ -768,9 +785,10 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
           1, data$expr_gt_mean_p[1], data$expr_gt_mean_p[2] / 10
         ))
         if (data$expr_gt_dist > 1) {
-          init$expr_gt_sd <- array(abs(rnorm(
+          # Floor at the Stan `<lower=1e-3>` bound on `expr_gt_sd`.
+          init$expr_gt_sd <- array(pmax(1e-3, abs(rnorm(
             1, data$expr_gt_sd_p[1], data$expr_gt_sd_p[2] / 10
-          )))
+          ))))
         }
       }
       if (isTRUE(data$expl_lrd_dist > 0)) {
@@ -778,9 +796,10 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
           1, data$expl_lrd_mean_p[1], data$expl_lrd_mean_p[2] / 10
         ))
         if (data$expl_lrd_dist > 1) {
-          init$expl_lrd_sd <- array(abs(rnorm(
+          # Floor at the Stan `<lower=1e-3>` bound on `expl_lrd_sd`.
+          init$expl_lrd_sd <- array(pmax(1e-3, abs(rnorm(
             1, data$expl_lrd_sd_p[1], data$expl_lrd_sd_p[2] / 10
-          )))
+          ))))
         }
       }
       if (data$expr_fncol > 0) {
