@@ -25,7 +25,8 @@ vignette: >
 [`enw_forecast()`](../reference/enw_forecast.html) re-drives a fit, optionally under new latent-process assumptions.
 All three share the same generated-quantities code, so their outputs are directly comparable.
 
-This pattern mirrors the separation in `EpiNow2` between [`simulate_infections()`](https://epiforecasts.io/EpiNow2/reference/simulate_infections.html) and [`forecast_infections()`](https://epiforecasts.io/EpiNow2/reference/forecast_infections.html), generalised here so that any model component can be fixed or overridden.
+This pattern mirrors the separation in `EpiNow2` between [`simulate_infections()`](https://epiforecasts.io/EpiNow2/reference/simulate_infections.html) and [`forecast_infections()`](https://epiforecasts.io/EpiNow2/reference/forecast_infections.html).
+In simulation any sampled parameter can be fixed via `parameters`, while forecasting currently overrides the growth rate.
 
 
 ``` r

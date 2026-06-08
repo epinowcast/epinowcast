@@ -18,8 +18,9 @@
 #'
 #' The override interface is a named list. Each element replaces a latent model
 #' component for every posterior draw with the supplied values, while every
-#' other component keeps its per-draw posterior values. Currently the supported
-#' component is:
+#' other component keeps its per-draw posterior values. The named-list interface
+#' is shaped to take more than one component, but `r` is currently the only
+#' supported override:
 #'
 #' - `r`: the growth rate (the log of the effective reproduction number when a
 #'   generation time is supplied, or the log growth rate otherwise; see
@@ -28,11 +29,12 @@
 #'   group then time. A single value is recycled. `NA` elements re-use the
 #'   posterior-mean growth rate at that position.
 #'
-#' The mechanism is general: each override is injected via a model data hook
-#' that bypasses the corresponding regression. New components can be exposed by
-#' adding the matching Stan hook. The interface mirrors `EpiNow2::
-#' forecast_infections()`, which overrides the reproduction number of a fit;
-#' here the same idea is generalised to any hooked component.
+#' Each override is injected via a model data hook that bypasses the
+#' corresponding regression. Only the growth-rate hook (`expr_r_override`) is
+#' wired up so far; exposing further components (for example a fixed reporting
+#' delay) requires adding a matching Stan hook and is future work. The interface
+#' mirrors `EpiNow2::forecast_infections()`, which overrides the reproduction
+#' number of a fit.
 #'
 #' When no override is supplied for a component, the forecast uses the full
 #' per-draw posterior for that component (no collapse to a summary), so
