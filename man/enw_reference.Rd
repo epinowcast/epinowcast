@@ -28,8 +28,8 @@ and "exponential", with the default being "lognormal". These distributions
 are discretised using the double interval censoring approach from the
 \href{https://primarycensored.epinowcast.org}{primarycensored} package, which
 accounts for primary event censoring, secondary interval censoring, and
-right truncation. The log-logistic distribution was previously available but
-has been dropped pending log-logistic support in \code{primarycensored} (see
+right truncation. The log-logistic distribution is not currently supported,
+pending log-logistic support in \code{primarycensored} (see
 \url{https://github.com/epinowcast/primarycensored/issues/321}). See
 \code{vignette("distributions")} for details.}
 

@@ -569,15 +569,10 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
   )
 
   # This sparse fit (~7 weekly Wednesday observations at max_delay = 10) only
-  # weakly identifies the parametric reference delay. The package default
-  # refp_mean_int / refp_sd_int priors were tuned for the old uniform-interval
-  # discretisation and sit away from where the primarycensored double-censoring
-  # discretisation places the delay, so under the default prior this sparse fit
-  # becomes multimodal (rhat ~2.3, many divergences) on some seeds. Supplying an
-  # informative delay prior centred where primarycensored expects the delay
-  # regularises it and it converges reliably. See
-  # https://github.com/epinowcast/epinowcast/issues/856 for revisiting the
-  # package default prior in a separate PR.
+  # weakly identifies the parametric reference delay, so under the package
+  # default prior it can become multimodal on some seeds. An informative delay
+  # prior regularises it and it converges reliably. See issue #856 on revisiting
+  # the package default prior.
   weekly_priors <- data.table::data.table(
     variable = c("refp_mean_int", "refp_sd_int"),
     mean = c(2, 3),

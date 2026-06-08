@@ -329,16 +329,10 @@ test_that(
     expect_true(any(exp$priors$variable == "expr_arima_sigma"))
 
     # The integrated ARIMA(1, 1) residual scale (expr_arima_sigma) is weakly
-    # identified: it samples a funnel that produces persistent divergences and
-    # E-BFMI warnings, and does not reach rhat < 1.1 even with adapt_delta =
-    # 0.99, max_treedepth = 12 and 1000/1000 iterations (divergences increase
-    # rather than clear). This surfaced when primarycensored became the
-    # reference-delay discretisation, which sharpened the rest of the
-    # posterior. The convergence assertion is therefore skipped on CI pending a
-    # reparameterisation of the integrated residual; see
-    # https://github.com/epinowcast/epinowcast/issues/855. The pacf/location
-    # parameter recovers consistently regardless. Run locally to exercise the
-    # fit path.
+    # identified: it samples a funnel that does not reach rhat < 1.1 even with
+    # adapt_delta = 0.99 and 1000/1000 iterations. The convergence assertion is
+    # skipped on CI pending a reparameterisation; see issue #855. The
+    # pacf/location parameter recovers regardless.
     skip_on_ci()
     fit <- epinowcast(
       pobs,

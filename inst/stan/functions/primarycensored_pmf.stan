@@ -1,13 +1,10 @@
 /**
  * Primary event censored discretisation wrapper for epinowcast
  *
- * Wraps the vendored primarycensored Stan functions (see
- * primarycensored.stan) so that they can be used as a drop-in alternative to
- * discretised_logit_hazard() when discretising a parametric reference date
- * delay distribution. The primarycensored approach accounts for double
- * interval censoring (a uniform primary event window convolved with a
- * secondary reporting interval) rather than the uniform-interval approximation
- * used by discretised_logit_hazard().
+ * Wraps the vendored primarycensored Stan functions (see primarycensored.stan)
+ * to discretise a parametric reference date delay distribution. This accounts
+ * for double interval censoring: a uniform primary event window convolved with
+ * a secondary reporting interval, with right truncation at the maximum delay.
  *
  * @ingroup pmf_handlers
  */
@@ -25,15 +22,13 @@
  * @return The corresponding primarycensored dist_id.
  *
  * @note The exponential (epinowcast id 1) is routed through the
- * primarycensored gamma id (2) as a Gamma(shape = 1) special case. This uses
- * the analytical gamma-uniform solution rather than falling back to the
- * per-delay ODE integration that primarycensored's standalone exponential id
- * (4) would require, which is substantially faster inside the sampler.
+ * primarycensored gamma id (2) as a Gamma(shape = 1) special case, which uses
+ * the analytical gamma-uniform solution rather than the slower per-delay
+ * integration of primarycensored's standalone exponential id (4).
  *
- * @note The log-logistic distribution was dropped from epinowcast pending
- * support in primarycensored
- * (see https://github.com/epinowcast/primarycensored/issues/321); any other
- * id is rejected.
+ * @note The log-logistic distribution is unsupported pending primarycensored
+ * support (see https://github.com/epinowcast/primarycensored/issues/321); any
+ * other id is rejected.
  */
 int enw_to_pcens_dist_id(int dist) {
   if (dist == 1) return 2;  // exponential -> primarycensored gamma (shape 1)
@@ -93,10 +88,8 @@ array[] real enw_to_pcens_params(real mu, real sigma, int dist) {
  *
  * Computes logit hazards from a non-overlapping discretised log PMF (such as
  * the one returned by the primarycensored functions) using the standard
- * discrete survival hazard h_d = p_d / S_{d-1}, where S_{d-1} is the survival
- * function S_{d-1} = 1 - sum_{i < d} p_i. This differs from
- * lprob_to_uniform_double_censored_log_hazard(), which assumes the overlapping
- * uniform-interval PMF produced by discretised_logit_hazard().
+ * discrete survival hazard h_d = p_d / S_{d-1}, where the survival function is
+ * S_{d-1} = 1 - sum_{i < d} p_i.
  *
  * @param lprob Vector of log probabilities, one per discrete delay 0:(u - 1).
  *
@@ -137,8 +130,8 @@ vector lprob_to_log_hazard(vector lprob, int u) {
  *
  * Computes the log probability mass function of a double interval censored
  * delay distribution using the vendored primarycensored Stan functions and,
- * optionally, converts it to logit hazards so that the result is a drop in
- * replacement for discretised_logit_hazard().
+ * optionally, converts it to logit hazards (the output contract of
+ * log_hazard_to_logit_hazard()).
  *
  * @param mu Location parameter of the parametric distribution (epinowcast
  * transformed scale).
