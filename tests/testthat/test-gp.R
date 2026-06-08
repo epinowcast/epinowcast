@@ -371,7 +371,7 @@ test_that("a d = 1 gp() recovers a known integrated (drifting) trend", {
     "}",
     "transformed parameters {",
     "  vector[T] f = apply_gp_term(",
-    "    rep_vector(0.0, T), 1, T, 1, M, L, 2, 1.5, 1,",
+    "    rep_vector(0.0, T), 1, 0, T, 1, M, L, 2, 1.5, 1,",
     "    PHI, to_matrix(eta, M, 1), {rho}, {alpha}, idx);",
     "}",
     "model {",
