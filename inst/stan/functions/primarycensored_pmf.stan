@@ -45,10 +45,8 @@ int enw_to_pcens_dist_id(int dist) {
  *
  * epinowcast parameterises its parametric reference delay distributions on a
  * transformed scale (e.g. log rate for the exponential, log shape for the
- * gamma) that matches lcdf_discretised() in discretised_logit_hazard.stan.
- * The vendored primarycensored functions expect the native Stan
- * parameterisation. This function performs the translation so that the two
- * discretisation paths share the same user facing parameters.
+ * gamma). The vendored primarycensored functions expect the native Stan
+ * parameterisation. This function performs the translation.
  *
  * @param mu Location parameter on the epinowcast transformed scale.
  *
@@ -84,6 +82,28 @@ array[] real enw_to_pcens_params(real mu, real sigma, int dist) {
 }
 
 /**
+ * Convert log hazards to logit hazards
+ *
+ * Transforms log hazards to logit hazards without converting to the natural
+ * scale.
+ *
+ * @param lhaz Vector of log hazards.
+ *
+ * @return Vector of logit hazards.
+ *
+ * @note The final hazard is fixed to 1, so its logit hazard is +Inf and all
+ * remaining mass is reported at the maximum delay.
+ */
+vector log_hazard_to_logit_hazard(vector lhaz) {
+  int n = num_elements(lhaz);
+  // Logit transform all but last, then append Inf (last hazard h[n] = 1)
+  return append_row(
+    lhaz[1:(n-1)] - log1m_exp(lhaz[1:(n-1)]),
+    positive_infinity()
+  );
+}
+
+/**
  * Convert a proper discretised log PMF to logit hazards
  *
  * Computes logit hazards from a non-overlapping discretised log PMF (such as
@@ -99,8 +119,7 @@ array[] real enw_to_pcens_params(real mu, real sigma, int dist) {
  * log_hazard_to_logit_hazard().
  *
  * @note The final hazard is fixed to 1 (logit hazard +inf) so that all
- * remaining probability mass is reported by the maximum delay, matching
- * discretised_logit_hazard().
+ * remaining probability mass is reported at the maximum delay.
  */
 vector lprob_to_log_hazard(vector lprob, int u) {
   vector[u] lhaz;
@@ -149,8 +168,7 @@ vector lprob_to_log_hazard(vector lprob, int u) {
  * (1) or to convert to logit hazards (0).
  *
  * @return A vector of logit hazards or log probabilities of the discretised
- * distribution, representing discrete delays from 0 to (dmax - 1). The output
- * contract matches discretised_logit_hazard().
+ * distribution, representing discrete delays from 0 to (dmax - 1).
  *
  * @note Uses a uniform primary event window of width 1 and assumes an integer
  * secondary censoring window of width 1, matching epinowcast's daily

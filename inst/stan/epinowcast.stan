@@ -7,7 +7,6 @@ functions {
 #include functions/regression.stan
 #include functions/log_expected_latent_from_r.stan
 #include functions/log_expected_obs_from_latent.stan
-#include functions/discretised_logit_hazard.stan
 #include functions/primarycensored.stan
 #include functions/primarycensored_pmf.stan
 #include functions/hazard.stan
