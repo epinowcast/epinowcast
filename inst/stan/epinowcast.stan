@@ -7,7 +7,8 @@ functions {
 #include functions/regression.stan
 #include functions/log_expected_latent_from_r.stan
 #include functions/log_expected_obs_from_latent.stan
-#include functions/discretised_logit_hazard.stan
+#include functions/primarycensored.stan
+#include functions/primarycensored_pmf.stan
 #include functions/hazard.stan
 #include functions/expected_obs.stan
 #include functions/combine_logit_hazards.stan
@@ -541,6 +542,10 @@ transformed parameters{
       refp_gp_type, refp_gp_nu, refp_gp_d, refp_gp_PHI, refp_gp_eta,
       refp_gp_rho, refp_gp_alpha, refp_gp_flat_idx
     );
+    // Default the (unused) sd to 1 for single-parameter distributions such as
+    // the exponential (model_refp == 1) so the discretisation functions below
+    // always receive a defined value.
+    refp_sd = rep_vector(1.0, refp_fnrow);
     if (model_refp > 1) {
       refp_sd = regression_predictor(
         {log(refp_sd_int[1])}, refp_sd_beta, refp_fnrow, refp_fncol,
@@ -559,11 +564,13 @@ transformed parameters{
     }
     }
     // calculate parametric reference date logit hazards (unless no reporting
-    // effects)
+    // effects). The parametric reference delay is discretised with the
+    // primarycensored double interval censoring approach for every supported
+    // distribution (lognormal, gamma, exponential).
     profile("transformed_delay_reference_time_hazards") {
     for (i in 1:refp_fnrow) {
-      refp_lh[, i] = discretised_logit_hazard(
-        refp_mean[i], refp_sd[i], dmax, model_refp, 2, ref_as_p
+      refp_lh[, i] = discretised_pcens_logit_hazard(
+        refp_mean[i], refp_sd[i], dmax, model_refp, ref_as_p
       );
     }
     }

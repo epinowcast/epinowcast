@@ -90,8 +90,6 @@ test_that("enw_reference supports parametric models", {
   expect_identical(lognormal_ref$data$model_refp, 2)
   gamma_ref <- enw_reference(distribution = "gamma", data = pobs)
   expect_identical(gamma_ref$data$model_refp, 3)
-  loglogistic_ref <- enw_reference(distribution = "loglogistic", data = pobs)
-  expect_identical(loglogistic_ref$data$model_refp, 4)
   no_ref <- suppressWarnings(
     enw_reference(distribution = "none", non_parametric = ~1, data = pobs)
   )
@@ -103,6 +101,39 @@ test_that("enw_reference supports parametric models", {
   expect_identical(
     exp_ref$inits(exp_ref$data, exp_ref$priors)()$refp_sd_int, numeric(0)
   )
+})
+
+test_that("enw_reference does not expose a discretisation toggle", {
+  # The primarycensored discretisation is always used for the supported
+  # parametric distributions; there is no discretisation argument or
+  # refp_pcens data flag.
+  expect_false("discretisation" %in% names(formals(enw_reference)))
+
+  for (dist in c("exponential", "lognormal", "gamma")) {
+    ref <- enw_reference(distribution = dist, data = pobs)
+    expect_null(ref$data$refp_pcens)
+  }
+})
+
+test_that("enw_reference does not accept the loglogistic option", {
+  # loglogistic is unsupported pending primarycensored support
+  # (epinowcast/primarycensored#321).
+  expect_false("loglogistic" %in% eval(formals(enw_reference)$distribution))
+  expect_error(
+    enw_reference(distribution = "loglogistic", data = pobs)
+  )
+})
+
+test_that("vendored Stan dist ids match the primarycensored lookup", {
+  # enw_to_pcens_dist_id() in primarycensored_pmf.stan hard-codes the
+  # primarycensored Stan dist ids. Pin them to primarycensored's own lookup so
+  # an upstream renumbering fails here rather than silently mis-mapping.
+  skip_if_not_installed("primarycensored")
+  expect_identical(primarycensored::pcd_stan_dist_id("lognormal"), 1L)
+  expect_identical(primarycensored::pcd_stan_dist_id("gamma"), 2L)
+  # epinowcast routes its exponential through the gamma id with shape 1 for the
+  # analytical solution, not primarycensored's standalone exponential id.
+  expect_identical(primarycensored::pcd_stan_dist_id("exponential"), 4L)
 })
 
 test_that("enw_reference supports non-parametric models", {
