@@ -33,11 +33,11 @@ enw_get_cache()
 \dontrun{
 # Use the package cache in R >= 4.0
 if (R.version.string >= "4.0.0") {
- enw_set_cache(
-   tools::R_user_dir(package = "epinowcast", "cache"), type = "all"
- )
+  enw_set_cache(
+    tools::R_user_dir(package = "epinowcast", "cache"),
+    type = "all"
+  )
 }
-
 }
 \dontshow{\}) # examplesIf}
 }
@@ -45,6 +45,7 @@ if (R.version.string >= "4.0.0") {
 Functions used to help convert models into the format required for stan
 \code{\link{enw_formula_as_data_list}()},
 \code{\link{enw_get_cache}()},
+\code{\link{enw_laplace_model}()},
 \code{\link{enw_model}()},
 \code{\link{enw_pathfinder}()},
 \code{\link{enw_priors_as_data_list}()},
