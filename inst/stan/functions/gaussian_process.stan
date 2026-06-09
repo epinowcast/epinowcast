@@ -158,24 +158,25 @@ vector update_gp(matrix PHI, int M, real L, real alpha,
  *                  (T x G) latent matrix.
  * @return base + gathered Gaussian process contribution.
  */
-vector apply_gp_term(vector base, int present, int T, int G,
-                     int M, real L, int type, real nu, int d,
-                     matrix PHI, matrix eta,
-                     array[] real rho, array[] real alpha,
-                     array[] int flat_idx) {
-  if (!present) return base;
+/**
+ * Build the (T x G) integrated Gaussian process latent matrix.
+ *
+ * For `d = 0` each column is the stationary GP. For `d >= 1` the first d
+ * entries are anchored to zero, the free values fill (d + 1):T, and the
+ * column is integrated d times (the leading zeros survive each
+ * cumulative_sum pass).
+ */
+matrix gp_latent_matrix(int T, int G, int M, real L, int type, real nu,
+                        int d, matrix PHI, matrix eta,
+                        array[] real rho, array[] real alpha) {
   matrix[T, G] gp_eps;
   for (g in 1:G) {
-    // Free GP values (length T for d = 0, T - d for d >= 1).
     vector[rows(PHI)] f = update_gp(
       PHI, M, L, alpha[1], rho[1], eta[, g], type, nu
     );
     if (d == 0) {
       gp_eps[, g] = f;
     } else {
-      // Anchor the first d entries to zero and place the free values
-      // from (d + 1):T, then integrate d times. The leading zeros are
-      // preserved by each cumulative_sum pass.
       vector[T] col = rep_vector(0.0, T);
       col[(d + 1):T] = f;
       for (i in 1:d) {
@@ -183,6 +184,46 @@ vector apply_gp_term(vector base, int present, int T, int G,
       }
       gp_eps[, g] = col;
     }
+  }
+  return gp_eps;
+}
+
+/**
+ * Grand mean (over time and groups) of the integrated GP latent.
+ *
+ * Like `arima_latent_mean_offset`, this is the single level direction that
+ * competes with the shared intercept when the GP is integrated (`d >= 1`).
+ * Subtracting it from the sampled intercept recovers the original-scale
+ * intercept the prior applies to (an additive, unit-Jacobian shift). Each
+ * group keeps its own level relative to the grand mean, so a grouped GP is
+ * exact for any number of groups. Returns 0 unless present, centring is on,
+ * and `d >= 1`.
+ */
+real gp_latent_mean_offset(int present, int centre, int T, int G,
+                           int M, real L, int type, real nu, int d,
+                           matrix PHI, matrix eta,
+                           array[] real rho, array[] real alpha) {
+  if (!present || !centre || d < 1) return 0.0;
+  matrix[T, G] gp_eps = gp_latent_matrix(
+    T, G, M, L, type, nu, d, PHI, eta, rho, alpha
+  );
+  return mean(to_vector(gp_eps));
+}
+
+vector apply_gp_term(vector base, int present, int centre, int T, int G,
+                     int M, real L, int type, real nu, int d,
+                     matrix PHI, matrix eta,
+                     array[] real rho, array[] real alpha,
+                     array[] int flat_idx) {
+  if (!present) return base;
+  matrix[T, G] gp_eps = gp_latent_matrix(
+    T, G, M, L, type, nu, d, PHI, eta, rho, alpha
+  );
+  // Centre the integrated GP (d >= 1) on its grand mean so the intercept
+  // owns the level (mirrors the ARIMA residual). Only the shared grand
+  // mean is removed, so a grouped GP keeps each group's own level.
+  if (centre && d >= 1) {
+    gp_eps = gp_eps - mean(to_vector(gp_eps));
   }
   return base + to_vector(gp_eps)[flat_idx];
 }

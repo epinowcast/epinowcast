@@ -35,6 +35,8 @@ delay for unobserved data to be negative 1 (indicating no maximum observed).
 Helper functions for model modules
 \code{\link{add_pmfs}()},
 \code{\link{convolution_matrix}()},
+\code{\link{delay_only_ltotal}()},
+\code{\link{delay_only_total}()},
 \code{\link{enw_dayofweek_structural_reporting}()},
 \code{\link{enw_reference_by_report}()},
 \code{\link{enw_reps_with_complete_refs}()},

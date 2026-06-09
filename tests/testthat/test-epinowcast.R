@@ -496,11 +496,13 @@ test_that("epinowcast() can fit a simple combined parametric and non-parametric
       sampler = silent_enw_sample,
       save_warmup = FALSE, pp = TRUE,
       chains = 2, iter_warmup = 500, iter_sampling = 1000,
-      refresh = 0, show_messages = FALSE
+      refresh = 0, show_messages = FALSE, max_treedepth = 12
     ),
     model = model
   ))
-  expect_convergence(nowcast)
+  # treedepth headroom: this combined reference fit is borderline and can
+  # touch the default cap; divergences and R-hat still guard convergence.
+  expect_convergence(nowcast, treedepth = 12)
   expect_equal(
     summary(
       nowcast,

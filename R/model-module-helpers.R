@@ -92,6 +92,64 @@ latest_obs_as_matrix <- function(latest) {
   latest_matrix <- as.matrix(latest_matrix[, -1])
 }
 
+#' Known per-reference-date totals for the delay-only model
+#'
+#' Builds the `dlo_ltotal` data entry for the delay-only model. The known
+#' totals are the latest available `confirm` per reference date and group,
+#' supplied to Stan on the log scale as a `g` by `t` matrix (cmdstanr's layout
+#' for `array[g] vector[t]`). The log total is only an offset on the expected
+#' cells and cancels in the multinomial likelihood, so reference dates with no
+#' observed cells (a non-positive or missing latest total, e.g. the most recent
+#' dates under an observation indicator) are floored to 1 (log 0); such dates
+#' contribute nothing to the likelihood.
+#'
+#' @param data Output from [enw_preprocess_data()].
+#'
+#' @param delay_only Logical; if `FALSE` an empty (`g` by `0`) matrix is
+#' returned so the model carries no delay-only totals.
+#'
+#' @return A `g` by `t` matrix of log totals (or `g` by `0` when not in
+#' delay-only mode).
+#' @family modelmodulehelpers
+delay_only_ltotal <- function(data, delay_only) {
+  g <- data$groups[[1]]
+  if (!delay_only) {
+    return(matrix(numeric(0), nrow = g, ncol = 0))
+  }
+  # latest_obs_as_matrix returns reference dates (t) by group (g); transpose
+  # to the array[g] vector[t] layout cmdstanr expects.
+  totals <- t(latest_obs_as_matrix(data$latest[[1]]))
+  # Floor non-positive / missing totals to 1 so the (cancelling) offset stays
+  # finite; these snapshots have no observations and drop out of the
+  # likelihood.
+  totals[!is.finite(totals) | totals <= 0] <- 1
+  log(totals)
+}
+
+#' Known integer totals per snapshot for the delay-only model
+#'
+#' Builds the `dlo_total` data entry: the known integer total per snapshot
+#' (the latest cumulative `confirm`, i.e. the cutoff running total), ordered
+#' by group then reference date to match the snapshot order. These totals
+#' size the residual category when an observation indicator leaves some
+#' before-cutoff cells unobserved.
+#'
+#' @inheritParams delay_only_ltotal
+#'
+#' @return An integer vector of length `snapshots` (or length 0 when not in
+#' delay-only mode).
+#' @family modelmodulehelpers
+delay_only_total <- function(data, delay_only) {
+  if (!delay_only) {
+    return(integer(0))
+  }
+  latest <- coerce_dt(data$latest[[1]], group = TRUE)
+  data.table::setkeyv(latest, c(".group", "reference_date"))
+  totals <- latest$confirm
+  totals[!is.finite(totals) | totals < 0] <- 0
+  as.integer(round(totals))
+}
+
 #' Construct a convolution matrix
 #'
 #' This function allows the construction of convolution matrices which can be

@@ -50,9 +50,9 @@ analysis and model development.
 pobs <- enw_example("preprocessed")
 
 nowcast <- epinowcast(pobs,
- expectation = enw_expectation(~1, data = pobs),
- fit = enw_fit_opts(enw_pathfinder, pp = TRUE),
- obs = enw_obs(family = "poisson", data = pobs),
+  expectation = enw_expectation(~1, data = pobs),
+  fit = enw_fit_opts(enw_pathfinder, pp = TRUE),
+  obs = enw_obs(family = "poisson", data = pobs),
 )
 
 summary(nowcast)

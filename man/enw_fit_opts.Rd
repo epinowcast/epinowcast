@@ -79,6 +79,7 @@ enw_fit_opts(iter_sampling = 1000, iter_warmup = 1000)
 }
 \seealso{
 Model modules
+\code{\link{.expectation_is_minimal}()},
 \code{\link{enw_expectation}()},
 \code{\link{enw_missing}()},
 \code{\link{enw_obs}()},

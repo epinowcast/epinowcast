@@ -19,6 +19,7 @@ functions {
 #include functions/allocate_observed_obs.stan
 #include functions/apply_missing_reference_effects.stan
 #include functions/log_expected_by_report.stan
+#include functions/delay_multinomial_lpmf.stan
 #include functions/delay_lpmf.stan
 }
 
@@ -62,6 +63,7 @@ data {
   int expr_fncol;
   int expr_rncol;
   matrix[expr_fnindex, expr_fncol] expr_fdesign;
+  vector[expr_fncol] expr_fdesign_means; // obs-weighted column means
   matrix[expr_fncol, expr_rncol + 1] expr_rdesign;
   array[g] int expr_g; // starting time points for growth of each group
   // Priors for growth rate and initial log latent cases
@@ -154,6 +156,7 @@ data {
   array[s] int refp_findex;
   int refp_fncol;
   matrix[refp_fnrow, refp_fncol] refp_fdesign;
+  vector[refp_fncol] refp_fdesign_means; // obs-weighted column means
   int refp_rncol;
   matrix[refp_fncol, refp_rncol + 1] refp_rdesign;
   array[2, 1] real refp_mean_int_p;
@@ -203,6 +206,7 @@ data {
   int refnp_fncol;
   int refnp_rncol;
   matrix[refnp_fnindex, refnp_fncol] refnp_fdesign;
+  vector[refnp_fncol] refnp_fdesign_means; // obs-weighted column means
   matrix[refnp_fncol, refnp_rncol + 1] refnp_rdesign;
   array[2, 1] real refnp_int_p;
   array[2, 1] real refnp_beta_sd_p;
@@ -284,6 +288,7 @@ data {
   int miss_fncol;
   int miss_rncol;
   matrix[miss_fnindex, miss_fncol] miss_fdesign;
+  vector[miss_fncol] miss_fdesign_means; // obs-weighted column means
   matrix[miss_fncol, model_miss ? miss_rncol + 1 : 0] miss_rdesign;
   // Observations reported without a reference date (by reporting time)
   // --> Since the first dmax-1 obs are not used here, the reporting time
@@ -331,6 +336,15 @@ data {
   int model_obs; // control parameter for the observation model
   array[2, 1] real sqrt_phi_p; // 1/sqrt (overdispersion)
 
+  // Delay-only model: fit the delay distribution conditional on known totals
+  // via a (truncated) multinomial instead of the latent + obs model.
+  int<lower=0, upper=1> model_delay_only;
+  // Known log totals by group and time (empty unless delay-only).
+  array[g] vector[model_delay_only ? t : 0] dlo_ltotal;
+  // Known integer totals by snapshot (the cutoff running total), used to size
+  // the residual category when before-cutoff cells are unobserved.
+  array[model_delay_only ? s : 0] int dlo_total;
+
   // Control parameters
   int debug; // should debug information be shown?
   int likelihood; // should the likelihood be included?
@@ -360,7 +374,7 @@ parameters {
   // Expectation model
   // ---- Growth rate submodule ----
   matrix<offset = to_matrix(expr_lelatent_int_p[1], expr_r_seed, g), multiplier = to_matrix(expr_lelatent_int_p[2], expr_r_seed, g)>[expr_r_seed, g] expr_lelatent_int; // initial observations by group (log)
-  array[expr_fintercept ? 1 : 0] real<offset = expr_r_int_p[1, 1], multiplier = expr_r_int_p[2, 1]> expr_r_int; // growth rate intercept
+  array[expr_fintercept ? 1 : 0] real<offset = expr_r_int_p[1, 1], multiplier = expr_r_int_p[2, 1]> expr_r_int_c; // growth rate intercept (centred)
   vector[expr_fncol] expr_beta;
   vector<lower=0>[expr_rncol] expr_beta_sd;
   // Growth rate ARIMA term parameters
@@ -387,7 +401,7 @@ parameters {
 
   // Reference model
   // Parametric reference model
-  array[model_refp ? 1 : 0] real<offset = refp_mean_int_p[1,1], multiplier = refp_mean_int_p[2,1]> refp_mean_int;
+  array[model_refp ? 1 : 0] real<offset = refp_mean_int_p[1,1], multiplier = refp_mean_int_p[2,1]> refp_mean_int_c;
   array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; 
   vector[model_refp ? refp_fncol : 0] refp_mean_beta;
   vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta;
@@ -410,7 +424,7 @@ parameters {
   array[refp_gp_present && model_refp > 1 ? 1 : 0]
     real<lower=0> refp_gp_sd_alpha;
   // Non-parametric reference model
-  array[model_refnp && refnp_fintercept ? 1 : 0] real refnp_int;
+  array[model_refnp && refnp_fintercept ? 1 : 0] real refnp_int_c;
   vector[model_refnp ? refnp_fncol : 0] refnp_beta;
   vector<lower=0>[refnp_rncol] refnp_beta_sd;
   // Non-parametric reference ARIMA term parameters
@@ -438,7 +452,7 @@ parameters {
   array[rep_gp_present ? 1 : 0] real<lower=0> rep_gp_alpha;
 
   // Missing reference date model
-  array[model_miss] real miss_int;
+  array[model_miss] real miss_int_c;
   vector[miss_fncol] miss_beta;
   vector<lower=0>[miss_rncol] miss_beta_sd;
   // Missing-reference ARIMA term parameters
@@ -479,16 +493,30 @@ transformed parameters{
   // Observation model
   array[model_obs > 0 ? 1 : 0] real phi; // Transformed overdispersion
 
+  // Recovered original-scale intercepts (see `centring_offsets`): the
+  // sampled `*_int_c` are on the centred scale and the user's prior is
+  // placed on these recovered values.
+  array[expr_fintercept ? 1 : 0] real expr_r_int;
+  array[model_refp ? 1 : 0] real refp_mean_int;
+  array[model_refnp && refnp_fintercept ? 1 : 0] real refnp_int;
+  array[model_miss] real miss_int;
+
   // Expectation model
   profile("transformed_expected_final_observations") {
   // Get log growth rates and map to expected latent cases
   if (expr_r_override) {
     // Inject a supplied growth rate trajectory (simulate / forecast modes)
     r = expr_r_override_value;
+    // Recover the raw intercept for output even when overriding, so the
+    // transformed parameter is always defined.
+    if (expr_fintercept) {
+      expr_r_int[1] = expr_r_int_c[1];
+    }
   } else {
     r = regression_predictor(
-      expr_r_int, expr_beta, expr_fnindex, expr_fncol, expr_fdesign,
+      expr_r_int_c, expr_beta, expr_fnindex, expr_fncol, expr_fdesign,
       expr_sparse, expr_beta_sd, expr_rdesign, expr_fintercept, sparse_design,
+      expr_fintercept,
       expr_arima_present, expr_arima_T, expr_arima_G,
       expr_arima_p, expr_arima_d, expr_arima_q, expr_arima_n_obs,
       expr_arima_z, expr_arima_pacf, expr_arima_theta, expr_arima_sigma,
@@ -497,6 +525,20 @@ transformed parameters{
       expr_gp_type, expr_gp_nu, expr_gp_d, expr_gp_PHI, expr_gp_eta,
       expr_gp_rho, expr_gp_alpha, expr_gp_flat_idx
     );
+    if (expr_fintercept) {
+      tuple(real, real) off = centring_offsets(
+        expr_fdesign_means, expr_beta, expr_beta_sd, expr_rdesign, expr_fncol,
+        expr_fintercept,
+        expr_arima_present, expr_arima_T, expr_arima_G,
+        expr_arima_p, expr_arima_d, expr_arima_q,
+        expr_arima_z, expr_arima_pacf, expr_arima_theta, expr_arima_sigma,
+        expr_gp_present, expr_gp_T, expr_gp_G, expr_gp_M, expr_gp_L,
+        expr_gp_type, expr_gp_nu, expr_gp_d, expr_gp_PHI, expr_gp_eta,
+        expr_gp_rho, expr_gp_alpha
+      );
+      r = r - off.1;                  // centre the design contribution
+      expr_r_int[1] = expr_r_int_c[1] - off.1 - off.2; // recover raw intercept
+    }
   }
   exp_llatent = log_expected_latent_from_r(
     expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
@@ -506,7 +548,7 @@ transformed parameters{
   if (expl_obs) {
     expl_prop = regression_predictor(
       {0}, expl_beta, expl_fnindex, expl_fncol, expl_fdesign,
-      expl_sparse, expl_beta_sd, expl_rdesign, 1, sparse_design,
+      expl_sparse, expl_beta_sd, expl_rdesign, 1, sparse_design, 0,
       expl_arima_present, expl_arima_T, expl_arima_G,
       expl_arima_p, expl_arima_d, expl_arima_q, expl_arima_n_obs,
       expl_arima_z, expl_arima_pacf, expl_arima_theta, expl_arima_sigma,
@@ -522,6 +564,11 @@ transformed parameters{
   } else {
     exp_lobs = exp_llatent; // assume latent cases and obs are identical
   }
+  // Delay-only mode: use the known totals as the expected total. The
+  // multinomial cancels this offset, so it only feeds posterior prediction.
+  if (model_delay_only) {
+    exp_lobs = dlo_ltotal;
+  }
   }
 
   // Reference model
@@ -532,8 +579,8 @@ transformed parameters{
     // applied per joint-deduplicated tuple)
     profile("transformed_delay_reference_time_effects") {
     refp_mean = regression_predictor(
-      refp_mean_int, refp_mean_beta, refp_fnrow, refp_fncol, refp_fdesign,
-      refp_sparse, refp_mean_beta_sd, refp_rdesign, 1, sparse_design,
+      refp_mean_int_c, refp_mean_beta, refp_fnrow, refp_fncol, refp_fdesign,
+      refp_sparse, refp_mean_beta_sd, refp_rdesign, 1, sparse_design, 1,
       refp_arima_present, refp_arima_T, refp_arima_G,
       refp_arima_p, refp_arima_d, refp_arima_q, refp_arima_n_obs,
       refp_arima_z, refp_arima_pacf, refp_arima_theta, refp_arima_sigma,
@@ -542,15 +589,31 @@ transformed parameters{
       refp_gp_type, refp_gp_nu, refp_gp_d, refp_gp_PHI, refp_gp_eta,
       refp_gp_rho, refp_gp_alpha, refp_gp_flat_idx
     );
+    {
+      tuple(real, real) off = centring_offsets(
+        refp_fdesign_means, refp_mean_beta, refp_mean_beta_sd, refp_rdesign,
+        refp_fncol, 1,
+        refp_arima_present, refp_arima_T, refp_arima_G,
+        refp_arima_p, refp_arima_d, refp_arima_q,
+        refp_arima_z, refp_arima_pacf, refp_arima_theta, refp_arima_sigma,
+        refp_gp_present, refp_gp_T, refp_gp_G, refp_gp_M, refp_gp_L,
+        refp_gp_type, refp_gp_nu, refp_gp_d, refp_gp_PHI, refp_gp_eta,
+        refp_gp_rho, refp_gp_alpha
+      );
+      refp_mean = refp_mean - off.1;
+      refp_mean_int[1] = refp_mean_int_c[1] - off.1 - off.2;
+    }
     // Default the (unused) sd to 1 for single-parameter distributions such as
     // the exponential (model_refp == 1) so the discretisation functions below
     // always receive a defined value.
     refp_sd = rep_vector(1.0, refp_fnrow);
     if (model_refp > 1) {
+      // refp_sd uses a log-link intercept; centring it would need a
+      // non-trivial Jacobian, so it is left on the raw design.
       refp_sd = regression_predictor(
         {log(refp_sd_int[1])}, refp_sd_beta, refp_fnrow, refp_fncol,
         refp_fdesign, refp_sparse, refp_sd_beta_sd, refp_rdesign, 1,
-        sparse_design,
+        sparse_design, 0,
         refp_arima_present, refp_arima_T, refp_arima_G,
         refp_arima_p, refp_arima_d, refp_arima_q, refp_arima_n_obs,
         refp_arima_z, refp_arima_pacf, refp_arima_theta,
@@ -580,9 +643,9 @@ transformed parameters{
     // calculate non-parametric reference date logit hazards
     profile("transformed_delay_non_parametric_reference_time_hazards") {
     refnp_lh = regression_predictor(
-      refnp_int, refnp_beta, refnp_fnindex, refnp_fncol, refnp_fdesign,
+      refnp_int_c, refnp_beta, refnp_fnindex, refnp_fncol, refnp_fdesign,
       refnp_sparse, refnp_beta_sd, refnp_rdesign, refnp_fintercept,
-      sparse_design,
+      sparse_design, refnp_fintercept,
       refnp_arima_present, refnp_arima_T, refnp_arima_G,
       refnp_arima_p, refnp_arima_d, refnp_arima_q, refnp_arima_n_obs,
       refnp_arima_z, refnp_arima_pacf, refnp_arima_theta, refnp_arima_sigma,
@@ -591,6 +654,20 @@ transformed parameters{
       refnp_gp_type, refnp_gp_nu, refnp_gp_d, refnp_gp_PHI, refnp_gp_eta,
       refnp_gp_rho, refnp_gp_alpha, refnp_gp_flat_idx
     );
+    if (refnp_fintercept) {
+      tuple(real, real) off = centring_offsets(
+        refnp_fdesign_means, refnp_beta, refnp_beta_sd, refnp_rdesign,
+        refnp_fncol, refnp_fintercept,
+        refnp_arima_present, refnp_arima_T, refnp_arima_G,
+        refnp_arima_p, refnp_arima_d, refnp_arima_q,
+        refnp_arima_z, refnp_arima_pacf, refnp_arima_theta, refnp_arima_sigma,
+        refnp_gp_present, refnp_gp_T, refnp_gp_G, refnp_gp_M, refnp_gp_L,
+        refnp_gp_type, refnp_gp_nu, refnp_gp_d, refnp_gp_PHI, refnp_gp_eta,
+        refnp_gp_rho, refnp_gp_alpha
+      );
+      refnp_lh = refnp_lh - off.1;
+      refnp_int[1] = refnp_int_c[1] - off.1 - off.2;
+    }
     }
   }
 
@@ -598,7 +675,7 @@ transformed parameters{
   profile("transformed_delay_reporting_time_effects") {
   srdlh = regression_predictor(
     {0}, rep_beta, rep_fnrow, rep_fncol, rep_fdesign,
-    rep_sparse, rep_beta_sd, rep_rdesign, 1, sparse_design,
+    rep_sparse, rep_beta_sd, rep_rdesign, 1, sparse_design, 0,
     rep_arima_present, rep_arima_T, rep_arima_G,
     rep_arima_p, rep_arima_d, rep_arima_q, rep_arima_n_obs,
     rep_arima_z, rep_arima_pacf, rep_arima_theta, rep_arima_sigma,
@@ -611,9 +688,9 @@ transformed parameters{
 
   // Missing reference model
   if (model_miss) {
-    miss_ref_lprop = log_inv_logit(regression_predictor(
-      miss_int, miss_beta, miss_fnindex, miss_fncol, miss_fdesign,
-      miss_sparse, miss_beta_sd, miss_rdesign, 1, sparse_design,
+    vector[miss_fnindex] miss_lp = regression_predictor(
+      miss_int_c, miss_beta, miss_fnindex, miss_fncol, miss_fdesign,
+      miss_sparse, miss_beta_sd, miss_rdesign, 1, sparse_design, 1,
       miss_arima_present, miss_arima_T, miss_arima_G,
       miss_arima_p, miss_arima_d, miss_arima_q, miss_arima_n_obs,
       miss_arima_z, miss_arima_pacf, miss_arima_theta, miss_arima_sigma,
@@ -621,7 +698,19 @@ transformed parameters{
       miss_gp_present, miss_gp_T, miss_gp_G, miss_gp_M, miss_gp_L,
       miss_gp_type, miss_gp_nu, miss_gp_d, miss_gp_PHI, miss_gp_eta,
       miss_gp_rho, miss_gp_alpha, miss_gp_flat_idx
-    ));
+    );
+    tuple(real, real) off = centring_offsets(
+      miss_fdesign_means, miss_beta, miss_beta_sd, miss_rdesign, miss_fncol,
+      1,
+      miss_arima_present, miss_arima_T, miss_arima_G,
+      miss_arima_p, miss_arima_d, miss_arima_q,
+      miss_arima_z, miss_arima_pacf, miss_arima_theta, miss_arima_sigma,
+      miss_gp_present, miss_gp_T, miss_gp_G, miss_gp_M, miss_gp_L,
+      miss_gp_type, miss_gp_nu, miss_gp_d, miss_gp_PHI, miss_gp_eta,
+      miss_gp_rho, miss_gp_alpha
+    );
+    miss_int[1] = miss_int_c[1] - off.1 - off.2;
+    miss_ref_lprop = log_inv_logit(miss_lp - off.1);
   }
   // Observation model
   if (model_obs) {
@@ -778,7 +867,7 @@ model {
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
           obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
           refnp_lh, model_refnp, rep_agg_p, rep_agg_n_selected,
-          rep_agg_selected_idx
+          rep_agg_selected_idx, model_delay_only, dlo_total
         );
       } else {
         target += reduce_sum(
@@ -786,7 +875,7 @@ model {
           flat_obs_lookup, exp_lobs, sg, st, rep_findex, srdlh, refp_lh,
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, refnp_lh,
           model_refnp, sdmax, csdmax, rep_agg_p, rep_agg_n_selected,
-          rep_agg_selected_idx
+          rep_agg_selected_idx, model_delay_only, dlo_total
         );
       }
     } else {
@@ -796,7 +885,7 @@ model {
         ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
         obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
         refnp_lh, model_refnp, rep_agg_p, rep_agg_n_selected,
-        rep_agg_selected_idx
+        rep_agg_selected_idx, model_delay_only, dlo_total
       );
     }
   }
@@ -805,10 +894,30 @@ model {
 
 
 generated quantities {
-  array[pp ? sum(sl) : 0] int pp_obs;
-  array[pp ? miss_obs : 0] int pp_miss_ref;
+  // Delay-only mode does not nowcast: posterior-prediction arrays are sized
+  // to zero and the cast block is skipped. Only log_lik (the multinomial) is
+  // produced.
+  array[pp && !model_delay_only ? sum(sl) : 0] int pp_obs;
+  array[pp && !model_delay_only ? miss_obs : 0] int pp_miss_ref;
   vector[ologlik ? s : 0] log_lik;
-  array[cast ? min(dmax, t) : 0, cast ? g : 0] int pp_inf_obs;
+  array[cast && !model_delay_only ? min(dmax, t) : 0,
+        cast && !model_delay_only ? g : 0] int pp_inf_obs;
+  if (model_delay_only) {
+    if (ologlik) {
+      // Expected cells over the cutoff range (lsl), matching the model block.
+      vector[clsl[s]] dlo_lexp = expected_obs_from_snaps(
+        1, s, exp_lobs, rep_findex, srdlh, refp_lh, refp_findex, model_refp,
+        rep_fncol, ref_as_p, lsl, clsl, sg, st, clsl[s], refnp_lh, model_refnp,
+        sdmax, csdmax, rep_agg_p, rep_agg_n_selected, rep_agg_selected_idx
+      );
+      for (i in 1:s) {
+        log_lik[i] = delay_multinomial_snaps(
+          i, i, flat_obs, dlo_lexp, 1, dlo_total, flat_obs_lookup,
+          lsl, clsl, nsl, cnsl
+        );
+      }
+    }
+  } else {
   profile("generated_total") {
   if (cast) {
     vector[csdmax[s]] log_exp_obs_all;
@@ -927,6 +1036,7 @@ generated quantities {
       }
     }
     }
+  }
   }
   }
 }
