@@ -26,7 +26,10 @@ be returned as a \code{data.frame}.}
 \item{init}{A list of initial values or a function to generate initial
 values. If not provided, the model will attempt to generate initial values}
 
-\item{...}{Additional parameters to be passed to \code{CmdStanModel$laplace()}.}
+\item{...}{Additional parameters to be passed to \code{CmdStanModel$laplace()}.
+Useful arguments include \code{opt_args} (a list of options for the internal
+optimisation step, e.g. \code{opt_args = list(iter = 5000)}), \code{jacobian}, and
+\code{draws}.}
 }
 \value{
 A data.table containing the fit, data, and fit_args.
@@ -49,6 +52,17 @@ skewed or multimodal posteriors.
 
 Note that the \code{threads_per_chain} argument is renamed to \code{threads} to match
 the \code{CmdStanModel$laplace()} method.
+
+The Laplace approximation can be fragile on more complex \code{epinowcast}
+specifications. The optimiser may fail to reach a finite mode, or the
+Gaussian approximation may place mass in regions where the model produces
+non-finite (\code{NaN}/\code{Inf}) quantities, in which case the draws cannot be used.
+To make these failures actionable rather than opaque, \code{enw_laplace()}
+forwards the package initialisation function to the internal optimiser,
+checks that the draws can be retrieved, and checks the draws for non-finite
+values. If either check fails it aborts with guidance on remedies such as
+supplying better initial values, increasing the optimiser iterations via
+\code{opt_args}, or using \code{\link[=enw_pathfinder]{enw_pathfinder()}} or \code{\link[=enw_sample]{enw_sample()}} instead.
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}

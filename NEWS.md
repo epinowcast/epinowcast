@@ -22,6 +22,7 @@
 - Added `enw_laplace()`, a new approximate-inference backend that wraps the cmdstanr `$laplace()` method (optimise to the posterior mode, then sample from a Gaussian centred there).
   It slots into the pluggable `enw_fit_opts(sampler = ...)` interface like `enw_pathfinder()` and is a fast but approximate alternative to NUTS, suited to exploration and model development.
   Like pathfinder, it tends to underestimate tail and posterior variance, so it is not recommended for final inference.
+  It forwards the package initialisation function to the internal optimiser and checks the returned draws, aborting with an actionable error (suggesting better inits, more optimiser iterations, or switching to pathfinder or NUTS) when the optimiser cannot reach a usable mode or the Gaussian approximation produces non-finite draws.
   Requires CmdStan >= 2.32.
 - Lowered the minimum R version from 4.4.0 to 4.3.0 so users on R 4.3.x can install the package.
   No code in the package relies on features introduced in R 4.4.
@@ -37,6 +38,9 @@
 
 ## Bug fixes
 
+- The posterior-predictive count RNG now caps the log expected count just below Stan's count-RNG limit before drawing.
+  Stan's count RNGs throw an overflow exception when the expected count exceeds `2^30`, which discards the whole draw; approximate methods such as the Laplace approximation and pathfinder can sample extreme tail values for the linear predictor and so hit this.
+  The cap is a no-op for realistic expected counts and keeps these draws usable.
 - Fixed a Stan dimension mismatch when the expectation, reference, report, or missing data formula has an intercept and a single numeric covariate (e.g., `r = ~ 1 + week`).
   The fixed-effects design matrix was collapsing to a vector after the intercept was dropped, causing Stan to error with `mismatch in number dimensions declared and found in context`.
   See #783 by @seabbs.

@@ -514,6 +514,15 @@ enw_pathfinder <- function(data, model = epinowcast::enw_model(),
   out[]
 }
 
+# Shared remedy guidance for `enw_laplace()` failures.
+.laplace_remedy_msg <- function() {
+  paste(
+    "Try supplying better initial values, increasing the optimiser",
+    "iterations with {.code opt_args = list(iter = ...)}, or use",
+    "{.fn enw_pathfinder} or {.fn enw_sample} instead."
+  )
+}
+
 #' Fit a CmdStan model using the Laplace approximation
 #'
 #' For more information on the Laplace method see the
@@ -531,8 +540,22 @@ enw_pathfinder <- function(data, model = epinowcast::enw_model(),
 #' Note that the `threads_per_chain` argument is renamed to `threads` to match
 #' the `CmdStanModel$laplace()` method.
 #'
+#' The Laplace approximation can be fragile on more complex `epinowcast`
+#' specifications. The optimiser may fail to reach a finite mode, or the
+#' Gaussian approximation may place mass in regions where the model produces
+#' non-finite (`NaN`/`Inf`) quantities, in which case the draws cannot be used.
+#' To make these failures actionable rather than opaque, `enw_laplace()`
+#' forwards the package initialisation function to the internal optimiser,
+#' checks that the draws can be retrieved, and checks the draws for non-finite
+#' values. If either check fails it aborts with guidance on remedies such as
+#' supplying better initial values, increasing the optimiser iterations via
+#' `opt_args`, or using [enw_pathfinder()] or [enw_sample()] instead.
+#'
 #' @inheritParams enw_sample
 #' @param ... Additional parameters to be passed to `CmdStanModel$laplace()`.
+#' Useful arguments include `opt_args` (a list of options for the internal
+#' optimisation step, e.g. `opt_args = list(iter = 5000)`), `jacobian`, and
+#' `draws`.
 #'
 #' @return A data.table containing the fit, data, and fit_args.
 #' If diagnostics is TRUE, it also includes the run_time column with the timing
@@ -561,8 +584,48 @@ enw_laplace <- function(data, model = epinowcast::enw_model(),
   dot_args <- list(...)
   dot_args$threads <- dot_args$threads_per_chain
   dot_args$threads_per_chain <- NULL
+  # The package initialisation function is forwarded to the internal
+  # optimisation step run by `$laplace()`; good inits are essential for the
+  # optimiser to reach a finite mode on `epinowcast` models.
   dot_args$init <- init
   fit <- do.call(model$laplace, c(list(data), dot_args))
+
+  # `$laplace()` can return a fit object whose underlying run failed (e.g. a
+  # generated-quantities exception at a tail draw discards the output). Surface
+  # this as an actionable error rather than a downstream cmdstanr one.
+  draws <- tryCatch(
+    fit$draws(),
+    error = function(e) {
+      msg <- c(
+        "The Laplace approximation failed to produce usable draws.",
+        "*" = paste(
+          "The optimiser may not have reached a usable mode, or the model",
+          "produced non-finite values when sampling at the mode."
+        )
+      )
+      msg <- c(msg, "*" = .laplace_remedy_msg())
+      cli::cli_abort(msg, parent = e)
+    }
+  )
+
+  # `NaN` draws indicate the Gaussian approximation has sampled a region where
+  # the model is genuinely degenerate (e.g. a `NaN` delay distribution under a
+  # time-varying reference model). These break downstream summaries, so abort
+  # with guidance. Structural `Inf` values (e.g. the final-delay log hazard)
+  # are expected and not flagged.
+  if (anyNA(draws)) {
+    msg <- c(
+      "The Laplace approximation produced `NaN` draws.",
+      "*" = paste(
+        "The Gaussian approximation has placed mass in a region where the",
+        "model is degenerate, so the draws cannot be summarised. This often",
+        "indicates the Laplace approximation is unsuitable for this",
+        "specification."
+      )
+    )
+    msg <- c(msg, "*" = .laplace_remedy_msg())
+    cli::cli_abort(msg)
+  }
 
   out <- data.table(
     fit = list(fit),
