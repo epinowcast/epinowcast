@@ -514,6 +514,69 @@ enw_pathfinder <- function(data, model = epinowcast::enw_model(),
   out[]
 }
 
+#' Fit a CmdStan model using the Laplace approximation
+#'
+#' For more information on the Laplace method see the
+#' [CmdStan documentation](https://mc-stan.org/cmdstanr/reference/model-method-laplace.html). # nolint
+#'
+#' This method first optimises the model to the posterior mode (the maximum a
+#' posteriori estimate) and then draws samples from a Gaussian approximation to
+#' the posterior centred at that mode. It is a fast approximate alternative to
+#' the NUTS sampler used in [enw_sample()] and, like [enw_pathfinder()], is
+#' recommended for exploratory analysis and model development rather than final
+#' inference. As with pathfinder, the Gaussian approximation tends to
+#' underestimate tail behaviour and posterior variance, particularly for
+#' skewed or multimodal posteriors.
+#'
+#' Note that the `threads_per_chain` argument is renamed to `threads` to match
+#' the `CmdStanModel$laplace()` method.
+#'
+#' @inheritParams enw_sample
+#' @param ... Additional parameters to be passed to `CmdStanModel$laplace()`.
+#'
+#' @return A data.table containing the fit, data, and fit_args.
+#' If diagnostics is TRUE, it also includes the run_time column with the timing
+#' information.
+#'
+#' @export
+#' @family modeltools
+#' @importFrom cli cli_abort
+#' @examplesIf interactive()
+#' pobs <- enw_example("preprocessed")
+#'
+#' nowcast <- epinowcast(pobs,
+#'   expectation = enw_expectation(~1, data = pobs),
+#'   fit = enw_fit_opts(enw_laplace, pp = TRUE),
+#'   obs = enw_obs(family = "poisson", data = pobs),
+#' )
+#'
+#' summary(nowcast)
+enw_laplace <- function(data, model = epinowcast::enw_model(),
+                        diagnostics = TRUE, init = NULL, ...) {
+  if (is.null(model[["laplace"]])) {
+    cli::cli_abort(
+      "`laplace` method unavailable. Requires CmdStan >=2.32."
+    )
+  }
+  dot_args <- list(...)
+  dot_args$threads <- dot_args$threads_per_chain
+  dot_args$threads_per_chain <- NULL
+  dot_args$init <- init
+  fit <- do.call(model$laplace, c(list(data), dot_args))
+
+  out <- data.table(
+    fit = list(fit),
+    data = list(data),
+    fit_args = list(list(...))
+  )
+
+  if (diagnostics) {
+    timing <- round(fit$time()$total, 1)
+    out[, run_time := timing]
+  }
+  out[]
+}
+
 #' Load and compile the nowcasting model
 #'
 #' @param model A character string indicating the path to the model.
