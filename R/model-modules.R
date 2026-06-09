@@ -1047,7 +1047,9 @@ enw_missing <- function(formula = ~1, data) {
 #' negative binomial with a quadratic mean-variance
 #' relationship ("negbin"). Negative binomial with a linear
 #' mean-variance relationship ("negbin1d") and Poisson ("poisson") are
-#' also available.
+#' also available. This is ignored when `delay_only = TRUE`, in which case the
+#' delay-only multinomial likelihood is used regardless of `family`; supplying
+#' a `family` alongside `delay_only = TRUE` emits a warning.
 #'
 #' @param observation_indicator A character string, the name of the column in
 #' the data that indicates whether an observation is observed or not (using a
@@ -1058,6 +1060,27 @@ enw_missing <- function(formula = ~1, data) {
 #' [enw_flag_observed_observations()]. If either of these approaches are used
 #' then the variable will be name `.observed`. Default is `NULL`.
 #'
+#' @param delay_only Logical, defaults to `FALSE`. If `TRUE`, fit only the
+#' reporting-delay distribution conditional on the known per-reference-date
+#' totals, treating those totals as fixed truth. The latent process and
+#' per-cell observation model are replaced by a (truncated) multinomial over
+#' the reported cells of each reference date, so `family` is ignored. With
+#' final retrospective totals
+#' this is the plain multinomial; with running totals observed up to some
+#' horizon the renormalisation over the observed delay range gives the
+#' truncated multinomial. An `observation_indicator` is supported and
+#' renormalises over all delays up to the observation cutoff. Because the
+#' known totals override the expected observations, the latent process is
+#' inert; [epinowcast()] therefore minimises the expectation automatically, so
+#' a delay-only fit is just `epinowcast(data, obs = enw_obs(delay_only = TRUE,
+#' data = data))` with no separate expectation module to configure. This mode
+#' estimates delays and does not nowcast (refit with the full model for a
+#' nowcast). Not compatible with the missing reference model. See the delay
+#' estimation vignette for a worked example.
+#' Based on the conditional delay likelihood of Kalbfleisch and Lawless
+#' (\doi{10.1080/01621459.1989.10478780}) and Höhle and an der Heiden
+#' (\doi{10.1111/biom.12194}).
+#'
 #' @param data Output from [enw_preprocess_data()].
 #'
 #' @return A list as required by stan.
@@ -1065,9 +1088,32 @@ enw_missing <- function(formula = ~1, data) {
 #' @export
 #' @examples
 #' enw_obs(data = enw_example("preprocessed"))
+#' # Delay-only model conditional on known totals
+#' enw_obs(delay_only = TRUE, data = enw_example("preprocessed"))
 enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
-                    observation_indicator = NULL, data) {
+                    observation_indicator = NULL, delay_only = FALSE, data) {
+  family_supplied <- !missing(family)
   family <- match.arg(family)
+
+  # The delay-only likelihood is a (truncated) multinomial and does not use a
+  # per-cell observation family. Warn if a family was supplied alongside it and
+  # then ignore it.
+  if (delay_only) {
+    if (family_supplied) {
+      cli::cli_warn(
+        c(
+          paste(
+            "{.arg family} is ignored when {.code delay_only = TRUE}."
+          ),
+          i = paste(
+            "The delay-only model uses a multinomial likelihood, so the",
+            "observation family is not used."
+          )
+        )
+      )
+    }
+    family <- "poisson"
+  }
 
   # copy new confirm for processing
   new_confirm <- coerce_dt(
@@ -1137,6 +1183,13 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
     family == "negbin", 1,
     family == "negbin1d", 2
   )
+
+  # Delay-only model: fit the delay distribution conditional on the known
+  # totals (supplied as log totals by reference date, and as integer totals
+  # by snapshot for the residual category) via a multinomial.
+  proc_data$model_delay_only <- as.integer(delay_only)
+  proc_data$dlo_ltotal <- delay_only_ltotal(data, delay_only)
+  proc_data$dlo_total <- delay_only_total(data, delay_only)
 
   out <- list()
   out$family <- family

@@ -71,6 +71,9 @@
       39
       40
       
+      $data$miss_fdesign_means
+      numeric(0)
+      
       $data$miss_rdesign
            (Intercept)
       attr(,"assign")
@@ -250,6 +253,9 @@
       [1] 0
       
       $data$miss_fdesign
+      numeric(0)
+      
+      $data$miss_fdesign_means
       numeric(0)
       
       $data$miss_rdesign

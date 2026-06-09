@@ -53,6 +53,8 @@ navbar:
         href: articles/single-timeseries-rt-estimation.html
       - text: Susceptible depletion in the renewal model
         href: articles/susceptible-depletion.html
+      - text: Estimating reporting delays with the full and delay-only models
+        href: articles/delay-estimation.html
       - text: Working with epinowcast
       - text: Comparing inference methods
         href: articles/inference-methods.html

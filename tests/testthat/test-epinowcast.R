@@ -499,13 +499,15 @@ test_that("epinowcast() can fit a simple combined parametric and non-parametric
       sampler = silent_enw_sample,
       save_warmup = FALSE, pp = TRUE,
       chains = 2, iter_warmup = 500, iter_sampling = 1000,
-      refresh = 0, show_messages = FALSE
+      refresh = 0, show_messages = FALSE, max_treedepth = 12
     ),
     model = model
   ))
   # This combined parametric/non-parametric reference model sits at the
   # treedepth-10 boundary; allow headroom (as already done elsewhere in this
   # file) so the assertion is not sensitive to small sampler perturbations.
+  # The #833 intercept-centring can also shift this borderline fit; R-hat and
+  # divergences still guard convergence.
   expect_convergence(nowcast, treedepth = 12)
   expect_equal(
     summary(
