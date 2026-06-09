@@ -476,6 +476,18 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
                             observation = ~1, latent_reporting_delay = 1,
                             data, ...) {
+  # A named list `r` declares a per-stratum expectation: each stratum
+  # either has its own latent process (a plain formula) or is a delayed
+  # function of another stratum (a `secondary()` formula). In Phase 0 the
+  # per-stratum structure is parsed, validated, and topologically ordered
+  # but is not yet wired into Stan; the existing single-process path is
+  # driven by the first independent stratum so existing fits behave as
+  # before. A scalar formula keeps the historic behaviour exactly.
+  strata_spec <- NULL
+  if (is.list(r) && !inherits(r, "formula")) {
+    strata_spec <- .build_strata_spec(r, data)
+    r <- strata_spec$primary_formula
+  }
   if (as_string_formula(r) == "~0") {
     cli::cli_abort("An expectation model formula for r must be specified")
   }
@@ -564,6 +576,12 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   names(r_list) <- paste0("expr_", names(r_list))
   names(obs_list) <- paste0("expl_", names(obs_list))
   out$data <- c(r_list, r_data, obs_list, obs_data)
+
+  # Multi-stratum overlay (Phase 0): record the validated, ordered
+  # per-stratum structure on the module output. No new Stan data is
+  # emitted yet, so the scalar path (and every existing fit) is byte-for-
+  # byte unchanged; later phases add the strata wiring to `out$data`.
+  out$strata <- strata_spec
 
   out$priors <- data.table::data.table(
     variable = c(
