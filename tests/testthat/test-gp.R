@@ -374,7 +374,7 @@ test_that("a d = 1 gp() recovers a known integrated (drifting) trend", {
     "}",
     "transformed parameters {",
     "  vector[T] f = apply_gp_term(",
-    "    rep_vector(0.0, T), 1, T, 1, M, L, 2, 1.5, 1,",
+    "    rep_vector(0.0, T), 1, 0, T, 1, M, L, 2, 1.5, 1,",
     "    PHI, to_matrix(eta, M, 1), {rho}, {alpha}, idx);",
     "}",
     "model {",
@@ -511,4 +511,25 @@ test_that("a grouped gp() term gives differing per-group realisations", {
   expect_true(length(g1) > 0)
   # Independent realisations: the per-group coefficient vectors differ.
   expect_gt(max(abs(g1 - g2)), 1e-6)
+})
+
+test_that("a d = 1 gp() samples cleanly at the default adapt_delta", {
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_on_local()
+  # Grand-mean centring sharpens the geometry, so guard against a
+  # divergence storm at the cmdstanr default adapt_delta (0.8): a
+  # regression would push the divergence rate far above this bound.
+  pobs <- enw_example("preprocessed")
+  nowcast <- suppressWarnings(suppressMessages(epinowcast(
+    pobs,
+    expectation = enw_expectation(r = ~ 1 + gp(week, d = 1), data = pobs),
+    obs = enw_obs(family = "poisson", data = pobs),
+    fit = enw_fit_opts(
+      save_warmup = FALSE, pp = FALSE, chains = 2, parallel_chains = 2,
+      iter_warmup = 500, iter_sampling = 500, adapt_delta = 0.8,
+      seed = 1, refresh = 0, show_messages = FALSE
+    )
+  )))
+  expect_convergence(nowcast, per_dts = 0.1, treedepth = 12, rhat = 1.1)
 })

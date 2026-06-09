@@ -2,6 +2,12 @@
 
 ## Model
 
+- The fixed-effects design and integrated (`d >= 1`) `arima()` and `gp()` residuals are now centred against the module intercept, decorrelating the intercept from the slopes and from the latent drift to improve sampling geometry.
+  For modules with a free intercept (`expr`, `refp` mean, `refnp`, `miss`) the design is centred on its observation-weighted column means, as `brms` does by default, and the grand mean (over time and groups) of the integrated residual is removed.
+  The sampled intercept (`<prefix>_int_c`) is on the centred scale; the original-scale intercept the prior applies to is recovered as `<prefix>_int` by undoing both the design and latent centring (a unit-Jacobian shift, so the prior keeps its meaning and the posterior is unchanged, as in EpiNow2's reproduction-number centring).
+  Only the shared grand-mean level is removed, so each group keeps its own level and drift: a grouped latent (`arima(time, group, ...)`, `G > 1`) is unchanged in meaning and the reparameterisation is exact for any number of groups.
+  On a weekly random-walk growth model the centred form samples roughly twice as fast at the `adapt_delta` these models use (it is sharper, so benefits from `adapt_delta >= 0.95`).
+  Modules without a free intercept (`expl`, `rep`) and the log-link `refp` standard deviation are left uncentred.
 - Added a `gp()` formula helper that places an approximate Gaussian process on any module's linear predictor, the same way `arima()` and `rw()` work.
   It uses a Hilbert-space reduced-rank (spectral) approximation with selectable kernels (Matern 3/2 default, Matern 5/2, Ornstein-Uhlenbeck, squared exponential, periodic) and a `basis_prop` accuracy-speed control.
   A `gp()` term can be placed on the growth rate (`expr`), the latent-to-obs proportion (`expl`), the parametric (`refp`) and non-parametric (`refnp`) reference delay, the report-time hazards (`rep`), and the missing-reference proportion (`miss`).
@@ -13,6 +19,14 @@
   This gives feature parity with the uncertain distribution support in `EpiNow2` (no `EpiNow2` code is used).
   Fixed PMFs remain the default so existing models are unaffected.
   See #177 and #178.
+- Added a delay-only model that fits the reporting-delay distribution conditional on known per-reference-date totals, treating those totals as fixed truth (the standard delay-estimation pattern of Kalbfleisch & Lawless, 1989; Höhle & an der Heiden, 2014).
+  Enable it with `enw_obs(delay_only = TRUE)`: a delay-only fit is just `epinowcast(data, obs = enw_obs(delay_only = TRUE, data = data))`, as `epinowcast()` minimises the (now inert) expectation automatically.
+  The latent process and per-cell observation model are replaced by a (truncated) multinomial likelihood over the reported cells of each reference date.
+  When the known totals are final retrospective totals this is the plain multinomial; when they are running totals observed only up to some horizon the likelihood renormalises over all delays up to the observation cutoff to give the truncated multinomial.
+  An `observation_indicator` is supported (interior cells unobserved but before the cutoff keep their weight).
+  `delay_only = TRUE` selects the multinomial likelihood internally regardless of `family`, warning if a `family` is supplied.
+  See the delay estimation vignette and #775 and #776.
+  Also adds `enw_posterior_delay()` to extract posterior samples of the parametric delay distribution; it returns one PMF per reference-design row (with a `row` column) for delay models with reference covariates, random effects, or time- or group-varying delays.
 - The parametric reference delay is now discretised with the double interval censoring approach from the [primarycensored](https://primarycensored.epinowcast.org) package, replacing the previous uniform-interval approximation.
   This more exactly accounts for primary event censoring, secondary interval censoring, and right truncation, and is used unconditionally for the lognormal, gamma, and exponential distributions.
   The log-logistic distribution has been dropped from `enw_reference()` because `primarycensored` does not yet support it (epinowcast/primarycensored#321); it can be restored once upstream support lands.

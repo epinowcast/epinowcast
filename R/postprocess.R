@@ -385,6 +385,217 @@ enw_quantiles_to_long <- function(posterior) {
   long[]
 }
 
+#' Discretise a parametric delay distribution
+#'
+#' Computes the discretised probability mass function of a parametric delay
+#' distribution using primary-event censoring via
+#' [primarycensored::dprimarycensored()], the same method `epinowcast` relies
+#' on for delay distributions. The PMF is over delays `0:(max_delay - 1)`,
+#' truncated at `max_delay`. Parameters use the distribution's natural
+#' parameterisation (e.g. `meanlog`/`sdlog` for the lognormal); the
+#' `refp_mean_int`/`refp_sd_int` parameters are mapped accordingly.
+#'
+#' @param mu Location parameter on the modelled scale (`refp_mean_int`).
+#'
+#' @param sigma Scale parameter on the modelled scale (`refp_sd_int`). Ignored
+#'   for the exponential distribution.
+#'
+#' @param max_delay Maximum delay (number of delay slots, delays `0:(max_delay
+#'   - 1)`).
+#'
+#' @param distribution One of "lognormal", "gamma", "exponential", or
+#'   "loglogistic".
+#'
+#' @return A numeric vector of length `max_delay` summing to 1.
+#' @family postprocess
+.discretise_parametric_pmf <- function(mu, sigma, max_delay,
+                                       distribution = "lognormal") {
+  .check_primarycensored("`.discretise_parametric_pmf()`")
+  delays <- 0:(max_delay - 1)
+  # Map the modelled (mu, sigma) to each distribution's pdist arguments.
+  spec <- switch(distribution,
+    lognormal = list(stats::plnorm, list(meanlog = mu, sdlog = sigma)),
+    gamma = list(stats::pgamma, list(shape = exp(mu), rate = sigma)),
+    exponential = list(stats::pexp, list(rate = exp(-mu))),
+    loglogistic = list(
+      function(q, shape, scale) {
+        ifelse(q <= 0, 0, 1 / (1 + (q / scale)^-shape))
+      },
+      list(shape = sigma, scale = exp(mu))
+    ),
+    cli::cli_abort("Unknown {.arg distribution}: {.val {distribution}}.")
+  )
+  do.call(
+    primarycensored::dprimarycensored,
+    c(
+      list(delays, pdist = spec[[1]], pwindow = 1, swindow = 1, D = max_delay),
+      spec[[2]]
+    )
+  )
+}
+
+#' Error if the primarycensored package is not installed
+#'
+#' @param caller A string naming the calling function for the error message.
+#' @return Invisibly `TRUE`; called for its side effect.
+#' @family postprocess
+.check_primarycensored <- function(caller) {
+  if (!requireNamespace("primarycensored", quietly = TRUE)) {
+    cli::cli_abort(
+      c(
+        "{caller} requires the {.pkg primarycensored} package.",
+        i = "Install it with {.code install.packages(\"primarycensored\")}."
+      )
+    )
+  }
+  invisible(TRUE)
+}
+
+#' Extract the index-ordered draw columns for a delay vector parameter
+#'
+#' @param fit A `cmdstanr` fit object.
+#' @param var A scalar string naming the vector variable (e.g. `"refp_mean"`).
+#' @return A list with `draws` (a `draws_df`, or `NULL` if `var` is absent) and
+#'   `cols` (the matching column names in index order).
+#' @family postprocess
+.delay_draw_columns <- function(fit, var) {
+  draws <- tryCatch(
+    posterior::as_draws_df(fit$draws(var)),
+    error = function(e) NULL
+  )
+  if (is.null(draws)) {
+    return(list(draws = NULL, cols = character(0)))
+  }
+  cols <- names(draws)[startsWith(names(draws), paste0(var, "["))]
+  list(draws = draws, cols = cols)
+}
+
+#' Posterior samples of the parametric reporting-delay distribution
+#'
+#' Extracts posterior draws of the parametric reporting-delay distribution
+#' from a fit (e.g. a delay-only fit, see the delay estimation vignette) and
+#' returns the discretised delay probability mass function for each draw. This
+#' supports comparing the estimated distribution against a known truth and
+#' plotting posterior samples rather than only summaries.
+#'
+#' The function reads the full `refp_mean` and `refp_sd` vectors saved by the
+#' Stan model (one entry per unique combination of parametric reference-date
+#' covariates) and discretises a delay PMF for each. For an intercept-only
+#' delay (the common case, `refp_mean` of length one) the output is a long
+#' `data.table` with columns `.draw`, `delay`, and `pmf`. For a delay model
+#' with reference-date covariates, random effects, or time- or group-varying
+#' delays (`refp_mean` of length greater than one) an additional integer `row`
+#' column identifies the reference-design row, and each row may have a
+#' different PMF. The mapping from `row` to reference date and group is set by
+#' the reference module's fixed-effect design (see [enw_reference()] and
+#' `enw_formula_as_data_list()`'s `refp_findex`); it is not recovered here
+#' because a `cmdstanr` fit does not retain that design on its own.
+#'
+#' @param fit A `cmdstanr` fit object (the `fit[[1]]` element of an
+#'   `epinowcast` output).
+#'
+#' @param max_delay Maximum delay (number of delay slots, delays
+#'   `0:(max_delay - 1)`).
+#'
+#' @param distribution The parametric distribution used in [enw_reference()],
+#'   one of "lognormal", "gamma", "exponential", or "loglogistic". Defaults to
+#'   "lognormal". A `cmdstanr` fit does not record which distribution was used
+#'   (the `model_refp` id is Stan data, not saved to the draws), so this must
+#'   match the distribution passed to [enw_reference()]. An incorrect value
+#'   silently yields the wrong PMF.
+#'
+#' @param draws Optional integer; if supplied, a random subset of this many
+#'   posterior draws is returned (useful for plotting). The same draws are used
+#'   across all reference-design rows.
+#'
+#' @return A long `data.table` with columns `.draw`, `delay`, and `pmf`, plus
+#'   an integer `row` column when the delay model has more than one
+#'   reference-design row.
+#' @family postprocess
+#' @export
+#' @importFrom data.table data.table rbindlist
+#' @examplesIf interactive()
+#' fit <- enw_example("nowcast")
+#' # Intercept-only delay
+#' enw_posterior_delay(fit$fit[[1]], max_delay = 20, draws = 50)
+#'
+#' # A delay model with a reference-date covariate yields one PMF per
+#' # reference-design row, identified by the `row` column:
+#' \dontrun{
+#' pobs <- enw_example("preprocessed")
+#' covariate_fit <- epinowcast(
+#'   pobs,
+#'   reference = enw_reference(~ 1 + day_of_week, data = pobs),
+#'   obs = enw_obs(delay_only = TRUE, data = pobs)
+#' )
+#' enw_posterior_delay(covariate_fit$fit[[1]], max_delay = 20, draws = 50)
+#' }
+enw_posterior_delay <- function(fit, max_delay, distribution = "lognormal",
+                                draws = NULL) {
+  # `posterior` returns the per-element columns of a vector variable in index
+  # order (`refp_mean[1]`, `refp_mean[2]`, ...), so `row` aligns with the Stan
+  # reference-design row order without re-parsing the bracketed indices.
+  mean_cols <- .delay_draw_columns(fit, "refp_mean")
+  mean_draws <- mean_cols$draws
+  mean_cols <- mean_cols$cols
+  if (length(mean_cols) == 0) {
+    cli::cli_abort(
+      c(
+        "Could not find {.var refp_mean} in the fit's posterior draws.",
+        i = paste(
+          "{.fun enw_posterior_delay} only supports models with a parametric",
+          "reference-date delay (`model_refp > 0` in [enw_reference()])."
+        ),
+        x = paste(
+          "Non-parametric or delay-free reference models do not produce a",
+          "parametric delay PMF."
+        )
+      )
+    )
+  }
+  n_rows <- length(mean_cols)
+
+  sd <- .delay_draw_columns(fit, "refp_sd")
+  sd_draws <- sd$draws
+  sd_cols <- sd$cols
+
+  n_draws <- nrow(mean_draws)
+  idx <- seq_len(n_draws)
+  if (!is.null(draws) && draws < n_draws) {
+    idx <- sort(sample.int(n_draws, draws))
+  }
+  delays <- 0:(max_delay - 1)
+
+  row_pmf <- function(row) {
+    mu <- mean_draws[[mean_cols[row]]]
+    if (length(sd_cols) >= row) {
+      sigma <- sd_draws[[sd_cols[row]]]
+    } else {
+      sigma <- rep(NA_real_, n_draws)
+    }
+    data.table::rbindlist(lapply(idx, function(i) {
+      data.table::data.table(
+        .draw = i,
+        delay = delays,
+        pmf = .discretise_parametric_pmf(
+          mu[i], sigma[i], max_delay, distribution
+        )
+      )
+    }))
+  }
+
+  if (n_rows == 1L) {
+    return(row_pmf(1L)[])
+  }
+  out <- data.table::rbindlist(lapply(seq_len(n_rows), function(row) {
+    dt <- row_pmf(row)
+    dt[, row := row]
+    data.table::setcolorder(dt, c("row", ".draw", "delay", "pmf"))
+    dt
+  }))
+  out[]
+}
+
 #' Build the ord_obs `data.table`.
 #'
 #' @param obs Observations as pulled from `nowcast$latest[[1]]`.

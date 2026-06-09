@@ -352,3 +352,33 @@ test_that(
     expect_true(all(is.finite(arima_pars$mean)))
   }
 )
+
+test_that("centring places the prior on the recovered intercept", {
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_on_local()
+  # A tight intercept prior should bind the *recovered* (original-scale)
+  # growth-rate intercept r_0, confirming the prior is placed on the
+  # recovered intercept rather than the internal centred one, and that the
+  # tight prior does not break sampling.
+  pobs <- enw_example("preprocessed")
+  tight <- data.frame(variable = "expr_r_int", mean = 0, sd = 0.05)
+  nowcast <- suppressWarnings(suppressMessages(epinowcast(
+    pobs,
+    expectation = enw_expectation(r = ~ 1 + rw(week), data = pobs),
+    priors = tight,
+    obs = enw_obs(family = "poisson", data = pobs),
+    fit = enw_fit_opts(
+      save_warmup = FALSE, pp = FALSE, chains = 2, parallel_chains = 2,
+      iter_warmup = 500, iter_sampling = 500, adapt_delta = 0.95,
+      seed = 1, refresh = 0, show_messages = FALSE
+    )
+  )))
+  expect_convergence(nowcast)
+  recovered <- nowcast$fit[[1]]$summary("expr_r_int")
+  # the recovered intercept is constrained by its tight prior (posterior
+  # sd at or below the prior sd); a prior on the internal centred intercept
+  # would leave the recovered one much wider.
+  expect_lt(recovered$sd, 0.05)
+  expect_lt(abs(recovered$mean), 0.15)
+})

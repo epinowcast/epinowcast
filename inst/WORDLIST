@@ -26,6 +26,7 @@ christinesangphet
 CMD
 CmdStan
 cmdstanr
+cmdstanr's
 CmdStanR
 Codecov
 com
@@ -33,6 +34,7 @@ COVID
 CrI
 crps
 CRPS
+cutoff
 cyclomatic
 dataconverters
 dedup
@@ -40,6 +42,7 @@ deduplicate
 deduplicated
 deduplication
 difftime
+Discretise
 discretisation
 Discretisation
 discretisations
@@ -76,7 +79,9 @@ gt
 Gulfa
 HalfNormal
 hannah
+Heiden
 HMC
+Hoehle
 Höhle
 IDate
 ImperialCollegeLondon
@@ -93,6 +98,7 @@ jhellewell
 jimrothstein
 jss
 kaitejohnson
+Kalbfleisch
 kathsherratt
 kylieainslie
 lceil
@@ -192,6 +198,7 @@ refp
 Reinsel
 renormalising
 Renviron
+renormalisation
 reparameterisation
 rhat
 Rhat
@@ -231,6 +238,7 @@ treedepth
 u
 Uhlenbeck
 un
+uncentred
 underbrace
 underpredicting
 underprediction

@@ -7,6 +7,7 @@
 enw_obs(
   family = c("negbin", "negbin1d", "poisson"),
   observation_indicator = NULL,
+  delay_only = FALSE,
   data
 )
 }
@@ -16,7 +17,9 @@ likelihood; enforced by \code{\link[base:match.arg]{base::match.arg()}}. By defa
 negative binomial with a quadratic mean-variance
 relationship ("negbin"). Negative binomial with a linear
 mean-variance relationship ("negbin1d") and Poisson ("poisson") are
-also available.}
+also available. This is ignored when \code{delay_only = TRUE}, in which case the
+delay-only multinomial likelihood is used regardless of \code{family}; supplying
+a \code{family} alongside \code{delay_only = TRUE} emits a warning.}
 
 \item{observation_indicator}{A character string, the name of the column in
 the data that indicates whether an observation is observed or not (using a
@@ -26,6 +29,26 @@ likelihood. This variable should be present in the data input to
 \code{\link[=enw_complete_dates]{enw_complete_dates()}} or it can be created directly using
 \code{\link[=enw_flag_observed_observations]{enw_flag_observed_observations()}}. If either of these approaches are used
 then the variable will be name \code{.observed}. Default is \code{NULL}.}
+
+\item{delay_only}{Logical, defaults to \code{FALSE}. If \code{TRUE}, fit only the
+reporting-delay distribution conditional on the known per-reference-date
+totals, treating those totals as fixed truth. The latent process and
+per-cell observation model are replaced by a (truncated) multinomial over
+the reported cells of each reference date, so \code{family} is ignored. With
+final retrospective totals
+this is the plain multinomial; with running totals observed up to some
+horizon the renormalisation over the observed delay range gives the
+truncated multinomial. An \code{observation_indicator} is supported and
+renormalises over all delays up to the observation cutoff. Because the
+known totals override the expected observations, the latent process is
+inert; \code{\link[=epinowcast]{epinowcast()}} therefore minimises the expectation automatically, so
+a delay-only fit is just \code{epinowcast(data, obs = enw_obs(delay_only = TRUE, data = data))} with no separate expectation module to configure. This mode
+estimates delays and does not nowcast (refit with the full model for a
+nowcast). Not compatible with the missing reference model. See the delay
+estimation vignette for a worked example.
+Based on the conditional delay likelihood of Kalbfleisch and Lawless
+(\doi{10.1080/01621459.1989.10478780}) and Höhle and an der Heiden
+(\doi{10.1111/biom.12194}).}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }
@@ -37,9 +60,12 @@ Setup observation model and data
 }
 \examples{
 enw_obs(data = enw_example("preprocessed"))
+# Delay-only model conditional on known totals
+enw_obs(delay_only = TRUE, data = enw_example("preprocessed"))
 }
 \seealso{
 Model modules
+\code{\link{.expectation_is_minimal}()},
 \code{\link{enw_expectation}()},
 \code{\link{enw_fit_opts}()},
 \code{\link{enw_missing}()},
