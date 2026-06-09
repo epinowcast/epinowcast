@@ -178,6 +178,17 @@ Multiplying <span class="math inline">\(T(\psi) z\)</span> applies the ARMA filt
 <p>The Stan implementation of these steps lives in <code>inst/stan/functions/arima_kernel.stan</code>.</p>
 </div>
 <div class="section level2">
+<h2 id="centring-the-integrated-residual">Centring the integrated residual<a class="anchor" aria-label="anchor" href="#centring-the-integrated-residual"></a>
+</h2>
+<p>When the residual is integrated (<span class="math inline">\(d \ge 1\)</span>) the cumulative-sum operator <span class="math inline">\(D^d\)</span> gives <span class="math inline">\(\epsilon\)</span> a free overall level: the first shock propagates through the cumulative sum and shifts the whole path.
+That level trades off against the module intercept, so it is removed and recovered into the intercept exactly as for the fixed-effect design — the general device, and why it leaves the posterior unchanged, is described in the <a href="model.html">model vignette</a>.</p>
+<p>The term-specific part is which mean is removed.
+Only the grand mean over time and groups is subtracted,</p>
+<p><span class="math display">\[\tilde\epsilon_{t, g} = \epsilon_{t, g} - \bar m, \qquad \bar m = \frac{1}{T G} \sum_{g=1}^{G} \sum_{t=1}^{T} \epsilon_{t, g},\]</span></p>
+<p>which is the single level direction that competes with the shared intercept.
+Each group keeps its own level relative to <span class="math inline">\(\bar m\)</span>, so a grouped latent (<span class="math inline">\(G &gt; 1\)</span>, e.g. <code>arima(week, age_group)</code>) still gives each group its own level and drift, and the reparameterisation is exact for any number of groups.</p>
+</div>
+<div class="section level2">
 <h2 id="stationarity-via-partial-autocorrelations">Stationarity via partial autocorrelations<a class="anchor" aria-label="anchor" href="#stationarity-via-partial-autocorrelations"></a>
 </h2>
 <p>The autoregressive part is only well behaved if it is <em>stationary</em>.
@@ -240,10 +251,12 @@ The latent scale <span class="math inline">\(\sigma\)</span> and the partial aut
 <p>Here <code>&lt;prefix&gt;</code> is the module the term sits on (<code>expr</code> for the growth rate, <code>refp</code> for the parametric reference mean, and so on; see <a href="#where">Where you can use it</a>).
 For example, to shrink the growth-rate AR term toward weak autocorrelation rather than leaving it uniform:</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://package.epinowcast.org">epinowcast</a></span><span class="op">)</span></span>
-<span><span class="va">pacf_prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>variable <span class="op">=</span> <span class="st">"expr_arima_pacf"</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span>
-<span><span class="co"># epinowcast(..., priors = pacf_prior)</span></span></code></pre></div>
-</details><p>The half-normal prior on <span class="math inline">\(\sigma\)</span> is the most consequential in practice; tighten it if the latent residual is competing with the rest of the linear predictor for variance.
+<code class="sourceCode R"><span><span class="va">pacf_prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  variable <span class="op">=</span> <span class="st">"expr_arima_pacf"</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</details><p>Pass the result to <code><a href="../reference/epinowcast.html">epinowcast()</a></code> through its <code>priors</code> argument.</p>
+<p>The half-normal prior on <span class="math inline">\(\sigma\)</span> is the most consequential in practice; tighten it if the latent residual is competing with the rest of the linear predictor for variance.
 A tighter <code>pacf</code> prior is the lever for discouraging the near-unit-root AR behaviour that the uniform default permits.</p>
 </div>
 <div class="section level2">

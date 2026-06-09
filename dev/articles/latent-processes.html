@@ -244,15 +244,15 @@ Here we model the trend at weekly resolution, matching <code>rw(week)</code>, so
 <tbody>
 <tr class="odd">
 <td align="left">expr_arima_pacf[1]</td>
-<td align="right">-0.023</td>
-<td align="right">-0.800</td>
-<td align="right">0.819</td>
+<td align="right">-0.033</td>
+<td align="right">-0.849</td>
+<td align="right">0.845</td>
 </tr>
 <tr class="even">
 <td align="left">expr_arima_sigma[1]</td>
-<td align="right">0.030</td>
+<td align="right">0.031</td>
 <td align="right">0.011</td>
-<td align="right">0.055</td>
+<td align="right">0.057</td>
 </tr>
 </tbody>
 </table>
@@ -328,14 +328,14 @@ The <a href="gaussian-process.html">Gaussian process implementation notes</a> co
 <tbody>
 <tr class="odd">
 <td align="left">expr_gp_rho[1]</td>
-<td align="right">3.229</td>
-<td align="right">1.327</td>
-<td align="right">6.027</td>
+<td align="right">3.331</td>
+<td align="right">1.385</td>
+<td align="right">6.397</td>
 </tr>
 <tr class="even">
 <td align="left">expr_gp_alpha[1]</td>
-<td align="right">0.041</td>
-<td align="right">0.013</td>
+<td align="right">0.042</td>
+<td align="right">0.011</td>
 <td align="right">0.086</td>
 </tr>
 </tbody>
@@ -453,20 +453,6 @@ The runtime column makes the accuracy-versus-cost trade-off explicit: the more f
 <span>    runtime_s <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">fits</span><span class="op">[[</span><span class="va">model</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">time</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">total</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
-<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
-<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
-<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
-<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
-<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
-<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
-<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
-<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
-<span><span class="co">#&gt; Warning: The ESS has been capped to avoid unstable estimates.</span></span>
-<span><span class="co">#&gt; Warning: 2 of 1000 (0.0%) transitions ended with a divergence.</span></span>
-<span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span>
-<span><span class="co">#&gt; Warning: 2 of 1000 (0.0%) transitions hit the maximum treedepth limit of 12.</span></span>
-<span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">diagnostics</span><span class="op">)</span></span></code></pre></div>
 </details><table class="table">
 <colgroup>
@@ -487,51 +473,51 @@ The runtime column makes the accuracy-versus-cost trade-off explicit: the more f
 <tr class="odd">
 <td align="left">rw(week, age_group)</td>
 <td align="right">1.012</td>
-<td align="right">259</td>
+<td align="right">244</td>
 <td align="right">0</td>
-<td align="right">99</td>
+<td align="right">73</td>
 </tr>
 <tr class="even">
 <td align="left">arima(week, age_group, 1, 1, 0)</td>
-<td align="right">1.011</td>
-<td align="right">177</td>
+<td align="right">1.013</td>
+<td align="right">255</td>
 <td align="right">0</td>
-<td align="right">111</td>
+<td align="right">62</td>
 </tr>
 <tr class="odd">
 <td align="left">ar(day, age_group, 1)</td>
-<td align="right">1.019</td>
-<td align="right">222</td>
+<td align="right">1.012</td>
+<td align="right">174</td>
 <td align="right">0</td>
-<td align="right">98</td>
+<td align="right">86</td>
 </tr>
 <tr class="even">
 <td align="left">gp(week, age_group)</td>
-<td align="right">1.008</td>
-<td align="right">237</td>
+<td align="right">1.029</td>
+<td align="right">152</td>
 <td align="right">0</td>
-<td align="right">77</td>
+<td align="right">59</td>
 </tr>
 <tr class="odd">
 <td align="left">(1 | week:.group)</td>
-<td align="right">1.035</td>
-<td align="right">185</td>
-<td align="right">2</td>
+<td align="right">1.030</td>
+<td align="right">219</td>
+<td align="right">0</td>
 <td align="right">74</td>
 </tr>
 <tr class="even">
 <td align="left">(1 | day_of_week)</td>
-<td align="right">1.014</td>
-<td align="right">150</td>
+<td align="right">1.010</td>
+<td align="right">191</td>
 <td align="right">0</td>
-<td align="right">224</td>
+<td align="right">67</td>
 </tr>
 <tr class="odd">
 <td align="left">(1 | day_of_week) + arima(week, …)</td>
-<td align="right">1.011</td>
-<td align="right">209</td>
+<td align="right">1.016</td>
+<td align="right">165</td>
 <td align="right">0</td>
-<td align="right">283</td>
+<td align="right">94</td>
 </tr>
 </tbody>
 </table>

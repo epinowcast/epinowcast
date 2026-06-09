@@ -118,6 +118,9 @@ enw_missing(data = enw_example("preprocessed"))
 #> 39
 #> 40
 #> 
+#> $data$miss_fdesign_means
+#> numeric(0)
+#> 
 #> $data$miss_rdesign
 #>      (Intercept)
 #> attr(,"assign")
@@ -293,8 +296,8 @@ enw_missing(data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x556147072268>
-#> <environment: 0x55614706b970>
+#> <bytecode: 0x5606cb5b32a0>
+#> <environment: 0x5606cb5b9c40>
 #> 
 
 # No missingness model specified
@@ -322,6 +325,9 @@ enw_missing(~0, data = enw_example("preprocessed"))
 #> [1] 0
 #> 
 #> $data$miss_fdesign
+#> numeric(0)
+#> 
+#> $data$miss_fdesign_means
 #> numeric(0)
 #> 
 #> $data$miss_rdesign
@@ -454,7 +460,7 @@ enw_missing(~0, data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x556147072268>
-#> <environment: 0x5561468ef600>
+#> <bytecode: 0x5606cb5b32a0>
+#> <environment: 0x5606c9bdf3e0>
 #> 
 ```

@@ -247,8 +247,8 @@ kable(arima_pars, digits = 3)
 
 | variable              |   mean |     q5 |   q95 |
 |:----------------------|-------:|-------:|------:|
-| expr_arima_pacf\[1\]  | -0.023 | -0.800 | 0.819 |
-| expr_arima_sigma\[1\] |  0.030 |  0.011 | 0.055 |
+| expr_arima_pacf\[1\]  | -0.033 | -0.849 | 0.845 |
+| expr_arima_sigma\[1\] |  0.031 |  0.011 | 0.057 |
 
 ## Stationary AR
 
@@ -363,8 +363,8 @@ kable(gp_pars, digits = 3)
 
 | variable           |  mean |    q5 |   q95 |
 |:-------------------|------:|------:|------:|
-| expr_gp_rho\[1\]   | 3.229 | 1.327 | 6.027 |
-| expr_gp_alpha\[1\] | 0.041 | 0.013 | 0.086 |
+| expr_gp_rho\[1\]   | 3.331 | 1.385 | 6.397 |
+| expr_gp_alpha\[1\] | 0.042 | 0.011 | 0.086 |
 
 ## Independent per-(week, group) effects
 
@@ -548,32 +548,18 @@ diagnostics <- rbindlist(lapply(names(fits), function(model) {
     runtime_s = round(fits[[model]]$fit[[1]]$time()$total)
   )
 }))
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: 2 of 1000 (0.0%) transitions ended with a divergence.
-#> See https://mc-stan.org/misc/warnings for details.
-#> Warning: 2 of 1000 (0.0%) transitions hit the maximum treedepth limit of 12.
-#> See https://mc-stan.org/misc/warnings for details.
 kable(diagnostics)
 ```
 
 | model | max_rhat | min_ess_bulk | divergences | runtime_s |
 |:---|---:|---:|---:|---:|
-| rw(week, age_group) | 1.012 | 259 | 0 | 99 |
-| arima(week, age_group, 1, 1, 0) | 1.011 | 177 | 0 | 111 |
-| ar(day, age_group, 1) | 1.019 | 222 | 0 | 98 |
-| gp(week, age_group) | 1.008 | 237 | 0 | 77 |
-| (1 \| week:.group) | 1.035 | 185 | 2 | 74 |
-| (1 \| day_of_week) | 1.014 | 150 | 0 | 224 |
-| (1 \| day_of_week) + arima(week, …) | 1.011 | 209 | 0 | 283 |
+| rw(week, age_group) | 1.012 | 244 | 0 | 73 |
+| arima(week, age_group, 1, 1, 0) | 1.013 | 255 | 0 | 62 |
+| ar(day, age_group, 1) | 1.012 | 174 | 0 | 86 |
+| gp(week, age_group) | 1.029 | 152 | 0 | 59 |
+| (1 \| week:.group) | 1.030 | 219 | 0 | 74 |
+| (1 \| day_of_week) | 1.010 | 191 | 0 | 67 |
+| (1 \| day_of_week) + arima(week, …) | 1.016 | 165 | 0 | 94 |
 
 ## When to reach for which
 

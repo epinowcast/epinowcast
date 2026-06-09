@@ -107,6 +107,9 @@ enw_formula_as_data_list(f, "mtcars")
 #> 3    1    0    0
 #> 5    0    0    1
 #> 
+#> $mtcars_fdesign_means
+#> [1] 0.34375 0.21875 0.43750
+#> 
 #> $mtcars_rdesign
 #>   fixed cyl
 #> 1     0   1
@@ -194,6 +197,9 @@ enw_formula_as_data_list(prefix = "missing")
 #> [1] 0
 #> 
 #> $missing_fdesign
+#> numeric(0)
+#> 
+#> $missing_fdesign_means
 #> numeric(0)
 #> 
 #> $missing_rdesign

@@ -56,5 +56,5 @@ Functions used to help convert formulas into model designs
 ``` r
 epinowcast:::remove_gp_terms(~ 1 + age_group + gp(week))
 #> ~1 + age_group
-#> <environment: 0x55614b730b38>
+#> <environment: 0x5606be61dc18>
 ```

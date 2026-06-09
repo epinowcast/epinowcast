@@ -114,6 +114,29 @@ eps  <- sigma * K * z                      # T x G latent
 The Stan implementation of these steps lives in
 `inst/stan/functions/arima_kernel.stan`.
 
+## Centring the integrated residual
+
+When the residual is integrated (\\d \ge 1\\) the cumulative-sum
+operator \\D^d\\ gives \\\epsilon\\ a free overall level: the first
+shock propagates through the cumulative sum and shifts the whole path.
+That level trades off against the module intercept, so it is removed and
+recovered into the intercept exactly as for the fixed-effect design —
+the general device, and why it leaves the posterior unchanged, is
+described in the [model
+vignette](https://package.epinowcast.org/dev/articles/model.md).
+
+The term-specific part is which mean is removed. Only the grand mean
+over time and groups is subtracted,
+
+\\\tilde\epsilon\_{t, g} = \epsilon\_{t, g} - \bar m, \qquad \bar m =
+\frac{1}{T G} \sum\_{g=1}^{G} \sum\_{t=1}^{T} \epsilon\_{t, g},\\
+
+which is the single level direction that competes with the shared
+intercept. Each group keeps its own level relative to \\\bar m\\, so a
+grouped latent (\\G \> 1\\, e.g. `arima(week, age_group)`) still gives
+each group its own level and drift, and the reparameterisation is exact
+for any number of groups.
+
 ## Stationarity via partial autocorrelations
 
 The autoregressive part is only well behaved if it is *stationary*. A
@@ -230,10 +253,15 @@ Code
 
 ``` r
 
-library(epinowcast)
-pacf_prior <- data.frame(variable = "expr_arima_pacf", mean = 0, sd = 0.3)
-# epinowcast(..., priors = pacf_prior)
+pacf_prior <- data.frame(
+  variable = "expr_arima_pacf", mean = 0, sd = 0.3,
+  stringsAsFactors = FALSE
+)
 ```
+
+Pass the result to
+[`epinowcast()`](https://package.epinowcast.org/dev/reference/epinowcast.md)
+through its `priors` argument.
 
 The half-normal prior on \\\sigma\\ is the most consequential in
 practice; tighten it if the latent residual is competing with the rest

@@ -372,6 +372,56 @@ for pooled standard deviations. See
 [`?epinowcast`](https://package.epinowcast.org/dev/reference/epinowcast.md)
 for details on inspecting and customising these priors.
 
+### Centring
+
+Each (log-)linear predictor above pairs an intercept (\\r_0\\,
+\\\nu_0\\, \\\mu_0\\, \\\delta_0\\) with a fixed-effect design matrix.
+Because the design columns are not generally centred at zero, the
+intercept and the fixed-effect coefficients trade off against each
+other, which correlates them in the posterior and slows sampling. For
+efficiency the fixed-effect design is therefore centred on its
+observation-weighted column means \\\bar X\\ before it enters the
+predictor, so the intercept represents the predictor at the mean of the
+covariates rather than at their origin, as `brms` does by default for
+population-level effects^(\[[16](#ref-brms)\]). Taking the growth rate
+as an example,
+
+\\\begin{equation} \text{log}(R\_{g,t}) = r_0^{c} + \beta\_{f,r} (X_r -
+\bar X_r) + \beta\_{r,r} Z_r, \end{equation}\\
+
+where \\r_0^{c}\\ is the sampled (centred) intercept. The original-scale
+intercept reported to the user is recovered as \\r_0 = r_0^{c} - \bar
+X_r \beta\_{f,r}\\, and the user’s prior is placed on \\r_0\\. The shift
+is additive, so the change of variables has unit Jacobian and the
+posterior is unchanged. `brms` centres its population-level design
+matrix in the same way^(\[[16](#ref-brms)\]), but places the prior on
+the centred intercept; here the prior is placed on the recovered
+original-scale \\r_0\\, so the user’s stated prior is honoured exactly.
+A very tight intercept prior then reintroduces a little of the
+intercept/slope coupling, which is the price of keeping the prior on the
+original scale.
+
+The same idea applies to the integrated drift of an autoregressive or
+Gaussian process term. An integrated
+[`arima()`](https://package.epinowcast.org/dev/reference/arima.md)
+residual or `gp(d >= 1)` term has a free overall level (the cumulative
+sum lets the early values shift the whole path) that trades off against
+the intercept, so its grand mean is removed and recovered into the
+intercept in the same way, following the reproduction-number centring
+used in `EpiNow2`^(\[[1](#ref-EpiNow2)\]). Only the shared grand mean —
+the single level direction that competes with the shared scalar
+intercept — is removed, so each group keeps its own level and drift and
+the reparameterisation is exact for any number of groups. It therefore
+breaks the intercept/drift ridge, but it does not centre per-group level
+correlations against group-level effects (such as a `(1 | group)` random
+intercept), which can remain for a grouped latent term; this is why a
+grouped latent benefits less than a single shared series. See the [ARIMA
+vignette](https://package.epinowcast.org/dev/articles/arima.md) and the
+[Gaussian process
+vignette](https://package.epinowcast.org/dev/articles/gaussian-process.md)
+for the term-specific forms. Modules without a free intercept are left
+uncentred.
+
 ## Observation model and nowcast
 
 Expected notifications by date of reference (\\t\\) and reporting delay
@@ -380,7 +430,7 @@ can now be found by multiplying expected final notifications for each
 (\\p\_{g,t,d}\\). We assume a negative binomial observation model, by
 default, with a joint overdispersion parameter (with a standard half
 normal prior on 1 over square root of the
-overdispersion^(\[[16](#ref-stan_prior_wiki)\])) and produce a nowcast
+overdispersion^(\[[17](#ref-stan_prior_wiki)\])) and produce a nowcast
 of final observed notifications at each reference date by summing
 posterior estimates for unobserved notification and observed
 notifications for that reference date.
@@ -452,9 +502,9 @@ parallelisation is available across times of reference to reduce
 runtimes. Sparse design matrices have been used for all covariates to
 limit the number of probability mass functions that need to be
 calculated. `epinowcast` incorporates additional functionality written
-in R^(\[[17](#ref-R)\]) to enable plotting nowcasts and posterior
+in R^(\[[18](#ref-R)\]) to enable plotting nowcasts and posterior
 predictions, summarising nowcasts, and scoring them using
-`scoringutils`^(\[[18](#ref-scoringutils)\]). A flexible formula
+`scoringutils`^(\[[19](#ref-scoringutils)\]). A flexible formula
 interface is provided to enable easier implementation of complex user
 specified models without interacting with the underlying code base. All
 functionality is modular allowing users to extend and alter the
@@ -580,15 +630,21 @@ K. (2024). *Primarycensored: Primary event censored distributions*.
 
 16\.
 
-Team, S. D. (2020). *Prior choice recommendations*.
+Bürkner, P.-C. (2017). brms: An R package for Bayesian multilevel models
+using Stan. *Journal of Statistical Software*, *80*(1), 1–28.
+<https://doi.org/10.18637/jss.v080.i01>
 
 17\.
+
+Team, S. D. (2020). *Prior choice recommendations*.
+
+18\.
 
 R Core Team. (2019). *R: A language and environment for statistical
 computing*. R Foundation for Statistical Computing.
 <https://www.R-project.org/>
 
-18\.
+19\.
 
 Bosse, N. (2020). *Scoringutils: A collection of proper scoring rules
 and metrics to assess predictions*.

@@ -258,11 +258,33 @@ For example, <code>enw_reference(non_parametric = ~ 1 + day_of_week)</code> adds
 See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for details on inspecting and customising these priors.</p>
 </div>
 </div>
+<div class="section level3">
+<h3 id="centring">Centring<a class="anchor" aria-label="anchor" href="#centring"></a>
+</h3>
+<p>Each (log-)linear predictor above pairs an intercept (<span class="math inline">\(r_0\)</span>, <span class="math inline">\(\nu_0\)</span>, <span class="math inline">\(\mu_0\)</span>, <span class="math inline">\(\delta_0\)</span>) with a fixed-effect design matrix.
+Because the design columns are not generally centred at zero, the intercept and the fixed-effect coefficients trade off against each other, which correlates them in the posterior and slows sampling.
+For efficiency the fixed-effect design is therefore centred on its observation-weighted column means <span class="math inline">\(\bar X\)</span> before it enters the predictor, so the intercept represents the predictor at the mean of the covariates rather than at their origin, as <code>brms</code> does by default for population-level effects<span class="citation"><sup>[<a href="#ref-brms">16</a>]</sup></span>.
+Taking the growth rate as an example,</p>
+<p><span class="math display">\[\begin{equation}
+  \text{log}(R_{g,t}) = r_0^{c} + \beta_{f,r} (X_r - \bar X_r) + \beta_{r,r} Z_r,
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(r_0^{c}\)</span> is the sampled (centred) intercept.
+The original-scale intercept reported to the user is recovered as <span class="math inline">\(r_0 = r_0^{c} - \bar X_r \beta_{f,r}\)</span>, and the user’s prior is placed on <span class="math inline">\(r_0\)</span>.
+The shift is additive, so the change of variables has unit Jacobian and the posterior is unchanged.
+<code>brms</code> centres its population-level design matrix in the same way<span class="citation"><sup>[<a href="#ref-brms">16</a>]</sup></span>, but places the prior on the centred intercept; here the prior is placed on the recovered original-scale <span class="math inline">\(r_0\)</span>, so the user’s stated prior is honoured exactly.
+A very tight intercept prior then reintroduces a little of the intercept/slope coupling, which is the price of keeping the prior on the original scale.</p>
+<p>The same idea applies to the integrated drift of an autoregressive or Gaussian process term.
+An integrated <code><a href="../reference/arima.html">arima()</a></code> residual or <code>gp(d &gt;= 1)</code> term has a free overall level (the cumulative sum lets the early values shift the whole path) that trades off against the intercept, so its grand mean is removed and recovered into the intercept in the same way, following the reproduction-number centring used in <code>EpiNow2</code><span class="citation"><sup>[<a href="#ref-EpiNow2">1</a>]</sup></span>.
+Only the shared grand mean — the single level direction that competes with the shared scalar intercept — is removed, so each group keeps its own level and drift and the reparameterisation is exact for any number of groups.
+It therefore breaks the intercept/drift ridge, but it does not centre per-group level correlations against group-level effects (such as a <code>(1 | group)</code> random intercept), which can remain for a grouped latent term; this is why a grouped latent benefits less than a single shared series.
+See the <a href="arima.html">ARIMA vignette</a> and the <a href="gaussian-process.html">Gaussian process vignette</a> for the term-specific forms.
+Modules without a free intercept are left uncentred.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="observation-model-and-nowcast">Observation model and nowcast<a class="anchor" aria-label="anchor" href="#observation-model-and-nowcast"></a>
 </h2>
-<p>Expected notifications by date of reference (<span class="math inline">\(t\)</span>) and reporting delay can now be found by multiplying expected final notifications for each <span class="math inline">\(t\)</span> with the probability of reporting for each day of delay (<span class="math inline">\(p_{g,t,d}\)</span>). We assume a negative binomial observation model, by default, with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion<span class="citation"><sup>[<a href="#ref-stan_prior_wiki">16</a>]</sup></span>) and produce a nowcast of final observed notifications at each reference date by summing posterior estimates for unobserved notification and observed notifications for that reference date.</p>
+<p>Expected notifications by date of reference (<span class="math inline">\(t\)</span>) and reporting delay can now be found by multiplying expected final notifications for each <span class="math inline">\(t\)</span> with the probability of reporting for each day of delay (<span class="math inline">\(p_{g,t,d}\)</span>). We assume a negative binomial observation model, by default, with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion<span class="citation"><sup>[<a href="#ref-stan_prior_wiki">17</a>]</sup></span>) and produce a nowcast of final observed notifications at each reference date by summing posterior estimates for unobserved notification and observed notifications for that reference date.</p>
 <p><span class="math display">\[\begin{align}
   n_{g,t,d} \mid \lambda_{g,t},p_{g,t,d}  &amp;\sim \text{NB} \left((1 - \alpha_{g,t})\lambda_{g,t} \times p_{g,t,d}, \phi \right),\ t=1,...,T. \\
     \frac{1}{\sqrt{\phi}} &amp;\sim \text{Half-Normal}(0, 1) \\
@@ -287,7 +309,7 @@ See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for deta
 <div class="section level2">
 <h2 id="implementation">Implementation<a class="anchor" aria-label="anchor" href="#implementation"></a>
 </h2>
-<p>The model is implemented in the probabilistic programming language <code>stan</code> and we use <code>cmdstanr</code> to interact with the model<span class="citation"><sup>[<a href="#ref-stan">12</a>,<a href="#ref-cmdstanr">13</a>]</sup></span>. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. <code>epinowcast</code> incorporates additional functionality written in R<span class="citation"><sup>[<a href="#ref-R">17</a>]</sup></span> to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using <code>scoringutils</code><span class="citation"><sup>[<a href="#ref-scoringutils">18</a>]</sup></span>. A flexible formula interface is provided to enable easier implementation of complex user specified models without interacting with the underlying code base. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.</p>
+<p>The model is implemented in the probabilistic programming language <code>stan</code> and we use <code>cmdstanr</code> to interact with the model<span class="citation"><sup>[<a href="#ref-stan">12</a>,<a href="#ref-cmdstanr">13</a>]</sup></span>. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. <code>epinowcast</code> incorporates additional functionality written in R<span class="citation"><sup>[<a href="#ref-R">18</a>]</sup></span> to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using <code>scoringutils</code><span class="citation"><sup>[<a href="#ref-scoringutils">19</a>]</sup></span>. A flexible formula interface is provided to enable easier implementation of complex user specified models without interacting with the underlying code base. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.</p>
 </div>
 <div class="section level2">
 <h2 id="summary-of-module-parameter-mappings">Summary of module-parameter mappings<a class="anchor" aria-label="anchor" href="#summary-of-module-parameter-mappings"></a>
@@ -415,17 +437,22 @@ See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for deta
 <div class="csl-right-inline">Abbott, S., Brand, S., Azam, J. M., Pearson, C., Funk, S., &amp; Charniga, K. (2024). <em>Primarycensored: Primary event censored distributions</em>. <a href="https://doi.org/10.5281/zenodo.13632839" class="external-link">https://doi.org/10.5281/zenodo.13632839</a>
 </div>
 </div>
-<div id="ref-stan_prior_wiki" class="csl-entry">
+<div id="ref-brms" class="csl-entry">
 <div class="csl-left-margin">16. </div>
+<div class="csl-right-inline">Bürkner, P.-C. (2017). <span class="nocase">brms</span>: An <span>R</span> package for <span>Bayesian</span> multilevel models using <span>Stan</span>. <em>Journal of Statistical Software</em>, <em>80</em>(1), 1–28. <a href="https://doi.org/10.18637/jss.v080.i01" class="external-link">https://doi.org/10.18637/jss.v080.i01</a>
+</div>
+</div>
+<div id="ref-stan_prior_wiki" class="csl-entry">
+<div class="csl-left-margin">17. </div>
 <div class="csl-right-inline">Team, S. D. (2020). <em>Prior choice recommendations</em>.</div>
 </div>
 <div id="ref-R" class="csl-entry">
-<div class="csl-left-margin">17. </div>
+<div class="csl-left-margin">18. </div>
 <div class="csl-right-inline">R Core Team. (2019). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="external-link">https://www.R-project.org/</a>
 </div>
 </div>
 <div id="ref-scoringutils" class="csl-entry">
-<div class="csl-left-margin">18. </div>
+<div class="csl-left-margin">19. </div>
 <div class="csl-right-inline">Bosse, N. (2020). <em>Scoringutils: A collection of proper scoring rules and metrics to assess predictions</em>. <a href="https://github.com/epiforecasts/scoringutils" class="external-link">https://github.com/epiforecasts/scoringutils</a>
 </div>
 </div>
