@@ -43,7 +43,7 @@ fit_delay_only <- function(pobs, model) {
     pobs,
     expectation = enw_expectation(~1, data = pobs),
     reference = enw_reference(~1, data = pobs),
-    obs = enw_obs(family = "poisson", delay_only = TRUE, data = pobs),
+    obs = enw_obs(delay_only = TRUE, data = pobs),
     fit = enw_fit_opts(
       sampler = silent_enw_sample, nowcast = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 500, iter_sampling = 500,
@@ -63,6 +63,29 @@ test_that("delay_only enw_obs() sets the expected data entries", {
   o0 <- enw_obs(data = pobs)
   expect_identical(o0$data$model_delay_only, 0L)
   expect_identical(ncol(o0$data$dlo_ltotal), 0L)
+})
+
+test_that("delay_only forces the multinomial likelihood and ignores family", {
+  pobs <- enw_example("preprocessed")
+  # No family needed: the multinomial path is selected (model_obs == 0).
+  o <- enw_obs(delay_only = TRUE, data = pobs)
+  expect_identical(o$data$model_delay_only, 1L)
+  expect_identical(o$data$model_obs, 0)
+  expect_identical(o$family, "poisson")
+
+  # A supplied family is ignored and warned about, with model_obs still 0.
+  expect_warning(
+    o_warn <- enw_obs(family = "negbin", delay_only = TRUE, data = pobs),
+    "ignored when"
+  )
+  expect_identical(o_warn$data$model_obs, 0)
+  expect_identical(o_warn$data$model_delay_only, 1L)
+
+  # The full model keeps family behaviour unchanged (no warning).
+  expect_no_warning(
+    o_full <- enw_obs(family = "negbin", data = pobs)
+  )
+  expect_identical(o_full$data$model_obs, 1)
 })
 
 test_that(".expectation_is_minimal() detects an intercept-only expectation", {
@@ -210,7 +233,7 @@ test_that("delay_only with nowcast = TRUE produces coherent output", {
     pobs,
     expectation = enw_expectation(~1, data = pobs),
     reference = enw_reference(~1, data = pobs),
-    obs = enw_obs(family = "poisson", delay_only = TRUE, data = pobs),
+    obs = enw_obs(delay_only = TRUE, data = pobs),
     fit = enw_fit_opts(
       sampler = silent_enw_sample, nowcast = TRUE, pp = TRUE,
       output_loglik = TRUE, chains = 2, iter_warmup = 300, iter_sampling = 300,
@@ -258,7 +281,7 @@ test_that("delay_only recovers a known delay with an observation indicator", {
     expectation = enw_expectation(~1, data = pobs),
     reference = enw_reference(~1, data = pobs),
     obs = enw_obs(
-      family = "poisson", delay_only = TRUE,
+      delay_only = TRUE,
       observation_indicator = ".observed", data = pobs
     ),
     fit = enw_fit_opts(

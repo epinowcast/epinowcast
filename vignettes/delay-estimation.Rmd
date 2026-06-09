@@ -122,6 +122,7 @@ full_fit <- epinowcast(
 ## Fitting the delay-only model
 
 The delay-only model uses the same reference-delay specification but sets `delay_only = TRUE` in `enw_obs()`.
+The delay-only likelihood is a multinomial conditional on the known totals, so no observation `family` is needed.
 There is no expectation module to configure: because the known totals override the expected observations, `epinowcast()` minimises the (now inert) expectation automatically.
 
 
@@ -129,7 +130,7 @@ There is no expectation module to configure: because the known totals override t
 delay_fit <- epinowcast(
   pobs,
   reference = enw_reference(~1, distribution = "lognormal", data = pobs),
-  obs = enw_obs(family = "poisson", delay_only = TRUE, data = pobs),
+  obs = enw_obs(delay_only = TRUE, data = pobs),
   fit = enw_fit_opts(
     nowcast = FALSE, save_warmup = FALSE, chains = 2,
     iter_warmup = 500, iter_sampling = 500,
@@ -231,7 +232,7 @@ missing_fit <- epinowcast(
   pobs_missing,
   reference = enw_reference(~1, distribution = "lognormal", data = pobs_missing),
   obs = enw_obs(
-    family = "poisson", delay_only = TRUE,
+    delay_only = TRUE,
     observation_indicator = ".observed", data = pobs_missing
   ),
   fit = enw_fit_opts(

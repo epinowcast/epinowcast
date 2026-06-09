@@ -835,7 +835,9 @@ enw_missing <- function(formula = ~1, data) {
 #' negative binomial with a quadratic mean-variance
 #' relationship ("negbin"). Negative binomial with a linear
 #' mean-variance relationship ("negbin1d") and Poisson ("poisson") are
-#' also available.
+#' also available. This is ignored when `delay_only = TRUE`, in which case the
+#' delay-only multinomial likelihood is used regardless of `family`; supplying
+#' a `family` alongside `delay_only = TRUE` emits a warning.
 #'
 #' @param observation_indicator A character string, the name of the column in
 #' the data that indicates whether an observation is observed or not (using a
@@ -850,7 +852,8 @@ enw_missing <- function(formula = ~1, data) {
 #' reporting-delay distribution conditional on the known per-reference-date
 #' totals, treating those totals as fixed truth. The latent process and
 #' per-cell observation model are replaced by a (truncated) multinomial over
-#' the reported cells of each reference date. With final retrospective totals
+#' the reported cells of each reference date, so `family` is ignored. With
+#' final retrospective totals
 #' this is the plain multinomial; with running totals observed up to some
 #' horizon the renormalisation over the observed delay range gives the
 #' truncated multinomial. An `observation_indicator` is supported and
@@ -877,7 +880,28 @@ enw_missing <- function(formula = ~1, data) {
 #' enw_obs(delay_only = TRUE, data = enw_example("preprocessed"))
 enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
                     observation_indicator = NULL, delay_only = FALSE, data) {
+  family_supplied <- !missing(family)
   family <- match.arg(family)
+
+  # The delay-only likelihood is a (truncated) multinomial and does not use a
+  # per-cell observation family. Warn if a family was supplied alongside it and
+  # then ignore it.
+  if (delay_only) {
+    if (family_supplied) {
+      cli::cli_warn(
+        c(
+          paste(
+            "{.arg family} is ignored when {.code delay_only = TRUE}."
+          ),
+          i = paste(
+            "The delay-only model uses a multinomial likelihood, so the",
+            "observation family is not used."
+          )
+        )
+      )
+    }
+    family <- "poisson"
+  }
 
   # copy new confirm for processing
   new_confirm <- coerce_dt(

@@ -17,7 +17,9 @@ likelihood; enforced by \code{\link[base:match.arg]{base::match.arg()}}. By defa
 negative binomial with a quadratic mean-variance
 relationship ("negbin"). Negative binomial with a linear
 mean-variance relationship ("negbin1d") and Poisson ("poisson") are
-also available.}
+also available. This is ignored when \code{delay_only = TRUE}, in which case the
+delay-only multinomial likelihood is used regardless of \code{family}; supplying
+a \code{family} alongside \code{delay_only = TRUE} emits a warning.}
 
 \item{observation_indicator}{A character string, the name of the column in
 the data that indicates whether an observation is observed or not (using a
@@ -32,7 +34,8 @@ then the variable will be name \code{.observed}. Default is \code{NULL}.}
 reporting-delay distribution conditional on the known per-reference-date
 totals, treating those totals as fixed truth. The latent process and
 per-cell observation model are replaced by a (truncated) multinomial over
-the reported cells of each reference date. With final retrospective totals
+the reported cells of each reference date, so \code{family} is ignored. With
+final retrospective totals
 this is the plain multinomial; with running totals observed up to some
 horizon the renormalisation over the observed delay range gives the
 truncated multinomial. An \code{observation_indicator} is supported and
