@@ -316,9 +316,10 @@ test_that("epinowcast() reproduces HMC results when fit using Laplace on a
 
   posterior <- as.data.table(nowcast$fit[[1]]$summary())
   regression_posterior <- as.data.table(regression_nowcast$fit[[1]]$summary())
+  # Laplace prepends `lp_approx__`; the HMC reference already starts with `lp__`
   expect_identical(
     posterior$variable,
-    c("lp__", "lp_approx__", regression_posterior$variable)
+    c("lp__", "lp_approx__", regression_posterior$variable[-1])
   )
   # Nowcast median has not changed by more than 500 in total
   expect_diff_sum_abs_lt(
