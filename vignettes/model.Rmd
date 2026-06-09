@@ -105,6 +105,7 @@ Where $G_{g}\left(p, t - p \right)$ is the probability of an infection $p$ days 
 
 Optionally, the renewal process can account for susceptible depletion given an initial susceptible population $N_g$ (`population` in `enw_expectation()`).
 Transmission is then scaled by the remaining susceptible fraction $S_{g,t} / N_g$, where $S_{g,t} = N_g - \sum_{p < t} \lambda^l_{g,p}$ is the susceptible pool depleted by cumulative latent cases, so the effective reproduction number bends down as the pool depletes.
+This adjustment is ported from `EpiNow2` [@EpiNow2; @Abbott2020] and follows the bounded-exponential susceptible-depletion form of the semi-mechanistic renewal process [@Bhatt2020].
 This assumes a single well-mixed population per group with no waning or vital dynamics.
 The [susceptible depletion vignette](susceptible-depletion.html) demonstrates the adjustment on simulated data.
 

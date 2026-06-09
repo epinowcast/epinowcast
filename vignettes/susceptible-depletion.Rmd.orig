@@ -83,9 +83,6 @@ obs <- data.table(
   confirm = rpois(length(sim$incidence), sim$incidence)
 )
 obs[, report_date := reference_date]
-
-cat("Realised attack size:", round(sim$attack_size),
-    "of", population, "susceptibles\n")
 ```
 
 The realised attack size consumes almost the whole population, so depletion
@@ -136,64 +133,16 @@ nowcast_unadjusted <- epinowcast(
 )
 ```
 
-## Comparing the recovered attack size
-
-We extract the posterior latent cases (`exp_llatent`) from each fit and compare
-the recovered cumulative attack size with the known truth.
-We work from the posterior draws rather than a single summary, so the
-comparison reflects the full posterior.
-
-```{r attack-size}
-attack_draws <- function(nowcast, label) {
-  draws <- posterior::as_draws_matrix(nowcast$fit[[1]]$draws("exp_llatent"))
-  data.table(model = label, attack = rowSums(exp(draws)))
-}
-
-attack <- rbind(
-  attack_draws(nowcast_adjusted, "adjusted"),
-  attack_draws(nowcast_unadjusted, "unadjusted")
-)
-
-attack_summary <- attack[, .(
-  median = median(attack),
-  q5 = quantile(attack, 0.05),
-  q95 = quantile(attack, 0.95)
-), by = model]
-knitr::kable(attack_summary, digits = 0, caption = paste(
-  "Recovered cumulative attack size. True value:", round(sim$attack_size)
-))
-```
-
-We also plot each model's attack-size posterior median and 90% credible
-interval against the realised truth.
-We show intervals rather than densities here because the adjusted model's
-posterior is pinned at the population cap, so a density would collapse to a
-spike and hide the unadjusted model's spread.
-
-```{r plot-attack, fig.cap = "Posterior median and 90% credible interval of the cumulative attack size under each model against the realised truth (dashed line)."}
-ggplot(attack_summary, aes(x = median, y = model, colour = model)) +
-  geom_pointrange(aes(xmin = q5, xmax = q95)) +
-  geom_vline(
-    aes(xintercept = sim$attack_size, linetype = "truth"), colour = "black"
-  ) +
-  scale_linetype_manual(values = c(truth = "dashed")) +
-  labs(
-    x = "Cumulative attack size", y = NULL, colour = NULL, linetype = NULL
-  ) +
-  theme_bw()
-```
-
-The adjusted model recovers the realised attack size, attributing the peak and
-decline to a shrinking susceptible pool.
-The unadjusted model has a constant reproduction number and no depletion, so it
-cannot produce a peak and instead has to compromise between the growth and the
-decline, biasing its reconstruction of the latent epidemic.
-
 ## Estimated latent epidemic
 
 We plot the full posterior of latent cases as a 90% credible ribbon rather than
 a single point estimate, so the spread of plausible trajectories is visible.
 The simulated truth is overlaid for comparison.
+The adjusted model recovers the wave by attributing the peak and decline to a
+shrinking susceptible pool.
+The unadjusted model has a constant reproduction number and no depletion, so it
+cannot produce a peak and instead compromises between the growth and the decline,
+biasing its reconstruction of the latent epidemic.
 
 ```{r plot-latent, fig.cap = "Posterior latent cases (90% credible interval) under each model against the simulated truth."}
 latent_posterior <- function(nowcast, label) {
@@ -252,16 +201,10 @@ nowcast_uncertain <- epinowcast(
   obs = enw_obs(family = "poisson", data = pobs),
   fit = fit_opts
 )
-
-pop_post <- nowcast_uncertain$fit[[1]]$summary("expr_pop_est")
-knitr::kable(
-  pop_post[, c("variable", "mean", "q5", "q95")],
-  digits = 0, caption = paste("Estimated population. True value:", population)
-)
 ```
 
-Rather than only reporting summary statistics, we plot the full posterior of the
-estimated population against the true value used to simulate the data.
+We plot the full posterior of the estimated population against the true value
+used to simulate the data.
 The posterior concentrates around the truth, showing the population is
 recovered from the depletion signal alone.
 
@@ -293,8 +236,7 @@ The adjustment assumes a single well-mixed population per group with no waning
 of immunity and no births or deaths, so the susceptible pool is only ever
 depleted by modelled latent cases.
 It applies only to the renewal path (`length(generation_time) > 1`).
-The depletion logic follows `EpiNow2` [@EpiNow2; @Abbott2020].
+The [model vignette](model.html) describes the adjustment and gives the
+references for the susceptible-depletion form it follows.
 See `?enw_expectation` for the `population`, `population_floor`,
 `population_uncertain`, and `population_cv` arguments.
-
-## References
