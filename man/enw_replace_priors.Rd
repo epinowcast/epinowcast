@@ -47,14 +47,15 @@ enw_replace_priors(priors, custom_priors)
 
 # Update priors from a previous model fit
 default_priors <- enw_reference(
- distribution = "lognormal",
- data = enw_example("preprocessed"),
+  distribution = "lognormal",
+  data = enw_example("preprocessed"),
 )$priors
 print(default_priors)
 
 fit_priors <- summary(
- enw_example("nowcast"), type = "fit",
- variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
+  enw_example("nowcast"),
+  type = "fit",
+  variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
 )
 fit_priors
 
@@ -64,6 +65,7 @@ enw_replace_priors(default_priors, fit_priors)
 Functions used to help convert models into the format required for stan
 \code{\link{enw_formula_as_data_list}()},
 \code{\link{enw_get_cache}()},
+\code{\link{enw_laplace_marginal_model}()},
 \code{\link{enw_model}()},
 \code{\link{enw_pathfinder}()},
 \code{\link{enw_priors_as_data_list}()},
