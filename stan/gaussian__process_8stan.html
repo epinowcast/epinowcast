@@ -128,12 +128,16 @@ Functions</h2></td></tr>
 <tr class="separator:a56305a04b7b8ac024c83766cb6b6eafc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9b875c5e1cdd69a0b54e94dac84aee7" id="r_ad9b875c5e1cdd69a0b54e94dac84aee7"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9b875c5e1cdd69a0b54e94dac84aee7">update_gp</a> (matrix PHI, int M, real L, real alpha, real rho, vector eta, int type, real nu)</td></tr>
 <tr class="separator:ad9b875c5e1cdd69a0b54e94dac84aee7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54a3a63c0ce8d61c069d416ca9fe5305" id="r_a54a3a63c0ce8d61c069d416ca9fe5305"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54a3a63c0ce8d61c069d416ca9fe5305">apply_gp_term</a> (vector base, int present, int T, int G, int M, real L, int type, real nu, int d, matrix PHI, matrix eta, array[] real rho, array[] real alpha, array[] int flat_idx)</td></tr>
-<tr class="separator:a54a3a63c0ce8d61c069d416ca9fe5305"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7b20383e1c5958d5310734670374163" id="r_ab7b20383e1c5958d5310734670374163"><td class="memItemLeft" align="right" valign="top">matrix&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab7b20383e1c5958d5310734670374163">gp_latent_matrix</a> (int T, int G, int M, real L, int type, real nu, int d, matrix PHI, matrix eta, array[] real rho, array[] real alpha)</td></tr>
+<tr class="separator:ab7b20383e1c5958d5310734670374163"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d16b73103a76438ff860ec0bad0e128" id="r_a7d16b73103a76438ff860ec0bad0e128"><td class="memItemLeft" align="right" valign="top">real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7d16b73103a76438ff860ec0bad0e128">gp_latent_mean_offset</a> (int present, int <a class="el" href="regression_8stan.html#a15c9ec258a725ca22bb9f959f6cba479">centre</a>, int T, int G, int M, real L, int type, real nu, int d, matrix PHI, matrix eta, array[] real rho, array[] real alpha)</td></tr>
+<tr class="separator:a7d16b73103a76438ff860ec0bad0e128"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bbf863517a02f291052fc944a9d4afe" id="r_a8bbf863517a02f291052fc944a9d4afe"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8bbf863517a02f291052fc944a9d4afe">apply_gp_term</a> (vector base, int present, int <a class="el" href="regression_8stan.html#a15c9ec258a725ca22bb9f959f6cba479">centre</a>, int T, int G, int M, real L, int type, real nu, int d, matrix PHI, matrix eta, array[] real rho, array[] real alpha, array[] int flat_idx)</td></tr>
+<tr class="separator:a8bbf863517a02f291052fc944a9d4afe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a54a3a63c0ce8d61c069d416ca9fe5305" name="a54a3a63c0ce8d61c069d416ca9fe5305"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a54a3a63c0ce8d61c069d416ca9fe5305">&#9670;&#160;</a></span>apply_gp_term()</h2>
+<a id="a8bbf863517a02f291052fc944a9d4afe" name="a8bbf863517a02f291052fc944a9d4afe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bbf863517a02f291052fc944a9d4afe">&#9670;&#160;</a></span>apply_gp_term()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -147,6 +151,11 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>present</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>centre</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -210,35 +219,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add an approximate Gaussian process latent term to a per-observation predictor, with optional integer-order differencing.</p>
-<p>Encapsulates the spectral update, per-group evaluation, optional integration, and per-observation gather so module call sites are a single line. When <code>present</code> is 0 the input is returned unchanged. Each group shares the length scale <code>rho</code> and magnitude <code>alpha</code>; per-group spectral coefficients are stacked column-wise in <code>eta</code>.</p>
-<p>The differencing order <code>d</code> integrates each group's realisation <code>d</code> times before it enters the predictor:</p>
-<ul>
-<li><code>d = 0</code>: stationary deviations of length <code>T</code> (the basis matrix is <code>T x M</code>). This is the original behaviour.</li>
-<li><code>d &gt;= 1</code>: the basis matrix has <code>T - d</code> rows, so the spectral update yields <code>T - d</code> free values. These fill positions <code>(d + 1):T</code> of a length-<code>T</code> vector whose first <code>d</code> entries are zero; applying <code>cumulative_sum()</code> <code>d</code> times then integrates the series. Because the leading <code>d</code> entries start at zero, they stay zero through every integration pass, anchoring the first <code>d</code> values of the realisation to zero. This leaves the free level (for <code>d = 1</code>) and additionally the free slope (for <code>d &gt;= 2</code>) to the module's fixed effects rather than the GP, which is the identifiability fix. <code>d = 1</code> matches EpiNow2's non-stationary reproduction-number GP (<code>gp[2:(gp_n + 1)] = noise; cumulative_sum</code>).</li>
-</ul>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">base</td><td>Predictor to which the latent process is added. </td></tr>
-    <tr><td class="paramname">present</td><td>0 = inert, 1 = active. </td></tr>
-    <tr><td class="paramname">T</td><td>Number of time points in the integrated series. </td></tr>
-    <tr><td class="paramname">G</td><td>Number of groups. </td></tr>
-    <tr><td class="paramname">M</td><td>Number of basis functions. </td></tr>
-    <tr><td class="paramname">L</td><td>Boundary factor. </td></tr>
-    <tr><td class="paramname">type</td><td>Kernel type (0 SE, 1 periodic, 2 Matern). </td></tr>
-    <tr><td class="paramname">nu</td><td>Matern smoothness. </td></tr>
-    <tr><td class="paramname">d</td><td>Differencing (integration) order, <code>d &gt;= 0</code>. </td></tr>
-    <tr><td class="paramname">PHI</td><td>Basis matrix ((T - d) x M, or (T - d) x 2M periodic). </td></tr>
-    <tr><td class="paramname">eta</td><td>Spectral coefficients ((2M or M) x G matrix; empty when not present). </td></tr>
-    <tr><td class="paramname">rho</td><td>Length scale (length-1 array, empty when inert). </td></tr>
-    <tr><td class="paramname">alpha</td><td>Magnitude (length-1 array, empty when inert). </td></tr>
-    <tr><td class="paramname">flat_idx</td><td>Per-observation column-major index into the (T x G) latent matrix. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>base + gathered Gaussian process contribution. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="gaussian__process_8stan_source.html#l00161">161</a> of file <a class="el" href="gaussian__process_8stan_source.html">gaussian_process.stan</a>.</p>
+<p class="definition">Definition at line <a class="el" href="gaussian__process_8stan_source.html#l00213">213</a> of file <a class="el" href="gaussian__process_8stan_source.html">gaussian_process.stan</a>.</p>
 
 </div>
 </div>
@@ -271,7 +253,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Hilbert-space reduced-rank (spectral) approximate Gaussian process.</p>
-<p>Adapted from EpiNow2 (<a href="https://github.com/epiforecasts/EpiNow2">https://github.com/epiforecasts/EpiNow2</a>, <a class="el" href="gaussian__process_8stan.html">inst/stan/functions/gaussian_process.stan</a>, MIT licensed, copyright EpiForecasts). Lightly modified for epinowcast: array syntax, naming, and an <code><a class="el" href="#a54a3a63c0ce8d61c069d416ca9fe5305">apply_gp_term()</a></code> wrapper that matches the <code><a class="el" href="arima__kernel_8stan.html#a1ec078fff6873a85bb953faa4a10e96c">apply_arima_residual()</a></code> per-observation gather used elsewhere in this package.</p>
+<p>Adapted from EpiNow2 (<a href="https://github.com/epiforecasts/EpiNow2">https://github.com/epiforecasts/EpiNow2</a>, <a class="el" href="gaussian__process_8stan.html">inst/stan/functions/gaussian_process.stan</a>, MIT licensed, copyright EpiForecasts). Lightly modified for epinowcast: array syntax, naming, and an <code><a class="el" href="#a8bbf863517a02f291052fc944a9d4afe">apply_gp_term()</a></code> wrapper that matches the <code><a class="el" href="arima__kernel_8stan.html#a061d9008b73150afa3cb674527121b4c">apply_arima_residual()</a></code> per-observation gather used elsewhere in this package.</p>
 <p>The approximation follows:</p><ul>
 <li>Riutort-Mayol et al. (2023), doi:10.1007/s11222-022-10167-2</li>
 <li><a href="https://avehtari.github.io/casestudies/Motorcycle/motorcycle_gpcourse.html">https://avehtari.github.io/casestudies/Motorcycle/motorcycle_gpcourse.html</a></li>
@@ -410,6 +392,182 @@ Functions</h2></td></tr>
 <p>Spectral density for the periodic kernel. </p>
 
 <p class="definition">Definition at line <a class="el" href="gaussian__process_8stan_source.html#l00072">72</a> of file <a class="el" href="gaussian__process_8stan_source.html">gaussian_process.stan</a>.</p>
+
+</div>
+</div>
+<a id="ab7b20383e1c5958d5310734670374163" name="ab7b20383e1c5958d5310734670374163"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7b20383e1c5958d5310734670374163">&#9670;&#160;</a></span>gp_latent_matrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">matrix gp_latent_matrix </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>T</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>G</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>M</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real</td>          <td class="paramname"><span class="paramname"><em>L</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real</td>          <td class="paramname"><span class="paramname"><em>nu</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>d</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">matrix</td>          <td class="paramname"><span class="paramname"><em>PHI</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">matrix</td>          <td class="paramname"><span class="paramname"><em>eta</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array[]real</td>          <td class="paramname"><span class="paramname"><em>rho</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array[]real</td>          <td class="paramname"><span class="paramname"><em>alpha</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Add an approximate Gaussian process latent term to a per-observation predictor, with optional integer-order differencing.</p>
+<p>Encapsulates the spectral update, per-group evaluation, optional integration, and per-observation gather so module call sites are a single line. When <code>present</code> is 0 the input is returned unchanged. Each group shares the length scale <code>rho</code> and magnitude <code>alpha</code>; per-group spectral coefficients are stacked column-wise in <code>eta</code>.</p>
+<p>The differencing order <code>d</code> integrates each group's realisation <code>d</code> times before it enters the predictor:</p>
+<ul>
+<li><code>d = 0</code>: stationary deviations of length <code>T</code> (the basis matrix is <code>T x M</code>). This is the original behaviour.</li>
+<li><code>d &gt;= 1</code>: the basis matrix has <code>T - d</code> rows, so the spectral update yields <code>T - d</code> free values. These fill positions <code>(d + 1):T</code> of a length-<code>T</code> vector whose first <code>d</code> entries are zero; applying <code>cumulative_sum()</code> <code>d</code> times then integrates the series. Because the leading <code>d</code> entries start at zero, they stay zero through every integration pass, anchoring the first <code>d</code> values of the realisation to zero. This leaves the free level (for <code>d = 1</code>) and additionally the free slope (for <code>d &gt;= 2</code>) to the module's fixed effects rather than the GP, which is the identifiability fix. <code>d = 1</code> matches EpiNow2's non-stationary reproduction-number GP (<code>gp[2:(gp_n + 1)] = noise; cumulative_sum</code>).</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">base</td><td>Predictor to which the latent process is added. </td></tr>
+    <tr><td class="paramname">present</td><td>0 = inert, 1 = active. </td></tr>
+    <tr><td class="paramname">T</td><td>Number of time points in the integrated series. </td></tr>
+    <tr><td class="paramname">G</td><td>Number of groups. </td></tr>
+    <tr><td class="paramname">M</td><td>Number of basis functions. </td></tr>
+    <tr><td class="paramname">L</td><td>Boundary factor. </td></tr>
+    <tr><td class="paramname">type</td><td>Kernel type (0 SE, 1 periodic, 2 Matern). </td></tr>
+    <tr><td class="paramname">nu</td><td>Matern smoothness. </td></tr>
+    <tr><td class="paramname">d</td><td>Differencing (integration) order, <code>d &gt;= 0</code>. </td></tr>
+    <tr><td class="paramname">PHI</td><td>Basis matrix ((T - d) x M, or (T - d) x 2M periodic). </td></tr>
+    <tr><td class="paramname">eta</td><td>Spectral coefficients ((2M or M) x G matrix; empty when not present). </td></tr>
+    <tr><td class="paramname">rho</td><td>Length scale (length-1 array, empty when inert). </td></tr>
+    <tr><td class="paramname">alpha</td><td>Magnitude (length-1 array, empty when inert). </td></tr>
+    <tr><td class="paramname">flat_idx</td><td>Per-observation column-major index into the (T x G) latent matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>base + gathered Gaussian process contribution. Build the (T x G) integrated Gaussian process latent matrix.</dd></dl>
+<p>For <code>d = 0</code> each column is the stationary GP. For <code>d &gt;= 1</code> the first d entries are anchored to zero, the free values fill (d + 1):T, and the column is integrated d times (the leading zeros survive each cumulative_sum pass). </p>
+
+<p class="definition">Definition at line <a class="el" href="gaussian__process_8stan_source.html#l00169">169</a> of file <a class="el" href="gaussian__process_8stan_source.html">gaussian_process.stan</a>.</p>
+
+</div>
+</div>
+<a id="a7d16b73103a76438ff860ec0bad0e128" name="a7d16b73103a76438ff860ec0bad0e128"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d16b73103a76438ff860ec0bad0e128">&#9670;&#160;</a></span>gp_latent_mean_offset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">real gp_latent_mean_offset </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>present</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>centre</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>T</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>G</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>M</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real</td>          <td class="paramname"><span class="paramname"><em>L</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real</td>          <td class="paramname"><span class="paramname"><em>nu</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>d</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">matrix</td>          <td class="paramname"><span class="paramname"><em>PHI</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">matrix</td>          <td class="paramname"><span class="paramname"><em>eta</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array[]real</td>          <td class="paramname"><span class="paramname"><em>rho</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array[]real</td>          <td class="paramname"><span class="paramname"><em>alpha</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Grand mean (over time and groups) of the integrated GP latent.</p>
+<p>Like <code>arima_latent_mean_offset</code>, this is the single level direction that competes with the shared intercept when the GP is integrated (<code>d &gt;= 1</code>). Subtracting it from the sampled intercept recovers the original-scale intercept the prior applies to (an additive, unit-Jacobian shift). Each group keeps its own level relative to the grand mean, so a grouped GP is exact for any number of groups. Returns 0 unless present, centring is on, and <code>d &gt;= 1</code>. </p>
+
+<p class="definition">Definition at line <a class="el" href="gaussian__process_8stan_source.html#l00202">202</a> of file <a class="el" href="gaussian__process_8stan_source.html">gaussian_process.stan</a>.</p>
 
 </div>
 </div>

@@ -114,7 +114,7 @@ $(function(){initNavTree('combine__effects_8stan.html',''); initResizable(true);
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ae491cd73e41a833998f8e7ff981281d9" id="r_ae491cd73e41a833998f8e7ff981281d9"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae491cd73e41a833998f8e7ff981281d9">combine_effects</a> (array[] real intercept, vector beta, int nobs, int neffs, matrix fdesign, tuple(vector, array[] int, array[] int) sparse, vector beta_sd, matrix rdesign, int add_intercept, int sparse_design)</td></tr>
+<tr class="memitem:ae491cd73e41a833998f8e7ff981281d9" id="r_ae491cd73e41a833998f8e7ff981281d9"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae491cd73e41a833998f8e7ff981281d9">combine_effects</a> (array[] real intercept, vector <a class="el" href="regression_8stan.html#a0e51f6de008ad4998e200ba0d444759c">beta</a>, int nobs, int <a class="el" href="regression_8stan.html#a32a4c7410cb166001d75f7766b71d152">neffs</a>, matrix fdesign, <a class="el" href="regression_8stan.html#a44533bd5f45e5df5514f373dc745689b">tuple</a>(vector, array[] int, array[] int) sparse, vector <a class="el" href="regression_8stan.html#a760668b3aaf676a88b301e7d9ccf2773">beta_sd</a>, matrix <a class="el" href="regression_8stan.html#aeda0bd818b2ebdfe46f6afa08d6fb6e9">rdesign</a>, int add_intercept, int sparse_design)</td></tr>
 <tr class="separator:ae491cd73e41a833998f8e7ff981281d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -152,7 +152,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">tuple(vector, array[] int, array[] int)</td>          <td class="paramname"><span class="paramname"><em>sparse</em></span>, </td>
+          <td class="paramtype"><a class="el" href="regression_8stan.html#a44533bd5f45e5df5514f373dc745689b">tuple</a>(vector, array[] int, array[] int)</td>          <td class="paramname"><span class="paramname"><em>sparse</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -197,20 +197,22 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>The function scales the beta vector using the product of beta_sd and rdesign, then combines these scaled effects with the fdesign matrix. If <code>add_intercept</code> is true, the intercept is included in the linear predictions. The function handles cases with no effects by returning a vector of the intercept repeated for each observation.</dd></dl>
 <div class="fragment"><div class="line"><span class="preprocessor"># Example usage in R:</span></div>
 <div class="line">intercept &lt;- 1</div>
-<div class="line">beta &lt;- c(0.1, 0.2, 0.4)</div>
+<div class="line"><a class="code hl_variable" href="regression_8stan.html#a0e51f6de008ad4998e200ba0d444759c">beta</a> &lt;- c(0.1, 0.2, 0.4)</div>
 <div class="line">design &lt;- matrix(c(1, 1, 1, 0,</div>
 <div class="line">                   0, 1, 0, 0,</div>
 <div class="line">                   0, 1, 1, 1), nrow = 3, byrow = TRUE)</div>
-<div class="line">beta_sd &lt;- c(0.1)</div>
+<div class="line"><a class="code hl_variable" href="regression_8stan.html#a760668b3aaf676a88b301e7d9ccf2773">beta_sd</a> &lt;- c(0.1)</div>
 <div class="line">sd_design &lt;- matrix(c(1, 1, 0,</div>
 <div class="line">                      0, 0, 1), nrow = 2, byrow = TRUE)</div>
 <div class="line"> </div>
 <div class="line"><span class="preprocessor"># Check effects are combined as expected:</span></div>
 <div class="line"><a class="code hl_function" href="#ae491cd73e41a833998f8e7ff981281d9">combine_effects</a>(</div>
-<div class="line">  intercept, beta, 4, 3, design, list({}, {}, {}), beta_sd, sd_design, 1, 0</div>
+<div class="line">  intercept, <a class="code hl_variable" href="regression_8stan.html#a0e51f6de008ad4998e200ba0d444759c">beta</a>, 4, 3, design, list({}, {}, {}), <a class="code hl_variable" href="regression_8stan.html#a760668b3aaf676a88b301e7d9ccf2773">beta_sd</a>, sd_design, 1, 0</div>
 <div class="line">)</div>
 <div class="line"># Output: 1.04 1.12 1.00 1.04</div>
 <div class="ttc" id="acombine__effects_8stan_html_ae491cd73e41a833998f8e7ff981281d9"><div class="ttname"><a href="#ae491cd73e41a833998f8e7ff981281d9">combine_effects</a></div><div class="ttdeci">vector combine_effects(array[] real intercept, vector beta, int nobs, int neffs, matrix fdesign, tuple(vector, array[] int, array[] int) sparse, vector beta_sd, matrix rdesign, int add_intercept, int sparse_design)</div><div class="ttdef"><b>Definition</b> <a href="combine__effects_8stan_source.html#l00062">combine_effects.stan:62</a></div></div>
+<div class="ttc" id="aregression_8stan_html_a0e51f6de008ad4998e200ba0d444759c"><div class="ttname"><a href="regression_8stan.html#a0e51f6de008ad4998e200ba0d444759c">beta</a></div><div class="ttdeci">vector beta</div><div class="ttdef"><b>Definition</b> <a href="regression_8stan_source.html#l00073">regression.stan:73</a></div></div>
+<div class="ttc" id="aregression_8stan_html_a760668b3aaf676a88b301e7d9ccf2773"><div class="ttname"><a href="regression_8stan.html#a760668b3aaf676a88b301e7d9ccf2773">beta_sd</a></div><div class="ttdeci">vector vector beta_sd</div><div class="ttdef"><b>Definition</b> <a href="regression_8stan_source.html#l00073">regression.stan:73</a></div></div>
 </div><!-- fragment --> 
 <p class="definition">Definition at line <a class="el" href="combine__effects_8stan_source.html#l00062">62</a> of file <a class="el" href="combine__effects_8stan_source.html">combine_effects.stan</a>.</p>
 

@@ -1,18 +1,13 @@
 var searchData=
 [
-  ['delay_20log_20pmfs_0',['Common Parameters for Delay log-PMFs',['../common_parameters_delay_lpmf_funcs.html',1,'']]],
-  ['delay_5fgroup_5flpmf_1',['delay_group_lpmf',['../delay__lpmf_8stan.html#a4142bdf2e34a12c7c18ec87e1c8e4ecb',1,'delay_lpmf.stan']]],
-  ['delay_5flpmf_2estan_2',['delay_lpmf.stan',['../delay__lpmf_8stan.html',1,'']]],
-  ['delay_5fmultinomial_5flpmf_3',['delay_multinomial_lpmf',['../delay__multinomial__lpmf_8stan.html#ab51a58a97897b562aa845f9f7daa7bb9',1,'delay_multinomial_lpmf.stan']]],
-  ['delay_5fmultinomial_5flpmf_2estan_4',['delay_multinomial_lpmf.stan',['../delay__multinomial__lpmf_8stan.html',1,'']]],
-  ['delay_5fmultinomial_5fsnaps_5',['delay_multinomial_snaps',['../delay__multinomial__lpmf_8stan.html#a723344c3dc8e86736b3350b7e1be5196',1,'delay_multinomial_lpmf.stan']]],
-  ['delay_5fsnap_5flpmf_6',['delay_snap_lpmf',['../delay__lpmf_8stan.html#a7e5f19a533a66223034f255f2bc9729b',1,'delay_lpmf.stan']]],
-  ['diagspd_5feq_7',['diagSPD_EQ',['../gaussian__process_8stan.html#a418b9ba49bfb6a4ff8ec4331826d032d',1,'gaussian_process.stan']]],
-  ['diagspd_5fmatern12_8',['diagSPD_Matern12',['../gaussian__process_8stan.html#aba328da750fac44cab0ca4e9a0b41274',1,'gaussian_process.stan']]],
-  ['diagspd_5fmatern32_9',['diagSPD_Matern32',['../gaussian__process_8stan.html#ae443d4d2b3b752c07ed835b83ecd0e86',1,'gaussian_process.stan']]],
-  ['diagspd_5fmatern52_10',['diagSPD_Matern52',['../gaussian__process_8stan.html#add4a066ad1281db47c82a5096af8099a',1,'gaussian_process.stan']]],
-  ['diagspd_5fperiodic_11',['diagSPD_Periodic',['../gaussian__process_8stan.html#a56305a04b7b8ac024c83766cb6b6eafc',1,'gaussian_process.stan']]],
-  ['discretised_5fpcens_5flogit_5fhazard_12',['discretised_pcens_logit_hazard',['../primarycensored__pmf_8stan.html#a6cc05ea2169e67c6ec3d7ebb5ab46e7a',1,'primarycensored_pmf.stan']]],
-  ['dist_5fhas_5fpositive_5fsupport_13',['dist_has_positive_support',['../primarycensored_8stan.html#ac677200fa47a95f644537be481450960',1,'primarycensored.stan']]],
-  ['dist_5flcdf_14',['dist_lcdf',['../primarycensored_8stan.html#a0761ffd0ab06dc8b52d0ef30090941ce',1,'primarycensored.stan']]]
+  ['centre_0',['centre',['../regression_8stan.html#a15c9ec258a725ca22bb9f959f6cba479',1,'regression.stan']]],
+  ['check_5ffor_5fanalytical_1',['check_for_analytical',['../primarycensored_8stan.html#afbcb39f95f9afcd6128039ece98c070a',1,'primarycensored.stan']]],
+  ['combine_5feffects_2',['combine_effects',['../combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9',1,'combine_effects.stan']]],
+  ['combine_5feffects_2estan_3',['combine_effects.stan',['../combine__effects_8stan.html',1,'']]],
+  ['combine_5flogit_5fhazards_4',['combine_logit_hazards',['../combine__logit__hazards_8stan.html#a9a6061dd1cadd700fa8ec3d38adcb2cf',1,'combine_logit_hazards.stan']]],
+  ['combine_5flogit_5fhazards_2estan_5',['combine_logit_hazards.stan',['../combine__logit__hazards_8stan.html',1,'']]],
+  ['common_20parameters_20for_20delay_20log_20pmfs_6',['Common Parameters for Delay log-PMFs',['../common_parameters_delay_lpmf_funcs.html',1,'']]],
+  ['common_5fparams_2estan_7',['common_params.stan',['../common__params_8stan.html',1,'']]],
+  ['cumulative_5fconverse_5flog_5fhazard_8',['cumulative_converse_log_hazard',['../hazard_8stan.html#a9a601aef6dbbacb82146a2e23689712c',1,'hazard.stan']]],
+  ['cumulative_5fop_9',['cumulative_op',['../arima__kernel_8stan.html#a700a2a46ea27f4197033c351168c9cf8',1,'arima_kernel.stan']]]
 ];

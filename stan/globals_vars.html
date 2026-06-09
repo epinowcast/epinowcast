@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>epinowcast: effects_priors_lp.stan Source File</title>
+<title>epinowcast: File Members</title>
 <link rel="icon" href="logo.png" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -78,7 +78,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(function(){initNavTree('effects__priors__lp_8stan_source.html',''); initResizable(true); });
+$(function(){initNavTree('globals_vars.html',''); initResizable(true); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -103,31 +103,42 @@ $(function(){initNavTree('effects__priors__lp_8stan_source.html',''); initResiza
 </div>
 </div>
 
-<div class="header">
-  <div class="headertitle"><div class="title">effects_priors_lp.stan</div></div>
-</div><!--header-->
 <div class="contents">
-<a href="effects__priors__lp_8stan.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
-<div class="foldopen" id="foldopen00029" data-start="{" data-end="}">
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="effects__priors__lp_8stan.html#aac4bdfbc86a1a47c11564c938282e8a0">   29</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="effects__priors__lp_8stan.html#aac4bdfbc86a1a47c11564c938282e8a0">effect_priors_lp</a>(vector <a class="code hl_variable" href="regression_8stan.html#a0e51f6de008ad4998e200ba0d444759c">beta</a>, vector <a class="code hl_variable" href="regression_8stan.html#a760668b3aaf676a88b301e7d9ccf2773">beta_sd</a>, array[,] real beta_sd_p,</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>                    <span class="keywordtype">int</span> fixed, <span class="keywordtype">int</span> random) {</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>  <span class="keywordflow">if</span> (fixed) {</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_variable" href="regression_8stan.html#a0e51f6de008ad4998e200ba0d444759c">beta</a> ~ std_normal();</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">if</span> (random) {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>      <a class="code hl_variable" href="regression_8stan.html#a760668b3aaf676a88b301e7d9ccf2773">beta_sd</a> ~ normal(beta_sd_p[1, 1], beta_sd_p[2, 1]);</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    }</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  }</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
-</div>
-<div class="ttc" id="aeffects__priors__lp_8stan_html_aac4bdfbc86a1a47c11564c938282e8a0"><div class="ttname"><a href="effects__priors__lp_8stan.html#aac4bdfbc86a1a47c11564c938282e8a0">effect_priors_lp</a></div><div class="ttdeci">void effect_priors_lp(vector beta, vector beta_sd, array[,] real beta_sd_p, int fixed, int random)</div><div class="ttdef"><b>Definition</b> <a href="#l00029">effects_priors_lp.stan:29</a></div></div>
-<div class="ttc" id="aregression_8stan_html_a0e51f6de008ad4998e200ba0d444759c"><div class="ttname"><a href="regression_8stan.html#a0e51f6de008ad4998e200ba0d444759c">beta</a></div><div class="ttdeci">vector beta</div><div class="ttdef"><b>Definition</b> <a href="regression_8stan_source.html#l00073">regression.stan:73</a></div></div>
-<div class="ttc" id="aregression_8stan_html_a760668b3aaf676a88b301e7d9ccf2773"><div class="ttname"><a href="regression_8stan.html#a760668b3aaf676a88b301e7d9ccf2773">beta_sd</a></div><div class="ttdeci">vector vector beta_sd</div><div class="ttdef"><b>Definition</b> <a href="regression_8stan_source.html#l00073">regression.stan:73</a></div></div>
-</div><!-- fragment --></div><!-- contents -->
+<div class="textblock">Here is a list of all variables with links to the files they belong to:</div><ul>
+<li>arima_d&#160;:&#160;<a class="el" href="regression_8stan.html#a3c38315fd3106040b6be198c894c1d57">regression.stan</a></li>
+<li>arima_G&#160;:&#160;<a class="el" href="regression_8stan.html#ae944b6f2403c295e64e8b98151286f29">regression.stan</a></li>
+<li>arima_p&#160;:&#160;<a class="el" href="regression_8stan.html#acaef563d239daeb1ca7371442da3e2af">regression.stan</a></li>
+<li>arima_pacf&#160;:&#160;<a class="el" href="regression_8stan.html#ab4cb5f24dd9c8d09f13bf2dc0729fc57">regression.stan</a></li>
+<li>arima_present&#160;:&#160;<a class="el" href="regression_8stan.html#a904ec6c4f1908fa93cafac195750210b">regression.stan</a></li>
+<li>arima_q&#160;:&#160;<a class="el" href="regression_8stan.html#a1822e4926126ce7b3c5c7b762766516a">regression.stan</a></li>
+<li>arima_sigma&#160;:&#160;<a class="el" href="regression_8stan.html#a3758082f5157b17b5fcccbab3dedda47">regression.stan</a></li>
+<li>arima_T&#160;:&#160;<a class="el" href="regression_8stan.html#ad280cf3bcd0d0d3938a831222fb49bed">regression.stan</a></li>
+<li>arima_theta&#160;:&#160;<a class="el" href="regression_8stan.html#af75855d21e91f5cd319e149f1893eeca">regression.stan</a></li>
+<li>arima_z&#160;:&#160;<a class="el" href="regression_8stan.html#a39c6289960894519833eb6571add52c1">regression.stan</a></li>
+<li>beta&#160;:&#160;<a class="el" href="regression_8stan.html#a0e51f6de008ad4998e200ba0d444759c">regression.stan</a></li>
+<li>beta_sd&#160;:&#160;<a class="el" href="regression_8stan.html#a760668b3aaf676a88b301e7d9ccf2773">regression.stan</a></li>
+<li>centre&#160;:&#160;<a class="el" href="regression_8stan.html#a15c9ec258a725ca22bb9f959f6cba479">regression.stan</a></li>
+<li>gp_alpha&#160;:&#160;<a class="el" href="regression_8stan.html#a2c9bcd15a730a32b030527d1b3075dd1">regression.stan</a></li>
+<li>gp_d&#160;:&#160;<a class="el" href="regression_8stan.html#a8100b0c81051ce8f878594a78be2a3ea">regression.stan</a></li>
+<li>gp_eta&#160;:&#160;<a class="el" href="regression_8stan.html#a283d7e2751933d1332fd534879822571">regression.stan</a></li>
+<li>gp_G&#160;:&#160;<a class="el" href="regression_8stan.html#a93676c994edeef3538766af820e105c6">regression.stan</a></li>
+<li>gp_L&#160;:&#160;<a class="el" href="regression_8stan.html#a96e06dee5ae7cd4b601336e15c54512f">regression.stan</a></li>
+<li>gp_M&#160;:&#160;<a class="el" href="regression_8stan.html#a825f3be4f961bcfadc6fdafb9833651b">regression.stan</a></li>
+<li>gp_nu&#160;:&#160;<a class="el" href="regression_8stan.html#a8ec42b69c305196fd52ce4169426f1b6">regression.stan</a></li>
+<li>gp_PHI&#160;:&#160;<a class="el" href="regression_8stan.html#a4f2d83a8ee9f3b6e1a222a5ab0d18f22">regression.stan</a></li>
+<li>gp_present&#160;:&#160;<a class="el" href="regression_8stan.html#ae61b3c0f6160f51e42fd9999a6b6127d">regression.stan</a></li>
+<li>gp_rho&#160;:&#160;<a class="el" href="regression_8stan.html#ac538ea66b4f3d74dc222ec8ce946ac11">regression.stan</a></li>
+<li>gp_T&#160;:&#160;<a class="el" href="regression_8stan.html#a883faff13717ab05470e3eefab65ea48">regression.stan</a></li>
+<li>gp_type&#160;:&#160;<a class="el" href="regression_8stan.html#a1305902ef049f7360ecfa5ba582722e2">regression.stan</a></li>
+<li>latent&#160;:&#160;<a class="el" href="regression_8stan.html#af2c24907e1f6d85be044b7926bcde239">regression.stan</a></li>
+<li>neffs&#160;:&#160;<a class="el" href="regression_8stan.html#a32a4c7410cb166001d75f7766b71d152">regression.stan</a></li>
+<li>rdesign&#160;:&#160;<a class="el" href="regression_8stan.html#aeda0bd818b2ebdfe46f6afa08d6fb6e9">regression.stan</a></li>
+</ul>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_35baea09d55bebfe17654fdf4bf061ce.html">functions</a></li><li class="navelem"><a class="el" href="effects__priors__lp_8stan.html">effects_priors_lp.stan</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>

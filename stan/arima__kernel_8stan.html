@@ -126,12 +126,14 @@ Functions</h2></td></tr>
 <tr class="separator:afd6b025986fedb3cbaa99d86cc8566b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8332c18c2bc7de1ea5fb4b87a2212859" id="r_a8332c18c2bc7de1ea5fb4b87a2212859"><td class="memItemLeft" align="right" valign="top">matrix&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8332c18c2bc7de1ea5fb4b87a2212859">arima_filter</a> (matrix Z, vector phi, vector theta, int d)</td></tr>
 <tr class="separator:a8332c18c2bc7de1ea5fb4b87a2212859"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ec078fff6873a85bb953faa4a10e96c" id="r_a1ec078fff6873a85bb953faa4a10e96c"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1ec078fff6873a85bb953faa4a10e96c">apply_arima_residual</a> (vector base, int n_obs, int present, int T, int G, int p, int d, int q, matrix z, vector pacf, vector theta, array[] real sigma, array[] int flat_idx)</td></tr>
-<tr class="separator:a1ec078fff6873a85bb953faa4a10e96c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e6e3fd2206fa92fcc2eadd991267d9d" id="r_a6e6e3fd2206fa92fcc2eadd991267d9d"><td class="memItemLeft" align="right" valign="top">real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e6e3fd2206fa92fcc2eadd991267d9d">arima_latent_mean_offset</a> (int present, int <a class="el" href="regression_8stan.html#a15c9ec258a725ca22bb9f959f6cba479">centre</a>, int T, int G, int p, int d, int q, matrix z, vector pacf, vector theta, array[] real sigma)</td></tr>
+<tr class="separator:a6e6e3fd2206fa92fcc2eadd991267d9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a061d9008b73150afa3cb674527121b4c" id="r_a061d9008b73150afa3cb674527121b4c"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a061d9008b73150afa3cb674527121b4c">apply_arima_residual</a> (vector base, int n_obs, int present, int <a class="el" href="regression_8stan.html#a15c9ec258a725ca22bb9f959f6cba479">centre</a>, int T, int G, int p, int d, int q, matrix z, vector pacf, vector theta, array[] real sigma, array[] int flat_idx)</td></tr>
+<tr class="separator:a061d9008b73150afa3cb674527121b4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a1ec078fff6873a85bb953faa4a10e96c" name="a1ec078fff6873a85bb953faa4a10e96c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1ec078fff6873a85bb953faa4a10e96c">&#9670;&#160;</a></span>apply_arima_residual()</h2>
+<a id="a061d9008b73150afa3cb674527121b4c" name="a061d9008b73150afa3cb674527121b4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a061d9008b73150afa3cb674527121b4c">&#9670;&#160;</a></span>apply_arima_residual()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -150,6 +152,11 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>present</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>centre</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -203,28 +210,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add an ARIMA(p, d, q) latent residual to a per-observation predictor.</p>
-<p>Encapsulates the kernel build, scaling, and per-observation lookup so module call sites are a single line. When <code>present</code> is 0 the input is returned unchanged.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">base</td><td>Predictor to which the latent is added. </td></tr>
-    <tr><td class="paramname">n_obs</td><td>Length of <code>base</code> and of the lookup vectors. </td></tr>
-    <tr><td class="paramname">present</td><td>0 = inert, 1 = active. </td></tr>
-    <tr><td class="paramname">T</td><td>Number of time points in the latent series. </td></tr>
-    <tr><td class="paramname">G</td><td>Number of groups. </td></tr>
-    <tr><td class="paramname">p,d,q</td><td>ARIMA orders. </td></tr>
-    <tr><td class="paramname">z</td><td>Unit-normal shocks (T x G). </td></tr>
-    <tr><td class="paramname">pacf</td><td>Partial autocorrelations on (-1, 1), length p. </td></tr>
-    <tr><td class="paramname">theta</td><td>MA coefficients, length q. </td></tr>
-    <tr><td class="paramname">sigma</td><td>Length-1 array (empty when not present) holding the latent standard deviation. </td></tr>
-    <tr><td class="paramname">time_idx</td><td>Per-observation time index in 1..T. </td></tr>
-    <tr><td class="paramname">group_idx</td><td>Per-observation group index in 1..G.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A new vector equal to <code>base + sigma * (D^d * T(psi)) * z</code> looked up at the per-observation indices. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="arima__kernel_8stan_source.html#l00185">185</a> of file <a class="el" href="arima__kernel_8stan_source.html">arima_kernel.stan</a>.</p>
+<p class="definition">Definition at line <a class="el" href="arima__kernel_8stan_source.html#l00214">214</a> of file <a class="el" href="arima__kernel_8stan_source.html">arima_kernel.stan</a>.</p>
 
 </div>
 </div>
@@ -296,6 +283,98 @@ Functions</h2></td></tr>
 <p>Returns the T x T lower-triangular matrix that maps unit-normal shocks to the latent ARIMA series. The d-fold integration is applied as <code>d</code> repeated <code>cumulative_sum()</code> calls on the columns of the ARMA Toeplitz, which is mathematically identical to D^d * T(psi) but skips both the construction of the D^d matrix and the dense matrix-matrix multiply that follows it. For <code>d = 0</code> no integration pass is taken. </p>
 
 <p class="definition">Definition at line <a class="el" href="arima__kernel_8stan_source.html#l00121">121</a> of file <a class="el" href="arima__kernel_8stan_source.html">arima_kernel.stan</a>.</p>
+
+</div>
+</div>
+<a id="a6e6e3fd2206fa92fcc2eadd991267d9d" name="a6e6e3fd2206fa92fcc2eadd991267d9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e6e3fd2206fa92fcc2eadd991267d9d">&#9670;&#160;</a></span>arima_latent_mean_offset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">real arima_latent_mean_offset </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>present</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>centre</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>T</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>G</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>p</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>d</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>q</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">matrix</td>          <td class="paramname"><span class="paramname"><em>z</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector</td>          <td class="paramname"><span class="paramname"><em>pacf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector</td>          <td class="paramname"><span class="paramname"><em>theta</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array[]real</td>          <td class="paramname"><span class="paramname"><em>sigma</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Add an ARIMA(p, d, q) latent residual to a per-observation predictor.</p>
+<p>Encapsulates the kernel build, scaling, and per-observation lookup so module call sites are a single line. When <code>present</code> is 0 the input is returned unchanged.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">base</td><td>Predictor to which the latent is added. </td></tr>
+    <tr><td class="paramname">n_obs</td><td>Length of <code>base</code> and of the lookup vectors. </td></tr>
+    <tr><td class="paramname">present</td><td>0 = inert, 1 = active. </td></tr>
+    <tr><td class="paramname">centre</td><td>1 = mean-centre integrated (d &gt;= 1) residuals so the intercept owns the level; 0 = leave the raw series. </td></tr>
+    <tr><td class="paramname">T</td><td>Number of time points in the latent series. </td></tr>
+    <tr><td class="paramname">G</td><td>Number of groups. </td></tr>
+    <tr><td class="paramname">p,d,q</td><td>ARIMA orders. </td></tr>
+    <tr><td class="paramname">z</td><td>Unit-normal shocks (T x G). </td></tr>
+    <tr><td class="paramname">pacf</td><td>Partial autocorrelations on (-1, 1), length p. </td></tr>
+    <tr><td class="paramname">theta</td><td>MA coefficients, length q. </td></tr>
+    <tr><td class="paramname">sigma</td><td>Length-1 array (empty when not present) holding the latent standard deviation. </td></tr>
+    <tr><td class="paramname">time_idx</td><td>Per-observation time index in 1..T. </td></tr>
+    <tr><td class="paramname">group_idx</td><td>Per-observation group index in 1..G.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A new vector equal to <code>base + sigma * (D^d * T(psi)) * z</code> looked up at the per-observation indices. Average (over groups) of the per-group mean of the integrated latent.</dd></dl>
+<p>When the integrated residual is mean-centred (see <code>apply_arima_residual</code>) the level it carried is removed from the predictor. To keep the prior on the original-scale intercept (the EpiNow2 device: prior on the recovered level via a unit-Jacobian shift), this offset is subtracted from the sampled intercept so the recovered intercept absorbs the level.</p>
+<p>Only the grand mean (averaged over time and groups) is removed &ndash; this is the single level direction that competes with the shared intercept. Each group keeps its own level relative to that grand mean, so the reparameterisation is exact for any number of groups: a grouped latent still gives each group its own level and drift. See <code>vignettes/model.Rmd</code>.</p>
+<p>Returns 0 unless the term is present, centring is on, and d &gt;= 1. </p>
+
+<p class="definition">Definition at line <a class="el" href="arima__kernel_8stan_source.html#l00204">204</a> of file <a class="el" href="arima__kernel_8stan_source.html">arima_kernel.stan</a>.</p>
 
 </div>
 </div>

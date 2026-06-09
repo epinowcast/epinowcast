@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['matern_5findices_0',['matern_indices',['../gaussian__process_8stan.html#aea3ce21e4d20e365652fa733bff6cd1b',1,'gaussian_process.stan']]]
+  ['intercept_5fcentring_5foffset_0',['intercept_centring_offset',['../regression_8stan.html#aaf95cbe1eb0bf7cdaed5b6785c8b0933',1,'regression.stan']]]
 ];

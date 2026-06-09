@@ -109,25 +109,25 @@ $(function(){initNavTree('combine__effects_8stan_source.html',''); initResizable
 <div class="contents">
 <a href="combine__effects_8stan.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
 <div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9">   62</a></span>vector <a class="code hl_function" href="combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9">combine_effects</a>(array[] real intercept, vector beta, </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                       <span class="keywordtype">int</span> nobs, <span class="keywordtype">int</span> neffs,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9">   62</a></span>vector <a class="code hl_function" href="combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9">combine_effects</a>(array[] real intercept, vector <a class="code hl_variable" href="regression_8stan.html#a0e51f6de008ad4998e200ba0d444759c">beta</a>, </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                       <span class="keywordtype">int</span> nobs, <span class="keywordtype">int</span> <a class="code hl_variable" href="regression_8stan.html#a32a4c7410cb166001d75f7766b71d152">neffs</a>,</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                       <span class="comment">// Dense matrix components</span></div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                       matrix fdesign,</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                       <span class="comment">// Sparse matrix components</span></div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                       tuple(vector, array[] <span class="keywordtype">int</span>, array[] <span class="keywordtype">int</span>) sparse,</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                       vector beta_sd, </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                       <a class="code hl_function" href="regression_8stan.html#a44533bd5f45e5df5514f373dc745689b">tuple</a>(vector, array[] <span class="keywordtype">int</span>, array[] <span class="keywordtype">int</span>) sparse,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                       vector <a class="code hl_variable" href="regression_8stan.html#a760668b3aaf676a88b301e7d9ccf2773">beta_sd</a>, </div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                       <span class="comment">// Dense matrix for random effects</span></div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                       matrix rdesign,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                       matrix <a class="code hl_variable" href="regression_8stan.html#aeda0bd818b2ebdfe46f6afa08d6fb6e9">rdesign</a>,</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                       <span class="keywordtype">int</span> add_intercept, <span class="keywordtype">int</span> sparse_design) {</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  <span class="keywordflow">if</span> (neffs) {</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    vector[1 + num_elements(beta_sd)] ext_beta_sd = append_row(1.0, beta_sd);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="regression_8stan.html#a32a4c7410cb166001d75f7766b71d152">neffs</a>) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    vector[1 + num_elements(<a class="code hl_variable" href="regression_8stan.html#a760668b3aaf676a88b301e7d9ccf2773">beta_sd</a>)] ext_beta_sd = append_row(1.0, <a class="code hl_variable" href="regression_8stan.html#a760668b3aaf676a88b301e7d9ccf2773">beta_sd</a>);</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    vector[nobs] result;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    vector[neffs] scaled_beta = beta .* (rdesign * ext_beta_sd);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    vector[<a class="code hl_variable" href="regression_8stan.html#a32a4c7410cb166001d75f7766b71d152">neffs</a>] scaled_beta = <a class="code hl_variable" href="regression_8stan.html#a0e51f6de008ad4998e200ba0d444759c">beta</a> .* (<a class="code hl_variable" href="regression_8stan.html#aeda0bd818b2ebdfe46f6afa08d6fb6e9">rdesign</a> * ext_beta_sd);</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    </div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">if</span> (sparse_design) {</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>      <span class="comment">// Extract sparse matrix components from fdesign</span></div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>      result = csr_matrix_times_vector(</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        nobs, neffs, sparse.1, sparse.2, sparse.3, scaled_beta</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        nobs, <a class="code hl_variable" href="regression_8stan.html#a32a4c7410cb166001d75f7766b71d152">neffs</a>, sparse.1, sparse.2, sparse.3, scaled_beta</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>      );</div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    } <span class="keywordflow">else</span> {</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>      result = fdesign * scaled_beta;</div>
@@ -143,6 +143,11 @@ $(function(){initNavTree('combine__effects_8stan_source.html',''); initResizable
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>}</div>
 </div>
 <div class="ttc" id="acombine__effects_8stan_html_ae491cd73e41a833998f8e7ff981281d9"><div class="ttname"><a href="combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9">combine_effects</a></div><div class="ttdeci">vector combine_effects(array[] real intercept, vector beta, int nobs, int neffs, matrix fdesign, tuple(vector, array[] int, array[] int) sparse, vector beta_sd, matrix rdesign, int add_intercept, int sparse_design)</div><div class="ttdef"><b>Definition</b> <a href="#l00062">combine_effects.stan:62</a></div></div>
+<div class="ttc" id="aregression_8stan_html_a0e51f6de008ad4998e200ba0d444759c"><div class="ttname"><a href="regression_8stan.html#a0e51f6de008ad4998e200ba0d444759c">beta</a></div><div class="ttdeci">vector beta</div><div class="ttdef"><b>Definition</b> <a href="regression_8stan_source.html#l00073">regression.stan:73</a></div></div>
+<div class="ttc" id="aregression_8stan_html_a32a4c7410cb166001d75f7766b71d152"><div class="ttname"><a href="regression_8stan.html#a32a4c7410cb166001d75f7766b71d152">neffs</a></div><div class="ttdeci">vector vector matrix int neffs</div><div class="ttdef"><b>Definition</b> <a href="regression_8stan_source.html#l00073">regression.stan:73</a></div></div>
+<div class="ttc" id="aregression_8stan_html_a44533bd5f45e5df5514f373dc745689b"><div class="ttname"><a href="regression_8stan.html#a44533bd5f45e5df5514f373dc745689b">tuple</a></div><div class="ttdeci">tuple(real, real) centring_offsets(vector means_fixed</div></div>
+<div class="ttc" id="aregression_8stan_html_a760668b3aaf676a88b301e7d9ccf2773"><div class="ttname"><a href="regression_8stan.html#a760668b3aaf676a88b301e7d9ccf2773">beta_sd</a></div><div class="ttdeci">vector vector beta_sd</div><div class="ttdef"><b>Definition</b> <a href="regression_8stan_source.html#l00073">regression.stan:73</a></div></div>
+<div class="ttc" id="aregression_8stan_html_aeda0bd818b2ebdfe46f6afa08d6fb6e9"><div class="ttname"><a href="regression_8stan.html#aeda0bd818b2ebdfe46f6afa08d6fb6e9">rdesign</a></div><div class="ttdeci">vector vector matrix rdesign</div><div class="ttdef"><b>Definition</b> <a href="regression_8stan_source.html#l00073">regression.stan:73</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

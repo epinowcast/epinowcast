@@ -1,5 +1,19 @@
 var searchData=
 [
-  ['hazard_2estan_0',['hazard.stan',['../hazard_8stan.html',1,'']]],
-  ['hazard_5fto_5flog_5fprob_1',['hazard_to_log_prob',['../hazard_8stan.html#ae596473f33916489e56f6e555d08f211',1,'hazard.stan']]]
+  ['gaussian_5fprocess_2estan_0',['gaussian_process.stan',['../gaussian__process_8stan.html',1,'']]],
+  ['gp_5falpha_1',['gp_alpha',['../regression_8stan.html#a2c9bcd15a730a32b030527d1b3075dd1',1,'regression.stan']]],
+  ['gp_5fd_2',['gp_d',['../regression_8stan.html#a8100b0c81051ce8f878594a78be2a3ea',1,'regression.stan']]],
+  ['gp_5feta_3',['gp_eta',['../regression_8stan.html#a283d7e2751933d1332fd534879822571',1,'regression.stan']]],
+  ['gp_5fg_4',['gp_G',['../regression_8stan.html#a93676c994edeef3538766af820e105c6',1,'regression.stan']]],
+  ['gp_5fl_5',['gp_L',['../regression_8stan.html#a96e06dee5ae7cd4b601336e15c54512f',1,'regression.stan']]],
+  ['gp_5flatent_5fmatrix_6',['gp_latent_matrix',['../gaussian__process_8stan.html#ab7b20383e1c5958d5310734670374163',1,'gaussian_process.stan']]],
+  ['gp_5flatent_5fmean_5foffset_7',['gp_latent_mean_offset',['../gaussian__process_8stan.html#a7d16b73103a76438ff860ec0bad0e128',1,'gaussian_process.stan']]],
+  ['gp_5fm_8',['gp_M',['../regression_8stan.html#a825f3be4f961bcfadc6fdafb9833651b',1,'regression.stan']]],
+  ['gp_5fnu_9',['gp_nu',['../regression_8stan.html#a8ec42b69c305196fd52ce4169426f1b6',1,'regression.stan']]],
+  ['gp_5fphi_10',['gp_PHI',['../regression_8stan.html#a4f2d83a8ee9f3b6e1a222a5ab0d18f22',1,'regression.stan']]],
+  ['gp_5fpresent_11',['gp_present',['../regression_8stan.html#ae61b3c0f6160f51e42fd9999a6b6127d',1,'regression.stan']]],
+  ['gp_5fpriors_5flp_12',['gp_priors_lp',['../regression_8stan.html#a3b18406a53a43dc0ee266bff09b39b05',1,'regression.stan']]],
+  ['gp_5frho_13',['gp_rho',['../regression_8stan.html#ac538ea66b4f3d74dc222ec8ce946ac11',1,'regression.stan']]],
+  ['gp_5ft_14',['gp_T',['../regression_8stan.html#a883faff13717ab05470e3eefab65ea48',1,'regression.stan']]],
+  ['gp_5ftype_15',['gp_type',['../regression_8stan.html#a1305902ef049f7360ecfa5ba582722e2',1,'regression.stan']]]
 ];
