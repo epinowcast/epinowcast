@@ -11,7 +11,8 @@
 #' points at the Laplace model and the package Stan include directory.
 #'
 #' This inference path is experimental and supports only a subset of the full
-#' [epinowcast()] model (see [enw_laplace()]). It requires cmdstan >= 2.39.
+#' [epinowcast()] model (see [enw_laplace_marginal()]).
+#' It requires cmdstan >= 2.39.
 #'
 #' @inheritParams enw_model
 #'
@@ -20,8 +21,8 @@
 #' @family modeltools
 #' @export
 #' @examplesIf interactive()
-#' mod <- enw_laplace_model()
-enw_laplace_model <- function(model = system.file(
+#' mod <- enw_laplace_marginal_model()
+enw_laplace_marginal_model <- function(model = system.file(
                                 "stan", "models", "epinowcast_laplace.stan",
                                 package = "epinowcast"
                               ),
@@ -46,7 +47,8 @@ enw_laplace_model <- function(model = system.file(
 #' @description
 #' `r lifecycle::badge("experimental")`
 #'
-#' Checks the model modules passed to [enw_laplace()] and raises a clear error
+#' Checks the model modules passed to [enw_laplace_marginal()] and raises a
+#' clear error
 #' for any configuration outside the supported v1 subset. The supported subset
 #' is: a linear expectation with fixed effects, random effects, and/or a single
 #' `gp()` term; a static parametric reference delay (lognormal, gamma or
@@ -256,18 +258,18 @@ split_laplace_design <- function(formula) {
 #' stability. Defaults to `1e-6`.
 #'
 #' @return A named list suitable as the `data` argument to a model compiled by
-#' [enw_laplace_model()].
+#' [enw_laplace_marginal_model()].
 #' @family laplace
 #' @importFrom data.table data.table CJ setorder as.data.table
 #' @importFrom cli cli_abort
 #' @export
 #' @examplesIf interactive()
 #' pobs <- enw_example("preprocessed")
-#' enw_laplace_data(
+#' enw_laplace_marginal_data(
 #'   pobs,
 #'   expectation = enw_expectation(~ 1 + (1 | day_of_week), data = pobs)
 #' )
-enw_laplace_data <- function(data,
+enw_laplace_marginal_data <- function(data,
                              expectation = epinowcast::enw_expectation(
                                r = ~1, data = data
                              ),
@@ -473,7 +475,7 @@ enw_laplace_data <- function(data,
 #' non-finite log-likelihood rejections that occur when the default wide
 #' initialisation places the linear predictor far from the data.
 #'
-#' @param data A data list as produced by [enw_laplace_data()].
+#' @param data A data list as produced by [enw_laplace_marginal_data()].
 #'
 #' @return A function with no arguments returning a named list of initial
 #' values suitable for the `init` argument of a `cmdstanr` `$sample()` call.
@@ -481,10 +483,10 @@ enw_laplace_data <- function(data,
 #' @export
 #' @examplesIf interactive()
 #' pobs <- enw_example("preprocessed")
-#' dl <- enw_laplace_data(pobs)
-#' init_fn <- enw_laplace_inits(dl)
+#' dl <- enw_laplace_marginal_data(pobs)
+#' init_fn <- enw_laplace_marginal_inits(dl)
 #' init_fn()
-enw_laplace_inits <- function(data) {
+enw_laplace_marginal_inits <- function(data) {
   # Rough level for the intercept: log of the mean per-cell observed count.
   mean_obs <- mean(data$obs[data$obs > 0])
   level <- if (is.finite(mean_obs) && mean_obs > 0) log(mean_obs) else 0
@@ -547,10 +549,10 @@ enw_laplace_inits <- function(data) {
 #' the preprocessed data, so [summary.epinowcast()] and the nowcast extractors
 #' work as usual.
 #'
-#' @inheritParams enw_laplace_data
+#' @inheritParams enw_laplace_marginal_data
 #'
 #' @param model A compiled embedded-Laplace `cmdstanr` model as returned by
-#' [enw_laplace_model()].
+#' [enw_laplace_marginal_model()].
 #'
 #' @param fit Model fit options as defined using [enw_fit_opts()].
 #'
@@ -565,7 +567,7 @@ enw_laplace_inits <- function(data) {
 #' @export
 #' @examplesIf interactive()
 #' pobs <- enw_example("preprocessed")
-#' nowcast <- enw_laplace(
+#' nowcast <- enw_laplace_marginal(
 #'   pobs,
 #'   expectation = enw_expectation(~ 1 + (1 | day_of_week), data = pobs),
 #'   fit = enw_fit_opts(
@@ -573,7 +575,7 @@ enw_laplace_inits <- function(data) {
 #'   )
 #' )
 #' summary(nowcast, type = "nowcast")
-enw_laplace <- function(data,
+enw_laplace_marginal <- function(data,
                         expectation = epinowcast::enw_expectation(
                           r = ~1, data = data
                         ),
@@ -593,17 +595,18 @@ enw_laplace <- function(data,
                           sampler = epinowcast::enw_sample,
                           nowcast = TRUE, pp = FALSE, likelihood = TRUE
                         ),
-                        model = epinowcast::enw_laplace_model(),
+                        model = epinowcast::enw_laplace_marginal_model(),
                         priors = NULL,
                         jitter = 1e-6) {
   cli::cli_warn(
     paste0(
-      "`enw_laplace()` is experimental. The embedded-Laplace inference path ",
-      "is opt-in and supports only a subset of the full `epinowcast()` model."
+      "`enw_laplace_marginal()` is experimental. The embedded-Laplace ",
+      "inference path is opt-in and supports only a subset of the full ",
+      "`epinowcast()` model."
     )
   )
 
-  data_as_list <- enw_laplace_data(
+  data_as_list <- enw_laplace_marginal_data(
     data,
     expectation = expectation, reference = reference, obs = obs,
     report = report, missing = missing, priors = priors, jitter = jitter
@@ -614,7 +617,7 @@ enw_laplace <- function(data,
     sampler, c(
       list(
         data = data_as_list, model = model,
-        init = enw_laplace_inits(data_as_list)
+        init = enw_laplace_marginal_inits(data_as_list)
       ),
       fit$args
     )

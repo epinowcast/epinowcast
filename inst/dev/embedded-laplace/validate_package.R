@@ -6,12 +6,12 @@
 ## embedded-Laplace model here instead treats the linear predictor as the log
 ## LEVEL of expected counts (a zero-mean Gaussian field around a fixed-effect
 ## mean). These are different parameterisations, so a direct `epinowcast()`
-## vs `enw_laplace()` comparison on the same formula compares different models
+## vs `enw_laplace_marginal()` comparison on the same formula compares different models
 ## and is NOT a valid test of the Laplace approximation.
 ##
 ## To isolate the approximation itself, this script compares the package
 ## Laplace path against a NUTS reference that uses the IDENTICAL log-level model
-## (same data list from `enw_laplace_data()`, same priors, same delay and
+## (same data list from `enw_laplace_marginal_data()`, same priors, same delay and
 ## observation family) but samples the latent field theta ~ MVN(0, K) instead
 ## of marginalising it. Any difference is then attributable to the Laplace
 ## approximation, not to a specification mismatch.
@@ -30,7 +30,7 @@ here <- function(f) file.path(root, "inst/dev/embedded-laplace", f)
 
 ## Models: the package Laplace model and the matched NUTS reference.
 message("compiling embedded-Laplace model ...")
-m_lap <- enw_laplace_model(verbose = FALSE)
+m_lap <- enw_laplace_marginal_model(verbose = FALSE)
 message("compiling matched NUTS reference ...")
 m_nuts <- cmdstan_model(
   here("epinowcast_laplace_nuts.stan"),
@@ -40,8 +40,8 @@ m_nuts <- cmdstan_model(
 
 fit_both <- function(pobs, label, expectation, chains = 2,
                      warmup = 500, sampling = 500) {
-  dl <- enw_laplace_data(pobs, expectation = expectation)
-  init_fn <- enw_laplace_inits(dl)
+  dl <- enw_laplace_marginal_data(pobs, expectation = expectation)
+  init_fn <- enw_laplace_marginal_inits(dl)
   t_lap <- system.time(
     f_lap <- m_lap$sample(
       data = dl, init = init_fn, chains = chains, parallel_chains = chains,

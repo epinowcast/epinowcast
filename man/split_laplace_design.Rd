@@ -32,9 +32,9 @@ standard deviation.
 \seealso{
 Other laplace: 
 \code{\link{check_laplace_supported}()},
-\code{\link{enw_laplace}()},
-\code{\link{enw_laplace_data}()},
-\code{\link{enw_laplace_inits}()}
+\code{\link{enw_laplace_marginal}()},
+\code{\link{enw_laplace_marginal_data}()},
+\code{\link{enw_laplace_marginal_inits}()}
 }
 \concept{laplace}
 \keyword{internal}

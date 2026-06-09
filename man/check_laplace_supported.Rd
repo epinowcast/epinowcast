@@ -24,7 +24,8 @@ error is raised.
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-Checks the model modules passed to \code{\link[=enw_laplace]{enw_laplace()}} and raises a clear error
+Checks the model modules passed to \code{\link[=enw_laplace_marginal]{enw_laplace_marginal()}} and raises a
+clear error
 for any configuration outside the supported v1 subset. The supported subset
 is: a linear expectation with fixed effects, random effects, and/or a single
 \code{gp()} term; a static parametric reference delay (lognormal, gamma or
@@ -32,9 +33,9 @@ exponential); and a negative binomial (NB2) or Poisson observation family.
 }
 \seealso{
 Other laplace: 
-\code{\link{enw_laplace}()},
-\code{\link{enw_laplace_data}()},
-\code{\link{enw_laplace_inits}()},
+\code{\link{enw_laplace_marginal}()},
+\code{\link{enw_laplace_marginal_data}()},
+\code{\link{enw_laplace_marginal_inits}()},
 \code{\link{split_laplace_design}()}
 }
 \concept{laplace}
