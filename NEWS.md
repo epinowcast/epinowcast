@@ -19,6 +19,10 @@
 
 ## Package
 
+- Added `enw_laplace()`, a new approximate-inference backend that wraps cmdstanr's `$laplace()` method (optimise to the posterior mode, then sample from a Gaussian centred there).
+  It slots into the pluggable `enw_fit_opts(sampler = ...)` interface like `enw_pathfinder()` and is a fast but approximate alternative to NUTS, suited to exploration and model development.
+  Like pathfinder, it tends to underestimate tail and posterior variance, so it is not recommended for final inference.
+  Requires CmdStan >= 2.32.
 - Lowered the minimum R version from 4.4.0 to 4.3.0 so users on R 4.3.x can install the package.
   No code in the package relies on features introduced in R 4.4.
   See #811 by @seabbs.
