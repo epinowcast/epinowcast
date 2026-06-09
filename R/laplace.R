@@ -347,12 +347,29 @@ enw_laplace_data <- function(data,
     )
   }
 
-  # Per-group random-effect design. Take the first group's block and require
-  # the same column count across groups (shared RE/GP structure).
+  # Per-group random-effect design. The per-group marginalisation uses one
+  # shared T x q_re block, so the random-effect structure must be identical
+  # across groups (e.g. `(1 | day_of_week)`). Group-specific interactions such
+  # as `(1 | day_of_week:.group)` give a different block per group and are not
+  # supported by this v1 path; reject them with a clear error.
   use_re <- as.integer(split$q_re > 0)
   if (use_re == 1) {
     z_full <- split$Z
     z_g <- z_full[seq_len(t_len), , drop = FALSE]
+    if (groups > 1) {
+      for (gg in 2:groups) {
+        z_other <- z_full[((gg - 1) * t_len + 1):(gg * t_len), , drop = FALSE]
+        if (!isTRUE(all.equal(unname(z_other), unname(z_g)))) {
+          cli::cli_abort(
+            paste0(
+              "The embedded-Laplace path requires the random-effect design to ",
+              "be shared across groups. Group-specific interactions such as ",
+              "`(1 | feature:.group)` are not supported; use `(1 | feature)`."
+            )
+          )
+        }
+      }
+    }
     q_re <- ncol(z_g)
     re_index <- split$re_index
     n_re <- split$n_re
