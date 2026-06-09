@@ -133,6 +133,15 @@ enw_simulate <- function(data, growth_rate,
   # parameters that are not supplied are still initialised from their prior.
   prior_init <- enw_get_data(prepared, "init")()
   init_values <- utils::modifyList(prior_init, parameters)
+  # The module intercepts are sampled on a centred scale (`<prefix>_int_c`,
+  # see the centring reparameterisation in the Stan model), while the
+  # original-scale `<prefix>_int` is a recovered transformed parameter that
+  # the sampler ignores as an init. Map the user-facing original-scale
+  # intercept names onto the centred parameters so fixing them takes effect.
+  # For the simulate use case (no design covariates or integrated latent on
+  # the fixed intercept) the two scales coincide, so this fixes the intended
+  # value exactly.
+  init_values <- .map_centred_intercepts(init_values)
 
   # Fixed-parameter generation: parameters are taken from `parameters` where
   # supplied and from the prior-based initialisation otherwise. Each iteration
@@ -147,6 +156,36 @@ enw_simulate <- function(data, growth_rate,
   out <- data.table::copy(prepared)
   out$fit <- list(gq)
   out[]
+}
+
+#' Map original-scale intercept inits to their centred parameters
+#'
+#' The module intercepts are sampled on a centred scale
+#' (`<prefix>_int_c`); the original-scale `<prefix>_int` is a recovered
+#' transformed parameter that the sampler ignores as an init. This rewrites
+#' any original-scale intercept entries in an init list to the centred
+#' parameter name so that fixing them takes effect.
+#'
+#' @param init A named list of init values.
+#'
+#' @return The init list with original-scale intercept names mapped to their
+#' centred `<prefix>_int_c` equivalents.
+#'
+#' @keywords internal
+.map_centred_intercepts <- function(init) {
+  centred <- c(
+    expr_r_int = "expr_r_int_c",
+    refp_mean_int = "refp_mean_int_c",
+    refnp_int = "refnp_int_c",
+    miss_int = "miss_int_c"
+  )
+  for (raw in names(centred)) {
+    if (!is.null(init[[raw]])) {
+      init[[centred[[raw]]]] <- init[[raw]]
+      init[[raw]] <- NULL
+    }
+  }
+  init
 }
 
 #' Simulate observations with a missing reference date.
