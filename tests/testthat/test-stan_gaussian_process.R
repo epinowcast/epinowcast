@@ -66,10 +66,10 @@ test_that("apply_gp_term() integrates and anchors under differencing", {
     x <- 2 * (x - mean(x)) / (max(x) - 1)
     sin(outer(pi / (2 * L) * (x + L), seq_len(M))) / sqrt(L)
   }
-  run <- function(d, eta, phi, M) {
+  run <- function(d, eta, phi, M, centre = 0L) {
     eta_m <- matrix(eta, ncol = 1)
     apply_gp_term(
-      rep(0, T_full), 1L, T_full, 1L, M, L, 2L, 1.5, d,
+      rep(0, T_full), 1L, centre, T_full, 1L, M, L, 2L, 1.5, d,
       phi, eta_m, array(rho), array(alpha), seq_len(T_full)
     )
   }
@@ -102,6 +102,57 @@ test_that("apply_gp_term() integrates and anchors under differencing", {
   expect_lt(
     max(abs(out2 - cumsum(cumsum(c(0, 0, free2))))), 1e-10
   )
+})
+
+test_that("apply_gp_term() grand-mean centres the integrated GP", {
+  T_full <- 12L
+  L <- 1.5
+  alpha <- 1.0
+  rho <- 3.0
+  make_phi <- function(n, M) {
+    x <- seq_len(n)
+    x <- 2 * (x - mean(x)) / (max(x) - 1)
+    sin(outer(pi / (2 * L) * (x + L), seq_len(M))) / sqrt(L)
+  }
+  set.seed(2)
+  M <- 5L
+  phi <- make_phi(T_full - 1L, M)
+  eta_m <- matrix(rnorm(M), ncol = 1)
+  base <- rep(0, T_full)
+  idx <- seq_len(T_full)
+  raw <- apply_gp_term(
+    base, 1L, 0L, T_full, 1L, M, L, 2L, 1.5, 1L,
+    phi, eta_m, array(rho), array(alpha), idx
+  )
+  cen <- apply_gp_term(
+    base, 1L, 1L, T_full, 1L, M, L, 2L, 1.5, 1L,
+    phi, eta_m, array(rho), array(alpha), idx
+  )
+  # centred output is mean-zero and equals raw minus its grand mean
+  expect_lt(abs(mean(cen)), 1e-10)
+  expect_lt(max(abs(cen - (raw - mean(raw)))), 1e-10)
+  # the recovered offset equals the removed grand mean
+  off <- gp_latent_mean_offset(
+    1L, 1L, T_full, 1L, M, L, 2L, 1.5, 1L,
+    phi, eta_m, array(rho), array(alpha)
+  )
+  expect_lt(abs(off - mean(raw)), 1e-10)
+  # a stationary GP (d = 0) is never centred and has zero offset
+  phi0 <- make_phi(T_full, M)
+  raw0 <- apply_gp_term(
+    base, 1L, 0L, T_full, 1L, M, L, 2L, 1.5, 0L,
+    phi0, eta_m, array(rho), array(alpha), idx
+  )
+  cen0 <- apply_gp_term(
+    base, 1L, 1L, T_full, 1L, M, L, 2L, 1.5, 0L,
+    phi0, eta_m, array(rho), array(alpha), idx
+  )
+  expect_lt(max(abs(raw0 - cen0)), 1e-12)
+  off0 <- gp_latent_mean_offset(
+    1L, 1L, T_full, 1L, M, L, 2L, 1.5, 0L,
+    phi0, eta_m, array(rho), array(alpha)
+  )
+  expect_equal(off0, 0)
 })
 
 test_that("a small Stan model recovers a smooth GP trend", {
@@ -158,12 +209,32 @@ test_that("a small Stan model recovers a smooth GP trend", {
   set.seed(1)
   y <- true_f + rnorm(T, 0, obs_sd)
 
-  fit <- mod$sample(
-    data = list(T = T, M = M, L = L, PHI = PHI, y = y, obs_sd = obs_sd),
-    chains = 2, parallel_chains = 2, iter_warmup = 1000,
-    iter_sampling = 500, adapt_delta = 0.95, seed = 1, refresh = 0,
-    show_messages = FALSE, show_exceptions = FALSE
-  )
+  # A chain can silently fail to write its CSV on CI (`$sample()` returns
+  # but a chain's output is missing). Force the draws read inside the retry
+  # so a transient crash retries with a fresh seed rather than failing the
+  # test later at summary().
+  fit <- NULL
+  for (attempt in 0:3) {
+    fit <- tryCatch(
+      {
+        f <- mod$sample(
+          data = list(T = T, M = M, L = L, PHI = PHI, y = y, obs_sd = obs_sd),
+          chains = 2, parallel_chains = 2, iter_warmup = 1000,
+          iter_sampling = 500, adapt_delta = 0.95, seed = 1 + attempt,
+          refresh = 0, show_messages = FALSE, show_exceptions = FALSE
+        )
+        f$draws()
+        f
+      },
+      error = function(e) NULL
+    )
+    if (!is.null(fit)) {
+      break
+    }
+  }
+  if (is.null(fit)) {
+    stop("Stan sampler failed to produce output after retries")
+  }
   fhat <- fit$summary("f")$mean
   # The posterior mean should track the true smooth trend closely.
   expect_lt(sqrt(mean((fhat - true_f)^2)), 0.15)

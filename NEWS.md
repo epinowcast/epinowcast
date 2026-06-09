@@ -2,6 +2,12 @@
 
 ## Model
 
+- The fixed-effects design and integrated (`d >= 1`) `arima()` and `gp()` residuals are now centred against the module intercept, decorrelating the intercept from the slopes and from the latent drift to improve sampling geometry.
+  For modules with a free intercept (`expr`, `refp` mean, `refnp`, `miss`) the design is centred on its observation-weighted column means, as `brms` does by default, and the grand mean (over time and groups) of the integrated residual is removed.
+  The sampled intercept (`<prefix>_int_c`) is on the centred scale; the original-scale intercept the prior applies to is recovered as `<prefix>_int` by undoing both the design and latent centring (a unit-Jacobian shift, so the prior keeps its meaning and the posterior is unchanged, as in EpiNow2's reproduction-number centring).
+  Only the shared grand-mean level is removed, so each group keeps its own level and drift: a grouped latent (`arima(time, group, ...)`, `G > 1`) is unchanged in meaning and the reparameterisation is exact for any number of groups.
+  On a weekly random-walk growth model the centred form samples roughly twice as fast at the `adapt_delta` these models use (it is sharper, so benefits from `adapt_delta >= 0.95`).
+  Modules without a free intercept (`expl`, `rep`) and the log-link `refp` standard deviation are left uncentred.
 - Added a `gp()` formula helper that places an approximate Gaussian process on any module's linear predictor, the same way `arima()` and `rw()` work.
   It uses a Hilbert-space reduced-rank (spectral) approximation with selectable kernels (Matern 3/2 default, Matern 5/2, Ornstein-Uhlenbeck, squared exponential, periodic) and a `basis_prop` accuracy-speed control.
   A `gp()` term can be placed on the growth rate (`expr`), the latent-to-obs proportion (`expl`), the parametric (`refp`) and non-parametric (`refnp`) reference delay, the report-time hazards (`rep`), and the missing-reference proportion (`miss`).
