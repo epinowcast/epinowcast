@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate.R
 \name{.map_centred_intercepts}
 \alias{.map_centred_intercepts}
-\title{Map original-scale intercept inits to their centred parameters}
+\title{Map original-scale intercept init values to their centred parameters}
 \usage{
 .map_centred_intercepts(init)
 }

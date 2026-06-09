@@ -158,7 +158,7 @@ enw_simulate <- function(data, growth_rate,
   out[]
 }
 
-#' Map original-scale intercept inits to their centred parameters
+#' Map original-scale intercept init values to their centred parameters
 #'
 #' The module intercepts are sampled on a centred scale
 #' (`<prefix>_int_c`); the original-scale `<prefix>_int` is a recovered
