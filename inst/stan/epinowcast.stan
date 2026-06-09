@@ -471,10 +471,9 @@ transformed parameters{
   // Observation model
   array[model_obs > 0 ? 1 : 0] real phi; // Transformed overdispersion
 
-  // Recovered original-scale intercepts. The sampled `*_int_c` are on the
-  // centred design (decorrelated from the slopes); subtracting the design
-  // offset `dot(means, beta)` recovers the intercept the user specified a
-  // prior on (brms's `b_Intercept`). The shift is additive (unit Jacobian).
+  // Recovered original-scale intercepts (see `centring_offsets`): the
+  // sampled `*_int_c` are on the centred scale and the user's prior is
+  // placed on these recovered values.
   array[expr_fintercept ? 1 : 0] real expr_r_int;
   array[model_refp ? 1 : 0] real refp_mean_int;
   array[model_refnp && refnp_fintercept ? 1 : 0] real refnp_int;
@@ -496,24 +495,18 @@ transformed parameters{
     expr_gp_rho, expr_gp_alpha, expr_gp_flat_idx
   );
   if (expr_fintercept) {
-    real expr_offset = intercept_centring_offset(
-      expr_fdesign_means, expr_beta, expr_beta_sd, expr_rdesign, expr_fncol
-    );
-    real expr_lat_offset = arima_latent_mean_offset(
-      expr_arima_present, expr_fintercept, expr_arima_T, expr_arima_G,
+    tuple(real, real) off = centring_offsets(
+      expr_fdesign_means, expr_beta, expr_beta_sd, expr_rdesign, expr_fncol,
+      expr_fintercept,
+      expr_arima_present, expr_arima_T, expr_arima_G,
       expr_arima_p, expr_arima_d, expr_arima_q,
-      expr_arima_z, expr_arima_pacf, expr_arima_theta, expr_arima_sigma
+      expr_arima_z, expr_arima_pacf, expr_arima_theta, expr_arima_sigma,
+      expr_gp_present, expr_gp_T, expr_gp_G, expr_gp_M, expr_gp_L,
+      expr_gp_type, expr_gp_nu, expr_gp_d, expr_gp_PHI, expr_gp_eta,
+      expr_gp_rho, expr_gp_alpha
     );
-    real expr_gp_offset = gp_latent_mean_offset(
-      expr_gp_present, expr_fintercept, expr_gp_T, expr_gp_G, expr_gp_M,
-      expr_gp_L, expr_gp_type, expr_gp_nu, expr_gp_d, expr_gp_PHI,
-      expr_gp_eta, expr_gp_rho, expr_gp_alpha
-    );
-    r = r - expr_offset;            // centre the design contribution
-    // recover raw intercept: undo the design, ARIMA and GP centring so
-    // the prior stays on the original-scale level (unit Jacobian)
-    expr_r_int[1] =
-      expr_r_int_c[1] - expr_offset - expr_lat_offset - expr_gp_offset;
+    r = r - off.1;                  // centre the design contribution
+    expr_r_int[1] = expr_r_int_c[1] - off.1 - off.2; // recover raw intercept
   }
   exp_llatent = log_expected_latent_from_r(
     expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
@@ -560,23 +553,18 @@ transformed parameters{
       refp_gp_rho, refp_gp_alpha, refp_gp_flat_idx
     );
     {
-      real refp_mean_offset = intercept_centring_offset(
+      tuple(real, real) off = centring_offsets(
         refp_fdesign_means, refp_mean_beta, refp_mean_beta_sd, refp_rdesign,
-        refp_fncol
-      );
-      real refp_mean_lat_offset = arima_latent_mean_offset(
-        refp_arima_present, 1, refp_arima_T, refp_arima_G,
+        refp_fncol, 1,
+        refp_arima_present, refp_arima_T, refp_arima_G,
         refp_arima_p, refp_arima_d, refp_arima_q,
-        refp_arima_z, refp_arima_pacf, refp_arima_theta, refp_arima_sigma
+        refp_arima_z, refp_arima_pacf, refp_arima_theta, refp_arima_sigma,
+        refp_gp_present, refp_gp_T, refp_gp_G, refp_gp_M, refp_gp_L,
+        refp_gp_type, refp_gp_nu, refp_gp_d, refp_gp_PHI, refp_gp_eta,
+        refp_gp_rho, refp_gp_alpha
       );
-      real refp_mean_gp_offset = gp_latent_mean_offset(
-        refp_gp_present, 1, refp_gp_T, refp_gp_G, refp_gp_M,
-        refp_gp_L, refp_gp_type, refp_gp_nu, refp_gp_d, refp_gp_PHI,
-        refp_gp_eta, refp_gp_rho, refp_gp_alpha
-      );
-      refp_mean = refp_mean - refp_mean_offset;
-      refp_mean_int[1] = refp_mean_int_c[1] - refp_mean_offset
-        - refp_mean_lat_offset - refp_mean_gp_offset;
+      refp_mean = refp_mean - off.1;
+      refp_mean_int[1] = refp_mean_int_c[1] - off.1 - off.2;
     }
     // Default the (unused) sd to 1 for single-parameter distributions such as
     // the exponential (model_refp == 1) so the discretisation functions below
@@ -630,23 +618,18 @@ transformed parameters{
       refnp_gp_rho, refnp_gp_alpha, refnp_gp_flat_idx
     );
     if (refnp_fintercept) {
-      real refnp_offset = intercept_centring_offset(
+      tuple(real, real) off = centring_offsets(
         refnp_fdesign_means, refnp_beta, refnp_beta_sd, refnp_rdesign,
-        refnp_fncol
-      );
-      real refnp_lat_offset = arima_latent_mean_offset(
-        refnp_arima_present, refnp_fintercept, refnp_arima_T, refnp_arima_G,
+        refnp_fncol, refnp_fintercept,
+        refnp_arima_present, refnp_arima_T, refnp_arima_G,
         refnp_arima_p, refnp_arima_d, refnp_arima_q,
-        refnp_arima_z, refnp_arima_pacf, refnp_arima_theta, refnp_arima_sigma
+        refnp_arima_z, refnp_arima_pacf, refnp_arima_theta, refnp_arima_sigma,
+        refnp_gp_present, refnp_gp_T, refnp_gp_G, refnp_gp_M, refnp_gp_L,
+        refnp_gp_type, refnp_gp_nu, refnp_gp_d, refnp_gp_PHI, refnp_gp_eta,
+        refnp_gp_rho, refnp_gp_alpha
       );
-      real refnp_gp_offset = gp_latent_mean_offset(
-        refnp_gp_present, refnp_fintercept, refnp_gp_T, refnp_gp_G,
-        refnp_gp_M, refnp_gp_L, refnp_gp_type, refnp_gp_nu, refnp_gp_d,
-        refnp_gp_PHI, refnp_gp_eta, refnp_gp_rho, refnp_gp_alpha
-      );
-      refnp_lh = refnp_lh - refnp_offset;
-      refnp_int[1] =
-        refnp_int_c[1] - refnp_offset - refnp_lat_offset - refnp_gp_offset;
+      refnp_lh = refnp_lh - off.1;
+      refnp_int[1] = refnp_int_c[1] - off.1 - off.2;
     }
     }
   }
@@ -679,22 +662,18 @@ transformed parameters{
       miss_gp_type, miss_gp_nu, miss_gp_d, miss_gp_PHI, miss_gp_eta,
       miss_gp_rho, miss_gp_alpha, miss_gp_flat_idx
     );
-    real miss_offset = intercept_centring_offset(
-      miss_fdesign_means, miss_beta, miss_beta_sd, miss_rdesign, miss_fncol
-    );
-    real miss_lat_offset = arima_latent_mean_offset(
-      miss_arima_present, 1, miss_arima_T, miss_arima_G,
+    tuple(real, real) off = centring_offsets(
+      miss_fdesign_means, miss_beta, miss_beta_sd, miss_rdesign, miss_fncol,
+      1,
+      miss_arima_present, miss_arima_T, miss_arima_G,
       miss_arima_p, miss_arima_d, miss_arima_q,
-      miss_arima_z, miss_arima_pacf, miss_arima_theta, miss_arima_sigma
+      miss_arima_z, miss_arima_pacf, miss_arima_theta, miss_arima_sigma,
+      miss_gp_present, miss_gp_T, miss_gp_G, miss_gp_M, miss_gp_L,
+      miss_gp_type, miss_gp_nu, miss_gp_d, miss_gp_PHI, miss_gp_eta,
+      miss_gp_rho, miss_gp_alpha
     );
-    real miss_gp_offset = gp_latent_mean_offset(
-      miss_gp_present, 1, miss_gp_T, miss_gp_G, miss_gp_M,
-      miss_gp_L, miss_gp_type, miss_gp_nu, miss_gp_d, miss_gp_PHI,
-      miss_gp_eta, miss_gp_rho, miss_gp_alpha
-    );
-    miss_int[1] =
-      miss_int_c[1] - miss_offset - miss_lat_offset - miss_gp_offset;
-    miss_ref_lprop = log_inv_logit(miss_lp - miss_offset);
+    miss_int[1] = miss_int_c[1] - off.1 - off.2;
+    miss_ref_lprop = log_inv_logit(miss_lp - off.1);
   }
   // Observation model
   if (model_obs) {
