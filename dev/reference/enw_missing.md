@@ -40,6 +40,7 @@ distribution.
 ## See also
 
 Model modules
+[`.expectation_is_minimal()`](https://package.epinowcast.org/dev/reference/dot-expectation_is_minimal.md),
 [`enw_expectation()`](https://package.epinowcast.org/dev/reference/enw_expectation.md),
 [`enw_fit_opts()`](https://package.epinowcast.org/dev/reference/enw_fit_opts.md),
 [`enw_obs()`](https://package.epinowcast.org/dev/reference/enw_obs.md),
@@ -292,8 +293,8 @@ enw_missing(data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x5633746ab460>
-#> <environment: 0x5633746a34f0>
+#> <bytecode: 0x556147072268>
+#> <environment: 0x55614706b970>
 #> 
 
 # No missingness model specified
@@ -453,7 +454,7 @@ enw_missing(~0, data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x5633746ab460>
-#> <environment: 0x563372f99138>
+#> <bytecode: 0x556147072268>
+#> <environment: 0x5561468ef600>
 #> 
 ```

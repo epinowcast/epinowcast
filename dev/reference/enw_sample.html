@@ -40,6 +40,7 @@
     <li><a class="dropdown-item" href="../articles/package-use-cases.html">Case studies</a></li>
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
+    <li><a class="dropdown-item" href="../articles/delay-estimation.html">Estimating reporting delays with the full and delay-only models</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
     <li><a class="dropdown-item" href="../articles/temporal-aggregation.html">Temporal aggregation guide</a></li>
@@ -146,18 +147,18 @@ fitting arguments, and optionally summary diagnostics.</p>
 <span class="r-in"><span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"preprocessed"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span></span>
-<span class="r-in"><span> expectation <span class="op">=</span> <span class="fu"><a href="enw_expectation.html">enw_expectation</a></span><span class="op">(</span><span class="op">~</span><span class="fl">1</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span> fit <span class="op">=</span> <span class="fu"><a href="enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span><span class="va">enw_sample</span>, pp <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span> obs <span class="op">=</span> <span class="fu"><a href="enw_obs.html">enw_obs</a></span><span class="op">(</span>family <span class="op">=</span> <span class="st">"poisson"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  expectation <span class="op">=</span> <span class="fu"><a href="enw_expectation.html">enw_expectation</a></span><span class="op">(</span><span class="op">~</span><span class="fl">1</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  fit <span class="op">=</span> <span class="fu"><a href="enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span><span class="va">enw_sample</span>, pp <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  obs <span class="op">=</span> <span class="fu"><a href="enw_obs.html">enw_obs</a></span><span class="op">(</span>family <span class="op">=</span> <span class="st">"poisson"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nowcast</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use pathfinder initialization</span></span></span>
 <span class="r-in"><span><span class="va">nowcast_pathfinder</span> <span class="op">&lt;-</span> <span class="fu"><a href="epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span></span>
-<span class="r-in"><span> expectation <span class="op">=</span> <span class="fu"><a href="enw_expectation.html">enw_expectation</a></span><span class="op">(</span><span class="op">~</span><span class="fl">1</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span> fit <span class="op">=</span> <span class="fu"><a href="enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span><span class="va">enw_sample</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>, init_method <span class="op">=</span> <span class="st">"pathfinder"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span> obs <span class="op">=</span> <span class="fu"><a href="enw_obs.html">enw_obs</a></span><span class="op">(</span>family <span class="op">=</span> <span class="st">"poisson"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  expectation <span class="op">=</span> <span class="fu"><a href="enw_expectation.html">enw_expectation</a></span><span class="op">(</span><span class="op">~</span><span class="fl">1</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  fit <span class="op">=</span> <span class="fu"><a href="enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span><span class="va">enw_sample</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>, init_method <span class="op">=</span> <span class="st">"pathfinder"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  obs <span class="op">=</span> <span class="fu"><a href="enw_obs.html">enw_obs</a></span><span class="op">(</span>family <span class="op">=</span> <span class="st">"poisson"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nowcast_pathfinder</span><span class="op">)</span></span></span>

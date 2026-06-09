@@ -28,6 +28,32 @@
   implementation is adapted from `EpiNow2`
   (<https://github.com/epiforecasts/EpiNow2>, MIT licensed). See
   [\#824](https://github.com/epinowcast/epinowcast/issues/824).
+- Added a delay-only model that fits the reporting-delay distribution
+  conditional on known per-reference-date totals, treating those totals
+  as fixed truth (the standard delay-estimation pattern of Kalbfleisch &
+  Lawless, 1989; Höhle & an der Heiden, 2014). Enable it with
+  `enw_obs(delay_only = TRUE)`: a delay-only fit is just
+  `epinowcast(data, obs = enw_obs(delay_only = TRUE, data = data))`, as
+  [`epinowcast()`](https://package.epinowcast.org/dev/reference/epinowcast.md)
+  minimises the (now inert) expectation automatically. The latent
+  process and per-cell observation model are replaced by a (truncated)
+  multinomial likelihood over the reported cells of each reference date.
+  When the known totals are final retrospective totals this is the plain
+  multinomial; when they are running totals observed only up to some
+  horizon the likelihood renormalises over all delays up to the
+  observation cutoff to give the truncated multinomial. An
+  `observation_indicator` is supported (interior cells unobserved but
+  before the cutoff keep their weight). `delay_only = TRUE` selects the
+  multinomial likelihood internally regardless of `family`, warning if a
+  `family` is supplied. See the delay estimation vignette and
+  [\#775](https://github.com/epinowcast/epinowcast/issues/775) and
+  [\#776](https://github.com/epinowcast/epinowcast/issues/776). Also
+  adds
+  [`enw_posterior_delay()`](https://package.epinowcast.org/dev/reference/enw_posterior_delay.md)
+  to extract posterior samples of the parametric delay distribution; it
+  returns one PMF per reference-design row (with a `row` column) for
+  delay models with reference covariates, random effects, or time- or
+  group-varying delays.
 - The parametric reference delay is now discretised with the double
   interval censoring approach from the
   [primarycensored](https://primarycensored.epinowcast.org) package,

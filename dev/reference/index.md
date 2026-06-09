@@ -113,6 +113,8 @@ Functions for preprocessing observations
 
 Modular model components
 
+- [`.expectation_is_minimal()`](https://package.epinowcast.org/dev/reference/dot-expectation_is_minimal.md)
+  : Is an expectation module minimal (intercept-only, no convolution)?
 - [`enw_expectation()`](https://package.epinowcast.org/dev/reference/enw_expectation.md)
   : Expectation model module
 - [`enw_fit_opts()`](https://package.epinowcast.org/dev/reference/enw_fit_opts.md)
@@ -137,6 +139,10 @@ specific to individual modules
   : Add probability mass functions
 - [`convolution_matrix()`](https://package.epinowcast.org/dev/reference/convolution_matrix.md)
   : Construct a convolution matrix
+- [`delay_only_ltotal()`](https://package.epinowcast.org/dev/reference/delay_only_ltotal.md)
+  : Known per-reference-date totals for the delay-only model
+- [`delay_only_total()`](https://package.epinowcast.org/dev/reference/delay_only_total.md)
+  : Known integer totals per snapshot for the delay-only model
 - [`enw_dayofweek_structural_reporting()`](https://package.epinowcast.org/dev/reference/enw_dayofweek_structural_reporting.md)
   : Create day-of-week structural reporting pattern
 - [`enw_reference_by_report()`](https://package.epinowcast.org/dev/reference/enw_reference_by_report.md)
@@ -208,6 +214,15 @@ Functions for postprocessing model output
 
   Build the ord_obs `data.table`.
 
+- [`.check_primarycensored()`](https://package.epinowcast.org/dev/reference/dot-check_primarycensored.md)
+  : Error if the primarycensored package is not installed
+
+- [`.delay_draw_columns()`](https://package.epinowcast.org/dev/reference/dot-delay_draw_columns.md)
+  : Extract the index-ordered draw columns for a delay vector parameter
+
+- [`.discretise_parametric_pmf()`](https://package.epinowcast.org/dev/reference/dot-discretise_parametric_pmf.md)
+  : Discretise a parametric delay distribution
+
 - [`enw_add_latest_obs_to_nowcast()`](https://package.epinowcast.org/dev/reference/enw_add_latest_obs_to_nowcast.md)
   : Add latest observations to nowcast output
 
@@ -219,6 +234,9 @@ Functions for postprocessing model output
 
 - [`enw_posterior()`](https://package.epinowcast.org/dev/reference/enw_posterior.md)
   : Summarise the posterior
+
+- [`enw_posterior_delay()`](https://package.epinowcast.org/dev/reference/enw_posterior_delay.md)
+  : Posterior samples of the parametric reporting-delay distribution
 
 - [`enw_pp_summary()`](https://package.epinowcast.org/dev/reference/enw_pp_summary.md)
   : Posterior predictive summary

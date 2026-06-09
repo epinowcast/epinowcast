@@ -103,6 +103,7 @@ to the sampler function when it is called.
 ## See also
 
 Model modules
+[`.expectation_is_minimal()`](https://package.epinowcast.org/dev/reference/dot-expectation_is_minimal.md),
 [`enw_expectation()`](https://package.epinowcast.org/dev/reference/enw_expectation.md),
 [`enw_missing()`](https://package.epinowcast.org/dev/reference/enw_missing.md),
 [`enw_obs()`](https://package.epinowcast.org/dev/reference/enw_obs.md),
@@ -144,7 +145,7 @@ enw_fit_opts(iter_sampling = 1000, iter_warmup = 1000)
 #>     }
 #>     out[]
 #> }
-#> <bytecode: 0x56336e16b5f8>
+#> <bytecode: 0x556149d42888>
 #> <environment: namespace:epinowcast>
 #> 
 #> $data

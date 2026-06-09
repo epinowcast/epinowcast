@@ -8,6 +8,13 @@
   The maths behind the ARIMA(p, d, q) latent residuals in epinowcast,
   how to use them in any module’s formula, and how to set their priors.
 
+- [Estimating reporting delays with the full and delay-only
+  models](https://package.epinowcast.org/dev/articles/delay-estimation.md):
+
+  A walk through of estimating a reporting delay distribution, comparing
+  the full nowcasting model with the delay-only model that conditions on
+  known totals.
+
 - [Discretised
   distributions](https://package.epinowcast.org/dev/articles/distributions.md):
 

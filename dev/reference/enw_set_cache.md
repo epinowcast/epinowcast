@@ -55,11 +55,11 @@ enw_get_cache()
 if (FALSE) { # \dontrun{
 # Use the package cache in R >= 4.0
 if (R.version.string >= "4.0.0") {
- enw_set_cache(
-   tools::R_user_dir(package = "epinowcast", "cache"), type = "all"
- )
+  enw_set_cache(
+    tools::R_user_dir(package = "epinowcast", "cache"),
+    type = "all"
+  )
 }
-
 } # }
 }
 ```

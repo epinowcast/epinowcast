@@ -46,6 +46,7 @@ posterior.'><meta property="og:image" content="https://package.epinowcast.org/re
     <li><a class="dropdown-item" href="../articles/package-use-cases.html">Case studies</a></li>
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
+    <li><a class="dropdown-item" href="../articles/delay-estimation.html">Estimating reporting delays with the full and delay-only models</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
     <li><a class="dropdown-item" href="../articles/temporal-aggregation.html">Temporal aggregation guide</a></li>
@@ -119,11 +120,15 @@ observed data. Defaults to <code>TRUE</code>.</p></dd>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Functions used for postprocessing of model fits
+<code><a href="dot-check_primarycensored.html">.check_primarycensored()</a></code>,
+<code><a href="dot-delay_draw_columns.html">.delay_draw_columns()</a></code>,
+<code><a href="dot-discretise_parametric_pmf.html">.discretise_parametric_pmf()</a></code>,
 <code><a href="build_ord_obs.html">build_ord_obs()</a></code>,
 <code><a href="enw_add_latest_obs_to_nowcast.html">enw_add_latest_obs_to_nowcast()</a></code>,
 <code><a href="enw_nowcast_samples.html">enw_nowcast_samples()</a></code>,
 <code><a href="enw_nowcast_summary.html">enw_nowcast_summary()</a></code>,
 <code><a href="enw_posterior.html">enw_posterior()</a></code>,
+<code><a href="enw_posterior_delay.html">enw_posterior_delay()</a></code>,
 <code><a href="enw_pp_summary.html">enw_pp_summary()</a></code>,
 <code><a href="enw_quantiles_to_long.html">enw_quantiles_to_long()</a></code>,
 <code><a href="subset_obs.html">subset_obs()</a></code></p></div>

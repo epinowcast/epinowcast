@@ -72,8 +72,8 @@ enw_replace_priors(priors, custom_priors)
 
 # Update priors from a previous model fit
 default_priors <- enw_reference(
- distribution = "lognormal",
- data = enw_example("preprocessed"),
+  distribution = "lognormal",
+  data = enw_example("preprocessed"),
 )$priors
 print(default_priors)
 #>                variable
@@ -132,8 +132,9 @@ print(default_priors)
 #> 16: Zero truncated normal 0.000000  0.05
 
 fit_priors <- summary(
- enw_example("nowcast"), type = "fit",
- variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
+  enw_example("nowcast"),
+  type = "fit",
+  variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
 )
 fit_priors
 #>            variable      mean    median         sd        mad        q5

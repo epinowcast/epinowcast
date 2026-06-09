@@ -70,6 +70,7 @@
     <li><a class="dropdown-item" href="../articles/package-use-cases.html">Case studies</a></li>
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
+    <li><a class="dropdown-item" href="../articles/delay-estimation.html">Estimating reporting delays with the full and delay-only models</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
     <li><a class="dropdown-item" href="../articles/temporal-aggregation.html">Temporal aggregation guide</a></li>
@@ -175,21 +176,27 @@ definition vignette</a>. For function-specific details, see
 vignette</a></td>
 </tr>
 <tr class="odd">
+<td><strong>Delay-only model</strong></td>
+<td>Estimate the reporting delay given known totals, without a latent
+process</td>
+<td><a href="delay-estimation.html">Delay estimation vignette</a></td>
+</tr>
+<tr class="even">
 <td><strong>Custom priors</strong></td>
 <td>Inspect and replace default priors</td>
 <td><a href="#priors">Prior specification</a></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><strong>Model comparison</strong></td>
 <td>LOO-CV, posterior predictive checks</td>
 <td><a href="#model-evaluation">Model evaluation</a></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><strong>Inference methods</strong></td>
 <td>NUTS, pathfinder, pathfinder-initialised NUTS</td>
 <td><a href="inference-methods.html">Inference methods vignette</a></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><strong>Data visualisation</strong></td>
 <td>Inspect preprocessing and nowcast output</td>
 <td><a href="#visualisation">Visualisation</a></td>
@@ -375,6 +382,12 @@ hazards, or combinations.</p>
 <td>Different delays by strata</td>
 <td>Random effects by group</td>
 <td><code>parametric = ~1 + (1 | .group)</code></td>
+</tr>
+<tr class="even">
+<td>Delay-only model</td>
+<td>Estimate the delay given known totals, without a latent process</td>
+<td><code>enw_obs(delay_only = TRUE)</code></td>
+<td><a href="delay-estimation.html">Delay estimation vignette</a></td>
 </tr>
 </tbody>
 </table>

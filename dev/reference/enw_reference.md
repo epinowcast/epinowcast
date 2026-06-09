@@ -79,6 +79,7 @@ distribution.
 ## See also
 
 Model modules
+[`.expectation_is_minimal()`](https://package.epinowcast.org/dev/reference/dot-expectation_is_minimal.md),
 [`enw_expectation()`](https://package.epinowcast.org/dev/reference/enw_expectation.md),
 [`enw_fit_opts()`](https://package.epinowcast.org/dev/reference/enw_fit_opts.md),
 [`enw_missing()`](https://package.epinowcast.org/dev/reference/enw_missing.md),
@@ -1235,8 +1236,8 @@ enw_reference(
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x56336fcb9b60>
-#> <environment: 0x56336fca8ca8>
+#> <bytecode: 0x556152f2fec8>
+#> <environment: 0x556152f53f70>
 #> 
 
 # Non-parametric model with a random effect per delay
@@ -4009,8 +4010,8 @@ enw_reference(
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x56336fcb9b60>
-#> <environment: 0x56336e6ec490>
+#> <bytecode: 0x556152f2fec8>
+#> <environment: 0x556142bbccb8>
 #> 
 
 # Combined parametric and non-parametric model
@@ -5174,7 +5175,7 @@ enw_reference(
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x56336fcb9b60>
-#> <environment: 0x56336d9fead0>
+#> <bytecode: 0x556152f2fec8>
+#> <environment: 0x556151d4fd20>
 #> 
 ```

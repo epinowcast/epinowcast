@@ -224,12 +224,13 @@ obs <- enw_filter_report_dates(
 )
 obs <- enw_filter_reference_dates(obs, include_days = 40)
 pobs <- enw_preprocess_data(
-  obs, by = c("age_group", "location"), max_delay = 20
-  )
+  obs,
+  by = c("age_group", "location"), max_delay = 20
+)
 data <- pobs$metareference[[1]]
 
 # Intercept only
-enw_formula(~ 1, data)
+enw_formula(~1, data)
 #> $formula
 #> [1] "~1"
 #> 

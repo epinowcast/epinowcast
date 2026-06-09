@@ -2,6 +2,7 @@
 <url><loc>https://package.epinowcast.org/dev/LICENSE-text.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/LICENSE.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/arima.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/articles/delay-estimation.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/distributions.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/epinowcast.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/features.html</loc></url>
@@ -53,7 +54,13 @@
 <url><loc>https://package.epinowcast.org/dev/reference/convolution_matrix.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/create_cache_dir.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/date_to_numeric_modulus.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/delay_only_ltotal.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/delay_only_total.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/dot-are_delays_valid.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/dot-check_primarycensored.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/dot-delay_draw_columns.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/dot-discretise_parametric_pmf.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/dot-expectation_is_minimal.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/dot-format_daily_delay.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/dot-format_delay_with_units.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/dot-format_nondaily_delay.html</loc></url>
@@ -122,6 +129,7 @@
 <url><loc>https://package.epinowcast.org/dev/reference/enw_plot_quantiles.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_plot_theme.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_posterior.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_posterior_delay.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_pp_summary.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_preprocess_data.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_priors_as_data_list.html</loc></url>

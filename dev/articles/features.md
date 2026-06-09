@@ -22,6 +22,7 @@ function-specific details, see `?function_name`.
 | **Hierarchical effects** | Random effects, random walks | [Hierarchical structure](#hierarchical) |
 | **Missing data handling** | Missing reference dates | [Missing data](#missing-data) |
 | **Retrospective Rt** | Rt estimation from finalised counts without delay modelling | [Rt estimation vignette](https://package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.md) |
+| **Delay-only model** | Estimate the reporting delay given known totals, without a latent process | [Delay estimation vignette](https://package.epinowcast.org/dev/articles/delay-estimation.md) |
 | **Custom priors** | Inspect and replace default priors | [Prior specification](#priors) |
 | **Model comparison** | LOO-CV, posterior predictive checks | [Model evaluation](#model-evaluation) |
 | **Inference methods** | NUTS, pathfinder, pathfinder-initialised NUTS | [Inference methods vignette](https://package.epinowcast.org/dev/articles/inference-methods.md) |
@@ -93,6 +94,7 @@ hazards, or combinations.
 | Mixed model | Parametric baseline + adjustments for complex patterns | `enw_reference(parametric = ~1, non_parametric = ~0 + (1 | delay_cat))` | Best of both |
 | Time-varying delays | Changing reporting over time | Include time effects in formulas | `parametric = ~1 + week` |
 | Group-specific delays | Different delays by strata | Random effects by group | `parametric = ~1 + (1 | .group)` |
+| Delay-only model | Estimate the delay given known totals, without a latent process | `enw_obs(delay_only = TRUE)` | [Delay estimation vignette](https://package.epinowcast.org/dev/articles/delay-estimation.md) |
 
 **Available distributions:** See the [distributions
 vignette](https://package.epinowcast.org/dev/articles/distributions.md)

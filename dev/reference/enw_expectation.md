@@ -93,6 +93,7 @@ distribution.
 ## See also
 
 Model modules
+[`.expectation_is_minimal()`](https://package.epinowcast.org/dev/reference/dot-expectation_is_minimal.md),
 [`enw_fit_opts()`](https://package.epinowcast.org/dev/reference/enw_fit_opts.md),
 [`enw_missing()`](https://package.epinowcast.org/dev/reference/enw_missing.md),
 [`enw_obs()`](https://package.epinowcast.org/dev/reference/enw_obs.md),
@@ -980,7 +981,7 @@ enw_expectation(data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x563372b7f430>
-#> <environment: 0x563372b649d0>
+#> <bytecode: 0x55614b8332f0>
+#> <environment: 0x55614b824db0>
 #> 
 ```

@@ -40,6 +40,7 @@
     <li><a class="dropdown-item" href="../articles/package-use-cases.html">Case studies</a></li>
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
+    <li><a class="dropdown-item" href="../articles/delay-estimation.html">Estimating reporting delays with the full and delay-only models</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
     <li><a class="dropdown-item" href="../articles/temporal-aggregation.html">Temporal aggregation guide</a></li>
@@ -344,6 +345,13 @@
 
       <dl><dt>
 
+          <code><a href="dot-expectation_is_minimal.html">.expectation_is_minimal()</a></code>
+
+        </dt>
+        <dd>Is an expectation module minimal (intercept-only, no convolution)?</dd>
+
+        <dt>
+
           <code><a href="enw_expectation.html">enw_expectation()</a></code>
 
         </dt>
@@ -413,6 +421,20 @@
 
         </dt>
         <dd>Construct a convolution matrix</dd>
+
+        <dt>
+
+          <code><a href="delay_only_ltotal.html">delay_only_ltotal()</a></code>
+
+        </dt>
+        <dd>Known per-reference-date totals for the delay-only model</dd>
+
+        <dt>
+
+          <code><a href="delay_only_total.html">delay_only_total()</a></code>
+
+        </dt>
+        <dd>Known integer totals per snapshot for the delay-only model</dd>
 
         <dt>
 
@@ -574,6 +596,27 @@
 
         <dt>
 
+          <code><a href="dot-check_primarycensored.html">.check_primarycensored()</a></code>
+
+        </dt>
+        <dd>Error if the primarycensored package is not installed</dd>
+
+        <dt>
+
+          <code><a href="dot-delay_draw_columns.html">.delay_draw_columns()</a></code>
+
+        </dt>
+        <dd>Extract the index-ordered draw columns for a delay vector parameter</dd>
+
+        <dt>
+
+          <code><a href="dot-discretise_parametric_pmf.html">.discretise_parametric_pmf()</a></code>
+
+        </dt>
+        <dd>Discretise a parametric delay distribution</dd>
+
+        <dt>
+
           <code><a href="enw_add_latest_obs_to_nowcast.html">enw_add_latest_obs_to_nowcast()</a></code>
 
         </dt>
@@ -599,6 +642,13 @@
 
         </dt>
         <dd>Summarise the posterior</dd>
+
+        <dt>
+
+          <code><a href="enw_posterior_delay.html">enw_posterior_delay()</a></code>
+
+        </dt>
+        <dd>Posterior samples of the parametric reporting-delay distribution</dd>
 
         <dt>
 
