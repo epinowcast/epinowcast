@@ -34,6 +34,7 @@ enw_posterior(fit$fit[[1]], variables = "expr_beta")
 \seealso{
 Functions used for postprocessing of model fits
 \code{\link{.check_primarycensored}()},
+\code{\link{.delay_draw_columns}()},
 \code{\link{.discretise_parametric_pmf}()},
 \code{\link{build_ord_obs}()},
 \code{\link{enw_add_latest_obs_to_nowcast}()},
