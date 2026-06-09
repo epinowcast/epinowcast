@@ -35,7 +35,7 @@ message("compiling matched NUTS reference ...")
 m_nuts <- cmdstan_model(
   here("epinowcast_laplace_nuts.stan"),
   include_paths = file.path(root, "inst/stan"),
-  cpp_options = list(stan_threads = TRUE), stanc_options = list("O1")
+  cpp_options = list(stan_threads = TRUE)
 )
 
 fit_both <- function(pobs, label, expectation, chains = 2,
