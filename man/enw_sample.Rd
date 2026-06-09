@@ -49,18 +49,18 @@ Fit a CmdStan model using NUTS
 pobs <- enw_example("preprocessed")
 
 nowcast <- epinowcast(pobs,
- expectation = enw_expectation(~1, data = pobs),
- fit = enw_fit_opts(enw_sample, pp = TRUE),
- obs = enw_obs(family = "poisson", data = pobs),
+  expectation = enw_expectation(~1, data = pobs),
+  fit = enw_fit_opts(enw_sample, pp = TRUE),
+  obs = enw_obs(family = "poisson", data = pobs),
 )
 
 summary(nowcast)
 
 # Use pathfinder initialization
 nowcast_pathfinder <- epinowcast(pobs,
- expectation = enw_expectation(~1, data = pobs),
- fit = enw_fit_opts(enw_sample, pp = TRUE, init_method = "pathfinder"),
- obs = enw_obs(family = "poisson", data = pobs),
+  expectation = enw_expectation(~1, data = pobs),
+  fit = enw_fit_opts(enw_sample, pp = TRUE, init_method = "pathfinder"),
+  obs = enw_obs(family = "poisson", data = pobs),
 )
 
 summary(nowcast_pathfinder)

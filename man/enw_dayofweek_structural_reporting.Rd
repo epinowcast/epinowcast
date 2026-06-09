@@ -34,12 +34,14 @@ pobs <- enw_preprocess_data(obs, max_delay = 30)
 
 # Wednesday-only reporting
 enw_dayofweek_structural_reporting(
-  pobs, day_of_week = "Wednesday"
+  pobs,
+  day_of_week = "Wednesday"
 )
 
 # Multiple reporting days
 enw_dayofweek_structural_reporting(
-  pobs, day_of_week = c("Monday", "Wednesday", "Friday")
+  pobs,
+  day_of_week = c("Monday", "Wednesday", "Friday")
 )
 }
 }
@@ -48,6 +50,8 @@ Helper functions for model modules
 \code{\link{add_max_observed_delay}()},
 \code{\link{add_pmfs}()},
 \code{\link{convolution_matrix}()},
+\code{\link{delay_only_ltotal}()},
+\code{\link{delay_only_total}()},
 \code{\link{enw_reference_by_report}()},
 \code{\link{enw_reps_with_complete_refs}()},
 \code{\link{enw_structural_reporting_metadata}()},

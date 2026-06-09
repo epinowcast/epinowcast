@@ -19,6 +19,7 @@ functions {
 #include functions/allocate_observed_obs.stan
 #include functions/apply_missing_reference_effects.stan
 #include functions/log_expected_by_report.stan
+#include functions/delay_multinomial_lpmf.stan
 #include functions/delay_lpmf.stan
 }
 
@@ -319,6 +320,15 @@ data {
   int model_obs; // control parameter for the observation model
   array[2, 1] real sqrt_phi_p; // 1/sqrt (overdispersion)
 
+  // Delay-only model: fit the delay distribution conditional on known totals
+  // via a (truncated) multinomial instead of the latent + obs model.
+  int<lower=0, upper=1> model_delay_only;
+  // Known log totals by group and time (empty unless delay-only).
+  array[g] vector[model_delay_only ? t : 0] dlo_ltotal;
+  // Known integer totals by snapshot (the cutoff running total), used to size
+  // the residual category when before-cutoff cells are unobserved.
+  array[model_delay_only ? s : 0] int dlo_total;
+
   // Control parameters
   int debug; // should debug information be shown?
   int likelihood; // should the likelihood be included?
@@ -504,6 +514,11 @@ transformed parameters{
     );
   } else {
     exp_lobs = exp_llatent; // assume latent cases and obs are identical
+  }
+  // Delay-only mode: use the known totals as the expected total. The
+  // multinomial cancels this offset, so it only feeds posterior prediction.
+  if (model_delay_only) {
+    exp_lobs = dlo_ltotal;
   }
   }
 
@@ -761,7 +776,7 @@ model {
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
           obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
           refnp_lh, model_refnp, rep_agg_p, rep_agg_n_selected,
-          rep_agg_selected_idx
+          rep_agg_selected_idx, model_delay_only, dlo_total
         );
       } else {
         target += reduce_sum(
@@ -769,7 +784,7 @@ model {
           flat_obs_lookup, exp_lobs, sg, st, rep_findex, srdlh, refp_lh,
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, refnp_lh,
           model_refnp, sdmax, csdmax, rep_agg_p, rep_agg_n_selected,
-          rep_agg_selected_idx
+          rep_agg_selected_idx, model_delay_only, dlo_total
         );
       }
     } else {
@@ -779,7 +794,7 @@ model {
         ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
         obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
         refnp_lh, model_refnp, rep_agg_p, rep_agg_n_selected,
-        rep_agg_selected_idx
+        rep_agg_selected_idx, model_delay_only, dlo_total
       );
     }
   }
@@ -788,10 +803,30 @@ model {
 
 
 generated quantities {
-  array[pp ? sum(sl) : 0] int pp_obs;
-  array[pp ? miss_obs : 0] int pp_miss_ref;
+  // Delay-only mode does not nowcast: posterior-prediction arrays are sized
+  // to zero and the cast block is skipped. Only log_lik (the multinomial) is
+  // produced.
+  array[pp && !model_delay_only ? sum(sl) : 0] int pp_obs;
+  array[pp && !model_delay_only ? miss_obs : 0] int pp_miss_ref;
   vector[ologlik ? s : 0] log_lik;
-  array[cast ? min(dmax, t) : 0, cast ? g : 0] int pp_inf_obs;
+  array[cast && !model_delay_only ? min(dmax, t) : 0,
+        cast && !model_delay_only ? g : 0] int pp_inf_obs;
+  if (model_delay_only) {
+    if (ologlik) {
+      // Expected cells over the cutoff range (lsl), matching the model block.
+      vector[clsl[s]] dlo_lexp = expected_obs_from_snaps(
+        1, s, exp_lobs, rep_findex, srdlh, refp_lh, refp_findex, model_refp,
+        rep_fncol, ref_as_p, lsl, clsl, sg, st, clsl[s], refnp_lh, model_refnp,
+        sdmax, csdmax, rep_agg_p, rep_agg_n_selected, rep_agg_selected_idx
+      );
+      for (i in 1:s) {
+        log_lik[i] = delay_multinomial_snaps(
+          i, i, flat_obs, dlo_lexp, 1, dlo_total, flat_obs_lookup,
+          lsl, clsl, nsl, cnsl
+        );
+      }
+    }
+  } else {
   profile("generated_total") {
   if (cast) {
     vector[csdmax[s]] log_exp_obs_all;
@@ -910,6 +945,7 @@ generated quantities {
       }
     }
     }
+  }
   }
   }
 }
