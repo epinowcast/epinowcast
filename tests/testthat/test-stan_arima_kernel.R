@@ -210,19 +210,26 @@ test_that("a small Stan model recovers known ARIMA parameters", {
       )
     }
     # A chain still occasionally fails to write its output on CI (producing no
-    # CSV), independent of platform or seed. Retry with a fresh seed so a
-    # transient crash does not fail the test; recovery is robust to the change.
+    # CSV), independent of platform or seed. The crash can be silent --
+    # `$sample()` returns without error but a chain's CSV is missing, so the
+    # failure only surfaces later when the draws are read. Force the read
+    # inside the retry so a transient crash triggers a fresh-seed retry
+    # rather than failing the test; recovery is robust to the seed change.
     for (attempt in 0:3) {
       fit <- tryCatch(
-        mod$sample(
-          data = list(
-            T = length(y), y = y, p = p, q = q, d = d, obs_sd = obs_sd
-          ),
-          chains = 2, parallel_chains = 2, iter_warmup = 1000,
-          iter_sampling = 500, adapt_delta = 0.95, init = init,
-          seed = seed + attempt, refresh = 0,
-          show_messages = FALSE, show_exceptions = FALSE
-        ),
+        {
+          f <- mod$sample(
+            data = list(
+              T = length(y), y = y, p = p, q = q, d = d, obs_sd = obs_sd
+            ),
+            chains = 2, parallel_chains = 2, iter_warmup = 1000,
+            iter_sampling = 500, adapt_delta = 0.95, init = init,
+            seed = seed + attempt, refresh = 0,
+            show_messages = FALSE, show_exceptions = FALSE
+          )
+          f$draws()
+          f
+        },
         error = function(e) NULL
       )
       if (!is.null(fit)) {

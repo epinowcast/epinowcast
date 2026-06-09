@@ -209,12 +209,32 @@ test_that("a small Stan model recovers a smooth GP trend", {
   set.seed(1)
   y <- true_f + rnorm(T, 0, obs_sd)
 
-  fit <- mod$sample(
-    data = list(T = T, M = M, L = L, PHI = PHI, y = y, obs_sd = obs_sd),
-    chains = 2, parallel_chains = 2, iter_warmup = 1000,
-    iter_sampling = 500, adapt_delta = 0.95, seed = 1, refresh = 0,
-    show_messages = FALSE, show_exceptions = FALSE
-  )
+  # A chain can silently fail to write its CSV on CI (`$sample()` returns
+  # but a chain's output is missing). Force the draws read inside the retry
+  # so a transient crash retries with a fresh seed rather than failing the
+  # test later at summary().
+  fit <- NULL
+  for (attempt in 0:3) {
+    fit <- tryCatch(
+      {
+        f <- mod$sample(
+          data = list(T = T, M = M, L = L, PHI = PHI, y = y, obs_sd = obs_sd),
+          chains = 2, parallel_chains = 2, iter_warmup = 1000,
+          iter_sampling = 500, adapt_delta = 0.95, seed = 1 + attempt,
+          refresh = 0, show_messages = FALSE, show_exceptions = FALSE
+        )
+        f$draws()
+        f
+      },
+      error = function(e) NULL
+    )
+    if (!is.null(fit)) {
+      break
+    }
+  }
+  if (is.null(fit)) {
+    stop("Stan sampler failed to produce output after retries")
+  }
   fhat <- fit$summary("f")$mean
   # The posterior mean should track the true smooth trend closely.
   expect_lt(sqrt(mean((fhat - true_f)^2)), 0.15)
