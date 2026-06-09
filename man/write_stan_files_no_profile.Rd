@@ -33,8 +33,12 @@ with all profiling statements removed.
 }
 \seealso{
 Functions used to help convert models into the format required for stan
+\code{\link{check_laplace_supported}()},
 \code{\link{enw_formula_as_data_list}()},
 \code{\link{enw_get_cache}()},
+\code{\link{enw_laplace_marginal}()},
+\code{\link{enw_laplace_marginal_data}()},
+\code{\link{enw_laplace_marginal_inits}()},
 \code{\link{enw_laplace_marginal_model}()},
 \code{\link{enw_model}()},
 \code{\link{enw_pathfinder}()},
@@ -44,6 +48,7 @@ Functions used to help convert models into the format required for stan
 \code{\link{enw_set_cache}()},
 \code{\link{enw_stan_to_r}()},
 \code{\link{enw_unset_cache}()},
-\code{\link{remove_profiling}()}
+\code{\link{remove_profiling}()},
+\code{\link{split_laplace_design}()}
 }
 \concept{modeltools}

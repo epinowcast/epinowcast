@@ -32,11 +32,24 @@ is: a linear expectation with fixed effects, random effects, and/or a single
 exponential); and a negative binomial (NB2) or Poisson observation family.
 }
 \seealso{
-Other laplace: 
+Functions used to help convert models into the format required for stan
+\code{\link{enw_formula_as_data_list}()},
+\code{\link{enw_get_cache}()},
 \code{\link{enw_laplace_marginal}()},
 \code{\link{enw_laplace_marginal_data}()},
 \code{\link{enw_laplace_marginal_inits}()},
-\code{\link{split_laplace_design}()}
+\code{\link{enw_laplace_marginal_model}()},
+\code{\link{enw_model}()},
+\code{\link{enw_pathfinder}()},
+\code{\link{enw_priors_as_data_list}()},
+\code{\link{enw_replace_priors}()},
+\code{\link{enw_sample}()},
+\code{\link{enw_set_cache}()},
+\code{\link{enw_stan_to_r}()},
+\code{\link{enw_unset_cache}()},
+\code{\link{remove_profiling}()},
+\code{\link{split_laplace_design}()},
+\code{\link{write_stan_files_no_profile}()}
 }
-\concept{laplace}
+\concept{modeltools}
 \keyword{internal}

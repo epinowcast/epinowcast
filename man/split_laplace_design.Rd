@@ -24,17 +24,30 @@ Takes an \code{\link[=enw_formula]{enw_formula()}} expectation design and splits
 effect design \code{X} (intercept plus unscaled columns) and the random effect
 design \code{Z} (columns scaled by a random-effect standard deviation), together
 with a per-\code{Z}-column index into the random-effect standard deviation
-vector. This implements epinowcast's scaled random-effect encoding (see
+vector. This implements the epinowcast scaled random-effect encoding (see
 \code{combine_effects.stan}), where random effects are expanded into the fixed
 design and \code{random$design} maps each expanded column to its scaling
 standard deviation.
 }
 \seealso{
-Other laplace: 
+Functions used to help convert models into the format required for stan
 \code{\link{check_laplace_supported}()},
+\code{\link{enw_formula_as_data_list}()},
+\code{\link{enw_get_cache}()},
 \code{\link{enw_laplace_marginal}()},
 \code{\link{enw_laplace_marginal_data}()},
-\code{\link{enw_laplace_marginal_inits}()}
+\code{\link{enw_laplace_marginal_inits}()},
+\code{\link{enw_laplace_marginal_model}()},
+\code{\link{enw_model}()},
+\code{\link{enw_pathfinder}()},
+\code{\link{enw_priors_as_data_list}()},
+\code{\link{enw_replace_priors}()},
+\code{\link{enw_sample}()},
+\code{\link{enw_set_cache}()},
+\code{\link{enw_stan_to_r}()},
+\code{\link{enw_unset_cache}()},
+\code{\link{remove_profiling}()},
+\code{\link{write_stan_files_no_profile}()}
 }
-\concept{laplace}
+\concept{modeltools}
 \keyword{internal}

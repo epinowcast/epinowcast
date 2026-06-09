@@ -3,7 +3,7 @@
 ## Model
 
 - Added an experimental, opt-in embedded-Laplace inference path (`enw_laplace_marginal()`, `enw_laplace_marginal_data()`, `enw_laplace_marginal_model()`).
-  It marginalises the latent log-expected-count field analytically with Stan's embedded Laplace approximation (`laplace_marginal_*`, cmdstan >= 2.39) instead of sampling it, while still sampling the hyperparameters with NUTS.
+  It marginalises the latent log-expected-count field analytically with Stan's embedded Laplace approximation (`laplace_marginal_*`, CmdStan >= 2.39) instead of sampling it, while still sampling the hyperparameters with NUTS.
   The expectation is modelled as the log level of expected counts with an additive covariance assembled from the expectation's fixed effects, random effects and/or a single `gp()` term; the delay reuses the static parametric reference discretisation and the observation family is negative binomial (NB2) or Poisson.
   The renewal expectation, non-parametric reference hazards, report-date models, missing-reference models and time-varying delays are not supported and raise a clear error.
   This path is experimental and is validated against a matched NUTS reference in `inst/dev/embedded-laplace/`.

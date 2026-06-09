@@ -6,13 +6,13 @@
 #' Compiles the opt-in, experimental embedded-Laplace nowcast model shipped
 #' in `inst/stan/models/epinowcast_laplace.stan`. This model marginalises the
 #' latent log-expected-count field analytically using Stan's embedded Laplace
-#' approximation (`laplace_marginal_*`, available from cmdstan 2.39) rather
+#' approximation (`laplace_marginal_*`, available from CmdStan 2.39) rather
 #' than sampling it with NUTS. It is a thin wrapper around [enw_model()] that
 #' points at the Laplace model and the package Stan include directory.
 #'
 #' This inference path is experimental and supports only a subset of the full
 #' [epinowcast()] model (see [enw_laplace_marginal()]).
-#' It requires cmdstan >= 2.39.
+#' It requires CmdStan >= 2.39.
 #'
 #' @inheritParams enw_model
 #'
@@ -62,7 +62,7 @@ enw_laplace_marginal_model <- function(model = system.file(
 #'
 #' @return Invisibly `TRUE` if the specification is supported; otherwise an
 #' error is raised.
-#' @family laplace
+#' @family modeltools
 #' @importFrom cli cli_abort
 #' @keywords internal
 check_laplace_supported <- function(reference, report, expectation, missing,
@@ -146,7 +146,7 @@ check_laplace_supported <- function(reference, report, expectation, missing,
 #' effect design `X` (intercept plus unscaled columns) and the random effect
 #' design `Z` (columns scaled by a random-effect standard deviation), together
 #' with a per-`Z`-column index into the random-effect standard deviation
-#' vector. This implements epinowcast's scaled random-effect encoding (see
+#' vector. This implements the epinowcast scaled random-effect encoding (see
 #' `combine_effects.stan`), where random effects are expanded into the fixed
 #' design and `random$design` maps each expanded column to its scaling
 #' standard deviation.
@@ -159,7 +159,7 @@ check_laplace_supported <- function(reference, report, expectation, missing,
 #' the random-effect standard deviation vector), `q_re` (the number of `Z`
 #' columns), `n_re` (the number of random-effect standard deviations) and
 #' `fintercept` (1 if an intercept is present, else 0).
-#' @family laplace
+#' @family modeltools
 #' @keywords internal
 split_laplace_design <- function(formula) {
   fdesign <- formula$fixed$design
@@ -259,7 +259,7 @@ split_laplace_design <- function(formula) {
 #'
 #' @return A named list suitable as the `data` argument to a model compiled by
 #' [enw_laplace_marginal_model()].
-#' @family laplace
+#' @family modeltools
 #' @importFrom data.table data.table CJ setorder as.data.table
 #' @importFrom cli cli_abort
 #' @export
@@ -479,7 +479,7 @@ enw_laplace_marginal_data <- function(data,
 #'
 #' @return A function with no arguments returning a named list of initial
 #' values suitable for the `init` argument of a `cmdstanr` `$sample()` call.
-#' @family laplace
+#' @family modeltools
 #' @export
 #' @examplesIf interactive()
 #' pobs <- enw_example("preprocessed")
@@ -531,7 +531,7 @@ enw_laplace_marginal_inits <- function(data) {
 #'
 #' An opt-in, experimental alternative to [epinowcast()] that marginalises the
 #' latent log-expected-count field analytically using Stan's embedded Laplace
-#' approximation (`laplace_marginal_*`, cmdstan >= 2.39) instead of sampling it
+#' approximation (`laplace_marginal_*`, CmdStan >= 2.39) instead of sampling it
 #' with NUTS. The hyperparameters (fixed effects, random-effect standard
 #' deviations, Gaussian process magnitude and length scale, delay parameters
 #' and overdispersion) are still sampled with NUTS; only the high-dimensional
@@ -561,7 +561,7 @@ enw_laplace_marginal_inits <- function(data) {
 #'
 #' @return An object of class "epinowcast" combining the input data, priors and
 #' the embedded-Laplace fit.
-#' @family laplace
+#' @family modeltools
 #' @importFrom data.table data.table
 #' @importFrom cli cli_alert_info cli_warn
 #' @export

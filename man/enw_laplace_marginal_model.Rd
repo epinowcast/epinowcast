@@ -67,13 +67,13 @@ A \code{cmdstanr} model.
 Compiles the opt-in, experimental embedded-Laplace nowcast model shipped
 in \code{inst/stan/models/epinowcast_laplace.stan}. This model marginalises the
 latent log-expected-count field analytically using Stan's embedded Laplace
-approximation (\verb{laplace_marginal_*}, available from cmdstan 2.39) rather
+approximation (\verb{laplace_marginal_*}, available from CmdStan 2.39) rather
 than sampling it with NUTS. It is a thin wrapper around \code{\link[=enw_model]{enw_model()}} that
 points at the Laplace model and the package Stan include directory.
 
 This inference path is experimental and supports only a subset of the full
 \code{\link[=epinowcast]{epinowcast()}} model (see \code{\link[=enw_laplace_marginal]{enw_laplace_marginal()}}).
-It requires cmdstan >= 2.39.
+It requires CmdStan >= 2.39.
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
@@ -82,8 +82,12 @@ mod <- enw_laplace_marginal_model()
 }
 \seealso{
 Functions used to help convert models into the format required for stan
+\code{\link{check_laplace_supported}()},
 \code{\link{enw_formula_as_data_list}()},
 \code{\link{enw_get_cache}()},
+\code{\link{enw_laplace_marginal}()},
+\code{\link{enw_laplace_marginal_data}()},
+\code{\link{enw_laplace_marginal_inits}()},
 \code{\link{enw_model}()},
 \code{\link{enw_pathfinder}()},
 \code{\link{enw_priors_as_data_list}()},
@@ -93,6 +97,7 @@ Functions used to help convert models into the format required for stan
 \code{\link{enw_stan_to_r}()},
 \code{\link{enw_unset_cache}()},
 \code{\link{remove_profiling}()},
+\code{\link{split_laplace_design}()},
 \code{\link{write_stan_files_no_profile}()}
 }
 \concept{modeltools}
