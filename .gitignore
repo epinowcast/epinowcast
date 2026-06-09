@@ -1,5 +1,7 @@
 *.xlsx
 inst/stan/epinowcast
+inst/stan/models/epinowcast_laplace
+inst/dev/embedded-laplace/epinowcast_laplace_nuts
 results/stan-fit.rds
 output
 *.rds
