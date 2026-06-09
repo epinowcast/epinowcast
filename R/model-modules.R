@@ -648,6 +648,18 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
                             population_uncertain = FALSE,
                             population_cv = 0.1,
                             data, ...) {
+  # A named list `r` declares a per-stratum expectation: each stratum
+  # either has its own latent process (a plain formula) or is a delayed
+  # function of another stratum (a `secondary()` formula). In Phase 0 the
+  # per-stratum structure is parsed, validated, and topologically ordered
+  # but is not yet wired into Stan; the existing single-process path is
+  # driven by the first independent stratum so existing fits behave as
+  # before. A scalar formula keeps the historic behaviour exactly.
+  strata_spec <- NULL
+  if (is.list(r) && !inherits(r, "formula")) {
+    strata_spec <- .build_strata_spec(r, data)
+    r <- strata_spec$primary_formula
+  }
   if (as_string_formula(r) == "~0") {
     cli::cli_abort("An expectation model formula for r must be specified")
   }
@@ -755,6 +767,13 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
     pop_medianlog <- rep(pop_medianlog, groups)
   }
   pop_sdlog <- rlang::`%||%`(pop$prior_sdlog, 1)
+
+  # Multi-stratum overlay (Phase 0): record the validated, ordered
+  # per-stratum structure on the module output. No new Stan data is
+  # emitted yet, so the scalar path (and every existing fit) is byte-for-
+  # byte unchanged; later phases add the strata wiring to `out$data`.
+  out$strata <- strata_spec
+
 
   out$priors <- data.table::data.table(
     variable = c(
