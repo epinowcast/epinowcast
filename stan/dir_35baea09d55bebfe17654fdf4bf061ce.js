@@ -7,6 +7,7 @@ var dir_35baea09d55bebfe17654fdf4bf061ce =
     [ "combine_logit_hazards.stan", "combine__logit__hazards_8stan.html", "combine__logit__hazards_8stan" ],
     [ "common_params.stan", "common__params_8stan.html", null ],
     [ "delay_lpmf.stan", "delay__lpmf_8stan.html", "delay__lpmf_8stan" ],
+    [ "delay_multinomial_lpmf.stan", "delay__multinomial__lpmf_8stan.html", "delay__multinomial__lpmf_8stan" ],
     [ "effects_priors_lp.stan", "effects__priors__lp_8stan.html", "effects__priors__lp_8stan" ],
     [ "expected_obs.stan", "expected__obs_8stan.html", "expected__obs_8stan" ],
     [ "expected_obs_from.stan", "expected__obs__from_8stan.html", "expected__obs__from_8stan" ],
