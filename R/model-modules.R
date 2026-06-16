@@ -363,16 +363,14 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   }
 
   # map report date effects to groups and times
+  rep_t <- nrow(data$metareport[[1]]) %/% data$groups[[1]]
+  if (rep_t * data$groups[[1]] != nrow(data$metareport[[1]])) {
+    cli::cli_abort("Report metadata is not rectangular across groups.")
+  }
   data_list$rep_findex <- t(
-    matrix(
-      data_list$rep_findex,
-      ncol = data$groups[[1]],
-      nrow = data$time[[1]] +
-        data$max_delay - 1
-    )
+    matrix(data_list$rep_findex, ncol = data$groups[[1]], nrow = rep_t)
   )
-  data_list$rep_t <- data$time[[1]] +
-    data$max_delay - 1
+  data_list$rep_t <- rep_t
   data_list$model_rep <- as.numeric(
     as_string_formula(non_parametric) != "~1"
   )
