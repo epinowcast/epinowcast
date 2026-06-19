@@ -143,6 +143,16 @@
   [\#783](https://github.com/epinowcast/epinowcast/issues/783) by
   [@seabbs](https://github.com/seabbs).
 
+- Fixed
+  [`enw_report()`](https://package.epinowcast.org/dev/reference/enw_report.md)
+  recycling the report-date index (`rep_findex`) when the report axis is
+  longer than `time + max_delay - 1`, for example after
+  `enw_complete_dates(completion_beyond_max_report = TRUE)`. Previously
+  this emitted a “data length is not a sub-multiple or multiple” warning
+  and mis-mapped report-date effects across groups and times; the number
+  of report dates per group is now read from the report metadata. See
+  [\#868](https://github.com/epinowcast/epinowcast/issues/868).
+
 ## epinowcast 0.6.0
 
 This release prepares the package for CRAN submission and introduces new

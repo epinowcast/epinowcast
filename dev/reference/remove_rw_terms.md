@@ -62,9 +62,9 @@ Functions used to help convert formulas into model designs
 ``` r
 epinowcast:::remove_rw_terms(~ 1 + age_group + location)
 #> ~1 + age_group + location
-#> <environment: 0x5606c66dad80>
+#> <environment: 0x55c8b8da3fe0>
 
 epinowcast:::remove_rw_terms(~ 1 + age_group + location + rw(week, location))
 #> ~1 + age_group + location
-#> <environment: 0x5606cb924340>
+#> <environment: 0x55c8ae7d97b0>
 ```

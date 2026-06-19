@@ -83,7 +83,8 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-6-0-1000">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-6-0-1000"></a></h3>
-<ul><li>Fixed a Stan dimension mismatch when the expectation, reference, report, or missing data formula has an intercept and a single numeric covariate (e.g., <code>r = ~ 1 + week</code>). The fixed-effects design matrix was collapsing to a vector after the intercept was dropped, causing Stan to error with <code>mismatch in number dimensions declared and found in context</code>. See <a href="https://github.com/epinowcast/epinowcast/issues/783" class="external-link">#783</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
+<ul><li><p>Fixed a Stan dimension mismatch when the expectation, reference, report, or missing data formula has an intercept and a single numeric covariate (e.g., <code>r = ~ 1 + week</code>). The fixed-effects design matrix was collapsing to a vector after the intercept was dropped, causing Stan to error with <code>mismatch in number dimensions declared and found in context</code>. See <a href="https://github.com/epinowcast/epinowcast/issues/783" class="external-link">#783</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</p></li>
+<li><p>Fixed <code><a href="../reference/enw_report.html">enw_report()</a></code> recycling the report-date index (<code>rep_findex</code>) when the report axis is longer than <code>time + max_delay - 1</code>, for example after <code>enw_complete_dates(completion_beyond_max_report = TRUE)</code>. Previously this emitted a “data length is not a sub-multiple or multiple” warning and mis-mapped report-date effects across groups and times; the number of report dates per group is now read from the report metadata. See <a href="https://github.com/epinowcast/epinowcast/issues/868" class="external-link">#868</a>.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
