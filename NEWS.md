@@ -51,6 +51,10 @@
   The fixed-effects design matrix was collapsing to a vector after the intercept was dropped, causing Stan to error with `mismatch in number dimensions declared and found in context`.
   See #783 by @seabbs.
 
+- Fixed `enw_report()` recycling the report-date index (`rep_findex`) when the report axis is longer than `time + max_delay - 1`, for example after `enw_complete_dates(completion_beyond_max_report = TRUE)`.
+  Previously this emitted a "data length is not a sub-multiple or multiple" warning and mis-mapped report-date effects across groups and times; the number of report dates per group is now read from the report metadata.
+  See #868.
+
 # epinowcast 0.6.0
 
 This release prepares the package for CRAN submission and introduces new methods for inspecting `epinowcast` and preprocessed data objects, including `print()`, `summary()`, `plot()` and an `enw_get_data()` accessor.
