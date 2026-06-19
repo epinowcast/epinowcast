@@ -425,6 +425,96 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   out
 }
 
+#' Normalise a delay input to a common specification
+#'
+#' Internal helper used by [enw_expectation()] to handle both fixed numeric
+#' PMFs (or lists of PMFs for time-varying delays) and uncertain distributions
+#' created with [enw_uncertain()]. Returns a list describing the delay with a
+#' common interface so that downstream Stan data construction is shared.
+#'
+#' @param x A numeric PMF, list of PMFs, or an `enw_uncertain` object.
+#' @param arg The argument name, used for error messages.
+#'
+#' @return A list with elements `n` (length of the delay), `dist` (Stan
+#' distribution id, 0 when fixed), `lrev` (reversed log PMF used for the
+#' generation time; a length-`n` placeholder when uncertain), `scale` (the sum
+#' of the PMF used for rescaling seeding, 1 when uncertain), `mean_p`, and
+#' `sd_p` (parameter priors).
+#' @noRd
+.expectation_delay_spec <- function(x, arg) {
+  if (inherits(x, "enw_uncertain")) {
+    return(list(
+      n = x$max,
+      dist = x$dist_id,
+      lrev = rep(0, x$max),
+      # The in-model PMF is normalised (discretised_logit_hazard uses
+      # max_strat = 2, so it sums to 1); any ascertainment rescaling is handled
+      # by the latent-to-obs proportion (`observation`) submodule.
+      scale = 1,
+      mean_p = x$mean_p,
+      sd_p = x$sd_p
+    ))
+  }
+  .valid_pmf <- function(p) {
+    is.numeric(p) && length(p) > 0 && all(is.finite(p)) &&
+      all(p >= 0) && sum(p) > 0
+  }
+  if (is.list(x)) {
+    if (length(x) == 0 || !all(vapply(x, .valid_pmf, logical(1)))) {
+      cli::cli_abort(paste0(
+        "{.arg {arg}} must be a non-empty list of numeric PMFs with ",
+        "finite, non-negative values and a positive sum"
+      ))
+    }
+  } else if (!.valid_pmf(x)) {
+    cli::cli_abort(paste0(
+      "{.arg {arg}} must be a numeric PMF with finite, non-negative ",
+      "values and a positive sum"
+    ))
+  }
+  n <- if (is.list(x)) length(x[[1]]) else length(x)
+  scale <- if (is.list(x)) sum(x[[1]]) else sum(x)
+  list(
+    n = n,
+    dist = 0L,
+    lrev = if (is.list(x)) log(rev(x[[1]])) else log(rev(x)),
+    scale = scale,
+    mean_p = c(1, 1),
+    sd_p = c(0.5, 1)
+  )
+}
+
+#' Map convolution-matrix nonzeros to PMF indices
+#'
+#' Internal helper used by [enw_expectation()] for uncertain latent reporting
+#' delays. The latent delay convolution matrix has a fixed sparsity pattern
+#' (depending only on the delay length and number of time points); only the
+#' nonzero values change when the PMF is rebuilt per posterior sample. This
+#' returns, for each nonzero element in compressed sparse row (CSR, row-major)
+#' order, the index of the PMF entry that supplies its value, so that the CSR
+#' weights can be rebuilt in-model from a sampled PMF while reusing the
+#' precomputed integer sparsity pattern. Using a value-stable index map (rather
+#' than re-extracting the sampled matrix) keeps the nonzero count constant even
+#' when the PMF tail underflows to exactly zero.
+#'
+#' @param rd_n Integer length of the reporting delay PMF (delays 0:(rd_n - 1)).
+#' @param ft Integer number of latent time points (`t + rd_n - 1`).
+#'
+#' @return An integer array giving the PMF index (1:`rd_n`) for each nonzero of
+#' the convolution matrix in CSR row-major order.
+#' @noRd
+.conv_pmf_index_map <- function(rd_n, ft) {
+  # Convolution matrix with values = PMF index, matching the Stan
+  # convolution_matrix() placement (column s holds pmf[1:l] from row s).
+  idx_mat <- convolution_matrix(
+    seq_len(rd_n), ft,
+    include_partial = FALSE
+  )
+  # CSR is row-major: iterate rows, left to right within each row.
+  w_idx <- as.integer(t(idx_mat)[t(idx_mat) != 0])
+  array(w_idx)
+}
+
 #' Expectation model module
 #'
 #' @param r A formula (as implemented in [enw_formula()]) describing
@@ -441,7 +531,13 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' @param generation_time A numeric vector that sums to 1 and defaults to 1.
 #' Describes the weighting to apply to previous generations (i.e as part of a
 #' renewal equation). When set to 1 (the default) this corresponds to modelling
-#' the daily growth rate.
+#' the daily growth rate. Alternatively, an uncertain distribution created with
+#' [enw_uncertain()] can be supplied. The distribution is then discretised and
+#' marginalised within the model, with its parameters estimated from priors
+#' (matching the uncertain distribution support in `EpiNow2`). Note that the
+#' generation time is only weakly identified from incidence data alone, so
+#' informative priors are usually required (see the discussion in the help for
+#' [enw_uncertain()]).
 #'
 #' @param observation A formula (as implemented in [enw_formula()]) describing
 #' the modifiers used to adjust expected observations. This can use features
@@ -459,7 +555,10 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' multiplying a probability mass function by some fraction) to account
 #' ascertainment etc. A list of PMFs can be provided to allow for time-varying
 #' PMFs. This should be the same length as the modelled time period plus the
-#' length of the generation time if supplied.
+#' length of the generation time if supplied. Alternatively, an uncertain
+#' distribution created with [enw_uncertain()] can be supplied, in which case
+#' the delay PMF is discretised and convolved within the model with its
+#' parameters estimated from priors.
 #'
 #' @param ... Additional parameters passed to [enw_add_metaobs_features()]. The
 #' same arguments as passed to `enw_preprocess_data()` should be used here.
@@ -480,28 +579,36 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   if (as_string_formula(observation) == "~0") {
     observation <- ~1
   }
-  if (abs(sum(generation_time) - 1) > 1e-3) {
+  # Normalise generation time and latent reporting delay to a common
+  # description that supports both fixed PMFs and uncertain (in-model
+  # discretised) distributions specified via `enw_uncertain()`.
+  gt <- .expectation_delay_spec(generation_time, "generation_time")
+  lrd <- .expectation_delay_spec(
+    latent_reporting_delay, "latent_reporting_delay"
+  )
+  if (gt$dist == 0 && abs(sum(generation_time) - 1) > 1e-3) {
     cli::cli_abort("The generation time must sum to 1")
   }
 
   # Set up growth rate features
   r_features <- data$metareference[[1]]
-  if (length(latent_reporting_delay) > 1) {
+  if (lrd$n > 1) {
     r_features <- enw_extend_date(
       r_features,
-      days = length(latent_reporting_delay) - 1, direction = "start"
+      days = lrd$n - 1, direction = "start"
     )
     suppressWarnings(enw_add_metaobs_features(r_features, ...))
   }
   r_features <- r_features[
-    date >= (min(date) + length(generation_time))
+    date >= (min(date) + gt$n)
   ]
 
   # Growth rate indicator variables & generation time terms
   r_list <- list(
-    r_seed = length(generation_time),
-    gt_n = length(generation_time),
-    lrgt = log(rev(generation_time)),
+    r_seed = gt$n,
+    gt_n = gt$n,
+    lrgt = gt$lrev,
+    gt_dist = gt$dist,
     t = nrow(r_features) / data$groups[[1]],
     obs = 0
   )
@@ -513,7 +620,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 
   # Initial prior for seeding observations
   latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
-  seed_obs <- (latest_matrix[1, ] + 1) * sum(latent_reporting_delay)
+  seed_obs <- (latest_matrix[1, ] + 1) * lrd$scale
   seed_obs <- purrr::map(seed_obs, ~ rep(log(.), r_list$gt_n))
   seed_obs <- round(unlist(seed_obs), 1)
 
@@ -528,17 +635,38 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 
   # Observation indicator variables
   obs_list <- list(
-    lrd_n = ifelse(is.list(latent_reporting_delay),
-      length(latent_reporting_delay[[1]]), length(latent_reporting_delay)
-    ),
-    lrd = convolution_matrix(
-      latent_reporting_delay, r_list$ft,
-      include_partial = FALSE
-    )
+    lrd_n = lrd$n,
+    lrd = if (lrd$dist == 0) {
+      convolution_matrix(
+        latent_reporting_delay, r_list$ft,
+        include_partial = FALSE
+      )
+    } else {
+      # Pattern matrix with the correct sparsity structure. The values are
+      # rebuilt in-model per sample (see the Stan convolution_matrix() call);
+      # passing the pattern here sizes the sparse CSR components so the fixed
+      # and uncertain branches share one matrix-vector path.
+      convolution_matrix(
+        rep(1 / lrd$n, lrd$n), r_list$ft,
+        include_partial = FALSE
+      )
+    },
+    lrd_dist = lrd$dist,
+    # For an uncertain delay, the CSR weights are rebuilt in-model from the
+    # sampled PMF. This maps each nonzero (in CSR row-major order, matching the
+    # precomputed sparse pattern) to the PMF index that supplies its value.
+    # Computed from a value-stable pattern (not the sampled PMF, whose tail may
+    # underflow to exactly zero and change the nonzero count).
+    lrd_w_idx = if (lrd$dist == 0) {
+      array(1L)
+    } else {
+      .conv_pmf_index_map(lrd$n, r_list$ft)
+    }
   )
+  obs_list$lrd_w_n <- length(obs_list$lrd_w_idx)
 
   obs_list$obs <- as.numeric(
-    sum(latent_reporting_delay) != 1 || obs_list$lrd_n != 1 ||
+    lrd$scale != 1 || obs_list$lrd_n != 1 || lrd$dist != 0 ||
       as_string_formula(observation) != "~1"
   )
   # Observation formula
@@ -563,6 +691,16 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   names(obs_list) <- paste0("expl_", names(obs_list))
   out$data <- c(r_list, r_data, obs_list, obs_data)
 
+  # Priors for the uncertain delay parameters are carried on the spec object
+  # (the `mean`/`sd` arguments of `enw_uncertain()`) and passed as Stan data
+  # directly, so they do not alter the user-facing `$priors` table for the
+  # default fixed-PMF case. The Stan parameters are sized 0 (and these data
+  # are unused) unless the corresponding delay is uncertain.
+  out$data$expr_gt_mean_p <- as.array(matrix(gt$mean_p, nrow = 2))
+  out$data$expr_gt_sd_p <- as.array(matrix(gt$sd_p, nrow = 2))
+  out$data$expl_lrd_mean_p <- as.array(matrix(lrd$mean_p, nrow = 2))
+  out$data$expl_lrd_sd_p <- as.array(matrix(lrd$sd_p, nrow = 2))
+
   out$priors <- data.table::data.table(
     variable = c(
       "expr_r_int", "expr_beta_sd",
@@ -573,7 +711,9 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       "expl_arima_sigma", "expl_arima_pacf",
       "expl_gp_rho", "expl_gp_alpha"
     ),
-    dimension = c(1, 1, seq_along(seed_obs), 1, 1, 1, 1, 1, 1, 1, 1, 1),
+    dimension = c(
+      1, 1, seq_along(seed_obs), 1, 1, 1, 1, 1, 1, 1, 1, 1
+    ),
     description = c(
       "Intercept of the log growth rate",
       "Standard deviation of scaled pooled log growth rate effects",
@@ -606,10 +746,12 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       "Log normal", "Zero truncated normal"
     ),
     mean = c(
-      0, 0, seed_obs, 0, 0, log(3), 0, 0, 0, 0, log(3), 0
+      0, 0, seed_obs, 0, 0, log(3), 0,
+      0, 0, 0, log(3), 0
     ),
     sd = c(
-      0.2, 1, rep(1, length(seed_obs)), 0.2, 0, 0.5, 0.05, 1, 0.2, 0, 0.5, 0.05
+      0.2, 1, rep(1, length(seed_obs)), 0.2, 0, 0.5, 0.05,
+      1, 0.2, 0, 0.5, 0.05
     )
   )
   out$inits <- function(data, priors) {
@@ -629,9 +771,35 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
           nrow = data$expr_gt_n, ncol = data$g
         ),
         expr_r_int = numeric(0),
+        expr_gt_mean = numeric(0),
+        expr_gt_sd = numeric(0),
+        expl_lrd_mean = numeric(0),
+        expl_lrd_sd = numeric(0),
         expl_beta = numeric(0),
         expl_beta_sd = numeric(0)
       )
+      if (isTRUE(data$expr_gt_dist > 0)) {
+        init$expr_gt_mean <- array(rnorm(
+          1, data$expr_gt_mean_p[1], data$expr_gt_mean_p[2] / 10
+        ))
+        if (data$expr_gt_dist > 1) {
+          # Floor at the Stan `<lower=1e-3>` bound on `expr_gt_sd`.
+          init$expr_gt_sd <- array(pmax(1e-3, abs(rnorm(
+            1, data$expr_gt_sd_p[1], data$expr_gt_sd_p[2] / 10
+          ))))
+        }
+      }
+      if (isTRUE(data$expl_lrd_dist > 0)) {
+        init$expl_lrd_mean <- array(rnorm(
+          1, data$expl_lrd_mean_p[1], data$expl_lrd_mean_p[2] / 10
+        ))
+        if (data$expl_lrd_dist > 1) {
+          # Floor at the Stan `<lower=1e-3>` bound on `expl_lrd_sd`.
+          init$expl_lrd_sd <- array(pmax(1e-3, abs(rnorm(
+            1, data$expl_lrd_sd_p[1], data$expl_lrd_sd_p[2] / 10
+          ))))
+        }
+      }
       if (data$expr_fncol > 0) {
         init$expr_beta <- array(rnorm(data$expr_fncol, 0, 0.01))
       }

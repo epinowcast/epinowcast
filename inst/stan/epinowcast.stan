@@ -55,7 +55,13 @@ data {
   int expr_t; // number of time points with modeled growth rate per group
   int expr_ft; // number of time points with latent cases (expr_r_seed + expr_t)
   // PMF of the generation time distribution (reversed and on log scale)
-  vector[expr_gt_n] expr_lrgt; 
+  vector[expr_gt_n] expr_lrgt;
+  // Uncertain generation time: 0 = fixed PMF (use expr_lrgt), else a
+  // distribution id (1 exp, 2 lognormal, 3 gamma) whose
+  // parameters are sampled and discretised in-model.
+  int<lower=0, upper=3> expr_gt_dist;
+  array[2, 1] real expr_gt_mean_p;
+  array[2, 1] real expr_gt_sd_p;
   // Model for growth rate process. Currently, 0 = none
   int expr_obs;
   int expr_fnindex;
@@ -100,6 +106,17 @@ data {
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
   // Partial PMF of the latent delay distribution as a convolution matrix
   matrix[expr_ft,  expr_ft] expl_lrd;
+  // Uncertain latent reporting delay: 0 = fixed PMF (use expl_lrd), else a
+  // distribution id (1 exp, 2 lognormal, 3 gamma) whose
+  // parameters are sampled and discretised then convolved in-model.
+  int<lower=0, upper=3> expl_lrd_dist;
+  array[2, 1] real expl_lrd_mean_p;
+  array[2, 1] real expl_lrd_sd_p;
+  // For an uncertain delay, maps each nonzero of the convolution matrix (CSR
+  // row-major order, matching the precomputed sparse pattern) to the PMF index
+  // supplying its value. Length 1 placeholder when the delay is fixed.
+  int expl_lrd_w_n;
+  array[expl_lrd_w_n] int<lower=1> expl_lrd_w_idx;
   // Model for latent-to-obs proportion. Currently, 0 = none
   // --> proportion of latent cases that will become observations
   // --> e.g.: infection fatality rate for death data
@@ -374,7 +391,21 @@ parameters {
   matrix[expr_gp_type == 1 ? 2 * expr_gp_M : expr_gp_M, expr_gp_G] expr_gp_eta;
   array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_rho;
   array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_alpha;
+  // Uncertain generation time parameters (sampled and discretised in-model).
+  // Centred on the prior via offset/multiplier (as for the parametric
+  // reference mean) for better conditioning and to keep proposals near the
+  // prior, avoiding overflow of exp(mu) in the discretisation.
+  array[expr_gt_dist ? 1 : 0] real<
+    offset = expr_gt_mean_p[1, 1], multiplier = expr_gt_mean_p[2, 1]
+  > expr_gt_mean;
+  array[expr_gt_dist > 1 ? 1 : 0] real<lower=1e-3> expr_gt_sd;
   // ---- Latent case submodule ----
+  // Uncertain latent reporting delay parameters (centred on the prior, see
+  // the generation time parameters above).
+  array[expl_lrd_dist ? 1 : 0] real<
+    offset = expl_lrd_mean_p[1, 1], multiplier = expl_lrd_mean_p[2, 1]
+  > expl_lrd_mean;
+  array[expl_lrd_dist > 1 ? 1 : 0] real<lower=1e-3> expl_lrd_sd;
   vector[expl_fncol] expl_beta;
   vector<lower=0>[expl_rncol] expl_beta_sd;
   // Latent-to-obs proportion ARIMA term parameters
@@ -491,6 +522,44 @@ transformed parameters{
 
   // Expectation model
   profile("transformed_expected_final_observations") {
+  // Explicit local block (NOT a profile block, which would be stripped by
+  // remove_profiling() leaving these declarations at top level). The
+  // generation time log PMF (reversed) and latent reporting delay convolution
+  // weights are local so they are not saved to draws: the default fixed-PMF
+  // posterior output stays byte-identical and the fixed-seed sampler is not
+  // perturbed. For a fixed PMF these are taken straight from transformed data;
+  // for an uncertain PMF they are rebuilt per sample. The sparsity pattern
+  // (column indices / row pointers) is identical in both cases, so only the
+  // real-valued weights vary and the integer parts are reused from
+  // `expl_lrd_sparse`.
+  {
+  vector[expr_gt_n] expr_lrgt_use;
+  vector[num_elements(expl_lrd_sparse.1)] expl_lrd_w;
+  // Reuse the parametric reference discretisation
+  // (discretised_pcens_logit_hazard with ref_as_p = 1 returns a log PMF) to
+  // rebuild distributions in-model.
+  if (expr_gt_dist) {
+    real gt_sigma = expr_gt_dist > 1 ? expr_gt_sd[1] : 0;
+    vector[expr_gt_n] gt_lpmf = discretised_pcens_logit_hazard(
+      expr_gt_mean[1], gt_sigma, expr_gt_n, expr_gt_dist, 1
+    );
+    // log_expected_latent_from_r expects the reversed log PMF.
+    expr_lrgt_use = reverse(gt_lpmf);
+  } else {
+    expr_lrgt_use = expr_lrgt;
+  }
+  if (expl_lrd_dist) {
+    real lrd_sigma = expl_lrd_dist > 1 ? expl_lrd_sd[1] : 0;
+    vector[expl_lrd_n] lrd_pmf = exp(discretised_pcens_logit_hazard(
+      expl_lrd_mean[1], lrd_sigma, expl_lrd_n, expl_lrd_dist, 1
+    ));
+    // Fill the CSR weights from the sampled PMF using the precomputed
+    // pattern-to-PMF index map (value-stable, so the nonzero count matches
+    // expl_lrd_sparse even if the PMF tail underflows to zero).
+    expl_lrd_w = lrd_pmf[expl_lrd_w_idx];
+  } else {
+    expl_lrd_w = expl_lrd_sparse.1;
+  }
   // Get log growth rates and map to expected latent cases
   r = regression_predictor(
     expr_r_int_c, expr_beta, expr_fnindex, expr_fncol, expr_fdesign,
@@ -519,8 +588,8 @@ transformed parameters{
     expr_r_int[1] = expr_r_int_c[1] - off.1 - off.2; // recover raw intercept
   }
   exp_llatent = log_expected_latent_from_r(
-    expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
-    expr_ft, g
+    expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n,
+    expr_lrgt_use, expr_ft, g
   );
   // Get latent-to-obs proportions and map expected latent cases to expected observations
   if (expl_obs) {
@@ -536,12 +605,13 @@ transformed parameters{
       expl_gp_rho, expl_gp_alpha, expl_gp_flat_idx
     );
     exp_lobs = log_expected_obs_from_latent(
-      exp_llatent, expl_lrd_n, expl_lrd_sparse.1, expl_lrd_sparse.2,
+      exp_llatent, expl_lrd_n, expl_lrd_w, expl_lrd_sparse.2,
       expl_lrd_sparse.3, t, g, expl_prop
     );
   } else {
     exp_lobs = exp_llatent; // assume latent cases and obs are identical
   }
+  } // close local block scoping expr_lrgt_use / expl_lrd_w
   // Delay-only mode: use the known totals as the expected total. The
   // multinomial cancels this offset, so it only feeds posterior prediction.
   if (model_delay_only) {
@@ -726,6 +796,20 @@ model {
     expr_gp_present, expr_gp_eta, expr_gp_rho, expr_gp_alpha,
     expr_gp_rho_p, expr_gp_alpha_p
   );
+  // Uncertain generation time parameter priors
+  if (expr_gt_dist) {
+    expr_gt_mean ~ normal(expr_gt_mean_p[1], expr_gt_mean_p[2]);
+    if (expr_gt_dist > 1) {
+      expr_gt_sd ~ normal(expr_gt_sd_p[1], expr_gt_sd_p[2]);
+    }
+  }
+  // Uncertain latent reporting delay parameter priors
+  if (expl_lrd_dist) {
+    expl_lrd_mean ~ normal(expl_lrd_mean_p[1], expl_lrd_mean_p[2]);
+    if (expl_lrd_dist > 1) {
+      expl_lrd_sd ~ normal(expl_lrd_sd_p[1], expl_lrd_sd_p[2]);
+    }
+  }
   // ---- Latent case submodule ----
   // latent-to-obs proportion effect + ARIMA priors
   regression_priors_lp(
