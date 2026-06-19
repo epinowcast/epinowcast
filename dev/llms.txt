@@ -236,7 +236,8 @@ specification. Contributions of any kind are welcome!
 [Lnrivas](https://github.com/epinowcast/epinowcast/commits?author=Lnrivas),
 [natemcintosh](https://github.com/epinowcast/epinowcast/commits?author=natemcintosh),
 [nikosbosse](https://github.com/epinowcast/epinowcast/commits?author=nikosbosse),
-[pratikunterwegs](https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs)
+[pratikunterwegs](https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs),
+[nicholasdavies](https://github.com/epinowcast/epinowcast/commits?author=nicholasdavies)
 
 ### Issue Authors
 
