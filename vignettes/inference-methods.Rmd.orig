@@ -1,6 +1,6 @@
 ---
 title: "Comparing Inference Methods"
-description: "A comparison of NUTS sampling, pathfinder approximate inference, and pathfinder-initialised NUTS across two model specifications."
+description: "A comparison of NUTS sampling, pathfinder and Laplace approximate inference, and pathfinder-initialised NUTS across two model specifications."
 author: Epinowcast Team
 opengraph:
   image:
@@ -38,11 +38,14 @@ knitr::opts_chunk$set(
   Produces gold-standard posterior samples but is the slowest option.
 - **Pathfinder** (`enw_pathfinder()`): a fast variational approximation.
   Useful for model development, exploration, and quick iteration.
+- **Laplace** (`enw_laplace()`): a fast Laplace approximation that optimises to
+  the posterior mode and then draws from a Gaussian centred there.
+  Like pathfinder, it is suited to model development and quick checks.
 - **Pathfinder-initialised NUTS** (`enw_sample(init_method = "pathfinder")`):
   uses pathfinder to find good starting values for NUTS.
   Can reduce warmup time and improve convergence for difficult models.
 
-This vignette compares these three approaches across two nowcasting model specifications of different complexity.
+This vignette compares these approaches across two nowcasting model specifications of different complexity.
 We look at runtime and sampling efficiency, MCMC and pathfinder diagnostics, the resulting nowcasts, and the posterior distributions of key delay and overdispersion parameters.
 We then demonstrate a real-time workflow that uses a previous NUTS posterior as the prior for a fast pathfinder update, and compare it against pathfinder with default priors and a full NUTS refit to show whether the informed priors close the gap to the gold-standard reference at a fraction of the cost.
 
@@ -200,6 +203,48 @@ fit_a_pf <- fit_nowcast(reference = ref_a, fit = pf_opts)
 fit_b_pf <- fit_nowcast(reference = ref_b, fit = pf_opts)
 ```
 
+## Laplace (approximate inference)
+
+The Laplace method optimises the model to the posterior mode and then draws from a Gaussian approximation centred there.
+We draw the same number of approximate samples as the other methods and set a seed, though the optimisation and draw steps are not fully deterministic.
+
+```{r fit-laplace, results='hide'}
+lap_opts <- enw_fit_opts(
+  sampler = enw_laplace, pp = TRUE, draws = 1000, seed = 123
+)
+
+fit_a_lap <- fit_nowcast(reference = ref_a, fit = lap_opts)
+# Spec B sits at the edge of what Laplace can handle: across repeated runs the
+# optimiser sometimes reaches a usable mode and sometimes lands where the
+# Gaussian draws produce non-finite quantities, so we wrap the fit and keep the
+# comparison going either way rather than letting a failure stop the vignette.
+fit_b_lap <- tryCatch(
+  fit_nowcast(reference = ref_b, fit = lap_opts),
+  error = function(e) conditionMessage(e)
+)
+fit_b_lap_ok <- inherits(fit_b_lap, "epinowcast")
+```
+
+```{r fit-laplace-b-status, echo = FALSE, results = "asis"}
+if (fit_b_lap_ok) {
+  cat(
+    "On this run Laplace also produced a usable fit for spec B. As the",
+    "comparisons below show, a usable fit does not mean its uncertainty is",
+    "trustworthy.\n"
+  )
+} else {
+  cat(
+    "On this run Laplace failed to fit spec B. `enw_laplace()` aborted with:",
+    paste0("\n\n> ", gsub("\n", " ", fit_b_lap[1]), "\n")
+  )
+}
+```
+
+Laplace fits spec A reliably.
+Spec B has a flatter, more correlated posterior, and Laplace is not reliable there: across repeated runs the optimiser sometimes reaches a usable mode and sometimes lands where the Gaussian draws produce non-finite quantities, even with a fixed seed, because the optimisation and draw steps are not fully deterministic.
+When the draws are unusable `enw_laplace()` aborts with an actionable error rather than failing later in an opaque way, which is itself a useful signal that the posterior is poorly approximated by a single Gaussian and that NUTS (or pathfinder-initialised NUTS) is needed.
+As with pathfinder, a usable fit does not guarantee a good one; the practical check is agreement with the NUTS reference, shown below.
+
 # Runtime comparison
 
 ```{r runtime-table}
@@ -207,24 +252,29 @@ fits <- list(
   "A: NUTS (prior init)" = fit_a_nuts,
   "A: NUTS (pathfinder init)" = fit_a_nuts_pf,
   "A: Pathfinder" = fit_a_pf,
+  "A: Laplace" = fit_a_lap,
   "B: NUTS (prior init)" = fit_b_nuts,
   "B: NUTS (pathfinder init)" = fit_b_nuts_pf,
-  "B: Pathfinder" = fit_b_pf
+  "B: Pathfinder" = fit_b_pf,
+  "B: Laplace" = fit_b_lap
 )
-
-method_labels <- c(
-  "NUTS (prior init)", "NUTS (pathfinder init)", "Pathfinder"
-)
+# Drop any methods that did not produce a fit (spec B Laplace on runs where it
+# failed), keeping only objects that are actual fits.
+fits <- Filter(function(x) inherits(x, "epinowcast"), fits)
 
 runtime_dt <- data.table(
   label = names(fits),
-  spec = rep(c("A (static delays)", "B (time-varying delays)"), each = 3),
-  method = rep(method_labels, 2),
+  spec = fifelse(
+    grepl("^A:", names(fits)),
+    "A (static delays)",
+    "B (time-varying delays)"
+  ),
+  method = gsub("^[AB]: ", "", names(fits)),
   runtime = vapply(fits, function(x) x$run_time, numeric(1))
 )
 
 ess_per_sec <- vapply(names(fits), function(nm) {
-  if (grepl("Pathfinder$", nm)) return(NA_real_)
+  if (!grepl("NUTS", nm)) return(NA_real_)
   s <- enw_posterior(fits[[nm]]$fit[[1]])
   min(s$ess_bulk, na.rm = TRUE) / fits[[nm]]$run_time
 }, numeric(1))
@@ -315,6 +365,14 @@ Both pathfinder fits here trigger Pareto k warnings well above 0.7, which is con
 However, as shown in the next section, the resulting nowcast can still provide a useful approximation for simpler models like spec A.
 We recommend using pathfinder for rapid iteration during model development and as an initialiser for NUTS, while relying on NUTS for final inference.
 
+## Laplace diagnostics
+
+The Laplace method has no MCMC diagnostics; its quality depends on the optimiser reaching the mode and on how Gaussian the posterior is in the unconstrained space.
+The practical check is agreement with the NUTS reference, shown in the nowcast and posterior comparisons below.
+Like pathfinder, it approximates the whole posterior with a single Gaussian, so it shares the tendency to underestimate posterior variance for skewed or multimodal posteriors.
+It fits spec A reliably, and where it also fits spec B a usable fit still does not mean its uncertainty is trustworthy, as the comparisons below show.
+Spec B is unreliable: across runs Laplace alternates between a usable fit and a clean failure, and when the draws are unusable `enw_laplace()` aborts with an actionable error, which is itself a useful signal that NUTS (or pathfinder-initialised NUTS) is needed.
+
 # Nowcast comparison
 
 We extract nowcast summaries from each fit and combine them for faceted comparison plots.
@@ -374,8 +432,8 @@ plot_nowcast_methods(
 )
 ```
 
-For spec A, all three methods produce similar nowcasts with good coverage of the observed data, suggesting that pathfinder can be an acceptable approximation for simpler models despite high Pareto k values.
-For spec B, the additional parameters in the time-varying delay model lead to greater divergence between pathfinder and NUTS, reflecting the increased difficulty of the approximation and resulting in less reliable coverage.
+For spec A, all methods produce similar nowcasts with good coverage of the observed data, suggesting that the approximate methods can be acceptable for simpler models despite high Pareto k values.
+For spec B, pathfinder diverges more from NUTS than it does for spec A, reflecting the increased difficulty of approximating the time-varying delay posterior and resulting in less reliable coverage; Laplace appears here only when it produced a usable fit for spec B on this run.
 These results are specific to this model configuration and data; always check agreement between methods for your particular setup.
 
 # Posterior parameter comparison
@@ -434,11 +492,12 @@ width_dt <- param_summaries[, .(
 knitr::kable(width_dt, caption = "Posterior means and 90% CrI widths.")
 ```
 
-Across all three parameters the point estimates (means) are broadly aligned between NUTS and pathfinder.
+Across all three parameters the point estimates (means) are broadly aligned between NUTS and the approximate methods.
 The 90% credible intervals from pathfinder are roughly an order of magnitude narrower than the NUTS references — for example, for `refp_mean_int` the pathfinder width is roughly 10% to 15% of the NUTS width.
-This is a known limitation of variational approximations: they tend to concentrate on a mode and underestimate tail variance, so uncertainty from a raw pathfinder fit is not trustworthy even when the central estimates look reasonable.
-NUTS with pathfinder initialisation reproduces the NUTS posterior (widths within a few percent of prior-init NUTS), so the initialisation itself does not carry the variational bias forward.
-These numbers are specific to this model and data — run the same check on your own setup before relying on pathfinder posteriors.
+Laplace is also a mode-centred Gaussian approximation and, where it produced a usable fit, shows the same tendency to produce intervals narrower than NUTS, as the table makes concrete.
+This is a known limitation of these approximations: they concentrate on a mode and underestimate tail variance, so uncertainty from a raw pathfinder or Laplace fit is not trustworthy even when the central estimates look reasonable.
+NUTS with pathfinder initialisation reproduces the NUTS posterior (widths within a few percent of prior-init NUTS), so the initialisation itself does not carry the approximation bias forward.
+These numbers are specific to this model and data — run the same check on your own setup before relying on approximate posteriors.
 
 # Updating with posterior-as-prior
 
@@ -603,10 +662,12 @@ See `?enw_replace_priors` for details on setting priors from previous fits.
 | NUTS (prior init) | Slow | Gold standard | Full MCMC diagnostics | Final inference, publication |
 | NUTS (pathfinder init) | Similar to prior-init NUTS on these models | Gold standard | Full MCMC diagnostics | Difficult models where standard NUTS shows convergence issues |
 | Pathfinder | ~7-15x faster than NUTS here | Approximate; narrow posteriors with high Pareto k on these models | Pareto k only | Model development, exploration, quick checks |
+| Laplace | Fast (optimise then sample at the mode) | Approximate; Gaussian posteriors that tend to be narrow, and can fail outright on harder models | Limited (optimiser convergence) | Quick checks on simpler models |
 
 **Practical guidance:**
 
 - Start with **pathfinder** during model development to iterate quickly on specification choices.
+- Consider **Laplace** (`enw_laplace()`) as an alternative fast approximation. It optimises to the posterior mode and samples from a Gaussian there, so like pathfinder it tends to underestimate tail variance and is best for development and quick checks rather than final inference. On harder models the optimiser can fail to reach a usable mode or the Gaussian can sample degenerate regions; `enw_laplace()` then aborts with an actionable error, a useful signal that the posterior is poorly approximated by a single Gaussian and that NUTS is needed.
 - Switch to **NUTS** for final inference when results will be reported or used for decisions.
 - Use **pathfinder-initialised NUTS** when standard NUTS shows convergence issues (high Rhat, many divergent transitions) or slow warmup.
 - Check Pareto k values from pathfinder fits: high values (> 0.7) warn that the approximation may be unreliable.

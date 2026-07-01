@@ -85,6 +85,13 @@ silent_enw_pathfinder <- function(...) {
   fit
 }
 
+silent_enw_laplace <- function(...) {
+  utils::capture.output(
+    fit <- suppressMessages(enw_laplace(...)) # nolint: implicit_assignment_linter
+  )
+  fit
+}
+
 # Build a minimal simulated enw_preprocess_data-like object for
 # testing delay-summary helpers. Constructs a `new_confirm` table
 # with known incidence by delay so expected proportions and

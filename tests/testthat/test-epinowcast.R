@@ -297,6 +297,64 @@ test_that("epinowcast() reproduces HMC results when fit using Pathfinder on a
   )
 })
 
+test_that("epinowcast() reproduces HMC results when fit using Laplace on a
+           simple case", {
+  skip_on_cran()
+  skip_on_local()
+
+  regression_nowcast <- enw_example("nowcast")
+  nowcast <- suppressMessages(epinowcast(pobs,
+    report = enw_report(~ 1 + (1 | day_of_week), data = pobs),
+    fit = enw_fit_opts(
+      sampler = silent_enw_laplace, pp = TRUE,
+      seed = 123
+    ),
+    model = model
+  ))
+  expect_type(nowcast$fit_args[[1]], "list")
+  expect_type(nowcast$data[[1]], "list")
+
+  posterior <- as.data.table(nowcast$fit[[1]]$summary())
+  regression_posterior <- as.data.table(regression_nowcast$fit[[1]]$summary())
+  # Laplace prepends `lp_approx__`; the HMC reference already starts with `lp__`
+  expect_identical(
+    posterior$variable,
+    c("lp__", "lp_approx__", regression_posterior$variable[-1])
+  )
+  # Nowcast median has not changed by more than 500 in total
+  expect_diff_sum_abs_lt(
+    posterior[variable %like% "pp_inf_obs", median],
+    regression_posterior[variable %like% "pp_inf_obs", median],
+    500
+  )
+  # Posterior predictions have not changed by more than in total
+  expect_diff_sum_abs_lt(
+    posterior[variable %like% "pp_obs", median],
+    regression_posterior[variable %like% "pp_obs", median],
+    2000
+  )
+  # Day of the week effects are equal to within 300%
+  # (Laplace is sensitive to compiled binary changes so
+  # tolerance must be generous)
+  expect_diff_abs_lt_per(
+    posterior[variable %like% "rep_beta", median],
+    regression_posterior[variable %like% "rep_beta", median],
+    4.0
+  )
+  # Reporting distribution mean is equal to within 75%
+  expect_diff_abs_lt_per(
+    posterior[variable %like% "refp_mean", median],
+    regression_posterior[variable %like% "refp_mean", median],
+    0.75
+  )
+  # Reporting distribution sd is equal to within 25%
+  expect_diff_abs_lt_per(
+    posterior[variable %like% "refp_sd", median],
+    regression_posterior[variable %like% "refp_sd", median],
+    0.25
+  )
+})
+
 test_that("epinowcast() can fit a simple missing data model", {
   skip_on_cran()
   skip_on_local()
