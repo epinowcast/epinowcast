@@ -59,8 +59,8 @@ Functions used to help convert formulas into model designs
 ``` r
 epinowcast:::remove_arima_terms(~ 1 + age_group + arima(week))
 #> ~1 + age_group
-#> <environment: 0x5612cb6ebc68>
+#> <environment: 0x5607f1d59718>
 epinowcast:::remove_arima_terms(~ 1 + age_group + ar(week, p = 2))
 #> ~1 + age_group
-#> <environment: 0x5612cb5f70a0>
+#> <environment: 0x5607f4d68bb8>
 ```
