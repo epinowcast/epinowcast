@@ -306,16 +306,16 @@ nowcast_default
 #>   metadelay          :      28 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
-#>   priors : 14 x 6 
+#>   priors : 40 x 6 
 #>   fit : CmdStanMCMC 
-#>   data : list(115) 
+#>   data : list(264) 
 #>   fit_args : list(7) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 500 | Max Rhat: 1.05 
+#>   Samples: 1,000 | Max Rhat: 1.02 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 8 (118 at max, 23.6%) 
-#>   Run time: 17.1 secs
+#>   Max treedepth: 8 (33 at max, 3.3%) 
+#>   Run time: 21 secs
 ```
 
 
@@ -454,16 +454,16 @@ nowcast_lognormal
 #>   metadelay          :      28 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
-#>   priors : 14 x 6 
+#>   priors : 40 x 6 
 #>   fit : CmdStanMCMC 
-#>   data : list(115) 
+#>   data : list(264) 
 #>   fit_args : list(7) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 1,000 | Max Rhat: 1.01 
-#>   Divergent transitions: 1 (0.1%) 
-#>   Max treedepth: 10 (3 at max, 0.3%) 
-#>   Run time: 68.1 secs
+#>   Samples: 1,000 | Max Rhat: 1.02 
+#>   Divergent transitions: 8 (0.8%) 
+#>   Max treedepth: 7 (371 at max, 37.1%) 
+#>   Run time: 43.4 secs
 ```
 
 
@@ -485,16 +485,16 @@ nowcast_np
 #>   metadelay          :      28 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
-#>   priors : 14 x 6 
+#>   priors : 40 x 6 
 #>   fit : CmdStanMCMC 
-#>   data : list(115) 
+#>   data : list(264) 
 #>   fit_args : list(7) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 1,000 | Max Rhat: 1.01 
-#>   Divergent transitions: 3 (0.3%) 
-#>   Max treedepth: 9 (927 at max, 92.7%) 
-#>   Run time: 95 secs
+#>   Samples: 1,000 | Max Rhat: 1.02 
+#>   Divergent transitions: 12 (1.2%) 
+#>   Max treedepth: 7 (290 at max, 29%) 
+#>   Run time: 33.8 secs
 ```
 
 ## Comparing all models
@@ -572,17 +572,17 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 22000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
 #>                    <num> <num>         <num>  <int>      <int> <int>  <num>
-#>     1:                 1    21             0      1          1     1    734
-#>     2:                 1    21             0      1          2     2    728
-#>     3:                 1    21             0      1          3     3    733
-#>     4:                 1    21             0      1          4     4    730
-#>     5:                 1    21             0      1          5     5    731
+#>     1:                 1    21             0      1          1     1    726
+#>     2:                 1    21             0      1          2     2    729
+#>     3:                 1    21             0      1          3     3    731
+#>     4:                 1    21             0      1          4     4    725
+#>     5:                 1    21             0      1          5     5    736
 #>    ---                                                                     
-#> 21996:                 1     0             1      2        496   996   1815
-#> 21997:                 1     0             1      2        497   997   1803
-#> 21998:                 1     0             1      2        498   998   1736
-#> 21999:                 1     0             1      2        499   999   1921
-#> 22000:                 1     0             1      2        500  1000   1931
+#> 21996:                 1     0             1      2        496   996   1857
+#> 21997:                 1     0             1      2        497   997   1844
+#> 21998:                 1     0             1      2        498   998   1900
+#> 21999:                 1     0             1      2        499   999   1951
+#> 22000:                 1     0             1      2        500  1000   1899
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
