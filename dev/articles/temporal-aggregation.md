@@ -424,10 +424,10 @@ kable(scored_weekly)
 
 | model | bias | dss | crps | overprediction | underprediction | dispersion | log_score | mad | ae_median | se_mean | interval_coverage_50 | interval_coverage_90 |
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Weekly timestep | 0.400 | 12.0 | 290 | 200 | 0.0 | 86.0 | 6.6 | 360 | 410 | 540000 | 0.67 | 0.67 |
-| Daily process, weekly reporting (fitted) | 0.002 | 8.5 | 32 | 21 | 3.1 | 7.6 | 5.2 | 32 | 42 | 4200 | 0.33 | 0.33 |
-| Daily process, weekly reporting (structural) | 0.610 | 8.3 | 21 | 10 | 0.0 | 11.0 | 5.0 | 46 | 33 | 1300 | 0.33 | 1.00 |
-| Daily benchmark | 0.900 | 11.0 | 36 | 28 | 0.0 | 7.9 | 6.3 | 34 | 50 | 2900 | 0.00 | 0.33 |
+| Weekly timestep | 0.370 | 10.0 | 79 | 39 | 0.0 | 40.0 | 5.8 | 160 | 120 | 50000 | 0.67 | 1.00 |
+| Daily process, weekly reporting (fitted) | 0.051 | 8.4 | 32 | 21 | 2.8 | 7.4 | 5.2 | 32 | 42 | 4200 | 0.33 | 0.67 |
+| Daily process, weekly reporting (structural) | 0.610 | 8.3 | 21 | 10 | 0.0 | 11.0 | 5.0 | 44 | 30 | 1100 | 0.33 | 1.00 |
+| Daily benchmark | 0.940 | 12.0 | 43 | 36 | 0.0 | 7.4 | 6.7 | 32 | 59 | 4000 | 0.00 | 0.33 |
 
 Code
 
@@ -548,9 +548,9 @@ kable(scored_daily)
 
 | model | bias | dss | crps | overprediction | underprediction | dispersion | log_score | mad | ae_median | se_mean | interval_coverage_50 | interval_coverage_90 |
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Daily process, weekly reporting (fitted) | -0.260 | 7.0 | 7.5 | 2.00 | 3.2 | 2.3 | 4.2 | 9.8 | 10.0 | 200 | 0.48 | 0.76 |
-| Daily process, weekly reporting (structural) | -0.061 | NaN | 6.1 | 0.91 | 1.9 | 3.3 | Inf | 14.0 | 7.6 | 90 | 0.62 | 0.90 |
-| Daily benchmark | 0.130 | 5.3 | 5.3 | 1.80 | 1.2 | 2.4 | 3.5 | 10.0 | 7.6 | 100 | 0.43 | 1.00 |
+| Daily process, weekly reporting (fitted) | -0.260 | 6.8 | 7.5 | 2.10 | 3.1 | 2.3 | 4.1 | 9.9 | 10.0 | 210 | 0.43 | 0.76 |
+| Daily process, weekly reporting (structural) | -0.065 | NaN | 6.0 | 0.89 | 2.0 | 3.1 | Inf | 13.0 | 7.8 | 90 | 0.57 | 0.90 |
+| Daily benchmark | 0.200 | 5.3 | 5.6 | 2.30 | 1.0 | 2.2 | 3.6 | 9.6 | 8.3 | 110 | 0.33 | 0.90 |
 
 Code
 
@@ -646,10 +646,10 @@ kable(runtimes)
 
 | Model                                        | Run time (s) |
 |:---------------------------------------------|-------------:|
-| Weekly timestep                              |          0.8 |
-| Daily process, weekly reporting (fitted)     |        130.0 |
-| Daily process, weekly reporting (structural) |         76.0 |
-| Daily benchmark                              |        180.0 |
+| Weekly timestep                              |          1.1 |
+| Daily process, weekly reporting (fitted)     |         41.0 |
+| Daily process, weekly reporting (structural) |         21.0 |
+| Daily benchmark                              |         58.0 |
 
 The pure weekly model is the cheapest by a wide margin — five weekly
 delay bins is a much smaller reporting triangle than 28 daily bins, and
