@@ -96,6 +96,13 @@ data {
   array[expr_gp_n_obs] int<lower=1> expr_gp_flat_idx;
   array[2, 1] real expr_gp_rho_p;
   array[2, 1] real expr_gp_alpha_p;
+  // ---- Susceptible-depletion (population) adjustment ----
+  int<lower=0, upper=1> expr_pop_use; // 0 = off, 1 = on
+  int<lower=0, upper=1> expr_pop_uncertain; // population estimated (1) or fixed
+  vector<lower=0>[g] expr_pop_fixed; // fixed population (per group)
+  real<lower=0> expr_pop_floor; // rate-denominator floor
+  // Per-group LogNormal prior (row 1 = log median per group, row 2 = log sd)
+  array[2, g] real expr_pop_p;
   // ---- Latent case submodule ----
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
   // Partial PMF of the latent delay distribution as a convolution matrix
@@ -374,6 +381,8 @@ parameters {
   matrix[expr_gp_type == 1 ? 2 * expr_gp_M : expr_gp_M, expr_gp_G] expr_gp_eta;
   array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_rho;
   array[expr_gp_present ? 1 : 0] real<lower=0> expr_gp_alpha;
+  // Estimated population per group (when uncertain)
+  vector<lower=0>[expr_pop_uncertain ? g : 0] expr_pop_est;
   // ---- Latent case submodule ----
   vector[expl_fncol] expl_beta;
   vector<lower=0>[expl_rncol] expl_beta_sd;
@@ -518,10 +527,16 @@ transformed parameters{
     r = r - off.1;                  // centre the design contribution
     expr_r_int[1] = expr_r_int_c[1] - off.1 - off.2; // recover raw intercept
   }
-  exp_llatent = log_expected_latent_from_r(
-    expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
-    expr_ft, g
-  );
+  // Population per group (local block: keep it out of the saved output).
+  // Uses the centred growth rate `r` from above.
+  {
+    vector[g] expr_pop =
+      expr_pop_uncertain ? expr_pop_est : expr_pop_fixed;
+    exp_llatent = log_expected_latent_from_r(
+      expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
+      expr_ft, g, expr_pop, expr_pop_use, expr_pop_floor
+    );
+  }
   // Get latent-to-obs proportions and map expected latent cases to expected observations
   if (expl_obs) {
     expl_prop = regression_predictor(
@@ -726,6 +741,11 @@ model {
     expr_gp_present, expr_gp_eta, expr_gp_rho, expr_gp_alpha,
     expr_gp_rho_p, expr_gp_alpha_p
   );
+  // Per-group LogNormal prior on the estimated population
+
+  if (expr_pop_uncertain) {
+    expr_pop_est ~ lognormal(expr_pop_p[1], expr_pop_p[2]);
+  }
   // ---- Latent case submodule ----
   // latent-to-obs proportion effect + ARIMA priors
   regression_priors_lp(
