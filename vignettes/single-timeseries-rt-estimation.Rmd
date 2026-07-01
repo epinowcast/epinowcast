@@ -686,16 +686,16 @@ germany_nowcast
 #>   metadelay          :      30 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
-#>   priors : 28 x 6 
+#>   priors : 54 x 6 
 #>   fit : CmdStanMCMC 
-#>   data : list(115) 
+#>   data : list(264) 
 #>   fit_args : list(9) 
 #>   init_method_output : NULL 
 #> Model fit: 
 #>   Samples: 2,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 10 (12 at max, 0.6%) 
-#>   Run time: 159.3 secs
+#>   Max treedepth: 10 (24 at max, 1.2%) 
+#>   Run time: 140.3 secs
 ```
 
 ::: {.alert .alert-warning}
@@ -731,16 +731,16 @@ retro_germany_nowcast
 #>   metadelay          :      30 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
-#>   priors : 28 x 6 
+#>   priors : 54 x 6 
 #>   fit : CmdStanMCMC 
-#>   data : list(115) 
+#>   data : list(264) 
 #>   fit_args : list(9) 
 #>   init_method_output : NULL 
 #> Model fit: 
 #>   Samples: 2,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 10 (27 at max, 1.4%) 
-#>   Run time: 185.1 secs
+#>   Max treedepth: 10 (18 at max, 0.9%) 
+#>   Run time: 149.8 secs
 ```
 
 ::: {.alert .alert-warning}
@@ -782,16 +782,16 @@ retro_nodelay_nowcast
 #>   metadelay          :       1 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
-#>   priors : 28 x 6 
+#>   priors : 54 x 6 
 #>   fit : CmdStanMCMC 
-#>   data : list(115) 
+#>   data : list(264) 
 #>   fit_args : list(9) 
 #>   init_method_output : NULL 
 #> Model fit: 
 #>   Samples: 2,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 10 (51 at max, 2.5%) 
-#>   Run time: 24.1 secs
+#>   Max treedepth: 10 (3 at max, 0.1%) 
+#>   Run time: 25.6 secs
 ```
 
 ::: {.alert .alert-warning}
