@@ -289,16 +289,16 @@ knitr::kable(
 
 | Spec                    | Method                 | Runtime (s) | Min ESS/s |
 |:------------------------|:-----------------------|------------:|:----------|
-| A (static delays)       | NUTS (prior init)      |        51.5 | 3.4       |
-| A (static delays)       | NUTS (pathfinder init) |        45.2 | 3.6       |
-| A (static delays)       | Pathfinder             |         6.6 | \-        |
-| B (time-varying delays) | NUTS (prior init)      |       120.9 | 1.5       |
-| B (time-varying delays) | NUTS (pathfinder init) |       112.8 | 1.7       |
-| B (time-varying delays) | Pathfinder             |        13.0 | \-        |
+| A (static delays)       | NUTS (prior init)      |        26.6 | 1.7       |
+| A (static delays)       | NUTS (pathfinder init) |        31.1 | 7.1       |
+| A (static delays)       | Pathfinder             |        10.6 | \-        |
+| B (time-varying delays) | NUTS (prior init)      |       204.1 | 0.6       |
+| B (time-varying delays) | NUTS (pathfinder init) |       257.7 | 0.4       |
+| B (time-varying delays) | Pathfinder             |       109.7 | \-        |
 
 Runtime and sampling efficiency for each spec and method. Min ESS/s is
 the minimum bulk effective sample size per second and is reported only
-for NUTS fits. {.table}
+for NUTS fits. {.table style="width:100%;"}
 
 Note that the runtime for pathfinder-initialised NUTS reported here only
 includes the NUTS sampling step. The pathfinder initialisation itself is
@@ -370,10 +370,10 @@ knitr::kable(
 
 | Label | Samples | Max Rhat | Divergent transitions | Max tree depth |
 |:---|---:|---:|---:|---:|
-| A: NUTS (prior init) | 1000 | 1.02 | 2 | 10 |
-| A: NUTS (pathfinder init) | 1000 | 1.02 | 1 | 9 |
-| B: NUTS (prior init) | 1000 | 1.01 | 2 | 9 |
-| B: NUTS (pathfinder init) | 1000 | 1.01 | 6 | 10 |
+| A: NUTS (prior init) | 1000 | 1.06 | 59 | 8 |
+| A: NUTS (pathfinder init) | 1000 | 1.02 | 11 | 8 |
+| B: NUTS (prior init) | 1000 | 1.03 | 12 | 9 |
+| B: NUTS (pathfinder init) | 1000 | 1.05 | 10 | 8 |
 
 MCMC diagnostics for NUTS fits. {.table}
 
@@ -576,24 +576,24 @@ knitr::kable(width_dt, caption = "Posterior means and 90% CrI widths.")
 
 | Spec | Method | Variable | Mean | 90% CrI width |
 |:---|:---|:---|---:|---:|
-| A (static delays) | NUTS (prior init) | refp_mean_int\[1\] | 3.91 | 1.89 |
-| A (static delays) | NUTS (prior init) | refp_sd_int\[1\] | 4.14 | 0.83 |
-| A (static delays) | NUTS (prior init) | sqrt_phi\[1\] | 1.83 | 0.27 |
-| A (static delays) | NUTS (pathfinder init) | refp_mean_int\[1\] | 3.96 | 1.94 |
-| A (static delays) | NUTS (pathfinder init) | refp_sd_int\[1\] | 4.17 | 0.83 |
-| A (static delays) | NUTS (pathfinder init) | sqrt_phi\[1\] | 1.83 | 0.27 |
-| A (static delays) | Pathfinder | refp_mean_int\[1\] | 3.84 | 0.43 |
-| A (static delays) | Pathfinder | refp_sd_int\[1\] | 4.20 | 0.13 |
-| A (static delays) | Pathfinder | sqrt_phi\[1\] | 1.88 | 0.18 |
-| B (time-varying delays) | NUTS (prior init) | refp_mean_int\[1\] | 3.66 | 2.12 |
-| B (time-varying delays) | NUTS (prior init) | refp_sd_int\[1\] | 3.91 | 1.12 |
-| B (time-varying delays) | NUTS (prior init) | sqrt_phi\[1\] | 1.74 | 0.28 |
-| B (time-varying delays) | NUTS (pathfinder init) | refp_mean_int\[1\] | 3.67 | 2.20 |
-| B (time-varying delays) | NUTS (pathfinder init) | refp_sd_int\[1\] | 3.91 | 1.19 |
-| B (time-varying delays) | NUTS (pathfinder init) | sqrt_phi\[1\] | 1.74 | 0.28 |
-| B (time-varying delays) | Pathfinder | refp_mean_int\[1\] | 2.94 | 0.36 |
-| B (time-varying delays) | Pathfinder | refp_sd_int\[1\] | 2.04 | 0.17 |
-| B (time-varying delays) | Pathfinder | sqrt_phi\[1\] | 1.62 | 0.09 |
+| A (static delays) | NUTS (prior init) | refp_mean_int\[1\] | 2.40 | 2.00 |
+| A (static delays) | NUTS (prior init) | refp_sd_int\[1\] | 3.42 | 0.79 |
+| A (static delays) | NUTS (prior init) | sqrt_phi\[1\] | 1.50 | 0.25 |
+| A (static delays) | NUTS (pathfinder init) | refp_mean_int\[1\] | 2.50 | 1.76 |
+| A (static delays) | NUTS (pathfinder init) | refp_sd_int\[1\] | 3.46 | 0.74 |
+| A (static delays) | NUTS (pathfinder init) | sqrt_phi\[1\] | 1.51 | 0.27 |
+| A (static delays) | Pathfinder | refp_mean_int\[1\] | 2.59 | 0.68 |
+| A (static delays) | Pathfinder | refp_sd_int\[1\] | 3.49 | 0.41 |
+| A (static delays) | Pathfinder | sqrt_phi\[1\] | 1.47 | 0.23 |
+| B (time-varying delays) | NUTS (prior init) | refp_mean_int\[1\] | 2.29 | 1.96 |
+| B (time-varying delays) | NUTS (prior init) | refp_sd_int\[1\] | 3.12 | 1.42 |
+| B (time-varying delays) | NUTS (prior init) | sqrt_phi\[1\] | 1.32 | 0.24 |
+| B (time-varying delays) | NUTS (pathfinder init) | refp_mean_int\[1\] | 2.23 | 2.08 |
+| B (time-varying delays) | NUTS (pathfinder init) | refp_sd_int\[1\] | 3.08 | 1.44 |
+| B (time-varying delays) | NUTS (pathfinder init) | sqrt_phi\[1\] | 1.31 | 0.25 |
+| B (time-varying delays) | Pathfinder | refp_mean_int\[1\] | 1.78 | 0.71 |
+| B (time-varying delays) | Pathfinder | refp_sd_int\[1\] | 3.22 | 0.40 |
+| B (time-varying delays) | Pathfinder | sqrt_phi\[1\] | 1.34 | 0.31 |
 
 Posterior means and 90% CrI widths. {.table style="width:100%;"}
 
@@ -646,14 +646,14 @@ day1_posterior <- day1_posterior[
 day1_posterior[, variable := gsub("\\[.*\\]", "", variable)]
 day1_posterior <- day1_posterior[, .(mean = mean(mean), sd = mean(sd)), by = variable]
 day1_posterior
-#>         variable        mean         sd
-#>           <char>       <num>      <num>
-#> 1:    expr_r_int -0.01803102 0.11953956
-#> 2:  expr_beta_sd  0.22981341 0.09128661
-#> 3: refp_mean_int  3.91101934 0.57955965
-#> 4:   refp_sd_int  4.14053770 0.24707924
-#> 5:   rep_beta_sd  0.41978786 0.13747114
-#> 6:      sqrt_phi  1.83300673 0.08172812
+#>         variable         mean         sd
+#>           <char>        <num>      <num>
+#> 1:  expr_beta_sd  0.396798521 0.13763881
+#> 2:   refp_sd_int  3.421866046 0.23386896
+#> 3:   rep_beta_sd  0.436799032 0.14286845
+#> 4:      sqrt_phi  1.500278454 0.07393571
+#> 5:    expr_r_int -0.005228553 0.13259809
+#> 6: refp_mean_int  2.399726125 0.56634981
 ```
 
 [`epinowcast()`](https://package.epinowcast.org/dev/reference/epinowcast.md)
@@ -748,9 +748,9 @@ knitr::kable(update_runtime, digits = 1)
 
 | Method                            | Runtime (s) |
 |:----------------------------------|------------:|
-| Pathfinder (informed priors)      |         2.2 |
-| Pathfinder (default priors)       |         5.2 |
-| NUTS (default priors, full refit) |        84.5 |
+| Pathfinder (informed priors)      |         9.7 |
+| Pathfinder (default priors)       |        12.8 |
+| NUTS (default priors, full refit) |        29.0 |
 
 We check whether the cheap pathfinder update tracks the full NUTS refit,
 and whether using informed priors improves the agreement compared to

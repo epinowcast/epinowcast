@@ -311,11 +311,11 @@ Increasing the number of paths is a standard way to improve pathfinder performan
 <span>    <span class="st">"and is reported only for NUTS fits."</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</details><table class="table">
+</details><table style="width:100%;" class="table">
 <caption>Runtime and sampling efficiency for each spec and method. Min ESS/s is the minimum bulk effective sample size per second and is reported only for NUTS fits.</caption>
 <colgroup>
-<col width="35%">
-<col width="32%">
+<col width="34%">
+<col width="33%">
 <col width="17%">
 <col width="14%">
 </colgroup>
@@ -329,37 +329,37 @@ Increasing the number of paths is a standard way to improve pathfinder performan
 <tr class="odd">
 <td align="left">A (static delays)</td>
 <td align="left">NUTS (prior init)</td>
-<td align="right">51.5</td>
-<td align="left">3.4</td>
+<td align="right">26.6</td>
+<td align="left">1.7</td>
 </tr>
 <tr class="even">
 <td align="left">A (static delays)</td>
 <td align="left">NUTS (pathfinder init)</td>
-<td align="right">45.2</td>
-<td align="left">3.6</td>
+<td align="right">31.1</td>
+<td align="left">7.1</td>
 </tr>
 <tr class="odd">
 <td align="left">A (static delays)</td>
 <td align="left">Pathfinder</td>
-<td align="right">6.6</td>
+<td align="right">10.6</td>
 <td align="left">-</td>
 </tr>
 <tr class="even">
 <td align="left">B (time-varying delays)</td>
 <td align="left">NUTS (prior init)</td>
-<td align="right">120.9</td>
-<td align="left">1.5</td>
+<td align="right">204.1</td>
+<td align="left">0.6</td>
 </tr>
 <tr class="odd">
 <td align="left">B (time-varying delays)</td>
 <td align="left">NUTS (pathfinder init)</td>
-<td align="right">112.8</td>
-<td align="left">1.7</td>
+<td align="right">257.7</td>
+<td align="left">0.4</td>
 </tr>
 <tr class="even">
 <td align="left">B (time-varying delays)</td>
 <td align="left">Pathfinder</td>
-<td align="right">13.0</td>
+<td align="right">109.7</td>
 <td align="left">-</td>
 </tr>
 </tbody>
@@ -436,30 +436,30 @@ In models where NUTS struggles to converge (e.g. due to complex posteriors or p
 <tr class="odd">
 <td align="left">A: NUTS (prior init)</td>
 <td align="right">1000</td>
-<td align="right">1.02</td>
-<td align="right">2</td>
-<td align="right">10</td>
+<td align="right">1.06</td>
+<td align="right">59</td>
+<td align="right">8</td>
 </tr>
 <tr class="even">
 <td align="left">A: NUTS (pathfinder init)</td>
 <td align="right">1000</td>
 <td align="right">1.02</td>
-<td align="right">1</td>
-<td align="right">9</td>
+<td align="right">11</td>
+<td align="right">8</td>
 </tr>
 <tr class="odd">
 <td align="left">B: NUTS (prior init)</td>
 <td align="right">1000</td>
-<td align="right">1.01</td>
-<td align="right">2</td>
+<td align="right">1.03</td>
+<td align="right">12</td>
 <td align="right">9</td>
 </tr>
 <tr class="even">
 <td align="left">B: NUTS (pathfinder init)</td>
 <td align="right">1000</td>
-<td align="right">1.01</td>
-<td align="right">6</td>
+<td align="right">1.05</td>
 <td align="right">10</td>
+<td align="right">8</td>
 </tr>
 </tbody>
 </table>
@@ -619,127 +619,127 @@ plot of chunk posterior-plot
 <td align="left">A (static delays)</td>
 <td align="left">NUTS (prior init)</td>
 <td align="left">refp_mean_int[1]</td>
-<td align="right">3.91</td>
-<td align="right">1.89</td>
+<td align="right">2.40</td>
+<td align="right">2.00</td>
 </tr>
 <tr class="even">
 <td align="left">A (static delays)</td>
 <td align="left">NUTS (prior init)</td>
 <td align="left">refp_sd_int[1]</td>
-<td align="right">4.14</td>
-<td align="right">0.83</td>
+<td align="right">3.42</td>
+<td align="right">0.79</td>
 </tr>
 <tr class="odd">
 <td align="left">A (static delays)</td>
 <td align="left">NUTS (prior init)</td>
 <td align="left">sqrt_phi[1]</td>
-<td align="right">1.83</td>
+<td align="right">1.50</td>
+<td align="right">0.25</td>
+</tr>
+<tr class="even">
+<td align="left">A (static delays)</td>
+<td align="left">NUTS (pathfinder init)</td>
+<td align="left">refp_mean_int[1]</td>
+<td align="right">2.50</td>
+<td align="right">1.76</td>
+</tr>
+<tr class="odd">
+<td align="left">A (static delays)</td>
+<td align="left">NUTS (pathfinder init)</td>
+<td align="left">refp_sd_int[1]</td>
+<td align="right">3.46</td>
+<td align="right">0.74</td>
+</tr>
+<tr class="even">
+<td align="left">A (static delays)</td>
+<td align="left">NUTS (pathfinder init)</td>
+<td align="left">sqrt_phi[1]</td>
+<td align="right">1.51</td>
 <td align="right">0.27</td>
 </tr>
-<tr class="even">
-<td align="left">A (static delays)</td>
-<td align="left">NUTS (pathfinder init)</td>
-<td align="left">refp_mean_int[1]</td>
-<td align="right">3.96</td>
-<td align="right">1.94</td>
-</tr>
-<tr class="odd">
-<td align="left">A (static delays)</td>
-<td align="left">NUTS (pathfinder init)</td>
-<td align="left">refp_sd_int[1]</td>
-<td align="right">4.17</td>
-<td align="right">0.83</td>
-</tr>
-<tr class="even">
-<td align="left">A (static delays)</td>
-<td align="left">NUTS (pathfinder init)</td>
-<td align="left">sqrt_phi[1]</td>
-<td align="right">1.83</td>
-<td align="right">0.27</td>
-</tr>
 <tr class="odd">
 <td align="left">A (static delays)</td>
 <td align="left">Pathfinder</td>
 <td align="left">refp_mean_int[1]</td>
-<td align="right">3.84</td>
-<td align="right">0.43</td>
+<td align="right">2.59</td>
+<td align="right">0.68</td>
 </tr>
 <tr class="even">
 <td align="left">A (static delays)</td>
 <td align="left">Pathfinder</td>
 <td align="left">refp_sd_int[1]</td>
-<td align="right">4.20</td>
-<td align="right">0.13</td>
+<td align="right">3.49</td>
+<td align="right">0.41</td>
 </tr>
 <tr class="odd">
 <td align="left">A (static delays)</td>
 <td align="left">Pathfinder</td>
 <td align="left">sqrt_phi[1]</td>
-<td align="right">1.88</td>
-<td align="right">0.18</td>
+<td align="right">1.47</td>
+<td align="right">0.23</td>
 </tr>
 <tr class="even">
 <td align="left">B (time-varying delays)</td>
 <td align="left">NUTS (prior init)</td>
 <td align="left">refp_mean_int[1]</td>
-<td align="right">3.66</td>
-<td align="right">2.12</td>
+<td align="right">2.29</td>
+<td align="right">1.96</td>
 </tr>
 <tr class="odd">
 <td align="left">B (time-varying delays)</td>
 <td align="left">NUTS (prior init)</td>
 <td align="left">refp_sd_int[1]</td>
-<td align="right">3.91</td>
-<td align="right">1.12</td>
+<td align="right">3.12</td>
+<td align="right">1.42</td>
 </tr>
 <tr class="even">
 <td align="left">B (time-varying delays)</td>
 <td align="left">NUTS (prior init)</td>
 <td align="left">sqrt_phi[1]</td>
-<td align="right">1.74</td>
-<td align="right">0.28</td>
+<td align="right">1.32</td>
+<td align="right">0.24</td>
 </tr>
 <tr class="odd">
 <td align="left">B (time-varying delays)</td>
 <td align="left">NUTS (pathfinder init)</td>
 <td align="left">refp_mean_int[1]</td>
-<td align="right">3.67</td>
-<td align="right">2.20</td>
+<td align="right">2.23</td>
+<td align="right">2.08</td>
 </tr>
 <tr class="even">
 <td align="left">B (time-varying delays)</td>
 <td align="left">NUTS (pathfinder init)</td>
 <td align="left">refp_sd_int[1]</td>
-<td align="right">3.91</td>
-<td align="right">1.19</td>
+<td align="right">3.08</td>
+<td align="right">1.44</td>
 </tr>
 <tr class="odd">
 <td align="left">B (time-varying delays)</td>
 <td align="left">NUTS (pathfinder init)</td>
 <td align="left">sqrt_phi[1]</td>
-<td align="right">1.74</td>
-<td align="right">0.28</td>
+<td align="right">1.31</td>
+<td align="right">0.25</td>
 </tr>
 <tr class="even">
 <td align="left">B (time-varying delays)</td>
 <td align="left">Pathfinder</td>
 <td align="left">refp_mean_int[1]</td>
-<td align="right">2.94</td>
-<td align="right">0.36</td>
+<td align="right">1.78</td>
+<td align="right">0.71</td>
 </tr>
 <tr class="odd">
 <td align="left">B (time-varying delays)</td>
 <td align="left">Pathfinder</td>
 <td align="left">refp_sd_int[1]</td>
-<td align="right">2.04</td>
-<td align="right">0.17</td>
+<td align="right">3.22</td>
+<td align="right">0.40</td>
 </tr>
 <tr class="even">
 <td align="left">B (time-varying delays)</td>
 <td align="left">Pathfinder</td>
 <td align="left">sqrt_phi[1]</td>
-<td align="right">1.62</td>
-<td align="right">0.09</td>
+<td align="right">1.34</td>
+<td align="right">0.31</td>
 </tr>
 </tbody>
 </table>
@@ -773,14 +773,14 @@ We borrow not just the delay distribution and overdispersion parameters, but als
 <span><span class="va">day1_posterior</span><span class="op">[</span>, <span class="va">variable</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\[.*\\]"</span>, <span class="st">""</span>, <span class="va">variable</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">day1_posterior</span> <span class="op">&lt;-</span> <span class="va">day1_posterior</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">mean</span><span class="op">)</span>, sd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">sd</span><span class="op">)</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">variable</span><span class="op">]</span></span>
 <span><span class="va">day1_posterior</span></span>
-<span><span class="co">#&gt;         variable        mean         sd</span></span>
-<span><span class="co">#&gt;           &lt;char&gt;       &lt;num&gt;      &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:    expr_r_int -0.01803102 0.11953956</span></span>
-<span><span class="co">#&gt; 2:  expr_beta_sd  0.22981341 0.09128661</span></span>
-<span><span class="co">#&gt; 3: refp_mean_int  3.91101934 0.57955965</span></span>
-<span><span class="co">#&gt; 4:   refp_sd_int  4.14053770 0.24707924</span></span>
-<span><span class="co">#&gt; 5:   rep_beta_sd  0.41978786 0.13747114</span></span>
-<span><span class="co">#&gt; 6:      sqrt_phi  1.83300673 0.08172812</span></span></code></pre></div>
+<span><span class="co">#&gt;         variable         mean         sd</span></span>
+<span><span class="co">#&gt;           &lt;char&gt;        &lt;num&gt;      &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:  expr_beta_sd  0.396798521 0.13763881</span></span>
+<span><span class="co">#&gt; 2:   refp_sd_int  3.421866046 0.23386896</span></span>
+<span><span class="co">#&gt; 3:   rep_beta_sd  0.436799032 0.14286845</span></span>
+<span><span class="co">#&gt; 4:      sqrt_phi  1.500278454 0.07393571</span></span>
+<span><span class="co">#&gt; 5:    expr_r_int -0.005228553 0.13259809</span></span>
+<span><span class="co">#&gt; 6: refp_mean_int  2.399726125 0.56634981</span></span></code></pre></div>
 </details><p><code><a href="../reference/epinowcast.html">epinowcast()</a></code> merges these values into the default priors via <code><a href="../reference/enw_replace_priors.html">enw_replace_priors()</a></code>, so only the listed variables are updated.</p>
 <p>We simulate a “day 2” by shifting the data window forward by one day and preprocessing again.
 We define a helper function using <code><a href="https://purrr.tidyverse.org/reference/partial.html" class="external-link">purrr::partial</a></code> to capture the shared model specification while allowing for data updates.</p>
@@ -848,15 +848,15 @@ We define a helper function using <code><a href="https://purrr.tidyverse.org/ref
 <tbody>
 <tr class="odd">
 <td align="left">Pathfinder (informed priors)</td>
-<td align="right">2.2</td>
+<td align="right">9.7</td>
 </tr>
 <tr class="even">
 <td align="left">Pathfinder (default priors)</td>
-<td align="right">5.2</td>
+<td align="right">12.8</td>
 </tr>
 <tr class="odd">
 <td align="left">NUTS (default priors, full refit)</td>
-<td align="right">84.5</td>
+<td align="right">29.0</td>
 </tr>
 </tbody>
 </table>
