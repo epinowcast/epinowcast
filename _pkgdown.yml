@@ -80,6 +80,10 @@ reference:
     desc: Modular model components
     contents:
       - has_concept("modelmodules")
+  - title: Multi-stratum tools
+    desc: Tools for declaring and ordering dependencies between strata
+    contents:
+      - has_concept("strata")
   - title: Helpers for defining model modules
     desc: Functions that help with the setup of model modules and that may be specific to individual modules
     contents:
