@@ -25,6 +25,8 @@ Helper functions for model modules
 [`add_max_observed_delay()`](https://package.epinowcast.org/reference/add_max_observed_delay.md),
 [`add_pmfs()`](https://package.epinowcast.org/reference/add_pmfs.md),
 [`convolution_matrix()`](https://package.epinowcast.org/reference/convolution_matrix.md),
+[`delay_only_ltotal()`](https://package.epinowcast.org/reference/delay_only_ltotal.md),
+[`delay_only_total()`](https://package.epinowcast.org/reference/delay_only_total.md),
 [`enw_dayofweek_structural_reporting()`](https://package.epinowcast.org/reference/enw_dayofweek_structural_reporting.md),
 [`enw_reference_by_report()`](https://package.epinowcast.org/reference/enw_reference_by_report.md),
 [`enw_reps_with_complete_refs()`](https://package.epinowcast.org/reference/enw_reps_with_complete_refs.md),

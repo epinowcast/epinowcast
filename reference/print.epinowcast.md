@@ -56,14 +56,14 @@ nowcast
 #>   metadelay          :      20 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
-#>   priors : 14 x 6 
+#>   priors : 40 x 6 
 #>   fit : CmdStanMCMC 
-#>   data : list(112) 
+#>   data : list(261) 
 #>   fit_args : list(5) 
 #>   init_method_output : NULL 
 #> Model fit: 
 #>   Samples: 1,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 8 (3 at max, 0.3%) 
-#>   Run time: 26 secs 
+#>   Max treedepth: 8 (54 at max, 5.4%) 
+#>   Run time: 56 secs 
 ```

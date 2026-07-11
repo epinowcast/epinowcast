@@ -113,6 +113,8 @@ Functions for preprocessing observations
 
 Modular model components
 
+- [`.expectation_is_minimal()`](https://package.epinowcast.org/reference/dot-expectation_is_minimal.md)
+  : Is an expectation module minimal (intercept-only, no convolution)?
 - [`enw_expectation()`](https://package.epinowcast.org/reference/enw_expectation.md)
   : Expectation model module
 - [`enw_fit_opts()`](https://package.epinowcast.org/reference/enw_fit_opts.md)
@@ -137,6 +139,10 @@ specific to individual modules
   Add probability mass functions
 - [`convolution_matrix()`](https://package.epinowcast.org/reference/convolution_matrix.md)
   : Construct a convolution matrix
+- [`delay_only_ltotal()`](https://package.epinowcast.org/reference/delay_only_ltotal.md)
+  : Known per-reference-date totals for the delay-only model
+- [`delay_only_total()`](https://package.epinowcast.org/reference/delay_only_total.md)
+  : Known integer totals per snapshot for the delay-only model
 - [`enw_dayofweek_structural_reporting()`](https://package.epinowcast.org/reference/enw_dayofweek_structural_reporting.md)
   : Create day-of-week structural reporting pattern
 - [`enw_reference_by_report()`](https://package.epinowcast.org/reference/enw_reference_by_report.md)
@@ -208,6 +214,15 @@ Functions for postprocessing model output
 
   Build the ord_obs `data.table`.
 
+- [`.check_primarycensored()`](https://package.epinowcast.org/reference/dot-check_primarycensored.md)
+  : Error if the primarycensored package is not installed
+
+- [`.delay_draw_columns()`](https://package.epinowcast.org/reference/dot-delay_draw_columns.md)
+  : Extract the index-ordered draw columns for a delay vector parameter
+
+- [`.discretise_parametric_pmf()`](https://package.epinowcast.org/reference/dot-discretise_parametric_pmf.md)
+  : Discretise a parametric delay distribution
+
 - [`enw_add_latest_obs_to_nowcast()`](https://package.epinowcast.org/reference/enw_add_latest_obs_to_nowcast.md)
   : Add latest observations to nowcast output
 
@@ -219,6 +234,9 @@ Functions for postprocessing model output
 
 - [`enw_posterior()`](https://package.epinowcast.org/reference/enw_posterior.md)
   : Summarise the posterior
+
+- [`enw_posterior_delay()`](https://package.epinowcast.org/reference/enw_posterior_delay.md)
+  : Posterior samples of the parametric reporting-delay distribution
 
 - [`enw_pp_summary()`](https://package.epinowcast.org/reference/enw_pp_summary.md)
   : Posterior predictive summary
@@ -275,26 +293,74 @@ Functions for validating model fits
 
 Functions that assist with interpreting model formulas
 
+- [`ar()`](https://package.epinowcast.org/reference/ar.md) :
+
+  Autoregressive alias for
+  [`arima()`](https://rdrr.io/r/stats/arima.html)
+
+- [`arima()`](https://package.epinowcast.org/reference/arima.md) : Adds
+  an ARIMA(p, d, q) latent residual to the model.
+
+- [`arima_terms()`](https://package.epinowcast.org/reference/arima_terms.md)
+  : Finds ARIMA terms in a formula object
+
+- [`arma()`](https://package.epinowcast.org/reference/arma.md) :
+
+  ARMA alias for [`arima()`](https://rdrr.io/r/stats/arima.html)
+
 - [`as_string_formula()`](https://package.epinowcast.org/reference/as_string_formula.md)
   : Converts formulas to strings
+
+- [`construct_arima()`](https://package.epinowcast.org/reference/construct_arima.md)
+  : Constructs ARIMA term metadata
+
+- [`construct_gp()`](https://package.epinowcast.org/reference/construct_gp.md)
+  : Constructs Gaussian process term metadata
+
 - [`construct_re()`](https://package.epinowcast.org/reference/construct_re.md)
   : Constructs random effect terms
+
 - [`construct_rw()`](https://package.epinowcast.org/reference/construct_rw.md)
   : Constructs random walk terms
+
 - [`enw_formula()`](https://package.epinowcast.org/reference/enw_formula.md)
   : Define a model using a formula interface
+
 - [`enw_manual_formula()`](https://package.epinowcast.org/reference/enw_manual_formula.md)
   : Define a model manually using fixed and random effects
+
+- [`gp()`](https://package.epinowcast.org/reference/gp.md) : Adds an
+  approximate Gaussian process to the model.
+
+- [`gp_terms()`](https://package.epinowcast.org/reference/gp_terms.md) :
+  Finds Gaussian process terms in a formula object
+
+- [`ma()`](https://package.epinowcast.org/reference/ma.md) :
+
+  Moving-average alias for
+  [`arima()`](https://rdrr.io/r/stats/arima.html)
+
 - [`parse_formula()`](https://package.epinowcast.org/reference/parse_formula.md)
   : Parse a formula into components
+
 - [`re()`](https://package.epinowcast.org/reference/re.md) : Defines
   random effect terms using the lme4 syntax
+
+- [`remove_arima_terms()`](https://package.epinowcast.org/reference/remove_arima_terms.md)
+  : Remove ARIMA terms from a formula object
+
+- [`remove_gp_terms()`](https://package.epinowcast.org/reference/remove_gp_terms.md)
+  : Remove Gaussian process terms from a formula object
+
 - [`remove_rw_terms()`](https://package.epinowcast.org/reference/remove_rw_terms.md)
   : Remove random walk terms from a formula object
+
 - [`rw()`](https://package.epinowcast.org/reference/rw.md) : Adds random
   walks with Gaussian steps to the model.
+
 - [`rw_terms()`](https://package.epinowcast.org/reference/rw_terms.md) :
   Finds random walk terms in a formula object
+
 - [`split_formula_to_terms()`](https://package.epinowcast.org/reference/split_formula_to_terms.md)
   : Split formula into individual terms
 

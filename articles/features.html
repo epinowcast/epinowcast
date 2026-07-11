@@ -18,8 +18,8 @@
     }
   };
 </script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Model Features Summary">
 <meta name="description" content="Quick reference to package capabilities">
@@ -38,7 +38,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,11 +62,17 @@
     <li><a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a></li>
     <li><a class="dropdown-item" href="../articles/features.html">Model features summary</a></li>
     <li><a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Case studies</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Latent processes</h6></li>
+    <li><a class="dropdown-item" href="../articles/latent-processes.html">Latent process and periodic options for the growth-rate model</a></li>
+    <li><a class="dropdown-item" href="../articles/arima.html">ARIMA latent residuals: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="../articles/gaussian-process.html">Gaussian process latent terms: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="../articles/package-use-cases.html">Case studies</a></li>
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
+    <li><a class="dropdown-item" href="../articles/delay-estimation.html">Estimating reporting delays with the full and delay-only models</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="../articles/temporal-aggregation.html">Temporal aggregation guide</a></li>
     <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul>
@@ -95,7 +101,7 @@
 Team</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/vignettes/features.Rmd" class="external-link"><code>vignettes/features.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/v0.7.0/vignettes/features.Rmd" class="external-link"><code>vignettes/features.Rmd</code></a></small>
       <div class="d-none name"><code>features.Rmd</code></div>
     </div>
 
@@ -169,21 +175,27 @@ definition vignette</a>. For function-specific details, see
 vignette</a></td>
 </tr>
 <tr class="odd">
+<td><strong>Delay-only model</strong></td>
+<td>Estimate the reporting delay given known totals, without a latent
+process</td>
+<td><a href="delay-estimation.html">Delay estimation vignette</a></td>
+</tr>
+<tr class="even">
 <td><strong>Custom priors</strong></td>
 <td>Inspect and replace default priors</td>
 <td><a href="#priors">Prior specification</a></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><strong>Model comparison</strong></td>
 <td>LOO-CV, posterior predictive checks</td>
 <td><a href="#model-evaluation">Model evaluation</a></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><strong>Inference methods</strong></td>
 <td>NUTS, pathfinder, pathfinder-initialised NUTS</td>
 <td><a href="inference-methods.html">Inference methods vignette</a></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><strong>Data visualisation</strong></td>
 <td>Inspect preprocessing and nowcast output</td>
 <td><a href="#visualisation">Visualisation</a></td>
@@ -221,9 +233,18 @@ match your data structure and computational constraints.</p>
 <td>Weekly</td>
 <td>Reduced computational cost</td>
 <td><code>timestep = "week"</code></td>
-<td><code>enw_preprocess_data(..., timestep = "week")</code></td>
+<td><a href="temporal-aggregation.html">Temporal aggregation
+guide</a></td>
 </tr>
 <tr class="odd">
+<td>Daily process, weekly reporting</td>
+<td>Daily inference from once-a-week reporting</td>
+<td>
+<code>timestep = "day"</code> with weekly observation scaffold</td>
+<td><a href="temporal-aggregation.html">Temporal aggregation
+guide</a></td>
+</tr>
+<tr class="even">
 <td>Custom</td>
 <td>Any integer multiple of days</td>
 <td><code>timestep = 7</code></td>
@@ -239,10 +260,14 @@ preprocessing</li>
 <li>
 <code><a href="../reference/enw_aggregate_cumulative.html">enw_aggregate_cumulative()</a></code>: Convert between
 timesteps</li>
+<li>
+<code><a href="../reference/enw_rolling_sum.html">enw_rolling_sum()</a></code> and
+<code><a href="../reference/enw_dayofweek_structural_reporting.html">enw_dayofweek_structural_reporting()</a></code>: Build the
+daily-process / weekly-reporting scaffold</li>
 </ul>
 <p><strong>Where to see it:</strong> The <a href="epinowcast.html">getting started vignette</a> uses daily data. For
-weekly or custom timesteps, simply change the <code>timestep</code>
-argument in <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>.</p>
+weekly data, weekly reporting on a daily process, and a side-by-side
+comparison with the daily benchmark see the <a href="temporal-aggregation.html">temporal aggregation guide</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="stratification">Stratified and Multi-Group Nowcasting<a class="anchor" aria-label="anchor" href="#stratification"></a>
@@ -357,6 +382,12 @@ hazards, or combinations.</p>
 <td>Random effects by group</td>
 <td><code>parametric = ~1 + (1 | .group)</code></td>
 </tr>
+<tr class="even">
+<td>Delay-only model</td>
+<td>Estimate the delay given known totals, without a latent process</td>
+<td><code>enw_obs(delay_only = TRUE)</code></td>
+<td><a href="delay-estimation.html">Delay estimation vignette</a></td>
+</tr>
 </tbody>
 </table>
 <p><strong>Available distributions:</strong> See the <a href="distributions.html">distributions vignette</a> for details on the
@@ -432,9 +463,9 @@ structural reporting metadata</li>
 timesteps</li>
 <li>See <code><a href="../reference/enw_report.html">?enw_report</a></code> for details</li>
 </ul>
-<p><strong>Where to see it:</strong> See
-<code>inst/examples/germany_weekly_reporting_daily_process_model.R</code>
-for an example with weekly reporting and a daily process model.</p>
+<p><strong>Where to see it:</strong> See the <a href="temporal-aggregation.html">temporal aggregation guide</a> for
+worked examples of weekly reporting on a daily process model, with both
+fitted and structural day-of-week reporting.</p>
 </div>
 <div class="section level2">
 <h2 id="latent-models">Latent Process Models<a class="anchor" aria-label="anchor" href="#latent-models"></a>
@@ -467,6 +498,20 @@ infections, hospitalisations).</p>
 <td>Smooth week-to-week trends</td>
 <td><code>~1 + rw(week, by = .group)</code></td>
 <td>Smoother estimates</td>
+</tr>
+<tr class="odd">
+<td>Stationary AR</td>
+<td>Mean-reverting; stationary by construction</td>
+<td><code>~1 + ar(week, by = .group, p = 1)</code></td>
+<td>Departures decay to the mean</td>
+</tr>
+<tr class="even">
+<td>ARIMA residual</td>
+<td>Trend and autocorrelation; <code>d</code> sets the integration
+order</td>
+<td><code>~1 + arima(week, by = .group, p = 1, d = 1)</code></td>
+<td>
+<code>d</code> &gt;= 1 gives non-stationary drift</td>
 </tr>
 <tr class="odd">
 <td>Growth rate</td>
@@ -503,7 +548,10 @@ vignette</a></td>
 observation modifiers</li>
 <li>See <code><a href="../reference/enw_expectation.html">?enw_expectation</a></code> for details</li>
 </ul>
-<p><strong>Where to see it:</strong> The <a href="single-timeseries-rt-estimation.html">Rt estimation vignette</a>
+<p><strong>Where to see it:</strong> The <a href="latent-processes.html">latent processes vignette</a> compares
+random walks, ARIMA(p, d, q) residuals, stationary AR, and periodic
+terms on the growth rate, with the <a href="arima.html">ARIMA
+reference</a> covering the maths, priors, and usage. The <a href="single-timeseries-rt-estimation.html">Rt estimation vignette</a>
 demonstrates renewal process models with generation times.</p>
 </div>
 <div class="section level2">
@@ -549,6 +597,15 @@ demonstrates renewal process models with generation times.</p>
 <td>Different trends per group</td>
 </tr>
 <tr class="odd">
+<td>AR / ARIMA terms</td>
+<td>Autocorrelated or integrated trends</td>
+<td>
+<code>~ar(time, p = 1)</code>,
+<code>~arima(time, p, d, q)</code>
+</td>
+<td>Persistence beyond a random walk</td>
+</tr>
+<tr class="even">
 <td>Sparse design</td>
 <td>Memory efficient</td>
 <td>
@@ -564,6 +621,9 @@ demonstrates renewal process models with generation times.</p>
 <code><a href="../reference/enw_formula.html">enw_formula()</a></code>: Unified formula interface</li>
 <li>
 <code><a href="../reference/rw.html">rw()</a></code>: Random walk helper</li>
+<li>
+<code><a href="../reference/ar.html">ar()</a></code>, <code><a href="../reference/arima.html">arima()</a></code>: Autoregressive and ARIMA
+latent residual helpers</li>
 <li>See <code><a href="../reference/enw_formula.html">?enw_formula</a></code> for syntax details</li>
 </ul>
 <p><strong>Where to see it:</strong> The <a href="germany-age-stratified-nowcasting.html">Germany case study</a>
@@ -1067,7 +1127,7 @@ API</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.9000.</p>
 </div>
 
     </footer>

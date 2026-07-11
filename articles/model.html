@@ -18,8 +18,8 @@
     }
   };
 </script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Model definition and implementation">
 <meta name="description" content="Model formulation and implementation details">
@@ -38,7 +38,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,11 +62,17 @@
     <li><a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a></li>
     <li><a class="dropdown-item" href="../articles/features.html">Model features summary</a></li>
     <li><a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Case studies</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Latent processes</h6></li>
+    <li><a class="dropdown-item" href="../articles/latent-processes.html">Latent process and periodic options for the growth-rate model</a></li>
+    <li><a class="dropdown-item" href="../articles/arima.html">ARIMA latent residuals: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="../articles/gaussian-process.html">Gaussian process latent terms: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="../articles/package-use-cases.html">Case studies</a></li>
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
+    <li><a class="dropdown-item" href="../articles/delay-estimation.html">Estimating reporting delays with the full and delay-only models</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="../articles/temporal-aggregation.html">Temporal aggregation guide</a></li>
     <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul>
@@ -92,7 +98,7 @@
                         <h4 data-toc-skip class="author">Epinowcast Team</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/vignettes/model.Rmd" class="external-link"><code>vignettes/model.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/v0.7.0/vignettes/model.Rmd" class="external-link"><code>vignettes/model.Rmd</code></a></small>
       <div class="d-none name"><code>model.Rmd</code></div>
     </div>
 
@@ -157,7 +163,8 @@ first point of contact.</p>
 \end{equation}\]</span></p>
 <p>where <span class="math inline">\(r_0\)</span> is the optional intercept, <span class="math inline">\(X_{r}\)</span> is the design matrix for fixed effects (<span class="math inline">\(\beta_{f,r}\)</span>), and <span class="math inline">\(Z_{r}\)</span> is the design matrix for random effects (<span class="math inline">\(\beta_{r,r}\)</span>. Within this specification the default model can be specified as a random effect on the day with no intercept. Alternative specifications that may be of interest include a weekly random walk (specified as <code>~ 1 + rw(week)</code>), a piecewise linear model (specified as <code>~ 1 + day:week</code>), and a group specific random effect (specified as <code>~ 1 + (1 | .group)</code>).</p>
 <p>This model is specified via the <code>r</code> argument of <code><a href="../reference/enw_expectation.html">enw_expectation()</a></code> (see <code><a href="../reference/enw_expectation.html">?enw_expectation</a></code>).
-For example, <code>enw_expectation(r = ~ 1 + rw(week))</code> implements a weekly random walk for the log reproduction number as described above.</p>
+For example, <code>enw_expectation(r = ~ 1 + rw(week))</code> implements a weekly random walk for the log reproduction number as described above.
+ARIMA(p, d, q) latent residuals are also supported through the <code><a href="../reference/arima.html">arima()</a></code> formula helper; see the <a href="latent-processes.html">latent processes vignette</a> for usage and the <a href="arima.html">ARIMA implementation notes</a> for the maths and parameterisation choices.</p>
 </div>
 <div class="section level3">
 <h3 id="latent-infectionsnotifications">Latent infections/notifications<a class="anchor" aria-label="anchor" href="#latent-infectionsnotifications"></a>
@@ -224,7 +231,7 @@ is the so-called reporting hazard. For a case in group <span class="math inline"
 <div class="section level5">
 <h5 id="parametric-baseline-hazard">Parametric baseline hazard<a class="anchor" aria-label="anchor" href="#parametric-baseline-hazard"></a>
 </h5>
-<p>The parametric baseline hazard <span class="math inline">\(\gamma_{g,t,d}\)</span> for a case in group <span class="math inline">\(g\)</span> with reference date <span class="math inline">\(t\)</span> is modelled according to a certain discretised parametric probability distribution with parameters <span class="math inline">\(\mu_{g,t}\)</span> and <span class="math inline">\(\upsilon_{g,t}\)</span>. Currently, <code>epinowcast</code> supports four different parametric distributions: (i) log-normal (default), (ii) exponential, (iii) gamma, and (iv) log-logistic. The distributions are discretised and adjusted for an assumed maximum delay, see <code><a href="../articles/distributions.html">vignette("distributions")</a></code> for details. The delay probabilities <span class="math inline">\(p^{\prime}_{g,t,d}\)</span> obtained from the discretised delay distribution are converted into hazards on the logit scale using</p>
+<p>The parametric baseline hazard <span class="math inline">\(\gamma_{g,t,d}\)</span> for a case in group <span class="math inline">\(g\)</span> with reference date <span class="math inline">\(t\)</span> is modelled according to a certain discretised parametric probability distribution with parameters <span class="math inline">\(\mu_{g,t}\)</span> and <span class="math inline">\(\upsilon_{g,t}\)</span>. Currently, <code>epinowcast</code> supports three different parametric distributions: (i) log-normal (default), (ii) exponential, and (iii) gamma. The distributions are discretised and adjusted for an assumed maximum delay using the double interval censoring discretisation from the <a href="https://primarycensored.epinowcast.org" class="external-link">primarycensored</a> package<span class="citation"><sup>[<a href="#ref-primarycensored">15</a>]</sup></span>; see <code><a href="../articles/distributions.html">vignette("distributions")</a></code> for details. The delay probabilities <span class="math inline">\(p^{\prime}_{g,t,d}\)</span> obtained from the discretised delay distribution are converted into hazards on the logit scale using</p>
 <p><span class="math display">\[\begin{equation}
   \gamma_{g,t,d} = \text{logit} \left(\frac{p^{\prime}_{g,t,d}}{\left(1 -\sum^{d-1}_{d^{\prime}=0} p^{\prime}_{g,t,d^{\prime}} \right)} \right).
 \end{equation}\]</span></p>
@@ -250,11 +257,33 @@ For example, <code>enw_reference(non_parametric = ~ 1 + day_of_week)</code> adds
 See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for details on inspecting and customising these priors.</p>
 </div>
 </div>
+<div class="section level3">
+<h3 id="centring">Centring<a class="anchor" aria-label="anchor" href="#centring"></a>
+</h3>
+<p>Each (log-)linear predictor above pairs an intercept (<span class="math inline">\(r_0\)</span>, <span class="math inline">\(\nu_0\)</span>, <span class="math inline">\(\mu_0\)</span>, <span class="math inline">\(\delta_0\)</span>) with a fixed-effect design matrix.
+Because the design columns are not generally centred at zero, the intercept and the fixed-effect coefficients trade off against each other, which correlates them in the posterior and slows sampling.
+For efficiency the fixed-effect design is therefore centred on its observation-weighted column means <span class="math inline">\(\bar X\)</span> before it enters the predictor, so the intercept represents the predictor at the mean of the covariates rather than at their origin, as <code>brms</code> does by default for population-level effects<span class="citation"><sup>[<a href="#ref-brms">16</a>]</sup></span>.
+Taking the growth rate as an example,</p>
+<p><span class="math display">\[\begin{equation}
+  \text{log}(R_{g,t}) = r_0^{c} + \beta_{f,r} (X_r - \bar X_r) + \beta_{r,r} Z_r,
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(r_0^{c}\)</span> is the sampled (centred) intercept.
+The original-scale intercept reported to the user is recovered as <span class="math inline">\(r_0 = r_0^{c} - \bar X_r \beta_{f,r}\)</span>, and the user’s prior is placed on <span class="math inline">\(r_0\)</span>.
+The shift is additive, so the change of variables has unit Jacobian and the posterior is unchanged.
+<code>brms</code> centres its population-level design matrix in the same way<span class="citation"><sup>[<a href="#ref-brms">16</a>]</sup></span>, but places the prior on the centred intercept; here the prior is placed on the recovered original-scale <span class="math inline">\(r_0\)</span>, so the user’s stated prior is honoured exactly.
+A very tight intercept prior then reintroduces a little of the intercept/slope coupling, which is the price of keeping the prior on the original scale.</p>
+<p>The same idea applies to the integrated drift of an autoregressive or Gaussian process term.
+An integrated <code><a href="../reference/arima.html">arima()</a></code> residual or <code>gp(d &gt;= 1)</code> term has a free overall level (the cumulative sum lets the early values shift the whole path) that trades off against the intercept, so its grand mean is removed and recovered into the intercept in the same way, following the reproduction-number centring used in <code>EpiNow2</code><span class="citation"><sup>[<a href="#ref-EpiNow2">1</a>]</sup></span>.
+Only the shared grand mean — the single level direction that competes with the shared scalar intercept — is removed, so each group keeps its own level and drift and the reparameterisation is exact for any number of groups.
+It therefore breaks the intercept/drift ridge, but it does not centre per-group level correlations against group-level effects (such as a <code>(1 | group)</code> random intercept), which can remain for a grouped latent term; this is why a grouped latent benefits less than a single shared series.
+See the <a href="arima.html">ARIMA vignette</a> and the <a href="gaussian-process.html">Gaussian process vignette</a> for the term-specific forms.
+Modules without a free intercept are left uncentred.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="observation-model-and-nowcast">Observation model and nowcast<a class="anchor" aria-label="anchor" href="#observation-model-and-nowcast"></a>
 </h2>
-<p>Expected notifications by date of reference (<span class="math inline">\(t\)</span>) and reporting delay can now be found by multiplying expected final notifications for each <span class="math inline">\(t\)</span> with the probability of reporting for each day of delay (<span class="math inline">\(p_{g,t,d}\)</span>). We assume a negative binomial observation model, by default, with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion<span class="citation"><sup>[<a href="#ref-stan_prior_wiki">15</a>]</sup></span>) and produce a nowcast of final observed notifications at each reference date by summing posterior estimates for unobserved notification and observed notifications for that reference date.</p>
+<p>Expected notifications by date of reference (<span class="math inline">\(t\)</span>) and reporting delay can now be found by multiplying expected final notifications for each <span class="math inline">\(t\)</span> with the probability of reporting for each day of delay (<span class="math inline">\(p_{g,t,d}\)</span>). We assume a negative binomial observation model, by default, with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion<span class="citation"><sup>[<a href="#ref-stan_prior_wiki">17</a>]</sup></span>) and produce a nowcast of final observed notifications at each reference date by summing posterior estimates for unobserved notification and observed notifications for that reference date.</p>
 <p><span class="math display">\[\begin{align}
   n_{g,t,d} \mid \lambda_{g,t},p_{g,t,d}  &amp;\sim \text{NB} \left((1 - \alpha_{g,t})\lambda_{g,t} \times p_{g,t,d}, \phi \right),\ t=1,...,T. \\
     \frac{1}{\sqrt{\phi}} &amp;\sim \text{Half-Normal}(0, 1) \\
@@ -279,7 +308,7 @@ See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for deta
 <div class="section level2">
 <h2 id="implementation">Implementation<a class="anchor" aria-label="anchor" href="#implementation"></a>
 </h2>
-<p>The model is implemented in the probabilistic programming language <code>stan</code> and we use <code>cmdstanr</code> to interact with the model<span class="citation"><sup>[<a href="#ref-stan">12</a>,<a href="#ref-cmdstanr">13</a>]</sup></span>. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. <code>epinowcast</code> incorporates additional functionality written in R<span class="citation"><sup>[<a href="#ref-R">16</a>]</sup></span> to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using <code>scoringutils</code><span class="citation"><sup>[<a href="#ref-scoringutils">17</a>]</sup></span>. A flexible formula interface is provided to enable easier implementation of complex user specified models without interacting with the underlying code base. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.</p>
+<p>The model is implemented in the probabilistic programming language <code>stan</code> and we use <code>cmdstanr</code> to interact with the model<span class="citation"><sup>[<a href="#ref-stan">12</a>,<a href="#ref-cmdstanr">13</a>]</sup></span>. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. <code>epinowcast</code> incorporates additional functionality written in R<span class="citation"><sup>[<a href="#ref-R">18</a>]</sup></span> to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using <code>scoringutils</code><span class="citation"><sup>[<a href="#ref-scoringutils">19</a>]</sup></span>. A flexible formula interface is provided to enable easier implementation of complex user specified models without interacting with the underlying code base. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.</p>
 </div>
 <div class="section level2">
 <h2 id="summary-of-module-parameter-mappings">Summary of module-parameter mappings<a class="anchor" aria-label="anchor" href="#summary-of-module-parameter-mappings"></a>
@@ -402,17 +431,27 @@ See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for deta
 <div class="csl-right-inline">Bastos, L. S., Economou, T., Gomes, M. F. C., Villela, D. A. M., Coelho, F. C., Cruz, O. G., Stoner, O., Bailey, T., &amp; Codeço, C. T. (2019). A modelling approach for correcting reporting delays in disease surveillance data. <em>Statistics in Medicine</em>, <em>38</em>(22), 4363–4377. <a href="https://doi.org/10.1002/sim.8303" class="external-link">https://doi.org/10.1002/sim.8303</a>
 </div>
 </div>
-<div id="ref-stan_prior_wiki" class="csl-entry">
+<div id="ref-primarycensored" class="csl-entry">
 <div class="csl-left-margin">15. </div>
+<div class="csl-right-inline">Abbott, S., Brand, S., Azam, J. M., Pearson, C., Funk, S., &amp; Charniga, K. (2024). <em>Primarycensored: Primary event censored distributions</em>. <a href="https://doi.org/10.5281/zenodo.13632839" class="external-link">https://doi.org/10.5281/zenodo.13632839</a>
+</div>
+</div>
+<div id="ref-brms" class="csl-entry">
+<div class="csl-left-margin">16. </div>
+<div class="csl-right-inline">Bürkner, P.-C. (2017). <span class="nocase">brms</span>: An <span>R</span> package for <span>Bayesian</span> multilevel models using <span>Stan</span>. <em>Journal of Statistical Software</em>, <em>80</em>(1), 1–28. <a href="https://doi.org/10.18637/jss.v080.i01" class="external-link">https://doi.org/10.18637/jss.v080.i01</a>
+</div>
+</div>
+<div id="ref-stan_prior_wiki" class="csl-entry">
+<div class="csl-left-margin">17. </div>
 <div class="csl-right-inline">Team, S. D. (2020). <em>Prior choice recommendations</em>.</div>
 </div>
 <div id="ref-R" class="csl-entry">
-<div class="csl-left-margin">16. </div>
+<div class="csl-left-margin">18. </div>
 <div class="csl-right-inline">R Core Team. (2019). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="external-link">https://www.R-project.org/</a>
 </div>
 </div>
 <div id="ref-scoringutils" class="csl-entry">
-<div class="csl-left-margin">17. </div>
+<div class="csl-left-margin">19. </div>
 <div class="csl-right-inline">Bosse, N. (2020). <em>Scoringutils: A collection of proper scoring rules and metrics to assess predictions</em>. <a href="https://github.com/epiforecasts/scoringutils" class="external-link">https://github.com/epiforecasts/scoringutils</a>
 </div>
 </div>
@@ -429,7 +468,7 @@ See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for deta
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.9000.</p>
 </div>
 
     </footer>

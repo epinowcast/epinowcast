@@ -5,7 +5,7 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Extract latest observations at a given maximum delay — enw_obs_at_delay"><meta name="description" content="Filter observations to a maximum delay and then
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Extract latest observations at a given maximum delay — enw_obs_at_delay"><meta name="description" content="Filter observations to a maximum delay and then
 extract the latest observations. This is useful for model
 evaluation where you want to assess performance against the
 data as the model would have seen it."><meta property="og:description" content="Filter observations to a maximum delay and then
@@ -19,7 +19,7 @@ data as the model would have seen it."><meta property="og:image" content="https:
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,11 +39,17 @@ data as the model would have seen it."><meta property="og:image" content="https:
     <li><a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a></li>
     <li><a class="dropdown-item" href="../articles/features.html">Model features summary</a></li>
     <li><a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Case studies</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Latent processes</h6></li>
+    <li><a class="dropdown-item" href="../articles/latent-processes.html">Latent process and periodic options for the growth-rate model</a></li>
+    <li><a class="dropdown-item" href="../articles/arima.html">ARIMA latent residuals: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="../articles/gaussian-process.html">Gaussian process latent terms: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="../articles/package-use-cases.html">Case studies</a></li>
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
+    <li><a class="dropdown-item" href="../articles/delay-estimation.html">Estimating reporting delays with the full and delay-only models</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="../articles/temporal-aggregation.html">Temporal aggregation guide</a></li>
     <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul></li>
@@ -59,7 +65,7 @@ data as the model would have seen it."><meta property="og:image" content="https:
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Extract latest observations at a given maximum delay</h1>
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/R/preprocess.R" class="external-link"><code>R/preprocess.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/v0.7.0/R/preprocess.R" class="external-link"><code>R/preprocess.R</code></a></small>
       <div class="d-none name"><code>enw_obs_at_delay.Rd</code></div>
     </div>
 
@@ -255,7 +261,7 @@ specified maximum delay.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.9000.</p>
 </div>
 
     </footer></div>

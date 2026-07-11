@@ -22,6 +22,7 @@ comparison).
 Code
 
 ``` r
+
 library(epinowcast)
 library(data.table)
 library(ggplot2)
@@ -52,6 +53,7 @@ reported^(\[[**placeholder?**](#ref-placeholder)\]).
 Code
 
 ``` r
+
 nat_germany_hosp <-
   germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
   enw_filter_report_dates(latest_date = "2021-10-01")
@@ -107,6 +109,7 @@ nowcast horizon.
 Code
 
 ``` r
+
 pobs_full <- enw_preprocess_data(
   retro_nat_germany, max_delay = 40
 )
@@ -135,6 +138,7 @@ including a preview of the reporting triangle, use
 Code
 
 ``` r
+
 summary(pobs_full)
 #> ── Preprocessed nowcast data summary ─────────────────────────────────────────── 
 #> Groups: 1 | Timestep: day | Max delay: 40 
@@ -185,6 +189,7 @@ analyst would see them at the nowcast date.
 Code
 
 ``` r
+
 plot(pobs_full, type = "obs") +
   labs(y = "Hospitalisations", x = "Reference date")
 ```
@@ -209,6 +214,7 @@ delay used for the nowcast.
 Code
 
 ``` r
+
 plot(pobs_full, type = "delay_cumulative")
 ```
 
@@ -235,6 +241,7 @@ modelling.
 Code
 
 ``` r
+
 pobs <- enw_preprocess_data(
   retro_nat_germany, max_delay = 28
 )
@@ -265,6 +272,7 @@ comparison baseline.
 Code
 
 ``` r
+
 latest_germany_hosp <- nat_germany_hosp |>
   enw_obs_at_delay(max_delay = 28) |>
   enw_filter_reference_dates(
@@ -308,12 +316,14 @@ field but is not tuned for any particular problem.
 Code
 
 ``` r
+
 model <- enw_model()
 ```
 
 Code
 
 ``` r
+
 options(mc.cores = 2)
 fit_opts <- enw_fit_opts(
   save_warmup = FALSE,
@@ -334,6 +344,7 @@ nowcast_default <- epinowcast(
 Code
 
 ``` r
+
 nowcast_default
 #> ── epinowcast model output ───────────────────────────────────────────────────── 
 #> Groups: 1 | Timestep: day | Max delay: 28 
@@ -351,21 +362,22 @@ nowcast_default
 #>   metadelay          :      28 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
-#>   priors : 14 x 6 
+#>   priors : 40 x 6 
 #>   fit : CmdStanMCMC 
-#>   data : list(115) 
+#>   data : list(264) 
 #>   fit_args : list(7) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 1,000 | Max Rhat: 1.01 
+#>   Samples: 1,000 | Max Rhat: 1.02 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 8 (5 at max, 0.5%) 
-#>   Run time: 20.2 secs
+#>   Max treedepth: 8 (33 at max, 3.3%) 
+#>   Run time: 21 secs
 ```
 
 Code
 
 ``` r
+
 plot(
   nowcast_default,
   latest_obs = latest_germany_hosp
@@ -385,6 +397,7 @@ model captures the underlying data generation process.
 Code
 
 ``` r
+
 plot(nowcast_default, type = "posterior") +
   facet_wrap(vars(reference_date), scale = "free")
 ```
@@ -420,6 +433,7 @@ weekly periodicity visible in the data.
 Code
 
 ``` r
+
 expectation_module <- enw_expectation(
   ~ 1 + rw(week) + (1 | day_of_week),
   data = pobs
@@ -440,6 +454,7 @@ and standard deviation.
 Code
 
 ``` r
+
 lognormal_reference <- enw_reference(
   parametric = ~ 1 + (1 | day_of_week),
   distribution = "lognormal",
@@ -457,6 +472,7 @@ tested.
 Code
 
 ``` r
+
 np_reference <- enw_reference(
   parametric = ~0,
   non_parametric = ~ 1 + rw(delay) + (1 | day_of_week),
@@ -480,6 +496,7 @@ Stan model is already compiled, only sampling time is required.
 Code
 
 ``` r
+
 nowcast_lognormal <- epinowcast(
   data = pobs,
   expectation = expectation_module,
@@ -492,6 +509,7 @@ nowcast_lognormal <- epinowcast(
 Code
 
 ``` r
+
 nowcast_np <- epinowcast(
   data = pobs,
   expectation = expectation_module,
@@ -517,6 +535,7 @@ convergence (Rhat), and any divergent transitions.
 Code
 
 ``` r
+
 nowcast_lognormal
 #> ── epinowcast model output ───────────────────────────────────────────────────── 
 #> Groups: 1 | Timestep: day | Max delay: 28 
@@ -534,21 +553,22 @@ nowcast_lognormal
 #>   metadelay          :      28 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
-#>   priors : 14 x 6 
+#>   priors : 40 x 6 
 #>   fit : CmdStanMCMC 
-#>   data : list(115) 
+#>   data : list(264) 
 #>   fit_args : list(7) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 1,000 | Max Rhat: 1.01 
-#>   Divergent transitions: 1 (0.1%) 
-#>   Max treedepth: 10 (2 at max, 0.2%) 
-#>   Run time: 89.9 secs
+#>   Samples: 1,000 | Max Rhat: 1.02 
+#>   Divergent transitions: 8 (0.8%) 
+#>   Max treedepth: 7 (371 at max, 37.1%) 
+#>   Run time: 43.4 secs
 ```
 
 Code
 
 ``` r
+
 nowcast_np
 #> ── epinowcast model output ───────────────────────────────────────────────────── 
 #> Groups: 1 | Timestep: day | Max delay: 28 
@@ -566,16 +586,16 @@ nowcast_np
 #>   metadelay          :      28 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
-#>   priors : 14 x 6 
+#>   priors : 40 x 6 
 #>   fit : CmdStanMCMC 
-#>   data : list(115) 
+#>   data : list(264) 
 #>   fit_args : list(7) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 1,000 | Max Rhat: 1.01 
-#>   Divergent transitions: 1 (0.1%) 
-#>   Max treedepth: 9 (991 at max, 99.1%) 
-#>   Run time: 130 secs
+#>   Samples: 1,000 | Max Rhat: 1.02 
+#>   Divergent transitions: 12 (1.2%) 
+#>   Max treedepth: 7 (290 at max, 29%) 
+#>   Run time: 33.8 secs
 ```
 
 ### Comparing all models
@@ -586,6 +606,7 @@ summaries.
 Code
 
 ``` r
+
 summaries <- list(
   Default = nowcast_default,
   Lognormal = nowcast_lognormal,
@@ -642,6 +663,7 @@ using the lognormal model as an example.
 Code
 
 ``` r
+
 # extract samples
 samples <- summary(
   nowcast_lognormal, type = "nowcast_samples"
@@ -667,17 +689,17 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 22000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
 #>                    <num> <num>         <num>  <int>      <int> <int>  <num>
-#>     1:                 1    21             0      1          1     1    725
-#>     2:                 1    21             0      1          2     2    726
-#>     3:                 1    21             0      1          3     3    727
-#>     4:                 1    21             0      1          4     4    733
-#>     5:                 1    21             0      1          5     5    727
+#>     1:                 1    21             0      1          1     1    726
+#>     2:                 1    21             0      1          2     2    729
+#>     3:                 1    21             0      1          3     3    731
+#>     4:                 1    21             0      1          4     4    725
+#>     5:                 1    21             0      1          5     5    736
 #>    ---                                                                     
-#> 21996:                 1     0             1      2        496   996   1919
-#> 21997:                 1     0             1      2        497   997   1936
-#> 21998:                 1     0             1      2        498   998   1968
-#> 21999:                 1     0             1      2        499   999   1908
-#> 22000:                 1     0             1      2        500  1000   2039
+#> 21996:                 1     0             1      2        496   996   1857
+#> 21997:                 1     0             1      2        497   997   1844
+#> 21998:                 1     0             1      2        498   998   1900
+#> 21999:                 1     0             1      2        499   999   1951
+#> 22000:                 1     0             1      2        500  1000   1899
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)

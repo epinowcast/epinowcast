@@ -5,7 +5,7 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Reference date logit hazard reporting model module — enw_reference"><meta name="description" content="Specifies the reference date reporting delay model using parametric
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Reference date logit hazard reporting model module — enw_reference"><meta name="description" content="Specifies the reference date reporting delay model using parametric
 and/or non-parametric hazard formulations."><meta property="og:description" content="Specifies the reference date reporting delay model using parametric
 and/or non-parametric hazard formulations."><meta property="og:image" content="https://package.epinowcast.org/reference/figures/README-nowcast-1.png"><meta property="og:image:alt" content="An R package for flexible hierarchical nowcasting"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@seabbs"><meta name="twitter:site" content="@seabbs"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -15,7 +15,7 @@ and/or non-parametric hazard formulations."><meta property="og:image" content="h
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,11 +35,17 @@ and/or non-parametric hazard formulations."><meta property="og:image" content="h
     <li><a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a></li>
     <li><a class="dropdown-item" href="../articles/features.html">Model features summary</a></li>
     <li><a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Case studies</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Latent processes</h6></li>
+    <li><a class="dropdown-item" href="../articles/latent-processes.html">Latent process and periodic options for the growth-rate model</a></li>
+    <li><a class="dropdown-item" href="../articles/arima.html">ARIMA latent residuals: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="../articles/gaussian-process.html">Gaussian process latent terms: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="../articles/package-use-cases.html">Case studies</a></li>
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
+    <li><a class="dropdown-item" href="../articles/delay-estimation.html">Estimating reporting delays with the full and delay-only models</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="../articles/temporal-aggregation.html">Temporal aggregation guide</a></li>
     <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul></li>
@@ -55,7 +61,7 @@ and/or non-parametric hazard formulations."><meta property="og:image" content="h
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Reference date logit hazard reporting model module</h1>
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/R/model-modules.R" class="external-link"><code>R/model-modules.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/v0.7.0/R/model-modules.R" class="external-link"><code>R/model-modules.R</code></a></small>
       <div class="d-none name"><code>enw_reference.Rd</code></div>
     </div>
 
@@ -68,7 +74,7 @@ and/or non-parametric hazard formulations.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_reference</span><span class="op">(</span></span>
 <span>  parametric <span class="op">=</span> <span class="op">~</span><span class="fl">1</span>,</span>
-<span>  distribution <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lognormal"</span>, <span class="st">"none"</span>, <span class="st">"exponential"</span>, <span class="st">"gamma"</span>, <span class="st">"loglogistic"</span><span class="op">)</span>,</span>
+<span>  distribution <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lognormal"</span>, <span class="st">"none"</span>, <span class="st">"exponential"</span>, <span class="st">"gamma"</span><span class="op">)</span>,</span>
 <span>  non_parametric <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>,</span>
 <span>  <span class="va">data</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -93,7 +99,14 @@ random effects, and random walks.</p></dd>
 <dt id="arg-distribution">distribution<a class="anchor" aria-label="anchor" href="#arg-distribution"></a></dt>
 <dd><p>A character vector describing the parametric delay
 distribution to use. Current options are: "none", "lognormal", "gamma",
-"exponential", and "loglogistic", with the default being "lognormal".</p></dd>
+and "exponential", with the default being "lognormal". These distributions
+are discretised using the double interval censoring approach from the
+<a href="https://primarycensored.epinowcast.org" class="external-link">primarycensored</a> package, which
+accounts for primary event censoring, secondary interval censoring, and
+right truncation. The log-logistic distribution is not currently supported,
+pending log-logistic support in <code>primarycensored</code> (see
+<a href="https://github.com/epinowcast/primarycensored/issues/321" class="external-link">https://github.com/epinowcast/primarycensored/issues/321</a>). See
+<code><a href="../articles/distributions.html">vignette("distributions")</a></code> for details.</p></dd>
 
 
 <dt id="arg-non-parametric">non_parametric<a class="anchor" aria-label="anchor" href="#arg-non-parametric"></a></dt>
@@ -124,6 +137,7 @@ can be used to sample from a tightened version of the prior distribution.</p>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Model modules
+<code><a href="dot-expectation_is_minimal.html">.expectation_is_minimal()</a></code>,
 <code><a href="enw_expectation.html">enw_expectation()</a></code>,
 <code><a href="enw_fit_opts.html">enw_fit_opts()</a></code>,
 <code><a href="enw_missing.html">enw_missing()</a></code>,
@@ -170,10 +184,70 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_fdesign_means</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> numeric(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_rdesign</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      (Intercept)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"assign")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_present</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_p</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_q</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_n_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_flat_idx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_present</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_M</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_L</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_n_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_PHI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 x 0 matrix&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_flat_idx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$model_refp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
@@ -1043,40 +1117,130 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 799</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 800</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_fdesign_means</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> numeric(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_rdesign</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      (Intercept)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"assign")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_present</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_p</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_q</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_n_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_flat_idx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_present</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_M</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_L</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_n_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_PHI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 x 0 matrix&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_flat_idx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$model_refnp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $priors</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             variable</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     refp_mean_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:       refp_sd_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: refp_mean_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:   refp_sd_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         refnp_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     refnp_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                       description</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                            &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         Log mean intercept for parametric reference date delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Log standard deviation for the parametric reference date delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:    Standard deviation of scaled pooled parametric mean effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:      Standard deviation of scaled pooled parametric sd effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:              Intercept for non-parametric reference date delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     Standard deviation of scaled pooled non-parametric effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution  mean    sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;char&gt; &lt;num&gt; &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal   1.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal   0.5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: Zero truncated normal   0.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal   0.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                Normal   0.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Zero truncated normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                variable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;char&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:       refp_mean_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:         refp_sd_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:   refp_mean_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:     refp_sd_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:    refp_arima_sigma</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: refp_arima_sd_sigma</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     refp_arima_pacf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:         refp_gp_rho</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:       refp_gp_alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:    refp_gp_sd_alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:           refnp_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:       refnp_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:   refnp_arima_sigma</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:    refnp_arima_pacf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:        refnp_gp_rho</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:      refnp_gp_alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                            description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                                 &lt;char&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:                                                                                                             Log mean intercept for parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:                                                                                                     Log standard deviation for the parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:                                                                                                        Standard deviation of scaled pooled parametric mean effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:                                                                                                          Standard deviation of scaled pooled parametric sd effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:                                                                                                Scale of the ARIMA latent residual on the parametric reference mean</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:                                                                                                  Scale of the ARIMA latent residual on the parametric reference sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     Partial autocorrelations of the ARIMA latent residual on the parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:                                                  Length scale of the Gaussian process on the parametric reference; log-normal prior on the (positive) length scale</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:                                                Magnitude (marginal standard deviation) of the Gaussian process on the parametric reference mean; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:                                                  Magnitude (marginal standard deviation) of the Gaussian process on the parametric reference sd; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:                                                                                                                  Intercept for non-parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:                                                                                                         Standard deviation of scaled pooled non-parametric effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:                                                                          Standard deviation of the ARIMA latent residual on non-parametric reference logit hazards</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14: Partial autocorrelations of the ARIMA latent residual on the non-parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:                                              Length scale of the Gaussian process on the non-parametric reference; log-normal prior on the (positive) length scale</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the non-parametric reference; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              distribution     mean    sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                    &lt;char&gt;    &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:                Normal 1.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: Zero truncated normal 0.500000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: Zero truncated normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: Zero truncated normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: Zero truncated normal 0.000000  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: Zero truncated normal 0.000000  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:               Uniform 0.000000  0.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:            Log normal 1.098612  0.50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: Zero truncated normal 0.000000  0.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: Zero truncated normal 0.000000  0.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:                Normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: Zero truncated normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13: Zero truncated normal 0.000000  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:               Uniform 0.000000  0.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:            Log normal 1.098612  0.50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16: Zero truncated normal 0.000000  0.05</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inits</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function (data, priors) </span>
@@ -1114,6 +1278,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   priors$refp_sd_beta_sd_p[1], priors$refp_sd_beta_sd_p[2]/10)))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .arima_inits(data, priors, "refp", with_sd_sigma = TRUE))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .gp_inits(data, priors, "refp", with_sd_alpha = TRUE))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         if (data$model_refnp &gt; 0) {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             if (data$refnp_fintercept &gt; 0) {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 init$refnp_int &lt;- array(rnorm(1, priors$refnp_int_p[1], </span>
@@ -1128,12 +1294,14 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   priors$refnp_beta_sd_p[1], priors$refnp_beta_sd_p[2]/10)))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .arima_inits(data, priors, "refnp"))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .gp_inits(data, priors, "refnp"))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         init</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fn</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5604872cb788&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5604872dafa8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55d0d4b5cfd8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55d0d4b6cbb0&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Non-parametric model with a random effect per delay</span></span></span>
@@ -1174,10 +1342,70 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_fdesign_means</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> numeric(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_rdesign</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      (Intercept)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"assign")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_present</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_p</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_q</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_n_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_flat_idx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_present</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_M</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_L</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_n_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_PHI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 x 0 matrix&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_flat_idx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$model_refp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
@@ -3649,6 +3877,10 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 799       0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 800       1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_fdesign_means</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] 0.05 0.05 0.05 0.05 0.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_rdesign</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    fixed delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1      0     1</span>
@@ -3674,35 +3906,122 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"assign")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_present</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_p</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_q</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_n_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_flat_idx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_present</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_M</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_L</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_n_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_PHI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 x 0 matrix&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_flat_idx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$model_refnp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $priors</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             variable</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     refp_mean_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:       refp_sd_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: refp_mean_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:   refp_sd_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         refnp_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     refnp_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                       description</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                            &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         Log mean intercept for parametric reference date delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Log standard deviation for the parametric reference date delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:    Standard deviation of scaled pooled parametric mean effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:      Standard deviation of scaled pooled parametric sd effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:              Intercept for non-parametric reference date delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     Standard deviation of scaled pooled non-parametric effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution  mean    sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;char&gt; &lt;num&gt; &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal   1.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal   0.5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: Zero truncated normal   0.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal   0.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                Normal   0.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Zero truncated normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                variable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;char&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:       refp_mean_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:         refp_sd_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:   refp_mean_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:     refp_sd_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:    refp_arima_sigma</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: refp_arima_sd_sigma</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     refp_arima_pacf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:         refp_gp_rho</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:       refp_gp_alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:    refp_gp_sd_alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:           refnp_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:       refnp_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:   refnp_arima_sigma</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:    refnp_arima_pacf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:        refnp_gp_rho</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:      refnp_gp_alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                            description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                                 &lt;char&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:                                                                                                             Log mean intercept for parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:                                                                                                     Log standard deviation for the parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:                                                                                                        Standard deviation of scaled pooled parametric mean effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:                                                                                                          Standard deviation of scaled pooled parametric sd effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:                                                                                                Scale of the ARIMA latent residual on the parametric reference mean</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:                                                                                                  Scale of the ARIMA latent residual on the parametric reference sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     Partial autocorrelations of the ARIMA latent residual on the parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:                                                  Length scale of the Gaussian process on the parametric reference; log-normal prior on the (positive) length scale</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:                                                Magnitude (marginal standard deviation) of the Gaussian process on the parametric reference mean; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:                                                  Magnitude (marginal standard deviation) of the Gaussian process on the parametric reference sd; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:                                                                                                                  Intercept for non-parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:                                                                                                         Standard deviation of scaled pooled non-parametric effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:                                                                          Standard deviation of the ARIMA latent residual on non-parametric reference logit hazards</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14: Partial autocorrelations of the ARIMA latent residual on the non-parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:                                              Length scale of the Gaussian process on the non-parametric reference; log-normal prior on the (positive) length scale</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the non-parametric reference; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              distribution     mean    sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                    &lt;char&gt;    &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:                Normal 1.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: Zero truncated normal 0.500000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: Zero truncated normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: Zero truncated normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: Zero truncated normal 0.000000  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: Zero truncated normal 0.000000  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:               Uniform 0.000000  0.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:            Log normal 1.098612  0.50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: Zero truncated normal 0.000000  0.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: Zero truncated normal 0.000000  0.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:                Normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: Zero truncated normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13: Zero truncated normal 0.000000  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:               Uniform 0.000000  0.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:            Log normal 1.098612  0.50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16: Zero truncated normal 0.000000  0.05</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inits</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function (data, priors) </span>
@@ -3740,6 +4059,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   priors$refp_sd_beta_sd_p[1], priors$refp_sd_beta_sd_p[2]/10)))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .arima_inits(data, priors, "refp", with_sd_sigma = TRUE))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .gp_inits(data, priors, "refp", with_sd_alpha = TRUE))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         if (data$model_refnp &gt; 0) {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             if (data$refnp_fintercept &gt; 0) {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 init$refnp_int &lt;- array(rnorm(1, priors$refnp_int_p[1], </span>
@@ -3754,12 +4075,14 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   priors$refnp_beta_sd_p[1], priors$refnp_beta_sd_p[2]/10)))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .arima_inits(data, priors, "refnp"))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .gp_inits(data, priors, "refnp"))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         init</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fn</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5604872cb788&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x56048905aaf0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55d0d4b5cfd8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55d0c2a04ed8&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Combined parametric and non-parametric model</span></span></span>
@@ -3799,10 +4122,70 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_fdesign_means</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> numeric(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_rdesign</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      (Intercept)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"assign")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_present</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_p</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_q</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_n_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_arima_flat_idx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_present</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_M</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_L</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_n_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_PHI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 x 0 matrix&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refp_gp_flat_idx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$model_refp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
@@ -4682,6 +5065,9 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [15,20)     0      0       0       1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_fdesign_means</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.25 0.25 0.25 0.25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_rdesign</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   fixed delay_cat</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1     0         1</span>
@@ -4691,35 +5077,122 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"assign")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_present</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_p</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_q</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_n_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_arima_flat_idx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_present</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_M</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_L</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_n_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_PHI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 x 0 matrix&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$refnp_gp_flat_idx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$model_refnp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $priors</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             variable</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     refp_mean_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:       refp_sd_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: refp_mean_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:   refp_sd_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         refnp_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     refnp_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                       description</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                            &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         Log mean intercept for parametric reference date delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Log standard deviation for the parametric reference date delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:    Standard deviation of scaled pooled parametric mean effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:      Standard deviation of scaled pooled parametric sd effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:              Intercept for non-parametric reference date delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     Standard deviation of scaled pooled non-parametric effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution  mean    sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;char&gt; &lt;num&gt; &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal   1.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal   0.5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: Zero truncated normal   0.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal   0.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                Normal   0.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Zero truncated normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                variable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;char&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:       refp_mean_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:         refp_sd_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:   refp_mean_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:     refp_sd_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:    refp_arima_sigma</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: refp_arima_sd_sigma</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     refp_arima_pacf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:         refp_gp_rho</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:       refp_gp_alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:    refp_gp_sd_alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:           refnp_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:       refnp_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:   refnp_arima_sigma</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:    refnp_arima_pacf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:        refnp_gp_rho</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:      refnp_gp_alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                            description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                                 &lt;char&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:                                                                                                             Log mean intercept for parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:                                                                                                     Log standard deviation for the parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:                                                                                                        Standard deviation of scaled pooled parametric mean effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:                                                                                                          Standard deviation of scaled pooled parametric sd effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:                                                                                                Scale of the ARIMA latent residual on the parametric reference mean</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:                                                                                                  Scale of the ARIMA latent residual on the parametric reference sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     Partial autocorrelations of the ARIMA latent residual on the parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:                                                  Length scale of the Gaussian process on the parametric reference; log-normal prior on the (positive) length scale</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:                                                Magnitude (marginal standard deviation) of the Gaussian process on the parametric reference mean; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:                                                  Magnitude (marginal standard deviation) of the Gaussian process on the parametric reference sd; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:                                                                                                                  Intercept for non-parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:                                                                                                         Standard deviation of scaled pooled non-parametric effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:                                                                          Standard deviation of the ARIMA latent residual on non-parametric reference logit hazards</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14: Partial autocorrelations of the ARIMA latent residual on the non-parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:                                              Length scale of the Gaussian process on the non-parametric reference; log-normal prior on the (positive) length scale</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the non-parametric reference; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              distribution     mean    sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                    &lt;char&gt;    &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:                Normal 1.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: Zero truncated normal 0.500000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: Zero truncated normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: Zero truncated normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: Zero truncated normal 0.000000  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: Zero truncated normal 0.000000  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:               Uniform 0.000000  0.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:            Log normal 1.098612  0.50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: Zero truncated normal 0.000000  0.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: Zero truncated normal 0.000000  0.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:                Normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: Zero truncated normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13: Zero truncated normal 0.000000  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:               Uniform 0.000000  0.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:            Log normal 1.098612  0.50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16: Zero truncated normal 0.000000  0.05</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inits</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function (data, priors) </span>
@@ -4757,6 +5230,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   priors$refp_sd_beta_sd_p[1], priors$refp_sd_beta_sd_p[2]/10)))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .arima_inits(data, priors, "refp", with_sd_sigma = TRUE))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .gp_inits(data, priors, "refp", with_sd_alpha = TRUE))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         if (data$model_refnp &gt; 0) {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             if (data$refnp_fintercept &gt; 0) {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 init$refnp_int &lt;- array(rnorm(1, priors$refnp_int_p[1], </span>
@@ -4771,12 +5246,14 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   priors$refnp_beta_sd_p[1], priors$refnp_beta_sd_p[2]/10)))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .arima_inits(data, priors, "refnp"))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init &lt;- c(init, .gp_inits(data, priors, "refnp"))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         init</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fn</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5604872cb788&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x560489abccc8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55d0d4b5cfd8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55d0cdb74358&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
@@ -4789,7 +5266,7 @@ can be used to sample from a tightened version of the prior distribution.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.9000.</p>
 </div>
 
     </footer></div>

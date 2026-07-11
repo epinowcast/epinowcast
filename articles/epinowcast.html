@@ -18,8 +18,8 @@
     }
   };
 </script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Getting Started with Epinowcast: Nowcasting">
 <meta name="description" content="A quick start example demonstrating use of epinowcast to nowcast hospital admissions.">
@@ -38,7 +38,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,11 +62,17 @@
     <li><a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a></li>
     <li><a class="dropdown-item" href="../articles/features.html">Model features summary</a></li>
     <li><a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Case studies</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Latent processes</h6></li>
+    <li><a class="dropdown-item" href="../articles/latent-processes.html">Latent process and periodic options for the growth-rate model</a></li>
+    <li><a class="dropdown-item" href="../articles/arima.html">ARIMA latent residuals: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="../articles/gaussian-process.html">Gaussian process latent terms: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="../articles/package-use-cases.html">Case studies</a></li>
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
+    <li><a class="dropdown-item" href="../articles/delay-estimation.html">Estimating reporting delays with the full and delay-only models</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="../articles/temporal-aggregation.html">Temporal aggregation guide</a></li>
     <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul>
@@ -92,7 +98,7 @@
                         <h4 data-toc-skip class="author">Epinowcast Team</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/vignettes/epinowcast.Rmd" class="external-link"><code>vignettes/epinowcast.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/v0.7.0/vignettes/epinowcast.Rmd" class="external-link"><code>vignettes/epinowcast.Rmd</code></a></small>
       <div class="d-none name"><code>epinowcast.Rmd</code></div>
     </div>
 
@@ -357,16 +363,16 @@ This is a historically common specification in the field but is not tuned for an
 <span><span class="co">#&gt;   metadelay          :      28 x 5 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Model objects (access with `enw_get_data(x, "&lt;name&gt;")`): </span></span>
-<span><span class="co">#&gt;   priors : 14 x 6 </span></span>
+<span><span class="co">#&gt;   priors : 40 x 6 </span></span>
 <span><span class="co">#&gt;   fit : CmdStanMCMC </span></span>
-<span><span class="co">#&gt;   data : list(115) </span></span>
+<span><span class="co">#&gt;   data : list(264) </span></span>
 <span><span class="co">#&gt;   fit_args : list(7) </span></span>
 <span><span class="co">#&gt;   init_method_output : NULL </span></span>
 <span><span class="co">#&gt; Model fit: </span></span>
-<span><span class="co">#&gt;   Samples: 1,000 | Max Rhat: 1.01 </span></span>
+<span><span class="co">#&gt;   Samples: 1,000 | Max Rhat: 1.02 </span></span>
 <span><span class="co">#&gt;   Divergent transitions: 0 (0%) </span></span>
-<span><span class="co">#&gt;   Max treedepth: 8 (5 at max, 0.5%) </span></span>
-<span><span class="co">#&gt;   Run time: 20.2 secs</span></span></code></pre></div>
+<span><span class="co">#&gt;   Max treedepth: 8 (33 at max, 3.3%) </span></span>
+<span><span class="co">#&gt;   Run time: 21 secs</span></span></code></pre></div>
 </details><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
 <span>  <span class="va">nowcast_default</span>,</span>
@@ -486,16 +492,16 @@ Printing it shows key diagnostics including the number of samples, convergence (
 <span><span class="co">#&gt;   metadelay          :      28 x 5 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Model objects (access with `enw_get_data(x, "&lt;name&gt;")`): </span></span>
-<span><span class="co">#&gt;   priors : 14 x 6 </span></span>
+<span><span class="co">#&gt;   priors : 40 x 6 </span></span>
 <span><span class="co">#&gt;   fit : CmdStanMCMC </span></span>
-<span><span class="co">#&gt;   data : list(115) </span></span>
+<span><span class="co">#&gt;   data : list(264) </span></span>
 <span><span class="co">#&gt;   fit_args : list(7) </span></span>
 <span><span class="co">#&gt;   init_method_output : NULL </span></span>
 <span><span class="co">#&gt; Model fit: </span></span>
-<span><span class="co">#&gt;   Samples: 1,000 | Max Rhat: 1.01 </span></span>
-<span><span class="co">#&gt;   Divergent transitions: 1 (0.1%) </span></span>
-<span><span class="co">#&gt;   Max treedepth: 10 (2 at max, 0.2%) </span></span>
-<span><span class="co">#&gt;   Run time: 89.9 secs</span></span></code></pre></div>
+<span><span class="co">#&gt;   Samples: 1,000 | Max Rhat: 1.02 </span></span>
+<span><span class="co">#&gt;   Divergent transitions: 8 (0.8%) </span></span>
+<span><span class="co">#&gt;   Max treedepth: 7 (371 at max, 37.1%) </span></span>
+<span><span class="co">#&gt;   Run time: 43.4 secs</span></span></code></pre></div>
 </details><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast_np</span></span>
 <span><span class="co">#&gt; ── epinowcast model output ───────────────────────────────────────────────────── </span></span>
@@ -514,16 +520,16 @@ Printing it shows key diagnostics including the number of samples, convergence (
 <span><span class="co">#&gt;   metadelay          :      28 x 5 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Model objects (access with `enw_get_data(x, "&lt;name&gt;")`): </span></span>
-<span><span class="co">#&gt;   priors : 14 x 6 </span></span>
+<span><span class="co">#&gt;   priors : 40 x 6 </span></span>
 <span><span class="co">#&gt;   fit : CmdStanMCMC </span></span>
-<span><span class="co">#&gt;   data : list(115) </span></span>
+<span><span class="co">#&gt;   data : list(264) </span></span>
 <span><span class="co">#&gt;   fit_args : list(7) </span></span>
 <span><span class="co">#&gt;   init_method_output : NULL </span></span>
 <span><span class="co">#&gt; Model fit: </span></span>
-<span><span class="co">#&gt;   Samples: 1,000 | Max Rhat: 1.01 </span></span>
-<span><span class="co">#&gt;   Divergent transitions: 1 (0.1%) </span></span>
-<span><span class="co">#&gt;   Max treedepth: 9 (991 at max, 99.1%) </span></span>
-<span><span class="co">#&gt;   Run time: 130 secs</span></span></code></pre></div>
+<span><span class="co">#&gt;   Samples: 1,000 | Max Rhat: 1.02 </span></span>
+<span><span class="co">#&gt;   Divergent transitions: 12 (1.2%) </span></span>
+<span><span class="co">#&gt;   Max treedepth: 7 (290 at max, 29%) </span></span>
+<span><span class="co">#&gt;   Run time: 33.8 secs</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level3">
@@ -597,17 +603,17 @@ This is demonstrated here by plotting the 7 day incidence for hospitalisations u
 <span><span class="co">#&gt; 22000:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
 <span><span class="co">#&gt;        cum_prop_reported delay prop_reported .chain .iteration .draw sample</span></span>
 <span><span class="co">#&gt;                    &lt;num&gt; &lt;num&gt;         &lt;num&gt;  &lt;int&gt;      &lt;int&gt; &lt;int&gt;  &lt;num&gt;</span></span>
-<span><span class="co">#&gt;     1:                 1    21             0      1          1     1    725</span></span>
-<span><span class="co">#&gt;     2:                 1    21             0      1          2     2    726</span></span>
-<span><span class="co">#&gt;     3:                 1    21             0      1          3     3    727</span></span>
-<span><span class="co">#&gt;     4:                 1    21             0      1          4     4    733</span></span>
-<span><span class="co">#&gt;     5:                 1    21             0      1          5     5    727</span></span>
+<span><span class="co">#&gt;     1:                 1    21             0      1          1     1    726</span></span>
+<span><span class="co">#&gt;     2:                 1    21             0      1          2     2    729</span></span>
+<span><span class="co">#&gt;     3:                 1    21             0      1          3     3    731</span></span>
+<span><span class="co">#&gt;     4:                 1    21             0      1          4     4    725</span></span>
+<span><span class="co">#&gt;     5:                 1    21             0      1          5     5    736</span></span>
 <span><span class="co">#&gt;    ---                                                                     </span></span>
-<span><span class="co">#&gt; 21996:                 1     0             1      2        496   996   1919</span></span>
-<span><span class="co">#&gt; 21997:                 1     0             1      2        497   997   1936</span></span>
-<span><span class="co">#&gt; 21998:                 1     0             1      2        498   998   1968</span></span>
-<span><span class="co">#&gt; 21999:                 1     0             1      2        499   999   1908</span></span>
-<span><span class="co">#&gt; 22000:                 1     0             1      2        500  1000   2039</span></span>
+<span><span class="co">#&gt; 21996:                 1     0             1      2        496   996   1857</span></span>
+<span><span class="co">#&gt; 21997:                 1     0             1      2        497   997   1844</span></span>
+<span><span class="co">#&gt; 21998:                 1     0             1      2        498   998   1900</span></span>
+<span><span class="co">#&gt; 21999:                 1     0             1      2        499   999   1951</span></span>
+<span><span class="co">#&gt; 22000:                 1     0             1      2        500  1000   1899</span></span>
 <span><span class="va">latest_germany_hosp_7day</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span><span class="op">)</span><span class="op">[</span></span>
 <span>  ,</span>
 <span>  <span class="va">confirm</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/froll.html" class="external-link">frollsum</a></span><span class="op">(</span><span class="va">confirm</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
@@ -645,7 +651,7 @@ Each module can be independently adjusted based on what we observe in the data a
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.9000.</p>
 </div>
 
     </footer>

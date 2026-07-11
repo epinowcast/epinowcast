@@ -18,8 +18,8 @@
     }
   };
 </script><script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="A Bayesian Framework for Real-time Infectious Disease Surveillance">
 <meta name="description" content="A modular Bayesian framework for real-time infectious disease surveillance. Provides tools for nowcasting, reproduction number estimation, delay estimation, and forecasting from data subject to reporting delays, right-truncation, missing data, and incomplete ascertainment. Users can build models suited to their setting using a flexible formula interface supporting fixed effects, random effects, random walks, and time-varying parameters, with options including parametric and non-parametric delay distributions with optional modifiers (via discrete-time hazard models), renewal processes, observation models, missing data imputation, and stratified analyses with partial pooling. By jointly estimating disease dynamics and reporting patterns, our framework enables earlier and more reliable detection of trends. While designed with epidemiological applications in mind, the framework can be applied to any right-truncated time series count data.">
@@ -38,7 +38,7 @@
 
     <a class="navbar-brand me-2" href="index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,11 +62,17 @@
     <li><a class="dropdown-item" href="articles/model.html">Model definition and implementation</a></li>
     <li><a class="dropdown-item" href="articles/features.html">Model features summary</a></li>
     <li><a class="dropdown-item" href="articles/distributions.html">Discretised distributions</a></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Case studies</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Latent processes</h6></li>
+    <li><a class="dropdown-item" href="articles/latent-processes.html">Latent process and periodic options for the growth-rate model</a></li>
+    <li><a class="dropdown-item" href="articles/arima.html">ARIMA latent residuals: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="articles/gaussian-process.html">Gaussian process latent terms: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="articles/package-use-cases.html">Case studies</a></li>
     <li><a class="dropdown-item" href="articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
+    <li><a class="dropdown-item" href="articles/delay-estimation.html">Estimating reporting delays with the full and delay-only models</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="articles/temporal-aggregation.html">Temporal aggregation guide</a></li>
     <li><a class="dropdown-item" href="articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul>
@@ -199,7 +205,7 @@ Package Analysis Scripts
 <div class="section level3">
 <h3 id="code">Code<a class="anchor" aria-label="anchor" href="#code"></a>
 </h3>
-<p><a href="https://github.com/epinowcast/epinowcast/commits?author=seabbs" class="external-link">seabbs</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=adrian-lison" class="external-link">adrian-lison</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=sbfnk" class="external-link">sbfnk</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=Bisaloo" class="external-link">Bisaloo</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=pearsonca" class="external-link">pearsonca</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=choi-hannah" class="external-link">choi-hannah</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=medewitt" class="external-link">medewitt</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=jamesmbaazam" class="external-link">jamesmbaazam</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=pitmonticone" class="external-link">pitmonticone</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=jessalynnsebastian" class="external-link">jessalynnsebastian</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=athowes" class="external-link">athowes</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=kathsherratt" class="external-link">kathsherratt</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=barbora-sobolova" class="external-link">barbora-sobolova</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=kaitejohnson" class="external-link">kaitejohnson</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=Lnrivas" class="external-link">Lnrivas</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=natemcintosh" class="external-link">natemcintosh</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=nikosbosse" class="external-link">nikosbosse</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs" class="external-link">pratikunterwegs</a></p>
+<p><a href="https://github.com/epinowcast/epinowcast/commits?author=seabbs" class="external-link">seabbs</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=adrian-lison" class="external-link">adrian-lison</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=sbfnk" class="external-link">sbfnk</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=Bisaloo" class="external-link">Bisaloo</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=pearsonca" class="external-link">pearsonca</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=choi-hannah-old" class="external-link">choi-hannah-old</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=medewitt" class="external-link">medewitt</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=jamesmbaazam" class="external-link">jamesmbaazam</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=pitmonticone" class="external-link">pitmonticone</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=jessalynnsebastian" class="external-link">jessalynnsebastian</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=athowes" class="external-link">athowes</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=kathsherratt" class="external-link">kathsherratt</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=barbora-sobolova" class="external-link">barbora-sobolova</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=kaitejohnson" class="external-link">kaitejohnson</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=Lnrivas" class="external-link">Lnrivas</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=natemcintosh" class="external-link">natemcintosh</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=nikosbosse" class="external-link">nikosbosse</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs" class="external-link">pratikunterwegs</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=nicholasdavies" class="external-link">nicholasdavies</a></p>
 </div>
 <div class="section level3">
 <h3 id="issue-authors">Issue Authors<a class="anchor" aria-label="anchor" href="#issue-authors"></a>
@@ -278,7 +284,7 @@ Package Analysis Scripts
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.9000.</p>
 </div>
 
     </footer>

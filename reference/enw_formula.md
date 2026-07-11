@@ -111,10 +111,36 @@ example:
 
 - `~ rw(week, location)`: independent random walks for each location
 
-- `~ rw(week, location, type = "dependent")`: random walks with shared
-  variance across locations
+- `~ rw(week, location)`: random walks with shared variance across
+  locations (per-group variance is a planned extension)
 
-These three types of effects can be combined in a single formula, for
+**ARIMA residuals**: Uses the
+[`arima()`](https://package.epinowcast.org/reference/arima.md) helper to
+add an ARIMA(p, d, q) latent residual series to the linear predictor.
+Unlike [`rw()`](https://package.epinowcast.org/reference/rw.md), the
+kernel that maps unit-normal shocks to the latent series depends on the
+autoregressive and moving-average parameters, so the term does not
+produce design-matrix columns; it carries lookup metadata that the Stan
+layer uses with the kernel from `inst/stan/functions/arima_kernel.stan`.
+For example:
+
+- `~ arima(week)`: AR(1) on weekly residuals
+
+- `~ arima(week, location, p = 2, d = 1, q = 1)`: ARIMA(2, 1, 1) driven
+  by independent shocks per location, with `phi`, `theta`, and `sigma`
+  shared across locations (per-group parameters are a planned extension)
+
+- `arima(time, d = 1, p = 0, q = 0)` is equivalent to `rw(time)`
+
+Convenience aliases match `brms`'s in-formula vocabulary:
+
+- `ar(time, by, p)` is `arima(time, by, p = p, d = 0, q = 0)`
+
+- `ma(time, by, q)` is `arima(time, by, p = 0, d = 0, q = q)`
+
+- `arma(time, by, p, q)` is `arima(time, by, p = p, d = 0, q = q)`
+
+These four types of effects can be combined in a single formula, for
 example: `~ 1 + age_group + (1 | location) + rw(week, location)`
 specifies fixed age effects, random location intercepts, and
 location-specific random walks over time.
@@ -164,12 +190,23 @@ For users new to formula syntax in R:
 ## See also
 
 Functions used to help convert formulas into model designs
+[`ar()`](https://package.epinowcast.org/reference/ar.md),
+[`arima()`](https://package.epinowcast.org/reference/arima.md),
+[`arima_terms()`](https://package.epinowcast.org/reference/arima_terms.md),
+[`arma()`](https://package.epinowcast.org/reference/arma.md),
 [`as_string_formula()`](https://package.epinowcast.org/reference/as_string_formula.md),
+[`construct_arima()`](https://package.epinowcast.org/reference/construct_arima.md),
+[`construct_gp()`](https://package.epinowcast.org/reference/construct_gp.md),
 [`construct_re()`](https://package.epinowcast.org/reference/construct_re.md),
 [`construct_rw()`](https://package.epinowcast.org/reference/construct_rw.md),
 [`enw_manual_formula()`](https://package.epinowcast.org/reference/enw_manual_formula.md),
+[`gp()`](https://package.epinowcast.org/reference/gp.md),
+[`gp_terms()`](https://package.epinowcast.org/reference/gp_terms.md),
+[`ma()`](https://package.epinowcast.org/reference/ma.md),
 [`parse_formula()`](https://package.epinowcast.org/reference/parse_formula.md),
 [`re()`](https://package.epinowcast.org/reference/re.md),
+[`remove_arima_terms()`](https://package.epinowcast.org/reference/remove_arima_terms.md),
+[`remove_gp_terms()`](https://package.epinowcast.org/reference/remove_gp_terms.md),
 [`remove_rw_terms()`](https://package.epinowcast.org/reference/remove_rw_terms.md),
 [`rw()`](https://package.epinowcast.org/reference/rw.md),
 [`rw_terms()`](https://package.epinowcast.org/reference/rw_terms.md),
@@ -186,12 +223,13 @@ obs <- enw_filter_report_dates(
 )
 obs <- enw_filter_reference_dates(obs, include_days = 40)
 pobs <- enw_preprocess_data(
-  obs, by = c("age_group", "location"), max_delay = 20
-  )
+  obs,
+  by = c("age_group", "location"), max_delay = 20
+)
 data <- pobs$metareference[[1]]
 
 # Intercept only
-enw_formula(~ 1, data)
+enw_formula(~1, data)
 #> $formula
 #> [1] "~1"
 #> 
@@ -203,6 +241,12 @@ enw_formula(~ 1, data)
 #> NULL
 #> 
 #> $parsed_formula$rw
+#> character(0)
+#> 
+#> $parsed_formula$arima
+#> character(0)
+#> 
+#> $parsed_formula$gp
 #> character(0)
 #> 
 #> 
@@ -241,6 +285,12 @@ enw_formula(~ 1, data)
 #> integer(0)
 #> 
 #> 
+#> $arima
+#> list()
+#> 
+#> $gp
+#> list()
+#> 
 #> attr(,"class")
 #> [1] "enw_formula" "list"       
 
@@ -257,6 +307,12 @@ enw_formula(~ 1 + age_group, data)
 #> NULL
 #> 
 #> $parsed_formula$rw
+#> character(0)
+#> 
+#> $parsed_formula$arima
+#> character(0)
+#> 
+#> $parsed_formula$gp
 #> character(0)
 #> 
 #> 
@@ -315,6 +371,12 @@ enw_formula(~ 1 + age_group, data)
 #> [1] 1 2 3 4 5 6
 #> 
 #> 
+#> $arima
+#> list()
+#> 
+#> $gp
+#> list()
+#> 
 #> attr(,"class")
 #> [1] "enw_formula" "list"       
 
@@ -333,6 +395,12 @@ enw_formula(~ 1 + (1 | age_group), data)
 #> 
 #> 
 #> $parsed_formula$rw
+#> character(0)
+#> 
+#> $parsed_formula$arima
+#> character(0)
+#> 
+#> $parsed_formula$gp
 #> character(0)
 #> 
 #> 
@@ -392,6 +460,12 @@ enw_formula(~ 1 + (1 | age_group), data)
 #> [1] 1 2 3 4 5 6 7
 #> 
 #> 
+#> $arima
+#> list()
+#> 
+#> $gp
+#> list()
+#> 
 #> attr(,"class")
 #> [1] "enw_formula" "list"       
 
@@ -410,22 +484,28 @@ enw_formula(~ 1 + rw(week), data)
 #> $parsed_formula$rw
 #> [1] "rw(week)"
 #> 
+#> $parsed_formula$arima
+#> character(0)
+#> 
+#> $parsed_formula$gp
+#> character(0)
+#> 
 #> 
 #> $expanded_formula
-#> [1] "~1 + cweek1 + cweek2 + cweek3 + cweek4 + cweek5"
+#> [1] "~1"
 #> 
 #> $fixed
 #> $fixed$formula
-#> [1] "~1 + cweek1 + cweek2 + cweek3 + cweek4 + cweek5"
+#> [1] "~1"
 #> 
 #> $fixed$design
-#>    (Intercept) cweek1 cweek2 cweek3 cweek4 cweek5
-#> 1            1      0      0      0      0      0
-#> 8            1      1      0      0      0      0
-#> 15           1      1      1      0      0      0
-#> 22           1      1      1      1      0      0
-#> 29           1      1      1      1      1      0
-#> 36           1      1      1      1      1      1
+#>   (Intercept)
+#> 1           1
+#> 1           1
+#> 1           1
+#> 1           1
+#> 1           1
+#> 1           1
 #> 
 #> $fixed$index
 #>   [1] 1 1 1 1 1 1 1 2 2 2 2 2 2 2 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 6 6
@@ -440,21 +520,59 @@ enw_formula(~ 1 + rw(week), data)
 #> 
 #> $random
 #> $random$formula
-#> [1] "~0 + fixed + rw__week"
+#> [1] "~1"
 #> 
 #> $random$design
-#>   fixed rw__week
-#> 1     0        1
-#> 2     0        1
-#> 3     0        1
-#> 4     0        1
-#> 5     0        1
+#>      (Intercept)
 #> attr(,"assign")
-#> [1] 1 2
+#> [1] 0
 #> 
 #> $random$index
-#> [1] 1 2 3 4 5
+#> integer(0)
 #> 
+#> 
+#> $arima
+#> $arima[[1]]
+#> $arima[[1]]$time
+#> [1] "week"
+#> 
+#> $arima[[1]]$by
+#> NULL
+#> 
+#> $arima[[1]]$p
+#> [1] 0
+#> 
+#> $arima[[1]]$d
+#> [1] 1
+#> 
+#> $arima[[1]]$q
+#> [1] 0
+#> 
+#> $arima[[1]]$T
+#> [1] 6
+#> 
+#> $arima[[1]]$G
+#> [1] 1
+#> 
+#> $arima[[1]]$time_idx
+#> [1] 1 2 3 4 5 6
+#> 
+#> $arima[[1]]$group_idx
+#> [1] 1 1 1 1 1 1
+#> 
+#> $arima[[1]]$time_vals
+#> [1] 0 1 2 3 4 5
+#> 
+#> $arima[[1]]$group_levels
+#> [1] "1"
+#> 
+#> $arima[[1]]$name
+#> [1] "arima__week"
+#> 
+#> 
+#> 
+#> $gp
+#> list()
 #> 
 #> attr(,"class")
 #> [1] "enw_formula" "list"       
@@ -476,144 +594,107 @@ enw_formula(~ 1 + (1 | age_group) + rw(week), data)
 #> $parsed_formula$rw
 #> [1] "rw(week)"
 #> 
+#> $parsed_formula$arima
+#> character(0)
+#> 
+#> $parsed_formula$gp
+#> character(0)
+#> 
 #> 
 #> $expanded_formula
-#> [1] "~1 + age_group + cweek1 + cweek2 + cweek3 + cweek4 + cweek5"
+#> [1] "~1 + age_group"
 #> 
 #> $fixed
 #> $fixed$formula
-#> [1] "~1 + age_group + cweek1 + cweek2 + cweek3 + cweek4 + cweek5"
+#> [1] "~1 + age_group"
 #> 
 #> $fixed$design
 #>     (Intercept) age_group00-04 age_group00+ age_group05-14 age_group15-34
 #> 1             1              0            1              0              0
-#> 8             1              0            1              0              0
-#> 15            1              0            1              0              0
-#> 22            1              0            1              0              0
-#> 29            1              0            1              0              0
-#> 36            1              0            1              0              0
+#> 1             1              0            1              0              0
+#> 1             1              0            1              0              0
+#> 1             1              0            1              0              0
+#> 1             1              0            1              0              0
+#> 1             1              0            1              0              0
 #> 41            1              1            0              0              0
-#> 48            1              1            0              0              0
-#> 55            1              1            0              0              0
-#> 62            1              1            0              0              0
-#> 69            1              1            0              0              0
-#> 76            1              1            0              0              0
+#> 41            1              1            0              0              0
+#> 41            1              1            0              0              0
+#> 41            1              1            0              0              0
+#> 41            1              1            0              0              0
+#> 41            1              1            0              0              0
 #> 81            1              0            0              1              0
-#> 88            1              0            0              1              0
-#> 95            1              0            0              1              0
-#> 102           1              0            0              1              0
-#> 109           1              0            0              1              0
-#> 116           1              0            0              1              0
+#> 81            1              0            0              1              0
+#> 81            1              0            0              1              0
+#> 81            1              0            0              1              0
+#> 81            1              0            0              1              0
+#> 81            1              0            0              1              0
 #> 121           1              0            0              0              1
-#> 128           1              0            0              0              1
-#> 135           1              0            0              0              1
-#> 142           1              0            0              0              1
-#> 149           1              0            0              0              1
-#> 156           1              0            0              0              1
+#> 121           1              0            0              0              1
+#> 121           1              0            0              0              1
+#> 121           1              0            0              0              1
+#> 121           1              0            0              0              1
+#> 121           1              0            0              0              1
 #> 161           1              0            0              0              0
-#> 168           1              0            0              0              0
-#> 175           1              0            0              0              0
-#> 182           1              0            0              0              0
-#> 189           1              0            0              0              0
-#> 196           1              0            0              0              0
+#> 161           1              0            0              0              0
+#> 161           1              0            0              0              0
+#> 161           1              0            0              0              0
+#> 161           1              0            0              0              0
+#> 161           1              0            0              0              0
 #> 201           1              0            0              0              0
-#> 208           1              0            0              0              0
-#> 215           1              0            0              0              0
-#> 222           1              0            0              0              0
-#> 229           1              0            0              0              0
-#> 236           1              0            0              0              0
+#> 201           1              0            0              0              0
+#> 201           1              0            0              0              0
+#> 201           1              0            0              0              0
+#> 201           1              0            0              0              0
+#> 201           1              0            0              0              0
 #> 241           1              0            0              0              0
-#> 248           1              0            0              0              0
-#> 255           1              0            0              0              0
-#> 262           1              0            0              0              0
-#> 269           1              0            0              0              0
-#> 276           1              0            0              0              0
-#>     age_group35-59 age_group60-79 age_group80+ cweek1 cweek2 cweek3 cweek4
-#> 1                0              0            0      0      0      0      0
-#> 8                0              0            0      1      0      0      0
-#> 15               0              0            0      1      1      0      0
-#> 22               0              0            0      1      1      1      0
-#> 29               0              0            0      1      1      1      1
-#> 36               0              0            0      1      1      1      1
-#> 41               0              0            0      0      0      0      0
-#> 48               0              0            0      1      0      0      0
-#> 55               0              0            0      1      1      0      0
-#> 62               0              0            0      1      1      1      0
-#> 69               0              0            0      1      1      1      1
-#> 76               0              0            0      1      1      1      1
-#> 81               0              0            0      0      0      0      0
-#> 88               0              0            0      1      0      0      0
-#> 95               0              0            0      1      1      0      0
-#> 102              0              0            0      1      1      1      0
-#> 109              0              0            0      1      1      1      1
-#> 116              0              0            0      1      1      1      1
-#> 121              0              0            0      0      0      0      0
-#> 128              0              0            0      1      0      0      0
-#> 135              0              0            0      1      1      0      0
-#> 142              0              0            0      1      1      1      0
-#> 149              0              0            0      1      1      1      1
-#> 156              0              0            0      1      1      1      1
-#> 161              1              0            0      0      0      0      0
-#> 168              1              0            0      1      0      0      0
-#> 175              1              0            0      1      1      0      0
-#> 182              1              0            0      1      1      1      0
-#> 189              1              0            0      1      1      1      1
-#> 196              1              0            0      1      1      1      1
-#> 201              0              1            0      0      0      0      0
-#> 208              0              1            0      1      0      0      0
-#> 215              0              1            0      1      1      0      0
-#> 222              0              1            0      1      1      1      0
-#> 229              0              1            0      1      1      1      1
-#> 236              0              1            0      1      1      1      1
-#> 241              0              0            1      0      0      0      0
-#> 248              0              0            1      1      0      0      0
-#> 255              0              0            1      1      1      0      0
-#> 262              0              0            1      1      1      1      0
-#> 269              0              0            1      1      1      1      1
-#> 276              0              0            1      1      1      1      1
-#>     cweek5
-#> 1        0
-#> 8        0
-#> 15       0
-#> 22       0
-#> 29       0
-#> 36       1
-#> 41       0
-#> 48       0
-#> 55       0
-#> 62       0
-#> 69       0
-#> 76       1
-#> 81       0
-#> 88       0
-#> 95       0
-#> 102      0
-#> 109      0
-#> 116      1
-#> 121      0
-#> 128      0
-#> 135      0
-#> 142      0
-#> 149      0
-#> 156      1
-#> 161      0
-#> 168      0
-#> 175      0
-#> 182      0
-#> 189      0
-#> 196      1
-#> 201      0
-#> 208      0
-#> 215      0
-#> 222      0
-#> 229      0
-#> 236      1
-#> 241      0
-#> 248      0
-#> 255      0
-#> 262      0
-#> 269      0
-#> 276      1
+#> 241           1              0            0              0              0
+#> 241           1              0            0              0              0
+#> 241           1              0            0              0              0
+#> 241           1              0            0              0              0
+#> 241           1              0            0              0              0
+#>     age_group35-59 age_group60-79 age_group80+
+#> 1                0              0            0
+#> 1                0              0            0
+#> 1                0              0            0
+#> 1                0              0            0
+#> 1                0              0            0
+#> 1                0              0            0
+#> 41               0              0            0
+#> 41               0              0            0
+#> 41               0              0            0
+#> 41               0              0            0
+#> 41               0              0            0
+#> 41               0              0            0
+#> 81               0              0            0
+#> 81               0              0            0
+#> 81               0              0            0
+#> 81               0              0            0
+#> 81               0              0            0
+#> 81               0              0            0
+#> 121              0              0            0
+#> 121              0              0            0
+#> 121              0              0            0
+#> 121              0              0            0
+#> 121              0              0            0
+#> 121              0              0            0
+#> 161              1              0            0
+#> 161              1              0            0
+#> 161              1              0            0
+#> 161              1              0            0
+#> 161              1              0            0
+#> 161              1              0            0
+#> 201              0              1            0
+#> 201              0              1            0
+#> 201              0              1            0
+#> 201              0              1            0
+#> 201              0              1            0
+#> 201              0              1            0
+#> 241              0              0            1
+#> 241              0              0            1
+#> 241              0              0            1
+#> 241              0              0            1
+#> 241              0              0            1
+#> 241              0              0            1
 #> 
 #> $fixed$index
 #>   [1]  1  1  1  1  1  1  1  2  2  2  2  2  2  2  3  3  3  3  3  3  3  4  4  4  4
@@ -632,28 +713,68 @@ enw_formula(~ 1 + (1 | age_group) + rw(week), data)
 #> 
 #> $random
 #> $random$formula
-#> [1] "~0 + fixed + age_group + rw__week"
+#> [1] "~0 + fixed + age_group"
 #> 
 #> $random$design
-#>    fixed age_group rw__week
-#> 1      0         1        0
-#> 2      0         1        0
-#> 3      0         1        0
-#> 4      0         1        0
-#> 5      0         1        0
-#> 6      0         1        0
-#> 7      0         1        0
-#> 8      0         0        1
-#> 9      0         0        1
-#> 10     0         0        1
-#> 11     0         0        1
-#> 12     0         0        1
+#>   fixed age_group
+#> 1     0         1
+#> 2     0         1
+#> 3     0         1
+#> 4     0         1
+#> 5     0         1
+#> 6     0         1
+#> 7     0         1
 #> attr(,"assign")
-#> [1] 1 2 3
+#> [1] 1 2
 #> 
 #> $random$index
-#>  [1]  1  2  3  4  5  6  7  8  9 10 11 12
+#> [1] 1 2 3 4 5 6 7
 #> 
+#> 
+#> $arima
+#> $arima[[1]]
+#> $arima[[1]]$time
+#> [1] "week"
+#> 
+#> $arima[[1]]$by
+#> NULL
+#> 
+#> $arima[[1]]$p
+#> [1] 0
+#> 
+#> $arima[[1]]$d
+#> [1] 1
+#> 
+#> $arima[[1]]$q
+#> [1] 0
+#> 
+#> $arima[[1]]$T
+#> [1] 6
+#> 
+#> $arima[[1]]$G
+#> [1] 1
+#> 
+#> $arima[[1]]$time_idx
+#>  [1] 1 2 3 4 5 6 1 2 3 4 5 6 1 2 3 4 5 6 1 2 3 4 5 6 1 2 3 4 5 6 1 2 3 4 5 6 1 2
+#> [39] 3 4 5 6
+#> 
+#> $arima[[1]]$group_idx
+#>  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+#> [39] 1 1 1 1
+#> 
+#> $arima[[1]]$time_vals
+#> [1] 0 1 2 3 4 5
+#> 
+#> $arima[[1]]$group_levels
+#> [1] "1"
+#> 
+#> $arima[[1]]$name
+#> [1] "arima__week"
+#> 
+#> 
+#> 
+#> $gp
+#> list()
 #> 
 #> attr(,"class")
 #> [1] "enw_formula" "list"       
@@ -671,6 +792,12 @@ enw_formula(~1, data[1:20, ], sparse = FALSE)
 #> NULL
 #> 
 #> $parsed_formula$rw
+#> character(0)
+#> 
+#> $parsed_formula$arima
+#> character(0)
+#> 
+#> $parsed_formula$gp
 #> character(0)
 #> 
 #> 
@@ -723,6 +850,12 @@ enw_formula(~1, data[1:20, ], sparse = FALSE)
 #> integer(0)
 #> 
 #> 
+#> $arima
+#> list()
+#> 
+#> $gp
+#> list()
+#> 
 #> attr(,"class")
 #> [1] "enw_formula" "list"       
 
@@ -742,6 +875,12 @@ enw_formula(~ (1 + day | week:month), data = data)
 #> 
 #> 
 #> $parsed_formula$rw
+#> character(0)
+#> 
+#> $parsed_formula$arima
+#> character(0)
+#> 
+#> $parsed_formula$gp
 #> character(0)
 #> 
 #> 
@@ -1051,6 +1190,12 @@ enw_formula(~ (1 + day | week:month), data = data)
 #> $random$index
 #>  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
 #> 
+#> 
+#> $arima
+#> list()
+#> 
+#> $gp
+#> list()
 #> 
 #> attr(,"class")
 #> [1] "enw_formula" "list"       

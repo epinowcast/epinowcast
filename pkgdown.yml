@@ -1,18 +1,23 @@
-pandoc: 3.1.11
-pkgdown: 2.2.0.9000
-pkgdown_sha: a6abe43ed48e58b1de42eba5e5541a5b6c46b46f
+pandoc: 3.8.3
+pkgdown: 2.2.1.9000
+pkgdown_sha: 2ee801842df1f581a47fa0e405596f2cad0a0011
 articles:
+  arima: arima.html
+  delay-estimation: delay-estimation.html
   distributions: distributions.html
   epinowcast: epinowcast.html
   features: features.html
+  gaussian-process: gaussian-process.html
   germany-age-stratified-nowcasting: germany-age-stratified-nowcasting.html
   inference-methods: inference-methods.html
+  latent-processes: latent-processes.html
   model: model.html
   package-use-cases: package-use-cases.html
   preprocess-visualisation: preprocess-visualisation.html
   single-timeseries-rt-estimation: single-timeseries-rt-estimation.html
   stan-help: stan-help.html
-last_built: 2026-04-29T23:00Z
+  temporal-aggregation: temporal-aggregation.html
+last_built: 2026-07-11T16:27Z
 urls:
   reference: https://package.epinowcast.org/reference
   article: https://package.epinowcast.org/articles

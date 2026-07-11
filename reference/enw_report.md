@@ -57,6 +57,7 @@ distribution.
 ## See also
 
 Model modules
+[`.expectation_is_minimal()`](https://package.epinowcast.org/reference/dot-expectation_is_minimal.md),
 [`enw_expectation()`](https://package.epinowcast.org/reference/enw_expectation.md),
 [`enw_fit_opts()`](https://package.epinowcast.org/reference/enw_fit_opts.md),
 [`enw_missing()`](https://package.epinowcast.org/reference/enw_missing.md),
@@ -105,10 +106,70 @@ enw_report(data = enw_example("preprocessed"))
 #>  
 #> 1
 #> 
+#> $data$rep_fdesign_means
+#> numeric(0)
+#> 
 #> $data$rep_rdesign
 #>      (Intercept)
 #> attr(,"assign")
 #> [1] 0
+#> 
+#> $data$rep_arima_present
+#> [1] 0
+#> 
+#> $data$rep_arima_T
+#> [1] 0
+#> 
+#> $data$rep_arima_G
+#> [1] 0
+#> 
+#> $data$rep_arima_p
+#> [1] 0
+#> 
+#> $data$rep_arima_d
+#> [1] 0
+#> 
+#> $data$rep_arima_q
+#> [1] 0
+#> 
+#> $data$rep_arima_n_obs
+#> [1] 0
+#> 
+#> $data$rep_arima_flat_idx
+#> integer(0)
+#> 
+#> $data$rep_gp_present
+#> [1] 0
+#> 
+#> $data$rep_gp_T
+#> [1] 0
+#> 
+#> $data$rep_gp_G
+#> [1] 0
+#> 
+#> $data$rep_gp_M
+#> [1] 0
+#> 
+#> $data$rep_gp_type
+#> [1] 0
+#> 
+#> $data$rep_gp_nu
+#> [1] 0
+#> 
+#> $data$rep_gp_d
+#> [1] 0
+#> 
+#> $data$rep_gp_L
+#> [1] 0
+#> 
+#> $data$rep_gp_n_obs
+#> [1] 0
+#> 
+#> $data$rep_gp_PHI
+#> <0 x 0 matrix>
+#> 
+#> $data$rep_gp_flat_idx
+#> integer(0)
 #> 
 #> $data$rep_agg_p
 #> [1] 0
@@ -131,12 +192,27 @@ enw_report(data = enw_example("preprocessed"))
 #> 
 #> 
 #> $priors
-#>       variable                                             description
-#>         <char>                                                  <char>
-#> 1: rep_beta_sd Standard deviation of scaled pooled report date effects
-#>             distribution  mean    sd
-#>                   <char> <num> <num>
-#> 1: Zero truncated normal     0     1
+#>           variable
+#>             <char>
+#> 1:     rep_beta_sd
+#> 2: rep_arima_sigma
+#> 3:  rep_arima_pacf
+#> 4:      rep_gp_rho
+#> 5:    rep_gp_alpha
+#>                                                                                                                                                            description
+#>                                                                                                                                                                 <char>
+#> 1:                                                                                                             Standard deviation of scaled pooled report date effects
+#> 2:                                                                                        Standard deviation of the ARIMA latent residual on report-time logit hazards
+#> 3: Partial autocorrelations of the ARIMA latent residual on the report-time logit hazards; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+#> 4:                                              Length scale of the Gaussian process on the report-time logit hazards; log-normal prior on the (positive) length scale
+#> 5:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the report-time logit hazards; half-normal prior
+#>             distribution     mean    sd
+#>                   <char>    <num> <num>
+#> 1: Zero truncated normal 0.000000  1.00
+#> 2: Zero truncated normal 0.000000  0.20
+#> 3:               Uniform 0.000000  0.00
+#> 4:            Log normal 1.098612  0.50
+#> 5: Zero truncated normal 0.000000  0.05
 #> 
 #> $inits
 #> function (data, priors) 
@@ -151,12 +227,14 @@ enw_report(data = enw_example("preprocessed"))
 #>             init$rep_beta_sd <- array(abs(rnorm(data$rep_rncol, 
 #>                 priors$rep_beta_sd_p[1], priors$rep_beta_sd_p[2]/10)))
 #>         }
+#>         init <- c(init, .arima_inits(data, priors, "rep"))
+#>         init <- c(init, .gp_inits(data, priors, "rep"))
 #>         init
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x56048c4ecb00>
-#> <environment: 0x56048c4f1468>
+#> <bytecode: 0x55d0d5c5b580>
+#> <environment: 0x55d0d5c6acc0>
 #> 
 
 if (FALSE) { # \dontrun{

@@ -4,6 +4,23 @@ This vignette describes the parametric delay distributions that are
 currently available in `epinowcast` and explains how they are internally
 discretised.
 
+``` r
+
+library(data.table)
+```
+
+    ## 
+    ## Attaching package: 'data.table'
+
+    ## The following object is masked from 'package:base':
+    ## 
+    ##     %notin%
+
+``` r
+
+library(ggplot2)
+```
+
 ## Available distributions
 
 The currently available parametric delay distributions are continuous
@@ -15,53 +32,103 @@ of each distribution, specifies how the parameters \\\mu\_{g,t}\\ and
 of the distribution (before discretization and adjustment for the
 assumed maximum delay).
 
-|                                       Distribution                                        |                      Parametrization                       |                                    Mean                                     |
-|:-----------------------------------------------------------------------------------------:|:----------------------------------------------------------:|:---------------------------------------------------------------------------:|
-|         [Log-normal](https://mc-stan.org/docs/functions-reference/lognormal.html)         |      \\\mu=\mu\_{g,t}\\, \\\sigma = \upsilon\_{g,t}\\      |              \\\exp(\mu\_{g,t}+\frac{\upsilon\_{g,t}^2}{2})\\               |
-| [Exponential](https://mc-stan.org/docs/functions-reference/exponential-distribution.html) |               \\\beta = \exp(-\mu\_{g,t})\\                |                            \\\exp(\mu\_{g,t})\\                             |
-|       [Gamma](https://mc-stan.org/docs/functions-reference/gamma-distribution.html)       | \\\alpha = \exp(\mu\_{g,t})\\, \\\beta = \upsilon\_{g,t}\\ |                    \\\exp(\mu\_{g,t})/\upsilon\_{g,t}\\                     |
-|          [Log-logistic](https://en.wikipedia.org/wiki/Log-logistic_distribution)          | \\\alpha = \exp(\mu\_{g,t})\\, \\\beta = \upsilon\_{g,t}\\ | \\\frac{\exp(\mu\_{g,t})\\\pi/\upsilon\_{g,t}}{\sin(\pi/\upsilon\_{g,t})}\\ |
+| Distribution | Parametrization | Mean |
+|:--:|:--:|:--:|
+| [Log-normal](https://mc-stan.org/docs/functions-reference/lognormal.html) | \\\mu=\mu\_{g,t}\\, \\\sigma = \upsilon\_{g,t}\\ | \\\exp(\mu\_{g,t}+\frac{\upsilon\_{g,t}^2}{2})\\ |
+| [Exponential](https://mc-stan.org/docs/functions-reference/exponential-distribution.html) | \\\beta = \exp(-\mu\_{g,t})\\ | \\\exp(\mu\_{g,t})\\ |
+| [Gamma](https://mc-stan.org/docs/functions-reference/gamma-distribution.html) | \\\alpha = \exp(\mu\_{g,t})\\, \\\beta = \upsilon\_{g,t}\\ | \\\exp(\mu\_{g,t})/\upsilon\_{g,t}\\ |
+
+The log-logistic distribution was previously available but has been
+dropped pending log-logistic support in `primarycensored`
+([epinowcast/primarycensored#321](https://github.com/epinowcast/primarycensored/issues/321)).
 
 ## Discretisation and adjustment for maximum delay
 
-In `epinowcast`, delays are modeled in discrete time and with an assumed
-maximum delay (specified via the `max_delay` argument). Therefore, the
-continuous delay distributions must be discretised and adjusted for the
-maximum delay.
+In `epinowcast`, delays are modelled in discrete time and with an
+assumed maximum delay (specified via the `max_delay` argument). The
+continuous delay distributions must therefore be discretised and
+adjusted for the maximum delay.
 
-The exact form of this discretisation is complex due to the interaction
-between primary and secondary events. Rather than modelling this
-explicitly, we approximate it by assuming a uniform censoring interval
-of 2 days for each delay. This comes from assuming daily censoring of
-both the primary and secondary events, which together define the delay
-distribution, and ignoring potential interactions between primary and
-secondary events. As a result, the probability of reporting a delay of
-\\d\\ days equals the probability of reporting a delay of \\d+1\\ days
-or less, minus the probability of reporting a delay of \\d-1\\ days or
-less. This is then normalised by the overall probability of reporting
-any delay up to some maximum observed delay, \\D\\.
+It is helpful to separate two distinct adjustments. The first is
+discretisation: turning the continuous delay into a probability mass
+over integer delays \\d = 0, 1, 2, \dots\\, with each \\p_d\\ defined
+for an infinite maximum delay so that \\\sum\_{d=0}^{\infty} p_d = 1\\.
+The second is conditioning on the maximum delay \\D\\: restricting
+attention to delays \\d \le D\\ and renormalising so that the truncated
+probabilities sum to 1, i.e. \\p^{\prime}\_{d} = p_d / \sum\_{j=0}^{D}
+p_j\\. The first step is about how a continuous distribution becomes
+discrete; the second is about right truncation at \\D\\.
 
-More formally, we define this in terms of the cumulative distribution
-function of the delay distribution. Let \\F^{\mu\_{g,t},
-\upsilon\_{g,t}}\\ be the cumulative distribution function of a
-continuous probability distribution of delays with parameters
-\\\mu\_{g,t}\\ and \\\upsilon\_{g,t}\\. Then, the probability of
-reporting a delay of \\d\\ days is \\p\_{g,t,d} = \frac{F^{\mu\_{g,t},
-\upsilon\_{g,t}}(d+1) - F^{\mu\_{g,t},
-\upsilon\_{g,t}}(d-1)}{F^{\mu\_{g,t}, \upsilon\_{g,t}}(D + 1 ) +
-F^{\mu\_{g,t}, \upsilon\_{g,t}}(D)}.\\
+### Double interval censoring with `primarycensored`
 
-Unless \\d = 0\\ then we instead have
+`epinowcast` discretises the parametric reference delay using the double
+interval censoring approach from the
+[primarycensored](https://primarycensored.epinowcast.org)
+package^(\[1\]). This accounts for the primary event window, the
+secondary (reporting) interval, and right truncation at the maximum
+delay \\D\\.
 
-\\p\_{g,t,0} = \frac{F^{\mu\_{g,t}, \upsilon\_{g,t}}(1)}{F^{\mu\_{g,t},
-\upsilon\_{g,t}}(D + 1 ) + F^{\mu\_{g,t}, \upsilon\_{g,t}}(D)}.\\
+Let \\F^{\mu\_{g,t}, \upsilon\_{g,t}}\\ be the cumulative distribution
+function of the continuous delay distribution. The primary event
+(e.g. infection) is not observed exactly but is assumed uniform over a
+window of width 1 day. Censoring the continuous delay by this primary
+window gives \\Q(t) = \int_0^1 F^{\mu\_{g,t}, \upsilon\_{g,t}}(t - s) \\
+\mathrm{d}s,\\ the cumulative probability that the delay, measured from
+the start of the primary window, is at most \\t\\. The secondary event
+is observed in a daily reporting interval, so the mass on an integer
+delay \\d\\ is the increment of \\Q\\ over that interval, conditioned on
+the maximum delay \\D\\, \\p\_{g,t,d} = \frac{Q(d + 1) - Q(d)}{Q(D)},
+\qquad d = 0, 1, \dots, D - 1.\\ The denominator \\Q(D)\\ applies the
+right truncation, so the discretised probabilities sum to 1.
 
-Normalising by \\F^{\mu\_{g,t}, \upsilon\_{g,t}}(D+1) + F^{\mu\_{g,t},
-\upsilon\_{g,t}}(D)\\, ensures that the \\p^{\prime}\_{g,t,d}\\ sum
-to 1. Since \\F^{\mu\_{g,t}, \upsilon\_{g,t}}(D)\\ is the probability of
-reporting before the maximum delay, this can also be interpreted as
-conditioning our distribution on the maximum delay.
+`primarycensored` evaluates \\Q\\ with analytical solutions for the
+supported distributions (the exponential is handled as a gamma with
+shape one), and the Stan implementation is vendored directly from the
+package. This is applied automatically to all available parametric
+distributions (lognormal, gamma and exponential); no argument is needed.
+See the [`primarycensored`
+documentation](https://primarycensored.epinowcast.org) for the full
+derivation, including arbitrary primary and secondary window widths.
 
-Note that because of the discretisation and normalization, the discrete
-delay distribution we obtain only approximates the original continuous
-distribution, and the approximation is worse for shorter delays.
+The discretised mass function for a lognormal delay (`meanlog = 1`,
+`sdlog = 0.5`) truncated at a maximum delay of 15 days, obtained
+directly from
+[`primarycensored::dprimarycensored()`](https://primarycensored.epinowcast.org/reference/dprimarycensored.html):
+
+``` r
+
+dmax <- 15
+pmf <- data.table(
+  delay = 0:(dmax - 1),
+  probability = primarycensored::dprimarycensored(
+    0:(dmax - 1), plnorm, pwindow = 1, swindow = 1, D = dmax,
+    meanlog = 1, sdlog = 0.5
+  )
+)
+
+ggplot(pmf, aes(x = delay, y = probability)) +
+  geom_col(fill = "#3182bd") +
+  labs(
+    x = "Delay (days)", y = "Probability",
+    title = "Discretised lognormal delay (meanlog = 1, sdlog = 0.5)"
+  ) +
+  theme_bw()
+```
+
+![](distributions_files/figure-html/pmf-1.png)
+
+The same `primarycensored` machinery underpins delay handling elsewhere
+in the ecosystem. [`epidist`](https://epidist.epinowcast.org) estimates
+delay distributions from individual line-list data, and
+[`EpiNow2::estimate_dist()`](https://epiforecasts.io/EpiNow2/) fits them
+from aggregated count data; both are powered by `primarycensored`, with
+the main difference being the data structure they expect. Estimating a
+delay with one of those tools and then passing it to
+[`enw_reference()`](https://package.epinowcast.org/reference/enw_reference.md)
+keeps the censoring assumptions consistent across the workflow.
+
+1\.
+
+Abbott, S., Brand, S., Azam, J. M., Pearson, C., Funk, S., & Charniga,
+K. (2024). *Primarycensored: Primary event censored distributions*.
+<https://doi.org/10.5281/zenodo.13632839>

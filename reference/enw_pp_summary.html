@@ -5,7 +5,7 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Posterior predictive summary — enw_pp_summary"><meta name="description" content="This function summarises posterior predictives
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Posterior predictive summary — enw_pp_summary"><meta name="description" content="This function summarises posterior predictives
 for observed data (by report and reference date). The functionality of
 this function can be used directly on the output of epinowcast() using
 the supplied summary.epinowcast() method."><meta property="og:description" content="This function summarises posterior predictives
@@ -19,7 +19,7 @@ the supplied summary.epinowcast() method."><meta property="og:image" content="ht
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,11 +39,17 @@ the supplied summary.epinowcast() method."><meta property="og:image" content="ht
     <li><a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a></li>
     <li><a class="dropdown-item" href="../articles/features.html">Model features summary</a></li>
     <li><a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Case studies</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Latent processes</h6></li>
+    <li><a class="dropdown-item" href="../articles/latent-processes.html">Latent process and periodic options for the growth-rate model</a></li>
+    <li><a class="dropdown-item" href="../articles/arima.html">ARIMA latent residuals: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="../articles/gaussian-process.html">Gaussian process latent terms: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="../articles/package-use-cases.html">Case studies</a></li>
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
+    <li><a class="dropdown-item" href="../articles/delay-estimation.html">Estimating reporting delays with the full and delay-only models</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="../articles/temporal-aggregation.html">Temporal aggregation guide</a></li>
     <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul></li>
@@ -59,7 +65,7 @@ the supplied summary.epinowcast() method."><meta property="og:image" content="ht
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Posterior predictive summary</h1>
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/R/postprocess.R" class="external-link"><code>R/postprocess.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/v0.7.0/R/postprocess.R" class="external-link"><code>R/postprocess.R</code></a></small>
       <div class="d-none name"><code>enw_pp_summary.Rd</code></div>
     </div>
 
@@ -102,11 +108,15 @@ plotting functions to work.</p></dd>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Functions used for postprocessing of model fits
+<code><a href="dot-check_primarycensored.html">.check_primarycensored()</a></code>,
+<code><a href="dot-delay_draw_columns.html">.delay_draw_columns()</a></code>,
+<code><a href="dot-discretise_parametric_pmf.html">.discretise_parametric_pmf()</a></code>,
 <code><a href="build_ord_obs.html">build_ord_obs()</a></code>,
 <code><a href="enw_add_latest_obs_to_nowcast.html">enw_add_latest_obs_to_nowcast()</a></code>,
 <code><a href="enw_nowcast_samples.html">enw_nowcast_samples()</a></code>,
 <code><a href="enw_nowcast_summary.html">enw_nowcast_summary()</a></code>,
 <code><a href="enw_posterior.html">enw_posterior()</a></code>,
+<code><a href="enw_posterior_delay.html">enw_posterior_delay()</a></code>,
 <code><a href="enw_quantiles_to_long.html">enw_quantiles_to_long()</a></code>,
 <code><a href="enw_summarise_samples.html">enw_summarise_samples()</a></code>,
 <code><a href="subset_obs.html">subset_obs()</a></code></p></div>
@@ -131,30 +141,30 @@ plotting functions to work.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 610:     2021-08-22  2021-08-22      1          45       DE       00+      45</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      cum_prop_reported delay new_confirm prop_reported   mean median        sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;num&gt; &lt;num&gt;       &lt;int&gt;         &lt;num&gt;  &lt;num&gt;  &lt;num&gt;     &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1:         0.3055556     0          22    0.30555556 22.049     20 10.447476</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2:         0.4722222     1          12    0.16666667 22.031     21 10.062370</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3:         0.5277778     2           4    0.05555556  7.992      8  4.118361</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4:         0.5972222     3           5    0.06944444  4.261      4  2.692978</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5:         0.5972222     4           0    0.00000000  1.326      1  1.258295</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:         0.3055556     0          22    0.30555556 26.383     25  9.581969</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:         0.4722222     1          12    0.16666667 15.233     15  6.050729</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:         0.5277778     2           4    0.05555556  7.678      7  3.636969</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:         0.5972222     3           5    0.06944444  3.944      4  2.286502</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:         0.5972222     4           0    0.00000000  1.400      1  1.259995</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 606:         0.9298246     1          61    0.35672515 81.048     77 33.870413</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 607:         1.0000000     2          12    0.07017544 12.586     11  6.299229</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 608:         0.6160714     0          69    0.61607143 73.471     69 32.792995</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 609:         1.0000000     1          43    0.38392857 47.332     44 20.074730</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 610:         1.0000000     0          45    1.00000000 40.534     37 20.435911</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 606:         0.9298246     1          61    0.35672515 55.768     54 18.172904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 607:         1.0000000     2          12    0.07017544 12.969     13  5.157387</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 608:         0.6160714     0          69    0.61607143 94.223     91 30.188319</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 609:         1.0000000     1          43    0.38392857 32.499     31 11.903684</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 610:         1.0000000     0          45    1.00000000 47.577     45 17.455107</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          mad   q50      rhat  ess_bulk  ess_tail</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;num&gt; &lt;num&gt;     &lt;num&gt;     &lt;num&gt;     &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1:  8.8956    20 1.0007087  981.0605  957.4820</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2: 10.3782    21 1.0006400 1010.0549  860.7285</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3:  4.4478     8 1.0018374 1046.7610  956.3804</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4:  2.9652     4 1.0008338  959.7921  978.0414</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5:  1.4826     1 1.0003294  999.1432  873.2038</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:  8.8956    25 1.0004729 1061.6093  991.5120</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:  5.9304    15 0.9988477 1023.0243  970.0040</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:  2.9652     7 1.0020368  880.4481  852.4398</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:  2.9652     4 0.9988907 1042.2961  972.7787</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:  1.4826     1 1.0058021  947.5482  928.1070</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 606: 31.1346    77 0.9999674 1016.8230 1000.9385</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 607:  5.9304    11 1.0006309  965.7202  850.5506</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 608: 29.6520    69 0.9983329 1072.1422  973.6582</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 609: 19.2738    44 0.9993679 1127.5257  906.6164</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 610: 17.7912    37 1.0003136 1372.2704 1042.6714</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 606: 17.7912    54 1.0017605 1121.7985  944.1552</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 607:  5.9304    13 0.9995106  941.1128 1010.1847</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 608: 28.1694    91 1.0000863  950.7711  896.0739</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 609: 10.3782    31 1.0022798  866.9334  748.8873</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 610: 16.3086    45 1.0013025 1030.5884  807.8255</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -166,7 +176,7 @@ plotting functions to work.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.9000.</p>
 </div>
 
     </footer></div>

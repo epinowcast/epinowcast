@@ -5,7 +5,7 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Replace default priors with user specified priors — enw_replace_priors"><meta name="description" content='Replaces default model priors with user specified ones
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Replace default priors with user specified priors — enw_replace_priors"><meta name="description" content='Replaces default model priors with user specified ones
 (restricted to normal priors with specified mean and standard
 deviations).
 A common use is extracting the posterior from a previous
@@ -23,7 +23,7 @@ and using it as a prior for subsequent fits.'><meta property="og:image" content=
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,11 +43,17 @@ and using it as a prior for subsequent fits.'><meta property="og:image" content=
     <li><a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a></li>
     <li><a class="dropdown-item" href="../articles/features.html">Model features summary</a></li>
     <li><a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Case studies</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Latent processes</h6></li>
+    <li><a class="dropdown-item" href="../articles/latent-processes.html">Latent process and periodic options for the growth-rate model</a></li>
+    <li><a class="dropdown-item" href="../articles/arima.html">ARIMA latent residuals: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="../articles/gaussian-process.html">Gaussian process latent terms: maths, priors, and usage</a></li>
+    <li><a class="dropdown-item" href="../articles/package-use-cases.html">Case studies</a></li>
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
+    <li><a class="dropdown-item" href="../articles/delay-estimation.html">Estimating reporting delays with the full and delay-only models</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="../articles/temporal-aggregation.html">Temporal aggregation guide</a></li>
     <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul></li>
@@ -63,7 +69,7 @@ and using it as a prior for subsequent fits.'><meta property="og:image" content=
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Replace default priors with user specified priors</h1>
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/R/model-tools.R" class="external-link"><code>R/model-tools.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/v0.7.0/R/model-tools.R" class="external-link"><code>R/model-tools.R</code></a></small>
       <div class="d-none name"><code>enw_replace_priors.Rd</code></div>
     </div>
 
@@ -144,79 +150,140 @@ available prior variable names by module.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Update priors from a previous model fit</span></span></span>
 <span class="r-in"><span><span class="va">default_priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_reference.html">enw_reference</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span> distribution <span class="op">=</span> <span class="st">"lognormal"</span>,</span></span>
-<span class="r-in"><span> data <span class="op">=</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"preprocessed"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  distribution <span class="op">=</span> <span class="st">"lognormal"</span>,</span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"preprocessed"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span><span class="op">)</span><span class="op">$</span><span class="va">priors</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">default_priors</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             variable</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     refp_mean_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:       refp_sd_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: refp_mean_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:   refp_sd_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         refnp_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     refnp_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                       description</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                            &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         Log mean intercept for parametric reference date delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Log standard deviation for the parametric reference date delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:    Standard deviation of scaled pooled parametric mean effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:      Standard deviation of scaled pooled parametric sd effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:              Intercept for non-parametric reference date delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     Standard deviation of scaled pooled non-parametric effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution  mean    sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;char&gt; &lt;num&gt; &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal   1.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal   0.5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: Zero truncated normal   0.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal   0.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                Normal   0.0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Zero truncated normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                variable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;char&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:       refp_mean_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:         refp_sd_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:   refp_mean_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:     refp_sd_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:    refp_arima_sigma</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: refp_arima_sd_sigma</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     refp_arima_pacf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:         refp_gp_rho</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:       refp_gp_alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:    refp_gp_sd_alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:           refnp_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:       refnp_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:   refnp_arima_sigma</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:    refnp_arima_pacf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:        refnp_gp_rho</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:      refnp_gp_alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                            description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                                 &lt;char&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:                                                                                                             Log mean intercept for parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:                                                                                                     Log standard deviation for the parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:                                                                                                        Standard deviation of scaled pooled parametric mean effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:                                                                                                          Standard deviation of scaled pooled parametric sd effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:                                                                                                Scale of the ARIMA latent residual on the parametric reference mean</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:                                                                                                  Scale of the ARIMA latent residual on the parametric reference sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     Partial autocorrelations of the ARIMA latent residual on the parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:                                                  Length scale of the Gaussian process on the parametric reference; log-normal prior on the (positive) length scale</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:                                                Magnitude (marginal standard deviation) of the Gaussian process on the parametric reference mean; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:                                                  Magnitude (marginal standard deviation) of the Gaussian process on the parametric reference sd; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:                                                                                                                  Intercept for non-parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:                                                                                                         Standard deviation of scaled pooled non-parametric effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:                                                                          Standard deviation of the ARIMA latent residual on non-parametric reference logit hazards</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14: Partial autocorrelations of the ARIMA latent residual on the non-parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:                                              Length scale of the Gaussian process on the non-parametric reference; log-normal prior on the (positive) length scale</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the non-parametric reference; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              distribution     mean    sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                    &lt;char&gt;    &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:                Normal 1.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: Zero truncated normal 0.500000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: Zero truncated normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: Zero truncated normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: Zero truncated normal 0.000000  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: Zero truncated normal 0.000000  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:               Uniform 0.000000  0.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:            Log normal 1.098612  0.50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: Zero truncated normal 0.000000  0.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: Zero truncated normal 0.000000  0.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:                Normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: Zero truncated normal 0.000000  1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13: Zero truncated normal 0.000000  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:               Uniform 0.000000  0.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:            Log normal 1.098612  0.50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16: Zero truncated normal 0.000000  0.05</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">fit_priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"nowcast"</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"fit"</span>,</span></span>
-<span class="r-in"><span> variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"refp_mean_int"</span>, <span class="st">"refp_sd_int"</span>, <span class="st">"sqrt_phi"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"nowcast"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  type <span class="op">=</span> <span class="st">"fit"</span>,</span></span>
+<span class="r-in"><span>  variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"refp_mean_int"</span>, <span class="st">"refp_sd_int"</span>, <span class="st">"sqrt_phi"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit_priors</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            variable      mean    median         sd        mad        q5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;char&gt;     &lt;num&gt;     &lt;num&gt;      &lt;num&gt;      &lt;num&gt;     &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: refp_mean_int[1] 2.8538466 2.8339088 0.60299691 0.62443435 1.9172352</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   refp_sd_int[1] 3.6893646 3.6917677 0.30337736 0.30959601 3.2030695</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      sqrt_phi[1] 0.3492024 0.3481456 0.03164753 0.03011692 0.2989725</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          q20       q80       q95     rhat  ess_bulk ess_tail</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;num&gt;     &lt;num&gt;     &lt;num&gt;    &lt;num&gt;     &lt;num&gt;    &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2.3202662 3.3509946 3.9807851 1.003710  606.3893 555.9773</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 3.4216331 3.9414908 4.2085437 1.001962  671.3773 487.2159</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 0.3228929 0.3739743 0.4046854 1.002404 1084.4296 806.2026</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            variable      mean   median         sd        mad       q5      q20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;char&gt;     &lt;num&gt;    &lt;num&gt;      &lt;num&gt;      &lt;num&gt;    &lt;num&gt;    &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: refp_mean_int[1] 2.2845186 2.265566 0.49001224 0.47245807 1.522838 1.868480</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   refp_sd_int[1] 3.2060377 3.201288 0.22387183 0.23731815 2.853391 3.008119</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      sqrt_phi[1] 0.2496831 0.248297 0.03409312 0.03389633 0.196707 0.221606</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          q80       q95     rhat  ess_bulk ess_tail</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;num&gt;     &lt;num&gt;    &lt;num&gt;     &lt;num&gt;    &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2.6828413 3.1463897 1.006471  571.2456 635.6078</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 3.3975243 3.5802367 1.005243  686.0466 746.0435</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 0.2784192 0.3063322 1.001405 1086.0941 603.1580</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">enw_replace_priors</span><span class="op">(</span><span class="va">default_priors</span>, <span class="va">fit_priors</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             variable</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: refp_mean_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   refp_sd_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:         refnp_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:     refnp_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:     refp_mean_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:       refp_sd_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7:          sqrt_phi</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                    description</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                         &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: Standard deviation of scaled pooled parametric mean effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   Standard deviation of scaled pooled parametric sd effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:           Intercept for non-parametric reference date delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  Standard deviation of scaled pooled non-parametric effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                                                        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:                                                        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7:                                                        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution      mean         sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;char&gt;     &lt;num&gt;      &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: Zero truncated normal 0.0000000 1.00000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal 0.0000000 1.00000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                Normal 0.0000000 1.00000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal 0.0000000 1.00000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                  &lt;NA&gt; 2.8538466 0.60299691</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:                  &lt;NA&gt; 3.6893646 0.30337736</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7:                  &lt;NA&gt; 0.3492024 0.03164753</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                variable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;char&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:   refp_mean_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:     refp_sd_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:    refp_arima_sigma</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: refp_arima_sd_sigma</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:     refp_arima_pacf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:         refp_gp_rho</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:       refp_gp_alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:    refp_gp_sd_alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:           refnp_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:       refnp_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:   refnp_arima_sigma</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:    refnp_arima_pacf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:        refnp_gp_rho</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:      refnp_gp_alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:       refp_mean_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:         refp_sd_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:            sqrt_phi</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                            description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                                 &lt;char&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:                                                                                                        Standard deviation of scaled pooled parametric mean effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:                                                                                                          Standard deviation of scaled pooled parametric sd effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:                                                                                                Scale of the ARIMA latent residual on the parametric reference mean</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:                                                                                                  Scale of the ARIMA latent residual on the parametric reference sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:     Partial autocorrelations of the ARIMA latent residual on the parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:                                                  Length scale of the Gaussian process on the parametric reference; log-normal prior on the (positive) length scale</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:                                                Magnitude (marginal standard deviation) of the Gaussian process on the parametric reference mean; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:                                                  Magnitude (marginal standard deviation) of the Gaussian process on the parametric reference sd; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:                                                                                                                  Intercept for non-parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:                                                                                                         Standard deviation of scaled pooled non-parametric effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:                                                                          Standard deviation of the ARIMA latent residual on non-parametric reference logit hazards</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: Partial autocorrelations of the ARIMA latent residual on the non-parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:                                              Length scale of the Gaussian process on the non-parametric reference; log-normal prior on the (positive) length scale</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the non-parametric reference; half-normal prior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:                                                                                                                                                               &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:                                                                                                                                                               &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:                                                                                                                                                               &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              distribution      mean         sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                    &lt;char&gt;     &lt;num&gt;      &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1: Zero truncated normal 0.0000000 1.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: Zero truncated normal 0.0000000 1.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: Zero truncated normal 0.0000000 0.20000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: Zero truncated normal 0.0000000 0.20000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:               Uniform 0.0000000 0.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:            Log normal 1.0986123 0.50000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7: Zero truncated normal 0.0000000 0.05000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8: Zero truncated normal 0.0000000 0.05000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:                Normal 0.0000000 1.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: Zero truncated normal 0.0000000 1.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11: Zero truncated normal 0.0000000 0.20000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:               Uniform 0.0000000 0.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:            Log normal 1.0986123 0.50000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14: Zero truncated normal 0.0000000 0.05000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:                  &lt;NA&gt; 2.2845186 0.49001224</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:                  &lt;NA&gt; 3.2060377 0.22387183</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:                  &lt;NA&gt; 0.2496831 0.03409312</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -228,7 +295,7 @@ available prior variable names by module.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.9000.</p>
 </div>
 
     </footer></div>

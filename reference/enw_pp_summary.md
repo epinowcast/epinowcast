@@ -38,11 +38,15 @@ A data.table summarising the posterior predictions.
 ## See also
 
 Functions used for postprocessing of model fits
+[`.check_primarycensored()`](https://package.epinowcast.org/reference/dot-check_primarycensored.md),
+[`.delay_draw_columns()`](https://package.epinowcast.org/reference/dot-delay_draw_columns.md),
+[`.discretise_parametric_pmf()`](https://package.epinowcast.org/reference/dot-discretise_parametric_pmf.md),
 [`build_ord_obs()`](https://package.epinowcast.org/reference/build_ord_obs.md),
 [`enw_add_latest_obs_to_nowcast()`](https://package.epinowcast.org/reference/enw_add_latest_obs_to_nowcast.md),
 [`enw_nowcast_samples()`](https://package.epinowcast.org/reference/enw_nowcast_samples.md),
 [`enw_nowcast_summary()`](https://package.epinowcast.org/reference/enw_nowcast_summary.md),
 [`enw_posterior()`](https://package.epinowcast.org/reference/enw_posterior.md),
+[`enw_posterior_delay()`](https://package.epinowcast.org/reference/enw_posterior_delay.md),
 [`enw_quantiles_to_long()`](https://package.epinowcast.org/reference/enw_quantiles_to_long.md),
 [`enw_summarise_samples()`](https://package.epinowcast.org/reference/enw_summarise_samples.md),
 [`subset_obs()`](https://package.epinowcast.org/reference/subset_obs.md)
@@ -67,28 +71,28 @@ enw_pp_summary(fit$fit[[1]], fit$new_confirm[[1]], probs = c(0.5))
 #> 610:     2021-08-22  2021-08-22      1          45       DE       00+      45
 #>      cum_prop_reported delay new_confirm prop_reported   mean median        sd
 #>                  <num> <num>       <int>         <num>  <num>  <num>     <num>
-#>   1:         0.3055556     0          22    0.30555556 22.049     20 10.447476
-#>   2:         0.4722222     1          12    0.16666667 22.031     21 10.062370
-#>   3:         0.5277778     2           4    0.05555556  7.992      8  4.118361
-#>   4:         0.5972222     3           5    0.06944444  4.261      4  2.692978
-#>   5:         0.5972222     4           0    0.00000000  1.326      1  1.258295
+#>   1:         0.3055556     0          22    0.30555556 26.383     25  9.581969
+#>   2:         0.4722222     1          12    0.16666667 15.233     15  6.050729
+#>   3:         0.5277778     2           4    0.05555556  7.678      7  3.636969
+#>   4:         0.5972222     3           5    0.06944444  3.944      4  2.286502
+#>   5:         0.5972222     4           0    0.00000000  1.400      1  1.259995
 #>  ---                                                                          
-#> 606:         0.9298246     1          61    0.35672515 81.048     77 33.870413
-#> 607:         1.0000000     2          12    0.07017544 12.586     11  6.299229
-#> 608:         0.6160714     0          69    0.61607143 73.471     69 32.792995
-#> 609:         1.0000000     1          43    0.38392857 47.332     44 20.074730
-#> 610:         1.0000000     0          45    1.00000000 40.534     37 20.435911
+#> 606:         0.9298246     1          61    0.35672515 55.768     54 18.172904
+#> 607:         1.0000000     2          12    0.07017544 12.969     13  5.157387
+#> 608:         0.6160714     0          69    0.61607143 94.223     91 30.188319
+#> 609:         1.0000000     1          43    0.38392857 32.499     31 11.903684
+#> 610:         1.0000000     0          45    1.00000000 47.577     45 17.455107
 #>          mad   q50      rhat  ess_bulk  ess_tail
 #>        <num> <num>     <num>     <num>     <num>
-#>   1:  8.8956    20 1.0007087  981.0605  957.4820
-#>   2: 10.3782    21 1.0006400 1010.0549  860.7285
-#>   3:  4.4478     8 1.0018374 1046.7610  956.3804
-#>   4:  2.9652     4 1.0008338  959.7921  978.0414
-#>   5:  1.4826     1 1.0003294  999.1432  873.2038
+#>   1:  8.8956    25 1.0004729 1061.6093  991.5120
+#>   2:  5.9304    15 0.9988477 1023.0243  970.0040
+#>   3:  2.9652     7 1.0020368  880.4481  852.4398
+#>   4:  2.9652     4 0.9988907 1042.2961  972.7787
+#>   5:  1.4826     1 1.0058021  947.5482  928.1070
 #>  ---                                            
-#> 606: 31.1346    77 0.9999674 1016.8230 1000.9385
-#> 607:  5.9304    11 1.0006309  965.7202  850.5506
-#> 608: 29.6520    69 0.9983329 1072.1422  973.6582
-#> 609: 19.2738    44 0.9993679 1127.5257  906.6164
-#> 610: 17.7912    37 1.0003136 1372.2704 1042.6714
+#> 606: 17.7912    54 1.0017605 1121.7985  944.1552
+#> 607:  5.9304    13 0.9995106  941.1128 1010.1847
+#> 608: 28.1694    91 1.0000863  950.7711  896.0739
+#> 609: 10.3782    31 1.0022798  866.9334  748.8873
+#> 610: 16.3086    45 1.0013025 1030.5884  807.8255
 ```

@@ -57,10 +57,14 @@ not.
 ## See also
 
 Functions used for postprocessing of model fits
+[`.check_primarycensored()`](https://package.epinowcast.org/reference/dot-check_primarycensored.md),
+[`.delay_draw_columns()`](https://package.epinowcast.org/reference/dot-delay_draw_columns.md),
+[`.discretise_parametric_pmf()`](https://package.epinowcast.org/reference/dot-discretise_parametric_pmf.md),
 [`build_ord_obs()`](https://package.epinowcast.org/reference/build_ord_obs.md),
 [`enw_add_latest_obs_to_nowcast()`](https://package.epinowcast.org/reference/enw_add_latest_obs_to_nowcast.md),
 [`enw_nowcast_summary()`](https://package.epinowcast.org/reference/enw_nowcast_summary.md),
 [`enw_posterior()`](https://package.epinowcast.org/reference/enw_posterior.md),
+[`enw_posterior_delay()`](https://package.epinowcast.org/reference/enw_posterior_delay.md),
 [`enw_pp_summary()`](https://package.epinowcast.org/reference/enw_pp_summary.md),
 [`enw_quantiles_to_long()`](https://package.epinowcast.org/reference/enw_quantiles_to_long.md),
 [`enw_summarise_samples()`](https://package.epinowcast.org/reference/enw_summarise_samples.md),
@@ -97,9 +101,9 @@ enw_nowcast_samples(
 #>     4:                 1    19             0      1          4     4    149
 #>     5:                 1    19             0      1          5     5    149
 #>    ---                                                                     
-#> 19996:                 1     0             1      2        496   996    453
-#> 19997:                 1     0             1      2        497   997    274
-#> 19998:                 1     0             1      2        498   998    250
-#> 19999:                 1     0             1      2        499   999    432
-#> 20000:                 1     0             1      2        500  1000    491
+#> 19996:                 1     0             1      2        496   996    254
+#> 19997:                 1     0             1      2        497   997    373
+#> 19998:                 1     0             1      2        498   998    412
+#> 19999:                 1     0             1      2        499   999    332
+#> 20000:                 1     0             1      2        500  1000    347
 ```

@@ -94,6 +94,7 @@ Preprocessing functions
 ## Examples
 
 ``` r
+
 # make some example date
 nat_germany_hosp <- subset(
   germany_covid19_hosp,

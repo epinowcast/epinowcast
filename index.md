@@ -34,6 +34,7 @@ You can install the latest released version using the normal `R`
 function, though you need to point to `r-universe` instead of CRAN:
 
 ``` r
+
 install.packages(
   "epinowcast", repos = "https://epinowcast.r-universe.dev"
 )
@@ -45,6 +46,7 @@ from Github (warning! this version may contain breaking changes and/or
 bugs):
 
 ``` r
+
 remotes::install_github(
   "epinowcast/epinowcast",
   dependencies = TRUE
@@ -56,6 +58,7 @@ tag (e.g. this installs
 [`0.2.0`](https://github.com/epinowcast/epinowcast/releases/tag/v0.2.0)):
 
 ``` r
+
 remotes::install_github(
   "epinowcast/epinowcast",
   dependencies = TRUE, ref = "v0.2.0"
@@ -82,6 +85,7 @@ vignette](https://package.epinowcast.org/articles/stan-help.html#toolchain),
 but the brief version is:
 
 ``` r
+
 # install cmdstanr
 install.packages(
   "cmdstanr",
@@ -156,6 +160,7 @@ features with these and they may help you if you are using a development
 version. After installing `epinowcast`, you can find them via:
 
 ``` r
+
 list.files(
   system.file("examples", package = "epinowcast"), full.names = TRUE
 )
@@ -219,7 +224,7 @@ specification. Contributions of any kind are welcome!
 [sbfnk](https://github.com/epinowcast/epinowcast/commits?author=sbfnk),
 [Bisaloo](https://github.com/epinowcast/epinowcast/commits?author=Bisaloo),
 [pearsonca](https://github.com/epinowcast/epinowcast/commits?author=pearsonca),
-[choi-hannah](https://github.com/epinowcast/epinowcast/commits?author=choi-hannah),
+[choi-hannah-old](https://github.com/epinowcast/epinowcast/commits?author=choi-hannah-old),
 [medewitt](https://github.com/epinowcast/epinowcast/commits?author=medewitt),
 [jamesmbaazam](https://github.com/epinowcast/epinowcast/commits?author=jamesmbaazam),
 [pitmonticone](https://github.com/epinowcast/epinowcast/commits?author=pitmonticone),
@@ -231,7 +236,8 @@ specification. Contributions of any kind are welcome!
 [Lnrivas](https://github.com/epinowcast/epinowcast/commits?author=Lnrivas),
 [natemcintosh](https://github.com/epinowcast/epinowcast/commits?author=natemcintosh),
 [nikosbosse](https://github.com/epinowcast/epinowcast/commits?author=nikosbosse),
-[pratikunterwegs](https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs)
+[pratikunterwegs](https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs),
+[nicholasdavies](https://github.com/epinowcast/epinowcast/commits?author=nicholasdavies)
 
 ### Issue Authors
 

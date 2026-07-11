@@ -2,6 +2,19 @@
 
 ### All vignettes
 
+- [ARIMA latent residuals: maths, priors, and
+  usage](https://package.epinowcast.org/articles/arima.md):
+
+  The maths behind the ARIMA(p, d, q) latent residuals in epinowcast,
+  how to use them in any module’s formula, and how to set their priors.
+
+- [Estimating reporting delays with the full and delay-only
+  models](https://package.epinowcast.org/articles/delay-estimation.md):
+
+  A walk through of estimating a reporting delay distribution, comparing
+  the full nowcasting model with the delay-only model that conditions on
+  known totals.
+
 - [Discretised
   distributions](https://package.epinowcast.org/articles/distributions.md):
 
@@ -18,6 +31,13 @@
 
   Quick reference to package capabilities
 
+- [Gaussian process latent terms: maths, priors, and
+  usage](https://package.epinowcast.org/articles/gaussian-process.md):
+
+  The maths behind the Hilbert-space approximate Gaussian process latent
+  terms in epinowcast, how to use them in any module’s formula, and how
+  to set their priors.
+
 - [Hierarchical nowcasting of age stratified COVID-19 hospitalisations
   in
   Germany](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.md):
@@ -30,6 +50,13 @@
 
   A comparison of NUTS sampling, pathfinder approximate inference, and
   pathfinder-initialised NUTS across two model specifications.
+
+- [Latent process and periodic options for the growth-rate
+  model](https://package.epinowcast.org/articles/latent-processes.md):
+
+  Random walks, ARIMA(p, d, q) residuals, and periodic effects — the
+  time-series structures available in the formula interface for the
+  growth rate.
 
 - [Model definition and
   implementation](https://package.epinowcast.org/articles/model.md):
@@ -58,3 +85,10 @@
   Stan](https://package.epinowcast.org/articles/stan-help.md):
 
   How to address issues you may encounter with Stan
+
+- [Temporal aggregation
+  guide](https://package.epinowcast.org/articles/temporal-aggregation.md):
+
+  How to fit nowcasts when the data and process timesteps differ,
+  including pure weekly, weekly reporting on a daily process, and a
+  daily benchmark.

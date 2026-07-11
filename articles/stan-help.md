@@ -40,10 +40,10 @@ configured on your machine.
 ### Ensuring you have the proper toolchain
 
 The Stan code that is written in the
-[epinowcast](https://package.epinowcast.org) package is
-converted[¹](#fn1) to optimised C++ code and then compiled to
-machine-readable instructions. Because Stan needs several programs to
-execute this compilation process such as the build tool
+[epinowcast](https://package.epinowcast.org) package is converted[^1] to
+optimised C++ code and then compiled to machine-readable instructions.
+Because Stan needs several programs to execute this compilation process
+such as the build tool
 [make](https://en.wikipedia.org/wiki/Make_(software)) and a C++
 compiler, you will need to ensure that your system has the appropriate
 supporting software, known as a toolchain. The steps to install this
@@ -74,6 +74,7 @@ You can install it with:
 Code
 
 ``` r
+
 install.packages(
   "cmdstanr",
   repos = c("https://stan-dev.r-universe.dev", getOption("repos"))
@@ -86,6 +87,7 @@ the following code in your R terminal:
 Code
 
 ``` r
+
 library(cmdstanr)
 check_cmdstan_toolchain()
 ```
@@ -96,6 +98,7 @@ as follows:
 Code
 
 ``` r
+
 #> The C++ toolchain required for CmdStan is set up properly!
 ```
 
@@ -107,6 +110,7 @@ Assuming you have the toolchain installed, you can install CmdStan.
 Code
 
 ``` r
+
 cmdstanr::install_cmdstan(cores = 2)
 ```
 
@@ -248,6 +252,7 @@ following:
 Code
 
 ``` r
+
 enw_fit_opts(
     save_warmup = FALSE,
     pp = TRUE,
@@ -282,6 +287,7 @@ retrieve your current files and manipulate them as needed.
 Code
 
 ``` r
+
 default_priors <- enw_reference(data = enw_example("preprocessed"))
 default_priors
 ```
@@ -293,6 +299,7 @@ them by half to 0.5.
 Code
 
 ``` r
+
 new_priors <- default_priors$priors
 
 new_priors[ ,sd := 0.5]
@@ -303,6 +310,7 @@ You could then pass these new priors to the `epinowcast` function.
 Code
 
 ``` r
+
 epinowcast(pobs,
   expectation = expectation_module,
   fit = fit,
@@ -389,6 +397,7 @@ detected during your model fit.
 Code
 
 ``` r
+
 #>1: There were 32 divergent transitions after warmup.
 ```
 
@@ -479,9 +488,7 @@ Yao, Y., Kennedy, L., Gabry, J., Bürkner, P.-C., & Modrák, M. (2020,
 November 3). *Bayesian Workflow*.
 <https://doi.org/10.48550/arXiv.2011.01808>
 
-------------------------------------------------------------------------
-
-1.  The Stan code is first passed to a Stan-specific compiled written in
-    Ocaml called [stanc3](https://github.com/stan-dev/stanc3). The
+[^1]: The Stan code is first passed to a Stan-specific compiled written
+    in Ocaml called [stanc3](https://github.com/stan-dev/stanc3). The
     optimised C++ code generated from this first step is then passed to
     the C++ compiler.

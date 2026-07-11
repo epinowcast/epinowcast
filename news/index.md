@@ -1,6 +1,135 @@
 # Changelog
 
-## epinowcast 0.6.1 (development)
+## epinowcast 0.7.0
+
+### Model
+
+- The fixed-effects design and integrated (`d >= 1`)
+  [`arima()`](https://package.epinowcast.org/reference/arima.md) and
+  [`gp()`](https://package.epinowcast.org/reference/gp.md) residuals are
+  now centred against the module intercept, decorrelating the intercept
+  from the slopes and from the latent drift to improve sampling
+  geometry. For modules with a free intercept (`expr`, `refp` mean,
+  `refnp`, `miss`) the design is centred on its observation-weighted
+  column means, as `brms` does by default, and the grand mean (over time
+  and groups) of the integrated residual is removed. The sampled
+  intercept (`<prefix>_int_c`) is on the centred scale; the
+  original-scale intercept the prior applies to is recovered as
+  `<prefix>_int` by undoing both the design and latent centring (a
+  unit-Jacobian shift, so the prior keeps its meaning and the posterior
+  is unchanged, as in EpiNow2’s reproduction-number centring). Only the
+  shared grand-mean level is removed, so each group keeps its own level
+  and drift: a grouped latent (`arima(time, group, ...)`, `G > 1`) is
+  unchanged in meaning and the reparameterisation is exact for any
+  number of groups. On a weekly random-walk growth model the centred
+  form samples roughly twice as fast at the `adapt_delta` these models
+  use (it is sharper, so benefits from `adapt_delta >= 0.95`). Modules
+  without a free intercept (`expl`, `rep`) and the log-link `refp`
+  standard deviation are left uncentred.
+- Added a [`gp()`](https://package.epinowcast.org/reference/gp.md)
+  formula helper that places an approximate Gaussian process on any
+  module’s linear predictor, the same way
+  [`arima()`](https://package.epinowcast.org/reference/arima.md) and
+  [`rw()`](https://package.epinowcast.org/reference/rw.md) work. It uses
+  a Hilbert-space reduced-rank (spectral) approximation with selectable
+  kernels (Matern 3/2 default, Matern 5/2, Ornstein-Uhlenbeck, squared
+  exponential, periodic) and a `basis_prop` accuracy-speed control. A
+  [`gp()`](https://package.epinowcast.org/reference/gp.md) term can be
+  placed on the growth rate (`expr`), the latent-to-obs proportion
+  (`expl`), the parametric (`refp`) and non-parametric (`refnp`)
+  reference delay, the report-time hazards (`rep`), and the
+  missing-reference proportion (`miss`). An integer `d` argument
+  (matching
+  [`arima()`](https://package.epinowcast.org/reference/arima.md)’s `d`)
+  integrates the process `d` times: `d = 0` is stationary (the default,
+  like EpiNow2’s `gp_on = "R0"`), `d = 1` gives a smoothly drifting
+  trend (like EpiNow2’s default `gp_on = "R_t-1"`), and `d >= 2`
+  integrates further, anchoring the first `d` values to zero so the
+  level and slope are carried by the fixed effects. The Stan
+  implementation is adapted from `EpiNow2`
+  (<https://github.com/epiforecasts/EpiNow2>, MIT licensed). See
+  [\#824](https://github.com/epinowcast/epinowcast/issues/824).
+- Added a delay-only model that fits the reporting-delay distribution
+  conditional on known per-reference-date totals, treating those totals
+  as fixed truth (the standard delay-estimation pattern of Kalbfleisch &
+  Lawless, 1989; Höhle & an der Heiden, 2014). Enable it with
+  `enw_obs(delay_only = TRUE)`: a delay-only fit is just
+  `epinowcast(data, obs = enw_obs(delay_only = TRUE, data = data))`, as
+  [`epinowcast()`](https://package.epinowcast.org/reference/epinowcast.md)
+  minimises the (now inert) expectation automatically. The latent
+  process and per-cell observation model are replaced by a (truncated)
+  multinomial likelihood over the reported cells of each reference date.
+  When the known totals are final retrospective totals this is the plain
+  multinomial; when they are running totals observed only up to some
+  horizon the likelihood renormalises over all delays up to the
+  observation cutoff to give the truncated multinomial. An
+  `observation_indicator` is supported (interior cells unobserved but
+  before the cutoff keep their weight). `delay_only = TRUE` selects the
+  multinomial likelihood internally regardless of `family`, warning if a
+  `family` is supplied. See the delay estimation vignette and
+  [\#775](https://github.com/epinowcast/epinowcast/issues/775) and
+  [\#776](https://github.com/epinowcast/epinowcast/issues/776). Also
+  adds
+  [`enw_posterior_delay()`](https://package.epinowcast.org/reference/enw_posterior_delay.md)
+  to extract posterior samples of the parametric delay distribution; it
+  returns one PMF per reference-design row (with a `row` column) for
+  delay models with reference covariates, random effects, or time- or
+  group-varying delays.
+- The parametric reference delay is now discretised with the double
+  interval censoring approach from the
+  [primarycensored](https://primarycensored.epinowcast.org) package,
+  replacing the previous uniform-interval approximation. This more
+  exactly accounts for primary event censoring, secondary interval
+  censoring, and right truncation, and is used unconditionally for the
+  lognormal, gamma, and exponential distributions. The log-logistic
+  distribution has been dropped from
+  [`enw_reference()`](https://package.epinowcast.org/reference/enw_reference.md)
+  because `primarycensored` does not yet support it
+  (epinowcast/primarycensored#321); it can be restored once upstream
+  support lands. The vendored Stan functions are generated from
+  `primarycensored` by `inst/dev/vendor-primarycensored.R` and kept up
+  to date by the `check-primarycensored` workflow, following the
+  approach used by `EpiNow2`. The now-unused legacy discretisation Stan
+  functions (`discretised_logit_hazard()` and its uniform-interval
+  helpers) have been removed. See
+  [\#848](https://github.com/epinowcast/epinowcast/issues/848)
+  (addressing
+  [\#438](https://github.com/epinowcast/epinowcast/issues/438) and
+  [\#297](https://github.com/epinowcast/epinowcast/issues/297)) by
+  [@seabbs](https://github.com/seabbs).
+- The autoregressive part of an
+  [`arima()`](https://package.epinowcast.org/reference/arima.md) latent
+  residual now takes an optional prior on its partial autocorrelations,
+  set through each module’s `<prefix>_arima_pacf` entry
+  (e.g. `expr_arima_pacf`). The default keeps the implicit
+  Uniform(-1, 1) from the parameter bounds; a positive standard
+  deviation switches to a Normal prior truncated to (-1, 1) for gentle
+  shrinkage toward weaker autocorrelation.
+
+### Package
+
+- Lowered the minimum R version from 4.4.0 to 4.3.0 so users on R 4.3.x
+  can install the package. No code in the package relies on features
+  introduced in R 4.4. See
+  [\#811](https://github.com/epinowcast/epinowcast/issues/811) by
+  [@seabbs](https://github.com/seabbs).
+
+### Documentation
+
+- Added a Gaussian process vignette (`gaussian-process.Rmd`) covering
+  the Hilbert-space spectral approximation, the available kernels, the
+  priors, and the modules a
+  [`gp()`](https://package.epinowcast.org/reference/gp.md) term can be
+  placed on, ported from `EpiNow2`’s implementation notes. See
+  [\#824](https://github.com/epinowcast/epinowcast/issues/824).
+- Added a temporal aggregation guide vignette covering the weekly
+  timestep, daily-process / weekly-reporting (fitted and structural
+  variants), and a daily benchmark, with weekly-scale CRPS comparison
+  via `scoringutils`. Replaces the standalone scripts at
+  `inst/examples/germany_weekly_process_model.R` and
+  `inst/examples/germany_weekly_reporting_daily_process_model.R`. See
+  [\#668](https://github.com/epinowcast/epinowcast/issues/668) by
+  [@seabbs](https://github.com/seabbs).
 
 ### Bug fixes
 
@@ -12,6 +141,16 @@
   `mismatch in number dimensions declared and found in context`. See
   [\#783](https://github.com/epinowcast/epinowcast/issues/783) by
   [@seabbs](https://github.com/seabbs).
+
+- Fixed
+  [`enw_report()`](https://package.epinowcast.org/reference/enw_report.md)
+  recycling the report-date index (`rep_findex`) when the report axis is
+  longer than `time + max_delay - 1`, for example after
+  `enw_complete_dates(completion_beyond_max_report = TRUE)`. Previously
+  this emitted a “data length is not a sub-multiple or multiple” warning
+  and mis-mapped report-date effects across groups and times; the number
+  of report dates per group is now read from the report metadata. See
+  [\#868](https://github.com/epinowcast/epinowcast/issues/868).
 
 ## epinowcast 0.6.0
 

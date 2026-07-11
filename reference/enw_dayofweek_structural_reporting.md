@@ -41,6 +41,8 @@ Helper functions for model modules
 [`add_max_observed_delay()`](https://package.epinowcast.org/reference/add_max_observed_delay.md),
 [`add_pmfs()`](https://package.epinowcast.org/reference/add_pmfs.md),
 [`convolution_matrix()`](https://package.epinowcast.org/reference/convolution_matrix.md),
+[`delay_only_ltotal()`](https://package.epinowcast.org/reference/delay_only_ltotal.md),
+[`delay_only_total()`](https://package.epinowcast.org/reference/delay_only_total.md),
 [`enw_reference_by_report()`](https://package.epinowcast.org/reference/enw_reference_by_report.md),
 [`enw_reps_with_complete_refs()`](https://package.epinowcast.org/reference/enw_reps_with_complete_refs.md),
 [`enw_structural_reporting_metadata()`](https://package.epinowcast.org/reference/enw_structural_reporting_metadata.md),
@@ -56,12 +58,14 @@ pobs <- enw_preprocess_data(obs, max_delay = 30)
 
 # Wednesday-only reporting
 enw_dayofweek_structural_reporting(
-  pobs, day_of_week = "Wednesday"
+  pobs,
+  day_of_week = "Wednesday"
 )
 
 # Multiple reporting days
 enw_dayofweek_structural_reporting(
-  pobs, day_of_week = c("Monday", "Wednesday", "Friday")
+  pobs,
+  day_of_week = c("Monday", "Wednesday", "Friday")
 )
 } # }
 ```
