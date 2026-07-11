@@ -993,7 +993,7 @@ enw_expectation(data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x55cc8b461d18>
-#> <environment: 0x55cc8b44f880>
+#> <bytecode: 0x55c00f5e6530>
+#> <environment: 0x55c00f5d9e20>
 #> 
 ```
