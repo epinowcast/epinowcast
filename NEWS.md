@@ -1,4 +1,4 @@
-# epinowcast 0.6.0.1000
+# epinowcast 0.7.0
 
 ## Model
 
