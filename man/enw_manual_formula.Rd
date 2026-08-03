@@ -62,6 +62,7 @@ Functions used to help convert formulas into model designs
 \code{\link{construct_gp}()},
 \code{\link{construct_re}()},
 \code{\link{construct_rw}()},
+\code{\link{construct_secondary}()},
 \code{\link{enw_formula}()},
 \code{\link{gp}()},
 \code{\link{gp_terms}()},
@@ -71,8 +72,11 @@ Functions used to help convert formulas into model designs
 \code{\link{remove_arima_terms}()},
 \code{\link{remove_gp_terms}()},
 \code{\link{remove_rw_terms}()},
+\code{\link{remove_secondary_terms}()},
 \code{\link{rw}()},
 \code{\link{rw_terms}()},
+\code{\link{secondary}()},
+\code{\link{secondary_terms}()},
 \code{\link{split_formula_to_terms}()}
 }
 \concept{formulatools}

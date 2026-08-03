@@ -277,6 +277,58 @@ remove_gp_terms <- function(formula) {
   form
 }
 
+#' Finds secondary stratum terms in a formula object
+#'
+#' @description This function extracts secondary stratum terms denoted
+#' using [secondary()] from a formula so that they can be processed on
+#' their own. A `secondary()` term declares that the stratum carrying the
+#' formula is a delayed and ascertained function of a parent stratum (see
+#' the multi-stratum expectation overlay used by [enw_expectation()]).
+#'
+#' @return A character vector containing the secondary stratum terms
+#' identified in the supplied formula.
+#'
+#' @inheritParams enw_formula
+#' @family formulatools
+#' @examples
+#' epinowcast:::secondary_terms(~ secondary(cases))
+#'
+#' epinowcast:::secondary_terms(~ 1 + secondary(cases, delay = ~ 1 + week))
+secondary_terms <- function(formula) {
+  trms <- attr(terms(formula), "term.labels")
+  match <- grepl("^secondary\\(.*\\)$", trms)
+  match <- match & !grepl("|", trms, fixed = TRUE)
+  trms[match]
+}
+
+#' Remove secondary stratum terms from a formula object
+#'
+#' @description This function removes secondary stratum terms denoted
+#' using [secondary()] from a formula so they can be processed on their
+#' own.
+#'
+#' @inheritParams split_formula_to_terms
+#' @return A formula object with the secondary stratum terms removed.
+#' @family formulatools
+#' @examples
+#' epinowcast:::remove_secondary_terms(~ 1 + secondary(cases))
+remove_secondary_terms <- function(formula) {
+  form <- as_string_formula(formula)
+  form <- gsub("secondary\\(.*?\\) \\+ ", "", form)
+  form <- gsub("\\+ secondary\\(.*?\\)", "", form)
+  form <- gsub("secondary\\(.*?\\)", "", form)
+
+  form <- tryCatch(
+    {
+      as.formula(form)
+    },
+    error = function(cond) {
+      as.formula(paste(form, 1))
+    }
+  )
+  form
+}
+
 #' Parse a formula into components
 #'
 #' @description This function uses a series internal functions
@@ -296,6 +348,7 @@ remove_gp_terms <- function(formula) {
 #'  - `rw`: A character vector of [rw()] random walk terms.
 #'  - `arima`: A character vector of [arima()] ARIMA(p, d, q) terms.
 #'  - `gp`: A character vector of [gp()] Gaussian process terms.
+#'  - `secondary`: A character vector of [secondary()] stratum terms.
 #' @inheritParams enw_formula
 #' @importFrom reformulas nobars findbars
 #' @importFrom cli cli_abort
@@ -308,10 +361,17 @@ remove_gp_terms <- function(formula) {
 #' epinowcast:::parse_formula(~ 1 + (age_group | location))
 #'
 #' epinowcast:::parse_formula(~ 1 + (1 | location) + rw(week, location))
+#'
+#' epinowcast:::parse_formula(~ secondary(cases))
 parse_formula <- function(formula) {
   if (!inherits(formula, "formula")) {
     cli::cli_abort("`formula` must be a formula object.")
   }
+  # secondary() terms carry nested formulas (e.g. `delay = ~ 1`) that
+  # would confuse `terms()`-based detection of the other special terms,
+  # so they are extracted and stripped first.
+  secondary <- secondary_terms(formula)
+  formula <- remove_secondary_terms(formula)
   rw <- rw_terms(formula)
   formula <- remove_rw_terms(formula)
   arima <- arima_terms(formula)
@@ -326,7 +386,8 @@ parse_formula <- function(formula) {
     random = random,
     rw = rw,
     arima = arima,
-    gp = gp
+    gp = gp,
+    secondary = secondary
   )
   model_terms
 }
@@ -662,6 +723,148 @@ gp <- function(time, by, d = 0, kernel = c(
     cli::cli_abort("`basis_prop` must be a numeric scalar in (0, 1].")
   }
   invisible(NULL)
+}
+
+#' Declare a stratum as a delayed function of another stratum
+#'
+#' @description A call to `secondary()` is used inside a per-stratum
+#' expectation formula passed to [enw_expectation()] (the `r` argument as
+#' a named list). It declares that the stratum carrying the formula is a
+#' delayed, ascertained (scaled) function of a parent stratum's
+#' expectation rather than having its own latent process. For example a
+#' deaths stratum may be a delayed and scaled function of a cases
+#' stratum. As with [gp()] and [arima()], arguments are not evaluated;
+#' they are captured for use in model construction.
+#'
+#' Every effect surface is a formula and follows the [enw_formula()]
+#' syntax. The only non-formula argument is `distribution`, the
+#' parametric family of the cross-stratum delay. Chains are allowed (a
+#' stratum may depend on a non-primary stratum); the dependency graph is
+#' validated and topologically ordered by [enw_topo_sort_strata()].
+#'
+#' This is the Phase 0 R skeleton of the multi-stratum overlay: the term
+#' is parsed, validated, and ordered, but is not yet wired into the Stan
+#' model.
+#'
+#' @param parent The parent stratum that this stratum depends on. Either
+#' an unquoted name (e.g. `cases`) or a string (e.g. `"cases"`). Stored
+#' as a string.
+#'
+#' @param delay A formula describing the cross-stratum delay (reference)
+#' surface. Defaults to `~1`. Maps to the reference hazard machinery.
+#'
+#' @param distribution Character string giving the parametric family of
+#' the cross-stratum delay. One of `"lognormal"` (the default),
+#' `"gamma"`, or `"exponential"`. This is the only non-formula argument.
+#'
+#' @param report A formula describing the report-date hazard surface for
+#' the cross-stratum delay. Defaults to `~0` (no report-date effects).
+#'
+#' @param ascertainment A formula describing the ascertainment (scale)
+#' surface, for example a case fatality ratio. Defaults to `~1`. Maps to
+#' the latent-to-observation proportion machinery.
+#'
+#' @param type Character string, one of `"incidence"` (the default) or
+#' `"prevalence"`, selecting whether the dependent stratum is modelled as
+#' an incidence or prevalence function of the parent.
+#'
+#' @return A list of class `enw_secondary_term` describing the
+#' dependency, interpretable by [construct_secondary()]. It contains the
+#' `parent` (string), the `delay`, `report`, and `ascertainment`
+#' formulas, the delay `distribution`, and the `type`.
+#' @export
+#' @importFrom cli cli_abort
+#' @importFrom rlang arg_match
+#' @family formulatools
+#' @examples
+#' secondary(cases)
+#' secondary("cases", delay = ~ 1 + week, distribution = "gamma")
+#' secondary(cases, ascertainment = ~ 1 + (1 | region), type = "prevalence")
+secondary <- function(parent, delay = ~1, distribution = "lognormal",
+                      report = ~0, ascertainment = ~1,
+                      type = c("incidence", "prevalence")) {
+  if (missing(parent)) {
+    cli::cli_abort("`parent` must be present")
+  }
+  # Accept an unquoted name or a string, storing the parent as a string.
+  # Inspect the unevaluated expression first so an unquoted symbol (e.g.
+  # `cases`) is not evaluated; only evaluate when it is itself a string.
+  parent_expr <- substitute(parent)
+  if (is.character(parent_expr)) {
+    parent <- parent_expr
+  } else if (is.name(parent_expr)) {
+    parent <- deparse(parent_expr)
+  } else {
+    parent <- as.character(parent)
+  }
+  if (length(parent) != 1L || is.na(parent) || !nzchar(parent)) {
+    cli::cli_abort("`parent` must be a single non-empty stratum name.")
+  }
+
+  .check_secondary_formula(delay, "delay")
+  .check_secondary_formula(report, "report")
+  .check_secondary_formula(ascertainment, "ascertainment")
+
+  distribution <- rlang::arg_match(
+    distribution, c("lognormal", "gamma", "exponential")
+  )
+  type <- rlang::arg_match(type, c("incidence", "prevalence"))
+
+  out <- list(
+    parent = parent,
+    delay = delay,
+    report = report,
+    ascertainment = ascertainment,
+    distribution = distribution,
+    type = type
+  )
+  class(out) <- "enw_secondary_term"
+  out
+}
+
+# Internal helper: validate that a `secondary()` surface argument is a
+# one-sided formula.
+.check_secondary_formula <- function(value, name) {
+  if (!inherits(value, "formula")) {
+    cli::cli_abort("`{name}` must be a formula (e.g. `~ 1`).")
+  }
+  invisible(NULL)
+}
+
+#' Constructs secondary stratum term metadata
+#'
+#' @description Takes a secondary stratum term as defined by
+#' [secondary()] and returns the metadata describing the cross-stratum
+#' dependency. In Phase 0 this records the parent, the delay, report, and
+#' ascertainment formulas, the delay distribution, and the dependency
+#' type; it does not yet build design matrices or Stan data (later
+#' phases reuse the reference, report, and ascertainment machinery).
+#'
+#' @param secondary A secondary stratum term as defined by [secondary()].
+#'
+#' @return A list with the following elements, passed through from the
+#' [secondary()] term: `parent`, `delay`, `report`, `ascertainment`,
+#' `distribution`, `type`, and a `name` label suitable as a parameter
+#' prefix.
+#' @family formulatools
+#' @importFrom cli cli_abort
+#' @examples
+#' epinowcast:::construct_secondary(secondary(cases))
+construct_secondary <- function(secondary) {
+  if (!inherits(secondary, "enw_secondary_term")) {
+    cli::cli_abort(
+      "Argument `secondary` must be constructed by `epinowcast::secondary()`."
+    )
+  }
+  list(
+    parent = secondary$parent,
+    delay = secondary$delay,
+    report = secondary$report,
+    ascertainment = secondary$ascertainment,
+    distribution = secondary$distribution,
+    type = secondary$type,
+    name = paste0("secondary__", secondary$parent)
+  )
 }
 
 #' Constructs random walk terms
@@ -1482,6 +1685,16 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # Parse formula
   parsed_formula <- parse_formula(formula)
 
+  # A `secondary()` term declares the formula's stratum as a delayed
+  # function of a parent stratum and so replaces, rather than augments,
+  # the usual fixed/random/time-series predictor. It must therefore
+  # appear on its own. When present, return a minimal formula object
+  # carrying the secondary specification (Phase 0: parsed and validated,
+  # not yet wired to Stan).
+  if (length(parsed_formula$secondary) > 0) {
+    return(.enw_formula_secondary(formula, parsed_formula))
+  }
+
   rw_terms <- NULL
   rw_metadata <- NULL
 
@@ -1640,7 +1853,53 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     fixed = fixed,
     random = random,
     arima = arima_specs,
-    gp = gp_specs
+    gp = gp_specs,
+    secondary = NULL
+  )
+  class(out) <- c("enw_formula", class(out))
+  out
+}
+
+# Internal: build the minimal `enw_formula` object for a stratum
+# formula that uses `secondary()`. The term must be the only term: it
+# replaces the predictor rather than augmenting it, so combining it with
+# fixed effects, random effects, or a time-series term is an error. More
+# than one `secondary()` term (multiple parents) is not supported.
+.enw_formula_secondary <- function(formula, parsed_formula) {
+  other_terms <- length(parsed_formula$random) + length(parsed_formula$rw) +
+    length(parsed_formula$arima) + length(parsed_formula$gp)
+  # An intercept-only fixed part ("1") is added by the formula parser
+  # even for `~ secondary(...)`; tolerate that single residual term but
+  # reject any genuine fixed effect alongside the secondary() term.
+  fixed_extra <- setdiff(parsed_formula$fixed, "1")
+  if (other_terms > 0L || length(fixed_extra) > 0L) {
+    cli::cli_abort(
+      paste0(
+        "`secondary()` must be the only term in a stratum formula; it ",
+        "cannot be combined with fixed effects, random effects, or ",
+        "time-series terms."
+      )
+    )
+  }
+  if (length(parsed_formula$secondary) > 1L) {
+    cli::cli_abort(
+      "Only one `secondary()` term is supported per stratum formula."
+    )
+  }
+  secondary_spec <- eval(parse(
+    text = paste0("epinowcast::", parsed_formula$secondary)
+  ))
+  secondary_spec <- construct_secondary(secondary_spec)
+
+  out <- list(
+    formula = as_string_formula(formula),
+    parsed_formula = parsed_formula,
+    expanded_formula = as_string_formula(formula),
+    fixed = NULL,
+    random = NULL,
+    arima = list(),
+    gp = list(),
+    secondary = secondary_spec
   )
   class(out) <- c("enw_formula", class(out))
   out

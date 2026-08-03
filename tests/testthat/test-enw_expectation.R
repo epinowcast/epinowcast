@@ -128,3 +128,78 @@ test_that(
     )
   }
 )
+
+test_that(
+  "enw_expectation accepts a named-list per-stratum r and stays
+  backward compatible for a scalar formula",
+  {
+    # Scalar formula: no strata structure is attached.
+    scalar <- enw_expectation(r = ~ 1 + day_of_week, data = pobs)
+    expect_false("strata" %in% names(scalar))
+
+    # Build a multi-stratum preprocessed object with a single `by`.
+    obs <- enw_filter_report_dates(
+      germany_covid19_hosp[location == "DE"],
+      remove_days = 40
+    )
+    obs <- enw_filter_reference_dates(obs, include_days = 20)
+    spobs <- enw_preprocess_data(obs, by = "age_group", max_delay = 10)
+    strata_names <- as.character(unique(spobs$metareference[[1]]$age_group))
+    primary <- strata_names[1]
+
+    r <- list()
+    r[[primary]] <- ~ 1 + rw(week)
+    for (s in strata_names[-1]) {
+      r[[s]] <- stats::as.formula(
+        paste0("~ secondary(`", primary, "`)")
+      )
+    }
+
+    exp <- enw_expectation(r = r, data = spobs)
+    expect_true("strata" %in% names(exp))
+    expect_identical(exp$strata$independent, primary)
+    expect_length(exp$strata$dependent_strata, length(strata_names) - 1L)
+    expect_identical(exp$strata$order[1], primary)
+    expect_identical(
+      exp$strata$strata[[strata_names[2]]]$parent, primary
+    )
+    # The scalar Stan path is still populated (driven by the primary).
+    expect_false(is.null(exp$data$expr_fnrow))
+  }
+)
+
+test_that("enw_expectation errors on an unknown secondary parent", {
+  obs <- enw_filter_report_dates(
+    germany_covid19_hosp[location == "DE"],
+    remove_days = 40
+  )
+  obs <- enw_filter_reference_dates(obs, include_days = 20)
+  spobs <- enw_preprocess_data(obs, by = "age_group", max_delay = 10)
+  strata_names <- as.character(unique(spobs$metareference[[1]]$age_group))
+  r <- list()
+  r[[strata_names[1]]] <- ~ 1 + rw(week)
+  r[[strata_names[2]]] <- ~ secondary(not_a_stratum)
+  expect_error(
+    enw_expectation(r = r, data = spobs), "undeclared stratum"
+  )
+})
+
+test_that("enw_expectation errors when no stratum has its own process", {
+  obs <- enw_filter_report_dates(
+    germany_covid19_hosp[location == "DE"],
+    remove_days = 40
+  )
+  obs <- enw_filter_reference_dates(obs, include_days = 20)
+  spobs <- enw_preprocess_data(obs, by = "age_group", max_delay = 10)
+  strata_names <- as.character(unique(spobs$metareference[[1]]$age_group))
+  s1 <- strata_names[1]
+  s2 <- strata_names[2]
+  r <- stats::setNames(
+    list(
+      stats::as.formula(paste0("~ secondary(`", s2, "`)")),
+      stats::as.formula(paste0("~ secondary(`", s1, "`)"))
+    ),
+    c(s1, s2)
+  )
+  expect_error(enw_expectation(r = r, data = spobs), "cycle|own process")
+})

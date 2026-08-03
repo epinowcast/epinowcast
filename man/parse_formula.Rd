@@ -20,6 +20,7 @@ A list of formula components. These currently include:
 \item \code{rw}: A character vector of \code{\link[=rw]{rw()}} random walk terms.
 \item \code{arima}: A character vector of \code{\link[=arima]{arima()}} ARIMA(p, d, q) terms.
 \item \code{gp}: A character vector of \code{\link[=gp]{gp()}} Gaussian process terms.
+\item \code{secondary}: A character vector of \code{\link[=secondary]{secondary()}} stratum terms.
 }
 }
 \description{
@@ -44,6 +45,8 @@ epinowcast:::parse_formula(~ 1 + age_group + (1 | location))
 epinowcast:::parse_formula(~ 1 + (age_group | location))
 
 epinowcast:::parse_formula(~ 1 + (1 | location) + rw(week, location))
+
+epinowcast:::parse_formula(~ secondary(cases))
 }
 \seealso{
 Functions used to help convert formulas into model designs
@@ -56,6 +59,7 @@ Functions used to help convert formulas into model designs
 \code{\link{construct_gp}()},
 \code{\link{construct_re}()},
 \code{\link{construct_rw}()},
+\code{\link{construct_secondary}()},
 \code{\link{enw_formula}()},
 \code{\link{enw_manual_formula}()},
 \code{\link{gp}()},
@@ -65,8 +69,11 @@ Functions used to help convert formulas into model designs
 \code{\link{remove_arima_terms}()},
 \code{\link{remove_gp_terms}()},
 \code{\link{remove_rw_terms}()},
+\code{\link{remove_secondary_terms}()},
 \code{\link{rw}()},
 \code{\link{rw_terms}()},
+\code{\link{secondary}()},
+\code{\link{secondary_terms}()},
 \code{\link{split_formula_to_terms}()}
 }
 \concept{formulatools}
