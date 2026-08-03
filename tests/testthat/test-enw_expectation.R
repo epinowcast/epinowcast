@@ -1,6 +1,25 @@
 # Use example data
 pobs <- enw_example("preprocessed")
 
+# A small two-group preprocessed dataset for per-group population tests.
+multi_group_pobs <- function() {
+  nat_germany_hosp <- germany_covid19_hosp[location == "DE"][
+    age_group %in% c("00+", "80+")
+  ]
+  nat_germany_hosp <- enw_filter_report_dates(
+    nat_germany_hosp,
+    latest_date = "2021-10-01"
+  )
+  nat_germany_hosp <- enw_complete_dates(
+    nat_germany_hosp,
+    by = c("location", "age_group")
+  )
+  suppressWarnings(enw_preprocess_data(
+    enw_filter_reference_dates(nat_germany_hosp, include_days = 10),
+    by = "age_group", max_delay = 10
+  ))
+}
+
 test_that("enw_expectation produces the expected default model", {
   expect_snapshot({
     expectation <- enw_expectation(data = pobs)
@@ -128,3 +147,158 @@ test_that(
     )
   }
 )
+
+test_that("enw_expectation defaults to no susceptible-depletion adjustment", {
+  expectation <- enw_expectation(data = pobs)
+  expect_identical(expectation$data$expr_pop_use, 0L)
+  expect_identical(expectation$data$expr_pop_uncertain, 0L)
+  expect_identical(expectation$data$expr_pop_floor, 1)
+  expect_length(expectation$data$expr_pop_fixed, pobs$groups[[1]])
+  expect_true(all(expectation$data$expr_pop_fixed == 0))
+  # The population prior is always supplied as data but only used when the
+  # population is estimated.
+  expect_true("expr_pop" %in% expectation$priors$variable)
+})
+
+test_that("enw_expectation accepts a fixed population for depletion", {
+  expectation <- enw_expectation(
+    generation_time = c(0.2, 0.5, 0.3), population = 1000, data = pobs
+  )
+  expect_identical(expectation$data$expr_pop_use, 1L)
+  expect_identical(expectation$data$expr_pop_uncertain, 0L)
+  expect_true(all(expectation$data$expr_pop_fixed == 1000))
+})
+
+test_that("enw_expectation supports an uncertain (fitted) population", {
+  population <- 1000
+  population_cv <- 0.1
+  expectation <- enw_expectation(
+    generation_time = c(0.2, 0.5, 0.3), population = population,
+    population_uncertain = TRUE, population_cv = population_cv, data = pobs
+  )
+  expect_identical(expectation$data$expr_pop_use, 1L)
+  expect_identical(expectation$data$expr_pop_uncertain, 1L)
+  expect_true("expr_pop" %in% expectation$priors$variable)
+  pop_prior <- expectation$priors[variable == "expr_pop"]
+  expect_identical(unique(pop_prior$distribution), "Log normal")
+  # One prior row per group.
+  expect_identical(nrow(pop_prior), pobs$groups[[1]])
+  # LogNormal log-median recovers the supplied population on the natural scale
+  expect_equal(exp(pop_prior$mean), population, tolerance = 1e-6)
+  # CV -> sdlog derivation is sqrt(log1p(cv^2))
+  expect_equal(pop_prior$sd, sqrt(log1p(population_cv^2)), tolerance = 1e-12)
+  # Inits are one independent value per group
+  pop_init <- expectation$inits(
+    c(expectation$data, list(g = pobs$groups[[1]])), expectation$priors
+  )()$expr_pop_est
+  expect_length(pop_init, pobs$groups[[1]])
+  expect_true(all(pop_init > 0))
+})
+
+test_that("enw_expectation accepts per-group fixed populations", {
+  multi_pobs <- multi_group_pobs()
+  expectation <- enw_expectation(
+    r = ~ 1 + (1 | .group), generation_time = c(0.2, 0.5, 0.3),
+    population = c(1000, 2000), data = multi_pobs
+  )
+  expect_length(expectation$data$expr_pop_fixed, multi_pobs$groups[[1]])
+  expect_identical(expectation$data$expr_pop_fixed, c(1000, 2000))
+  # A scalar with multiple groups recycles with a warning.
+  expect_warning(
+    enw_expectation(
+      r = ~ 1 + (1 | .group), generation_time = c(0.2, 0.5, 0.3),
+      population = 1500, data = multi_pobs
+    ),
+    "recycling"
+  )
+})
+
+test_that("enw_expectation fits per-group population prior medians", {
+  multi_pobs <- multi_group_pobs()
+  population <- c(1000, 4000)
+  population_cv <- 0.2
+  expectation <- suppressWarnings(enw_expectation(
+    r = ~ 1 + (1 | .group), generation_time = c(0.2, 0.5, 0.3),
+    population = population, population_uncertain = TRUE,
+    population_cv = population_cv, data = multi_pobs
+  ))
+  pop_prior <- expectation$priors[variable == "expr_pop"]
+  # One prior row per group, each centred on its own supplied population.
+  expect_identical(nrow(pop_prior), multi_pobs$groups[[1]])
+  expect_equal(exp(pop_prior$mean), population, tolerance = 1e-6)
+  # A single shared log sd from the CV.
+  expect_equal(
+    pop_prior$sd, rep(sqrt(log1p(population_cv^2)), length(population)),
+    tolerance = 1e-12
+  )
+  # Stan data carries a per-group prior (2 x g) via expr_pop_p.
+  pop_p <- enw_priors_as_data_list(pop_prior)$expr_pop_p
+  expect_identical(dim(pop_p), c(2L, length(population)))
+  expect_equal(exp(pop_p[1, ]), population, tolerance = 1e-6)
+})
+
+test_that("enw_expectation validates population arguments", {
+  expect_error(
+    enw_expectation(population = -1, data = pobs),
+    "population"
+  )
+  # Length 2 vector with a single group is invalid.
+  expect_error(
+    enw_expectation(population = c(1, 2), data = pobs),
+    "population"
+  )
+  expect_error(
+    enw_expectation(population_floor = -1, data = pobs),
+    "population_floor"
+  )
+  expect_error(
+    enw_expectation(
+      population_uncertain = TRUE, population = NULL, data = pobs
+    ),
+    "population"
+  )
+})
+
+test_that("enw_expectation rejects NA / non-finite population inputs", {
+  gt <- c(0.2, 0.5, 0.3)
+  # NA / non-finite population fails cleanly with the intended message.
+  expect_error(
+    enw_expectation(generation_time = gt, population = NA_real_, data = pobs),
+    "`population` must be"
+  )
+  expect_error(
+    enw_expectation(generation_time = gt, population = Inf, data = pobs),
+    "`population` must be"
+  )
+  # NA / non-finite population_floor.
+  expect_error(
+    enw_expectation(population_floor = NA_real_, data = pobs),
+    "`population_floor` must be"
+  )
+  expect_error(
+    enw_expectation(population_floor = Inf, data = pobs),
+    "`population_floor` must be"
+  )
+  # NA / non-finite population_cv (only checked when uncertain).
+  expect_error(
+    enw_expectation(
+      generation_time = gt, population = 1000,
+      population_uncertain = TRUE, population_cv = NA_real_, data = pobs
+    ),
+    "`population_cv` must be"
+  )
+})
+
+test_that("enw_expectation warns when population is set without a renewal", {
+  expect_warning(
+    enw_expectation(population = 1000, data = pobs),
+    "ignored for the daily growth rate model"
+  )
+  # The uncertain request is also flagged as dropped in this case.
+  expect_warning(
+    enw_expectation(
+      population = 1000, population_uncertain = TRUE, data = pobs
+    ),
+    "uncertain"
+  )
+})
