@@ -51,6 +51,8 @@ navbar:
         href: articles/germany-age-stratified-nowcasting.html
       - text: Estimating the effective reproduction number in real-time for a single timeseries with reporting delays
         href: articles/single-timeseries-rt-estimation.html
+      - text: Simulating, fitting, and forecasting
+        href: articles/simulate-and-forecast.html
       - text: Estimating reporting delays with the full and delay-only models
         href: articles/delay-estimation.html
       - text: Working with epinowcast

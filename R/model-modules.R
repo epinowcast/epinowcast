@@ -503,7 +503,11 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
     gt_n = length(generation_time),
     lrgt = log(rev(generation_time)),
     t = nrow(r_features) / data$groups[[1]],
-    obs = 0
+    obs = 0,
+    # Growth rate override (off by default). Used by enw_simulate() and
+    # enw_forecast() to inject a known or new growth rate trajectory.
+    r_override = 0L,
+    r_override_value = numeric(0)
   )
 
   r_list$g <- cumsum(
