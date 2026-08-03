@@ -955,8 +955,8 @@ germany_nowcast
 #> Model fit: 
 #>   Samples: 2,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 10 (24 at max, 1.2%) 
-#>   Run time: 140.3 secs
+#>   Max treedepth: 10 (25 at max, 1.2%) 
+#>   Run time: 76.9 secs
 ```
 
 Fitting this model with the default options will take around 5 minutes
@@ -1004,8 +1004,8 @@ retro_germany_nowcast
 #> Model fit: 
 #>   Samples: 2,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 10 (18 at max, 0.9%) 
-#>   Run time: 149.8 secs
+#>   Max treedepth: 10 (53 at max, 2.6%) 
+#>   Run time: 81.8 secs
 ```
 
 You may see a number of warning messages from `cmdstanr` when fitting
@@ -1062,8 +1062,8 @@ retro_nodelay_nowcast
 #> Model fit: 
 #>   Samples: 2,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 10 (3 at max, 0.1%) 
-#>   Run time: 25.6 secs
+#>   Max treedepth: 10 (5 at max, 0.2%) 
+#>   Run time: 13.5 secs
 ```
 
 This model fits much faster than the models with delay estimation as it

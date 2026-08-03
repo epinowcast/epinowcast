@@ -98,7 +98,7 @@
                         <h4 data-toc-skip class="author">Epinowcast Team</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/v0.7.0/vignettes/single-timeseries-rt-estimation.Rmd" class="external-link"><code>vignettes/single-timeseries-rt-estimation.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/vignettes/single-timeseries-rt-estimation.Rmd" class="external-link"><code>vignettes/single-timeseries-rt-estimation.Rmd</code></a></small>
       <div class="d-none name"><code>single-timeseries-rt-estimation.Rmd</code></div>
     </div>
 
@@ -715,8 +715,8 @@ This is useful when we want to estimate Rt from data that is already (approximat
 <span><span class="co">#&gt; Model fit: </span></span>
 <span><span class="co">#&gt;   Samples: 2,000 | Max Rhat: 1.01 </span></span>
 <span><span class="co">#&gt;   Divergent transitions: 0 (0%) </span></span>
-<span><span class="co">#&gt;   Max treedepth: 10 (24 at max, 1.2%) </span></span>
-<span><span class="co">#&gt;   Run time: 140.3 secs</span></span></code></pre></div>
+<span><span class="co">#&gt;   Max treedepth: 10 (25 at max, 1.2%) </span></span>
+<span><span class="co">#&gt;   Run time: 76.9 secs</span></span></code></pre></div>
 </details><div class="alert alert-warning">
 <p>Fitting this model with the default options will take around 5 minutes to run on a laptop with 4 CPU cores. If you have more CPU cores available you can reduce the time it takes to fit the model by increasing the number of threads per chain (see the <a href="#fitting-the-epinowcast-model">fitting options</a> section above).</p>
 </div>
@@ -755,8 +755,8 @@ This is useful when we want to estimate Rt from data that is already (approximat
 <span><span class="co">#&gt; Model fit: </span></span>
 <span><span class="co">#&gt;   Samples: 2,000 | Max Rhat: 1.01 </span></span>
 <span><span class="co">#&gt;   Divergent transitions: 0 (0%) </span></span>
-<span><span class="co">#&gt;   Max treedepth: 10 (18 at max, 0.9%) </span></span>
-<span><span class="co">#&gt;   Run time: 149.8 secs</span></span></code></pre></div>
+<span><span class="co">#&gt;   Max treedepth: 10 (53 at max, 2.6%) </span></span>
+<span><span class="co">#&gt;   Run time: 81.8 secs</span></span></code></pre></div>
 </details><div class="alert alert-warning">
 <p>You may see a number of warning messages from <code>cmdstanr</code> when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in <code>epinowcast</code>. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are actively working on improving in future versions of <code>epinowcast</code>.</p>
 </div>
@@ -801,8 +801,8 @@ The model only estimates the expectation (Rt and latent process) from the final 
 <span><span class="co">#&gt; Model fit: </span></span>
 <span><span class="co">#&gt;   Samples: 2,000 | Max Rhat: 1.01 </span></span>
 <span><span class="co">#&gt;   Divergent transitions: 0 (0%) </span></span>
-<span><span class="co">#&gt;   Max treedepth: 10 (3 at max, 0.1%) </span></span>
-<span><span class="co">#&gt;   Run time: 25.6 secs</span></span></code></pre></div>
+<span><span class="co">#&gt;   Max treedepth: 10 (5 at max, 0.2%) </span></span>
+<span><span class="co">#&gt;   Run time: 13.5 secs</span></span></code></pre></div>
 </details><div class="alert alert-warning">
 <p>This model fits much faster than the models with delay estimation as it has far fewer parameters and no delay convolution.</p>
 </div>
