@@ -368,10 +368,10 @@ nowcast_default
 #>   fit_args : list(7) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 1,000 | Max Rhat: 1.02 
+#>   Samples: 1,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 8 (33 at max, 3.3%) 
-#>   Run time: 21 secs
+#>   Max treedepth: 8 (13 at max, 1.3%) 
+#>   Run time: 19.8 secs
 ```
 
 Code
@@ -560,9 +560,9 @@ nowcast_lognormal
 #>   init_method_output : NULL 
 #> Model fit: 
 #>   Samples: 1,000 | Max Rhat: 1.02 
-#>   Divergent transitions: 8 (0.8%) 
-#>   Max treedepth: 7 (371 at max, 37.1%) 
-#>   Run time: 43.4 secs
+#>   Divergent transitions: 4 (0.4%) 
+#>   Max treedepth: 8 (1 at max, 0.1%) 
+#>   Run time: 29.9 secs
 ```
 
 Code
@@ -592,10 +592,10 @@ nowcast_np
 #>   fit_args : list(7) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 1,000 | Max Rhat: 1.02 
-#>   Divergent transitions: 12 (1.2%) 
-#>   Max treedepth: 7 (290 at max, 29%) 
-#>   Run time: 33.8 secs
+#>   Samples: 1,000 | Max Rhat: 1.01 
+#>   Divergent transitions: 9 (0.9%) 
+#>   Max treedepth: 7 (21 at max, 2.1%) 
+#>   Run time: 30.2 secs
 ```
 
 ### Comparing all models
@@ -689,17 +689,17 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 22000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
 #>                    <num> <num>         <num>  <int>      <int> <int>  <num>
-#>     1:                 1    21             0      1          1     1    726
-#>     2:                 1    21             0      1          2     2    729
-#>     3:                 1    21             0      1          3     3    731
-#>     4:                 1    21             0      1          4     4    725
-#>     5:                 1    21             0      1          5     5    736
+#>     1:                 1    21             0      1          1     1    735
+#>     2:                 1    21             0      1          2     2    736
+#>     3:                 1    21             0      1          3     3    733
+#>     4:                 1    21             0      1          4     4    727
+#>     5:                 1    21             0      1          5     5    733
 #>    ---                                                                     
-#> 21996:                 1     0             1      2        496   996   1857
-#> 21997:                 1     0             1      2        497   997   1844
-#> 21998:                 1     0             1      2        498   998   1900
-#> 21999:                 1     0             1      2        499   999   1951
-#> 22000:                 1     0             1      2        500  1000   1899
+#> 21996:                 1     0             1      2        496   996   2025
+#> 21997:                 1     0             1      2        497   997   1888
+#> 21998:                 1     0             1      2        498   998   2033
+#> 21999:                 1     0             1      2        499   999   1844
+#> 22000:                 1     0             1      2        500  1000   1962
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
