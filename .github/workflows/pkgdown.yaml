@@ -6,6 +6,7 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+  merge_group:
 
 name: pkgdown
 
