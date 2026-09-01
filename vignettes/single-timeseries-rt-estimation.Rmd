@@ -694,8 +694,8 @@ germany_nowcast
 #> Model fit: 
 #>   Samples: 2,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 10 (25 at max, 1.2%) 
-#>   Run time: 76.9 secs
+#>   Max treedepth: 10 (7 at max, 0.4%) 
+#>   Run time: 132.9 secs
 ```
 
 ::: {.alert .alert-warning}
@@ -739,8 +739,8 @@ retro_germany_nowcast
 #> Model fit: 
 #>   Samples: 2,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 10 (53 at max, 2.6%) 
-#>   Run time: 81.8 secs
+#>   Max treedepth: 10 (4 at max, 0.2%) 
+#>   Run time: 143.8 secs
 ```
 
 ::: {.alert .alert-warning}
@@ -790,8 +790,8 @@ retro_nodelay_nowcast
 #> Model fit: 
 #>   Samples: 2,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 10 (5 at max, 0.2%) 
-#>   Run time: 13.5 secs
+#>   Max treedepth: 10 (37 at max, 1.8%) 
+#>   Run time: 28.6 secs
 ```
 
 ::: {.alert .alert-warning}
