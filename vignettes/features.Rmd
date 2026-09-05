@@ -167,14 +167,16 @@ All model modules support the same formula interface.
 
 # Prior Specification {#priors}
 
-Each model module defines default normal priors which can be inspected and customised.
-To set custom priors, pass a `data.frame` with columns `variable`, `mean`, and `sd` to the `priors` argument of `epinowcast()`.
+Each model module defines default priors which can be inspected and customised.
+Priors are specified with the distributions of the [`distspec`](https://epiforecasts.io/distspec/) package (for example `distspec::Normal()` and `distspec::LogNormal()`), as in `EpiNow2`.
+To set custom priors, pass a named list of `distspec` distributions to the `priors` argument of `epinowcast()`.
 
 | Task | How to do it | Details |
 |------|--------------|---------|
 | Inspect module priors | `enw_reference(data = pobs)$priors` | Each module returns its defaults |
-| Replace specific priors | `enw_replace_priors(priors, custom)` | Merge custom values into defaults |
-| Pass to model | `epinowcast(..., priors = custom_priors)` | Overrides matching defaults |
+| Replace specific priors | `enw_replace_priors(priors, list(refp_mean_int = distspec::Normal(mean = 2, sd = 0.5)))` | Merge custom values into defaults |
+| Pass to model | `epinowcast(..., priors = list(refp_mean_int = distspec::Normal(mean = 2, sd = 0.5)))` | Overrides matching defaults |
+| Reuse a posterior as a prior | `epinowcast(..., priors = summary(nowcast, type = "fit"))` | A `data.frame` with `variable`, `mean`, and `sd` is also accepted |
 
 **Key functions:**
 

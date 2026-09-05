@@ -500,6 +500,13 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
+#'
+#' # A renewal process with a generation time defined using distspec
+#' enw_expectation(
+#'   r = ~ 1 + rw(week),
+#'   generation_time = distspec::Gamma(mean = 4, sd = 3, max = 15),
+#'   data = enw_example("preprocessed")
+#' )
 enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
                             observation = ~1, latent_reporting_delay = 1,
                             data, ...) {

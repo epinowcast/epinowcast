@@ -19,6 +19,11 @@
 
 - Added `distspec` as a dependency.
 
+## Documentation
+
+- Updated the prior examples in the ARIMA, Gaussian process, features, and Stan help vignettes to use `distspec` distributions, and added a `distspec` section to the discretised distributions vignette.
+- The single time series Rt estimation vignette now defines the generation time and latent reporting delay distributions with `distspec` rather than converting their parameters and discretising them by hand.
+
 # epinowcast 0.7.0
 
 ## Model
