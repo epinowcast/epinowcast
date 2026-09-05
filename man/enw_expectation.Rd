@@ -27,8 +27,14 @@ weekly random walk (specified as \code{rw(week, by = .group)}). Setting to
 
 \item{generation_time}{A numeric vector that sums to 1 and defaults to 1.
 Describes the weighting to apply to previous generations (i.e as part of a
-renewal equation). When set to 1 (the default) this corresponds to modelling
-the daily growth rate.}
+renewal equation), with the first entry the weight of the previous day.
+When set to 1 (the default) this corresponds to modelling
+the daily growth rate. Alternatively a bounded \verb{<dist_spec>} from the
+\code{distspec} package (e.g. \code{distspec::Gamma(mean = 4, sd = 3, max = 15)}),
+which is discretised to a daily probability mass function (PMF) using
+\code{\link[distspec:discretise]{distspec::discretise()}}. As the renewal equation has no weight for the
+current day, the probability of a delay of zero days is dropped and the
+PMF renormalised.}
 
 \item{observation}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}}) describing
 the modifiers used to adjust expected observations. This can use features
@@ -46,7 +52,10 @@ based on some assumed reporting delay and to rescale observations (by
 multiplying a probability mass function by some fraction) to account
 ascertainment etc. A list of PMFs can be provided to allow for time-varying
 PMFs. This should be the same length as the modelled time period plus the
-length of the generation time if supplied.}
+length of the generation time if supplied. A bounded \verb{<dist_spec>} from
+the \code{distspec} package (e.g. \code{distspec::LogNormal(mean = 5, sd = 2, max = 15)}) can be used in place of a PMF (including within a list) and
+is discretised using \code{\link[distspec:discretise]{distspec::discretise()}} with the first entry the
+probability of a delay of zero days.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
@@ -55,9 +64,11 @@ same arguments as passed to \code{enw_preprocess_data()} should be used here.}
 }
 \value{
 A list containing the supplied formulas, data passed into a list
-describing the models, a \code{data.frame} describing the priors used, and a
-function that takes the output data and priors and returns a function that
-can be used to sample from a tightened version of the prior distribution.
+describing the models, a \code{data.table} describing the priors used (with a
+\code{prior} column of \verb{<dist_spec>} objects from the \code{distspec} package, see
+\code{\link[=enw_replace_priors]{enw_replace_priors()}}), and a function that takes the output data and
+priors and returns a function that can be used to sample from a tightened
+version of the prior distribution.
 }
 \description{
 Expectation model module

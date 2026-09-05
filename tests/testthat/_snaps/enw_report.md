@@ -160,11 +160,11 @@
       3: Partial autocorrelations of the ARIMA latent residual on the report-time logit hazards; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
       4:                                              Length scale of the Gaussian process on the report-time logit hazards; log-normal prior on the (positive) length scale
       5:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the report-time logit hazards; half-normal prior
-                  distribution     mean   sd
-      1: Zero truncated normal 0.000000 1.00
-      2: Zero truncated normal 0.000000 0.20
-      3:               Uniform 0.000000 0.00
-      4:            Log normal 1.098612 0.50
-      5: Zero truncated normal 0.000000 0.05
+                  distribution          prior
+      1: Zero truncated normal    <normal[2]>
+      2: Zero truncated normal    <normal[2]>
+      3:               Uniform               
+      4:            Log normal <lognormal[2]>
+      5: Zero truncated normal    <normal[2]>
       
 

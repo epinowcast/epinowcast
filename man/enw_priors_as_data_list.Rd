@@ -2,30 +2,38 @@
 % Please edit documentation in R/model-tools.R
 \name{enw_priors_as_data_list}
 \alias{enw_priors_as_data_list}
-\title{Convert prior \code{data.frame} to list}
+\title{Convert priors to a list for Stan}
 \usage{
 enw_priors_as_data_list(priors)
 }
 \arguments{
-\item{priors}{A \code{data.frame} with columns \code{variable},
-\code{mean}, and \code{sd} describing normal priors.
-Default priors in the appropriate format are returned by
-the \verb{$priors} element of \code{\link[=enw_reference]{enw_reference()}} and other model
-module functions.}
+\item{priors}{Priors in any of the formats supported by
+\code{\link[=enw_replace_priors]{enw_replace_priors()}}: the \verb{$priors} table of a model module, a named
+list of \verb{<dist_spec>} objects, or a \code{data.frame} with \code{variable}, \code{mean},
+and \code{sd} columns.}
 }
 \value{
-A named list with each entry specifying a prior as a length
-two vector (specifying the mean and standard deviation of the prior).
+A named list with each entry specifying a prior as a \verb{2 x n}
+array of the location and scale of the prior on the scale used by the
+Stan model (the \code{mean} and \code{sd} of a normal prior and the \code{meanlog} and
+\code{sdlog} of a log-normal prior).
 }
 \description{
-Converts priors defined in a \code{data.frame} into a list
-format for use by stan. In addition it adds "_p" to all
-variable names in order too allow them to be distinguished from
-their standard usage within modelling code.
+Converts priors specified as \verb{<dist_spec>} objects into the list
+format used by the Stan model. Each prior becomes a \verb{2 x n} array with
+the location in the first row and the scale in the second (with \code{n > 1}
+for vectorised priors), and "_p" is added to each variable name so that
+priors can be distinguished from the corresponding parameters.
 }
 \examples{
-priors <- data.frame(variable = "x", mean = 1, sd = 2)
+priors <- list(
+  x = distspec::Normal(mean = 1, sd = 2),
+  y = distspec::LogNormal(meanlog = 0, sdlog = 0.5)
+)
 enw_priors_as_data_list(priors)
+
+# From the default priors of a model module
+enw_priors_as_data_list(enw_obs(data = enw_example("preprocessed"))$priors)
 }
 \seealso{
 Functions used to help convert models into the format required for stan

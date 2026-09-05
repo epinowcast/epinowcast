@@ -297,9 +297,9 @@ test_that("each module exposes a Uniform-by-default arima_pacf prior", {
       variable == paste0(prefix, "_arima_pacf")
     ]
     expect_identical(nrow(row), 1L)
-    # sd = 0 is the sentinel that leaves the implicit Uniform(-1, 1) prior
-    # from the parameter bounds in place.
-    expect_identical(row$sd, 0)
+    # A NULL prior (shipped as sd = 0) is the sentinel that leaves the
+    # implicit Uniform(-1, 1) prior from the parameter bounds in place.
+    expect_null(row$prior[[1]])
     expect_identical(row$distribution, "Uniform")
   }
 })
@@ -307,7 +307,7 @@ test_that("each module exposes a Uniform-by-default arima_pacf prior", {
 test_that("overriding arima_pacf ships a positive prior sd to Stan", {
   pobs <- enw_example("preprocessed")
   priors <- enw_expectation(r = ~ ar(week, p = 1), data = pobs)$priors
-  custom <- data.frame(variable = "expr_arima_pacf", mean = 0, sd = 0.3)
+  custom <- list(expr_arima_pacf = distspec::Normal(mean = 0, sd = 0.3))
   data_list <- enw_priors_as_data_list(enw_replace_priors(priors, custom))
   # Default uniform ships sd = 0; the override ships the regularising sd.
   expect_identical(as.vector(data_list$expr_arima_pacf_p), c(0, 0.3))
@@ -362,7 +362,7 @@ test_that("centring places the prior on the recovered intercept", {
   # recovered intercept rather than the internal centred one, and that the
   # tight prior does not break sampling.
   pobs <- enw_example("preprocessed")
-  tight <- data.frame(variable = "expr_r_int", mean = 0, sd = 0.05)
+  tight <- list(expr_r_int = distspec::Normal(mean = 0, sd = 0.05))
   nowcast <- suppressWarnings(suppressMessages(epinowcast(
     pobs,
     expectation = enw_expectation(r = ~ 1 + rw(week), data = pobs),

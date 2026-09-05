@@ -1163,23 +1163,23 @@
       14: Partial autocorrelations of the ARIMA latent residual on the non-parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
       15:                                              Length scale of the Gaussian process on the non-parametric reference; log-normal prior on the (positive) length scale
       16:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the non-parametric reference; half-normal prior
-                   distribution     mean   sd
-       1:                Normal 1.000000 1.00
-       2: Zero truncated normal 0.500000 1.00
-       3: Zero truncated normal 0.000000 1.00
-       4: Zero truncated normal 0.000000 1.00
-       5: Zero truncated normal 0.000000 0.20
-       6: Zero truncated normal 0.000000 0.20
-       7:               Uniform 0.000000 0.00
-       8:            Log normal 1.098612 0.50
-       9: Zero truncated normal 0.000000 0.05
-      10: Zero truncated normal 0.000000 0.05
-      11:                Normal 0.000000 1.00
-      12: Zero truncated normal 0.000000 1.00
-      13: Zero truncated normal 0.000000 0.20
-      14:               Uniform 0.000000 0.00
-      15:            Log normal 1.098612 0.50
-      16: Zero truncated normal 0.000000 0.05
+                   distribution          prior
+       1:                Normal    <normal[2]>
+       2: Zero truncated normal    <normal[2]>
+       3: Zero truncated normal    <normal[2]>
+       4: Zero truncated normal    <normal[2]>
+       5: Zero truncated normal    <normal[2]>
+       6: Zero truncated normal    <normal[2]>
+       7:               Uniform               
+       8:            Log normal <lognormal[2]>
+       9: Zero truncated normal    <normal[2]>
+      10: Zero truncated normal    <normal[2]>
+      11:                Normal    <normal[2]>
+      12: Zero truncated normal    <normal[2]>
+      13: Zero truncated normal    <normal[2]>
+      14:               Uniform               
+      15:            Log normal <lognormal[2]>
+      16: Zero truncated normal    <normal[2]>
       
 
 # enw_reference supports non-parametric models
@@ -3901,23 +3901,23 @@
       14: Partial autocorrelations of the ARIMA latent residual on the non-parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
       15:                                              Length scale of the Gaussian process on the non-parametric reference; log-normal prior on the (positive) length scale
       16:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the non-parametric reference; half-normal prior
-                   distribution     mean   sd
-       1:                Normal 1.000000 1.00
-       2: Zero truncated normal 0.500000 1.00
-       3: Zero truncated normal 0.000000 1.00
-       4: Zero truncated normal 0.000000 1.00
-       5: Zero truncated normal 0.000000 0.20
-       6: Zero truncated normal 0.000000 0.20
-       7:               Uniform 0.000000 0.00
-       8:            Log normal 1.098612 0.50
-       9: Zero truncated normal 0.000000 0.05
-      10: Zero truncated normal 0.000000 0.05
-      11:                Normal 0.000000 1.00
-      12: Zero truncated normal 0.000000 1.00
-      13: Zero truncated normal 0.000000 0.20
-      14:               Uniform 0.000000 0.00
-      15:            Log normal 1.098612 0.50
-      16: Zero truncated normal 0.000000 0.05
+                   distribution          prior
+       1:                Normal    <normal[2]>
+       2: Zero truncated normal    <normal[2]>
+       3: Zero truncated normal    <normal[2]>
+       4: Zero truncated normal    <normal[2]>
+       5: Zero truncated normal    <normal[2]>
+       6: Zero truncated normal    <normal[2]>
+       7:               Uniform               
+       8:            Log normal <lognormal[2]>
+       9: Zero truncated normal    <normal[2]>
+      10: Zero truncated normal    <normal[2]>
+      11:                Normal    <normal[2]>
+      12: Zero truncated normal    <normal[2]>
+      13: Zero truncated normal    <normal[2]>
+      14:               Uniform               
+      15:            Log normal <lognormal[2]>
+      16: Zero truncated normal    <normal[2]>
       
 
 # Parametric and non-parametric models can be jointly specified
@@ -5011,22 +5011,22 @@
       14: Partial autocorrelations of the ARIMA latent residual on the non-parametric reference; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
       15:                                              Length scale of the Gaussian process on the non-parametric reference; log-normal prior on the (positive) length scale
       16:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the non-parametric reference; half-normal prior
-                   distribution     mean   sd
-       1:                Normal 1.000000 1.00
-       2: Zero truncated normal 0.500000 1.00
-       3: Zero truncated normal 0.000000 1.00
-       4: Zero truncated normal 0.000000 1.00
-       5: Zero truncated normal 0.000000 0.20
-       6: Zero truncated normal 0.000000 0.20
-       7:               Uniform 0.000000 0.00
-       8:            Log normal 1.098612 0.50
-       9: Zero truncated normal 0.000000 0.05
-      10: Zero truncated normal 0.000000 0.05
-      11:                Normal 0.000000 1.00
-      12: Zero truncated normal 0.000000 1.00
-      13: Zero truncated normal 0.000000 0.20
-      14:               Uniform 0.000000 0.00
-      15:            Log normal 1.098612 0.50
-      16: Zero truncated normal 0.000000 0.05
+                   distribution          prior
+       1:                Normal    <normal[2]>
+       2: Zero truncated normal    <normal[2]>
+       3: Zero truncated normal    <normal[2]>
+       4: Zero truncated normal    <normal[2]>
+       5: Zero truncated normal    <normal[2]>
+       6: Zero truncated normal    <normal[2]>
+       7:               Uniform               
+       8:            Log normal <lognormal[2]>
+       9: Zero truncated normal    <normal[2]>
+      10: Zero truncated normal    <normal[2]>
+      11:                Normal    <normal[2]>
+      12: Zero truncated normal    <normal[2]>
+      13: Zero truncated normal    <normal[2]>
+      14:               Uniform               
+      15:            Log normal <lognormal[2]>
+      16: Zero truncated normal    <normal[2]>
       
 

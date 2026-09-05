@@ -150,6 +150,70 @@ delay_only_total <- function(data, delay_only) {
   as.integer(round(totals))
 }
 
+#' Convert a distribution to a probability mass function
+#'
+#' Numeric vectors are returned unchanged. A `<dist_spec>` from the
+#' `distspec` package (for example `distspec::Gamma(mean = 4, sd = 3,
+#' max = 15)`) is discretised to a daily probability mass function (PMF)
+#' with [distspec::discretise()], with the first entry the probability of a
+#' delay of zero days. The distribution must be bounded (using `max` or
+#' `cdf_max`) and have fixed (numeric) parameters. Sums of distributions
+#' are convolved with [distspec::collapse()].
+#'
+#' @param x A numeric vector describing a PMF or a `<dist_spec>`.
+#'
+#' @param arg A character string naming the argument being converted (used
+#' in error messages).
+#'
+#' @param drop_zero Logical, defaults to `FALSE`. If `TRUE`, the probability
+#' of a delay of zero days is dropped from a discretised `<dist_spec>` and
+#' the PMF renormalised so that the first entry is the probability of a
+#' delay of one day (as required for a generation time).
+#'
+#' @return A numeric vector describing a PMF.
+#' @keywords internal
+#' @importFrom cli cli_abort
+.enw_as_pmf <- function(x, arg = "x", drop_zero = FALSE) {
+  if (!inherits(x, "dist_spec")) {
+    return(x)
+  }
+  uncertain <- vapply(
+    seq_len(distspec::ndist(x)),
+    function(i) distspec::has_uncertainty(x, i),
+    logical(1)
+  )
+  if (any(uncertain)) {
+    cli::cli_abort(
+      paste0(
+        "{.arg {arg}} must be a {.cls dist_spec} with fixed (numeric) ",
+        "parameters to be discretised to a probability mass function"
+      )
+    )
+  }
+  if (!distspec::is_constrained(x)) {
+    cli::cli_abort(
+      paste0(
+        "{.arg {arg}} must be a bounded {.cls dist_spec} (e.g. with ",
+        "{.code max = 15} or {.code cdf_max = 0.99}) to be discretised to ",
+        "a probability mass function"
+      )
+    )
+  }
+  pmf <- distspec::get_pmf(distspec::collapse(distspec::discretise(x)))
+  if (drop_zero) {
+    if (length(pmf) < 2 || sum(pmf[-1]) <= 0) {
+      cli::cli_abort(
+        paste0(
+          "{.arg {arg}} has no probability mass beyond a delay of zero ",
+          "days once discretised"
+        )
+      )
+    }
+    pmf <- pmf[-1] / sum(pmf[-1])
+  }
+  pmf
+}
+
 #' Construct a convolution matrix
 #'
 #' This function allows the construction of convolution matrices which can be
@@ -565,6 +629,17 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
   )
 }
 
+# Default priors shared by the ARIMA latent residual terms of every module:
+# a half-normal on the residual scale and a flat prior (`NULL`, shipped to
+# Stan as a zero standard deviation) on the partial autocorrelations.
+.arima_sigma_prior <- function() {
+  distspec::Normal(mean = 0, sd = 0.2)
+}
+
+.arima_pacf_prior <- function() {
+  NULL
+}
+
 #' @importFrom stats runif
 .arima_inits <- function(data, priors, prefix, with_sd_sigma = FALSE) {
   z_nm <- paste0(prefix, "_arima_z")
@@ -634,6 +709,22 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
     "Magnitude (marginal standard deviation) of the Gaussian process on ",
     "the ", context, "; half-normal prior"
   )
+}
+
+# Default priors shared by the Gaussian process terms of every module: a
+# log-normal on the length scale and a half-normal on the magnitude.
+.gp_rho_prior <- function() {
+  distspec::LogNormal(meanlog = log(3), sdlog = 0.5)
+}
+
+.gp_alpha_prior <- function() {
+  distspec::Normal(mean = 0, sd = 0.05)
+}
+
+# Default half-normal prior on the standard deviation of pooled (random)
+# effects, shared by every module.
+.beta_sd_prior <- function() {
+  distspec::Normal(mean = 0, sd = 1)
 }
 
 # Build conditional Gaussian process initial values for a module's

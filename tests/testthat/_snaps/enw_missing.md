@@ -214,13 +214,13 @@
       4: Partial autocorrelations of the ARIMA latent residual on the missing-reference logit proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
       5:                                              Length scale of the Gaussian process on the missing-reference logit proportion; log-normal prior on the (positive) length scale
       6:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the missing-reference logit proportion; half-normal prior
-                  distribution     mean   sd
-      1:                Normal 0.000000 1.00
-      2: Zero truncated normal 0.000000 1.00
-      3: Zero truncated normal 0.000000 0.20
-      4:               Uniform 0.000000 0.00
-      5:            Log normal 1.098612 0.50
-      6: Zero truncated normal 0.000000 0.05
+                  distribution          prior
+      1:                Normal    <normal[2]>
+      2: Zero truncated normal    <normal[2]>
+      3: Zero truncated normal    <normal[2]>
+      4:               Uniform               
+      5:            Log normal <lognormal[2]>
+      6: Zero truncated normal    <normal[2]>
       
 
 # enw_missing returns an empty model when required
@@ -352,12 +352,12 @@
       4: Partial autocorrelations of the ARIMA latent residual on the missing-reference logit proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
       5:                                              Length scale of the Gaussian process on the missing-reference logit proportion; log-normal prior on the (positive) length scale
       6:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the missing-reference logit proportion; half-normal prior
-                  distribution     mean   sd
-      1:                Normal 0.000000 1.00
-      2: Zero truncated normal 0.000000 1.00
-      3: Zero truncated normal 0.000000 0.20
-      4:               Uniform 0.000000 0.00
-      5:            Log normal 1.098612 0.50
-      6: Zero truncated normal 0.000000 0.05
+                  distribution          prior
+      1:                Normal    <normal[2]>
+      2: Zero truncated normal    <normal[2]>
+      3: Zero truncated normal    <normal[2]>
+      4:               Uniform               
+      5:            Log normal <lognormal[2]>
+      6: Zero truncated normal    <normal[2]>
       
 

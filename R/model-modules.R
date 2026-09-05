@@ -38,9 +38,11 @@
 #' syntax.
 #'
 #' @return A list containing the supplied formulas, data passed into a list
-#' describing the models, a `data.frame` describing the priors used, and a
-#' function that takes the output data and priors and returns a function that
-#' can be used to sample from a tightened version of the prior distribution.
+#' describing the models, a `data.table` describing the priors used (with a
+#' `prior` column of `<dist_spec>` objects from the `distspec` package, see
+#' [enw_replace_priors()]), and a function that takes the output data and
+#' priors and returns a function that can be used to sample from a tightened
+#' version of the prior distribution.
 #'
 #' @inheritParams enw_obs
 #' @family modelmodules
@@ -147,7 +149,7 @@ enw_reference <- function(
   out$formula$parametric <- pform$formula
   out$formula$non_parametric <- npform$formula
   out$data <- c(pdata, npdata)
-  out$priors <- data.table::data.table(
+  out$priors <- .enw_prior_table(
     variable = c(
       "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd",
       "refp_arima_sigma", "refp_arima_sd_sigma", "refp_arima_pacf",
@@ -183,11 +185,23 @@ enw_reference <- function(
       "Normal", "Zero truncated normal", "Zero truncated normal", "Uniform",
       "Log normal", "Zero truncated normal"
     ),
-    mean = c(
-      1, 0.5, 0, 0, 0, 0, 0, log(3), 0, 0, 0, 0, 0, 0, log(3), 0
-    ),
-    sd = c(
-      1, 1, 1, 1, 0.2, 0.2, 0, 0.5, 0.05, 0.05, 1, 1, 0.2, 0, 0.5, 0.05
+    prior = list(
+      distspec::Normal(mean = 1, sd = 1),
+      distspec::Normal(mean = 0.5, sd = 1),
+      .beta_sd_prior(),
+      .beta_sd_prior(),
+      .arima_sigma_prior(),
+      .arima_sigma_prior(),
+      .arima_pacf_prior(),
+      .gp_rho_prior(),
+      .gp_alpha_prior(),
+      .gp_alpha_prior(),
+      distspec::Normal(mean = 0, sd = 1),
+      .beta_sd_prior(),
+      .arima_sigma_prior(),
+      .arima_pacf_prior(),
+      .gp_rho_prior(),
+      .gp_alpha_prior()
     )
   )
   out$inits <- function(data, priors) {
@@ -378,7 +392,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   out <- list()
   out$formula$non_parametric <- form$formula
   out$data <- data_list
-  out$priors <- data.table::data.table(
+  out$priors <- .enw_prior_table(
     variable = c(
       "rep_beta_sd", "rep_arima_sigma", "rep_arima_pacf",
       "rep_gp_rho", "rep_gp_alpha"
@@ -397,8 +411,13 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
       "Zero truncated normal", "Zero truncated normal", "Uniform",
       "Log normal", "Zero truncated normal"
     ),
-    mean = c(0, 0, 0, log(3), 0),
-    sd = c(1, 0.2, 0, 0.5, 0.05)
+    prior = list(
+      .beta_sd_prior(),
+      .arima_sigma_prior(),
+      .arima_pacf_prior(),
+      .gp_rho_prior(),
+      .gp_alpha_prior()
+    )
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -440,8 +459,14 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #'
 #' @param generation_time A numeric vector that sums to 1 and defaults to 1.
 #' Describes the weighting to apply to previous generations (i.e as part of a
-#' renewal equation). When set to 1 (the default) this corresponds to modelling
-#' the daily growth rate.
+#' renewal equation), with the first entry the weight of the previous day.
+#' When set to 1 (the default) this corresponds to modelling
+#' the daily growth rate. Alternatively a bounded `<dist_spec>` from the
+#' `distspec` package (e.g. `distspec::Gamma(mean = 4, sd = 3, max = 15)`),
+#' which is discretised to a daily probability mass function (PMF) using
+#' [distspec::discretise()]. As the renewal equation has no weight for the
+#' current day, the probability of a delay of zero days is dropped and the
+#' PMF renormalised.
 #'
 #' @param observation A formula (as implemented in [enw_formula()]) describing
 #' the modifiers used to adjust expected observations. This can use features
@@ -459,7 +484,11 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' multiplying a probability mass function by some fraction) to account
 #' ascertainment etc. A list of PMFs can be provided to allow for time-varying
 #' PMFs. This should be the same length as the modelled time period plus the
-#' length of the generation time if supplied.
+#' length of the generation time if supplied. A bounded `<dist_spec>` from
+#' the `distspec` package (e.g. `distspec::LogNormal(mean = 5, sd = 2,
+#' max = 15)`) can be used in place of a PMF (including within a list) and
+#' is discretised using [distspec::discretise()] with the first entry the
+#' probability of a delay of zero days.
 #'
 #' @param ... Additional parameters passed to [enw_add_metaobs_features()]. The
 #' same arguments as passed to `enw_preprocess_data()` should be used here.
@@ -479,6 +508,18 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   }
   if (as_string_formula(observation) == "~0") {
     observation <- ~1
+  }
+  generation_time <- .enw_as_pmf(
+    generation_time, arg = "generation_time", drop_zero = TRUE
+  )
+  if (inherits(latent_reporting_delay, "dist_spec")) {
+    latent_reporting_delay <- .enw_as_pmf(
+      latent_reporting_delay, arg = "latent_reporting_delay"
+    )
+  } else if (is.list(latent_reporting_delay)) {
+    latent_reporting_delay <- purrr::map(
+      latent_reporting_delay, .enw_as_pmf, arg = "latent_reporting_delay"
+    )
   }
   if (abs(sum(generation_time) - 1) > 1e-3) {
     cli::cli_abort("The generation time must sum to 1")
@@ -563,7 +604,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   names(obs_list) <- paste0("expl_", names(obs_list))
   out$data <- c(r_list, r_data, obs_list, obs_data)
 
-  out$priors <- data.table::data.table(
+  out$priors <- .enw_prior_table(
     variable = c(
       "expr_r_int", "expr_beta_sd",
       rep("expr_lelatent_int", length(seed_obs)),
@@ -605,11 +646,23 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       "Zero truncated normal", "Uniform",
       "Log normal", "Zero truncated normal"
     ),
-    mean = c(
-      0, 0, seed_obs, 0, 0, log(3), 0, 0, 0, 0, log(3), 0
-    ),
-    sd = c(
-      0.2, 1, rep(1, length(seed_obs)), 0.2, 0, 0.5, 0.05, 1, 0.2, 0, 0.5, 0.05
+    prior = c(
+      list(
+        distspec::Normal(mean = 0, sd = 0.2),
+        .beta_sd_prior()
+      ),
+      purrr::map(seed_obs, ~ distspec::Normal(mean = ., sd = 1)),
+      list(
+        .arima_sigma_prior(),
+        .arima_pacf_prior(),
+        .gp_rho_prior(),
+        .gp_alpha_prior(),
+        .beta_sd_prior(),
+        .arima_sigma_prior(),
+        .arima_pacf_prior(),
+        .gp_rho_prior(),
+        .gp_alpha_prior()
+      )
     )
   )
   out$inits <- function(data, priors) {
@@ -765,7 +818,7 @@ enw_missing <- function(formula = ~1, data) {
   out$formula <- as_string_formula(formula)
   out$data <- data_list
   # Define default priors
-  out$priors <- data.table::data.table(
+  out$priors <- .enw_prior_table(
     variable = c(
       "miss_int", "miss_beta_sd", "miss_arima_sigma", "miss_arima_pacf",
       "miss_gp_rho", "miss_gp_alpha"
@@ -791,8 +844,14 @@ enw_missing <- function(formula = ~1, data) {
       "Normal", "Zero truncated normal", "Zero truncated normal", "Uniform",
       "Log normal", "Zero truncated normal"
     ),
-    mean = c(0, 0, 0, 0, log(3), 0),
-    sd = c(1, 1, 0.2, 0, 0.5, 0.05)
+    prior = list(
+      distspec::Normal(mean = 0, sd = 1),
+      .beta_sd_prior(),
+      .arima_sigma_prior(),
+      .arima_pacf_prior(),
+      .gp_rho_prior(),
+      .gp_alpha_prior()
+    )
   )
   # Define a function for sampling from the priors and data
   out$inits <- function(data, priors) {
@@ -980,12 +1039,11 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
   out <- list()
   out$family <- family
   out$data <- proc_data
-  out$priors <- data.table::data.table(
+  out$priors <- .enw_prior_table(
     variable = "sqrt_phi",
     description = "One over the square root of the reporting overdispersion",
     distribution = "Zero truncated normal",
-    mean = 0,
-    sd = 0.5
+    prior = list(distspec::Normal(mean = 0, sd = 0.5))
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
