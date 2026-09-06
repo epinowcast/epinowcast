@@ -832,19 +832,19 @@
       10: Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
       11:                                              Length scale of the Gaussian process on the log latent-to-obs proportion; log-normal prior on the (positive) length scale
       12:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the log latent-to-obs proportion; half-normal prior
-                   distribution     mean   sd
-       1:                Normal 0.000000 0.20
-       2: Zero truncated normal 0.000000 1.00
-       3:                Normal 4.300000 1.00
-       4: Zero truncated normal 0.000000 0.20
-       5:               Uniform 0.000000 0.00
-       6:            Log normal 1.098612 0.50
-       7: Zero truncated normal 0.000000 0.05
-       8: Zero truncated normal 0.000000 1.00
-       9: Zero truncated normal 0.000000 0.20
-      10:               Uniform 0.000000 0.00
-      11:            Log normal 1.098612 0.50
-      12: Zero truncated normal 0.000000 0.05
+                   distribution          prior
+       1:                Normal    <normal[2]>
+       2: Zero truncated normal    <normal[2]>
+       3:                Normal    <normal[2]>
+       4: Zero truncated normal    <normal[2]>
+       5:               Uniform         [NULL]
+       6:            Log normal <lognormal[2]>
+       7: Zero truncated normal    <normal[2]>
+       8: Zero truncated normal    <normal[2]>
+       9: Zero truncated normal    <normal[2]>
+      10:               Uniform         [NULL]
+      11:            Log normal <lognormal[2]>
+      12: Zero truncated normal    <normal[2]>
       
 
 # enw_expectation supports custom expectation models
@@ -1473,19 +1473,19 @@
       10: Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
       11:                                              Length scale of the Gaussian process on the log latent-to-obs proportion; log-normal prior on the (positive) length scale
       12:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the log latent-to-obs proportion; half-normal prior
-                   distribution     mean   sd
-       1:                Normal 0.000000 0.20
-       2: Zero truncated normal 0.000000 1.00
-       3:                Normal 4.300000 1.00
-       4: Zero truncated normal 0.000000 0.20
-       5:               Uniform 0.000000 0.00
-       6:            Log normal 1.098612 0.50
-       7: Zero truncated normal 0.000000 0.05
-       8: Zero truncated normal 0.000000 1.00
-       9: Zero truncated normal 0.000000 0.20
-      10:               Uniform 0.000000 0.00
-      11:            Log normal 1.098612 0.50
-      12: Zero truncated normal 0.000000 0.05
+                   distribution          prior
+       1:                Normal    <normal[2]>
+       2: Zero truncated normal    <normal[2]>
+       3:                Normal    <normal[2]>
+       4: Zero truncated normal    <normal[2]>
+       5:               Uniform         [NULL]
+       6:            Log normal <lognormal[2]>
+       7: Zero truncated normal    <normal[2]>
+       8: Zero truncated normal    <normal[2]>
+       9: Zero truncated normal    <normal[2]>
+      10:               Uniform         [NULL]
+      11:            Log normal <lognormal[2]>
+      12: Zero truncated normal    <normal[2]>
       
 
 # enw_expectation works as expected when multiple timeseries are present
@@ -1948,23 +1948,23 @@
       15: Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
       16:                                              Length scale of the Gaussian process on the log latent-to-obs proportion; log-normal prior on the (positive) length scale
       17:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the log latent-to-obs proportion; half-normal prior
-                   distribution     mean   sd
-       1:                Normal 0.000000 0.20
-       2: Zero truncated normal 0.000000 1.00
-       3:                Normal 2.600000 1.00
-       4:                Normal 2.600000 1.00
-       5:                Normal 5.300000 1.00
-       6:                Normal 5.300000 1.00
-       7:                Normal 2.800000 1.00
-       8:                Normal 2.800000 1.00
-       9: Zero truncated normal 0.000000 0.20
-      10:               Uniform 0.000000 0.00
-      11:            Log normal 1.098612 0.50
-      12: Zero truncated normal 0.000000 0.05
-      13: Zero truncated normal 0.000000 1.00
-      14: Zero truncated normal 0.000000 0.20
-      15:               Uniform 0.000000 0.00
-      16:            Log normal 1.098612 0.50
-      17: Zero truncated normal 0.000000 0.05
+                   distribution          prior
+       1:                Normal    <normal[2]>
+       2: Zero truncated normal    <normal[2]>
+       3:                Normal    <normal[2]>
+       4:                Normal    <normal[2]>
+       5:                Normal    <normal[2]>
+       6:                Normal    <normal[2]>
+       7:                Normal    <normal[2]>
+       8:                Normal    <normal[2]>
+       9: Zero truncated normal    <normal[2]>
+      10:               Uniform         [NULL]
+      11:            Log normal <lognormal[2]>
+      12: Zero truncated normal    <normal[2]>
+      13: Zero truncated normal    <normal[2]>
+      14: Zero truncated normal    <normal[2]>
+      15:               Uniform         [NULL]
+      16:            Log normal <lognormal[2]>
+      17: Zero truncated normal    <normal[2]>
       
 

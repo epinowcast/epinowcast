@@ -192,23 +192,22 @@ For very simple models `threads_per_chain = 1` may lead to models fitting faster
 
 Setting sensible priors is important for Bayesian inference.
 See `?epinowcast` for an overview of how to inspect and customise priors across all model modules.
-When pre-processing your data, you can retrieve the prior arguments using the `enw_reference` function.
-As shown below, you can retrieve your current files and manipulate them as needed.
+Each model module returns its default priors in its `$priors` element, for example those of the reference date model from `enw_reference()`.
 
 ```{r}
-default_priors <- enw_reference(data = enw_example("preprocessed"))
+default_priors <- enw_reference(data = enw_example("preprocessed"))$priors
 default_priors
 ```
 
-In the above example, if you have some reason to believe that the standard deviation of the means used could we smaller, you could reduce them by half to 0.5.
+Priors are specified with the distributions of the `distspec` package.
+In the above example, if you have some reason to believe that the standard deviation of the prior on the log mean delay could be smaller, you could reduce it by half to 0.5.
 
-```r
-new_priors <- default_priors$priors
-
-new_priors[ ,sd := 0.5]
+```{r}
+library(distspec)
+new_priors <- list(refp_mean_int = Normal(mean = 1, sd = 0.5))
 ```
 
-You could then pass these new priors to the `epinowcast` function.
+You could then pass these new priors to the `epinowcast` function, which merges them with the defaults using `enw_replace_priors()`.
 
 ```r
 epinowcast(pobs,

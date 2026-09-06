@@ -247,7 +247,8 @@ Even with the masked interior cells the delay is recovered, because those cells 
 ## Using the delay-only estimate to set priors
 
 A delay-only fit is a fast way to get a delay estimate that can then *inform a full nowcast*.
-The posterior delay parameters can be passed as priors to a subsequent full model via `enw_reference()` (see `?enw_reference` for the `..._p` prior arguments) and `enw_replace_priors()`, so the full model starts from a data-driven delay rather than the package defaults.
+The posterior delay parameters can be passed as priors to a subsequent full model through the `priors` argument of `epinowcast()`, either as a named list of `distspec` distributions (e.g. `list(refp_mean_int = distspec::Normal(mean = 1.5, sd = 0.2))`) or as the posterior summary from `summary(delay_fit, type = "fit")`, so the full model starts from a data-driven delay rather than the package defaults.
+See `?enw_replace_priors` for the supported formats.
 This is useful when the delay is well identified from historical (fully reported) data but the latent process at recent dates is not.
 
 ## When to use the delay-only model

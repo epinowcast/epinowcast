@@ -33,12 +33,19 @@
 #' [enw_expectation()], [enw_missing()], and [enw_obs()] for
 #' the prior variables available in each module.
 #'
-#' To replace specific defaults, pass a `data.frame` to the
-#' `priors` argument.
-#' Vectorised prior names (e.g. `"refp_mean_int[1]"`) are
-#' matched after stripping the index.
-#' See [enw_replace_priors()] for details on the merging
-#' behaviour.
+#' Priors are specified using the `<dist_spec>` objects of the
+#' `distspec` package (for example [distspec::Normal()] and
+#' [distspec::LogNormal()]), as in `EpiNow2`.
+#' To replace specific defaults, pass a named list of `<dist_spec>`
+#' objects to the `priors` argument, e.g.
+#' `priors = list(refp_mean_int = distspec::Normal(mean = 2, sd = 0.5))`.
+#' A `data.frame` with `variable`, `mean`, and `sd` columns, such as
+#' returned by `summary(nowcast, type = "fit")`, is also supported.
+#' Vectorised prior names (e.g. `"expr_lelatent_int[1]"`) match the
+#' corresponding entry of a vectorised prior and are otherwise matched
+#' after stripping the index.
+#' See [enw_replace_priors()] for details on the supported formats and
+#' the merging behaviour.
 #'
 #' @param reference The reference date indexed reporting process model
 #' specification as defined using [enw_reference()].
@@ -67,11 +74,14 @@
 #' @param model The model to use within `fit`. By default this uses
 #' [enw_model()].
 #'
-#' @param priors A `data.frame` with columns `variable`, `mean`,
-#' and `sd` describing normal priors that replace the module
-#' defaults.
+#' @param priors A named list of `<dist_spec>` objects from the
+#' `distspec` package (e.g.
+#' `list(refp_mean_int = distspec::Normal(mean = 2, sd = 0.5))`), or a
+#' `data.frame` with columns `variable`, `mean`, and `sd`, describing
+#' priors that replace the module defaults.
 #' Custom priors are merged with the defaults automatically.
-#' See Details for how to inspect and modify priors.
+#' See Details and [enw_replace_priors()] for how to inspect and modify
+#' priors.
 #'
 #' @param ... Additional model modules to pass to `model`. User modules may
 #' be used but currently require the supplied `model` to be adapted.
@@ -122,9 +132,7 @@
 #' pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 #'
 #' # Fit with custom priors
-#' my_priors <- data.frame(
-#'   variable = "refp_mean_int", mean = 2, sd = 0.5
-#' )
+#' my_priors <- list(refp_mean_int = distspec::Normal(mean = 2, sd = 0.5))
 #' nowcast <- epinowcast(pobs,
 #'   priors = my_priors,
 #'   fit = enw_fit_opts(

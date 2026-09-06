@@ -82,7 +82,7 @@ library(epinowcast)
 library(data.table)
 library(purrr)
 library(ggplot2)
-library(primarycensored)
+library(distspec)
 ```
 
 ::: {.alert .alert-warning}
@@ -90,7 +90,7 @@ library(primarycensored)
 - Here we make use of `data.table` for simple data transformations but tools from the tidyverse or base R tools could just as easily be used;
 - We also use `purrr` to make use of the `partial()` function which allows us to partially specify a function for later reuse. This is useful for specifying the model as we can specify the parts of the model that are common to all models and then specify the parts that are specific to each model when we call the updated function;
 - We use `ggplot2` for plotting.
-- We use `primarycensored` for simulating the primary censored and right truncated processes need to correctly model the discrete delays.
+- We use `distspec` to define the generation time and reporting delay distributions. It discretises them using `primarycensored`, accounting for the primary censored and right truncated processes needed to correctly model the discrete delays.
 :::
 
 ## Introducing the data: COVID-19 hospitalisations in Germany
@@ -310,41 +310,32 @@ We first need to define the weekly random walk model for the effective reproduct
 rt_formula <- ~ 1 + rw(week)
 ```
 
-Next we define the generation time distribution. As already discussed, we assume a gamma distribution with mean 4 days and a standard deviation of 3 days. These summary parameters first need to be transformed to the shape and scale parameters used for the gamma distribution. We then need to account for daily censoring and finally normalise the probability mass function (PMF) to account for right truncation.
+Next we define the generation time distribution. As already discussed, we assume a gamma distribution with mean 4 days and a standard deviation of 3 days. We define this using `distspec`, which converts the mean and standard deviation to the shape and rate parameters of the gamma distribution. Setting a maximum delay means that when the distribution is discretised, daily censoring is accounted for and the probability mass function (PMF) is normalised to account for right truncation.
 
 ```{r}
 #| fig.cap: "Probability mass function of the assumed generation interval distribution" # nolint
-# first transform mean and sd to shape and scale
-gamma_mean <- 4
-gamma_sd <- 3
-gamma_shape <- gamma_mean^2 / gamma_sd^2
-gamma_scale <- gamma_sd^2 / gamma_mean
+generation_time <- Gamma(mean = 4, sd = 3, max = 15)
+generation_time
 
-# then discretise the distribution
-gt_pmf <- 0:14 |>
-  dpcens(pgamma, shape = gamma_shape, scale = gamma_scale, D = 15)
-
-plot(gt_pmf)
+plot(generation_time, cumulative = FALSE)
 ```
+
+`enw_expectation()` discretises this distribution and, as infections cannot cause new infections on the same day in the renewal equation, drops the probability of a zero day generation time and renormalises the PMF.
 
 ::: {.alert .alert-warning}
 Here and for other PMFs we set the maximum delay to be 15 days as this gives good coverage of the majority of the distribution and limits the computational burden of fitting the model.
 :::
 
-Now we define the latent reporting delay in a similar way remembering we specified a lognormal distribution with a mean of 5 days and a standard deviation of 2 days. We again also need to account for daily censoring and normalise the PMF to account for right truncation.
+Now we define the latent reporting delay in a similar way remembering we specified a lognormal distribution with a mean of 5 days and a standard deviation of 2 days. As we also want to scale the delay by the infection to hospitalisation ratio (2%), we discretise the distribution ourselves and multiply the resulting PMF.
 
 ```{r}
 #| fig.cap: "Probability mass function of the assumed latent (unobserved) reporting distribution" # nolint
-lgn_mean <- 5
-lgn_sd <- 2
-meanlog <- log(lgn_mean^2 / sqrt(lgn_sd^2 + lgn_mean^2))
-sdlog <- sqrt(log(1 + lgn_sd^2 / lgn_mean^2))
+reporting_delay <- LogNormal(mean = 5, sd = 2, max = 15)
+reporting_delay
 
-# then discretise the distribution
-reporting_pmf <- 0:14 |>
-  dpcens(plnorm, meanlog = meanlog, sdlog = sdlog, D = 15) |>
-# and scale it by the infection to hospitalisation ration (2%)
-  (\(x) x * 0.02)()
+# discretise the distribution and scale it by the infection to
+# hospitalisation ratio (2%)
+reporting_pmf <- get_pmf(discretise(reporting_delay)) * 0.02
 
 plot(reporting_pmf)
 ```
@@ -361,7 +352,7 @@ Finally, we can combine these four parts of the model to define the expected hos
 expectation_module <- partial(
   epinowcast::enw_expectation,
   r = rt_formula,
-  generation_time = gt_pmf,
+  generation_time = generation_time,
   latent_reporting_delay = reporting_pmf,
   observation = observation_formula
 )
