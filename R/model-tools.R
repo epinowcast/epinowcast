@@ -522,8 +522,9 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
 #'
 #' @param priors Priors in any of the formats supported by
 #' [enw_replace_priors()]: the `$priors` table of a model module, a named
-#' list of `<dist_spec>` objects, or a `data.frame` with `variable`, `mean`,
-#' and `sd` columns.
+#' list of `<dist_spec>` objects, a `data.frame` with `variable` and `prior`
+#' list columns, or a `data.frame` with `variable`, `mean`, and `sd`
+#' columns.
 #'
 #' @return A named list with each entry specifying a prior as a `2 x n`
 #' array of the location and scale of the prior on the scale used by the

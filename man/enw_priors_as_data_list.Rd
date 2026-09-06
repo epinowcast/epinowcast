@@ -9,8 +9,9 @@ enw_priors_as_data_list(priors)
 \arguments{
 \item{priors}{Priors in any of the formats supported by
 \code{\link[=enw_replace_priors]{enw_replace_priors()}}: the \verb{$priors} table of a model module, a named
-list of \verb{<dist_spec>} objects, or a \code{data.frame} with \code{variable}, \code{mean},
-and \code{sd} columns.}
+list of \verb{<dist_spec>} objects, a \code{data.frame} with \code{variable} and \code{prior}
+list columns, or a \code{data.frame} with \code{variable}, \code{mean}, and \code{sd}
+columns.}
 }
 \value{
 A named list with each entry specifying a prior as a \verb{2 x n}

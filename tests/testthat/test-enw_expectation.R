@@ -152,6 +152,26 @@ test_that("enw_expectation() accepts dist_spec generation times and latent
   expect_identical(from_dist$data$expl_lrd_n, length(lrd_pmf))
 })
 
+test_that("enw_expectation() accepts a list of time-varying latent reporting
+           delays, including dist_spec objects", {
+  pobs <- enw_example("preprocessed")
+  lrd <- distspec::LogNormal(mean = 5, sd = 2, max = 5)
+  lrd_pmf <- distspec::get_pmf(distspec::discretise(lrd))
+  t <- pobs$time[[1]] + length(lrd_pmf) - 1
+  from_dist <- enw_expectation(
+    ~1, latent_reporting_delay = rep(list(lrd), t), data = pobs
+  )
+  from_pmf <- enw_expectation(
+    ~1, latent_reporting_delay = rep(list(lrd_pmf), t), data = pobs
+  )
+  single <- enw_expectation(~1, latent_reporting_delay = lrd_pmf, data = pobs)
+  expect_identical(from_dist$data, from_pmf$data)
+  expect_identical(from_dist$priors, from_pmf$priors)
+  expect_identical(from_dist$data$expl_lrd_n, length(lrd_pmf))
+  expect_identical(from_dist$data$expl_obs, 1)
+  expect_identical(from_dist$priors, single$priors)
+})
+
 test_that("enw_expectation() requires bounded dist_spec objects with fixed
            parameters", {
   pobs <- enw_example("preprocessed")

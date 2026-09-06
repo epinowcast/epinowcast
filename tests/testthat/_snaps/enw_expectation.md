@@ -837,12 +837,12 @@
        2: Zero truncated normal    <normal[2]>
        3:                Normal    <normal[2]>
        4: Zero truncated normal    <normal[2]>
-       5:               Uniform               
+       5:               Uniform         [NULL]
        6:            Log normal <lognormal[2]>
        7: Zero truncated normal    <normal[2]>
        8: Zero truncated normal    <normal[2]>
        9: Zero truncated normal    <normal[2]>
-      10:               Uniform               
+      10:               Uniform         [NULL]
       11:            Log normal <lognormal[2]>
       12: Zero truncated normal    <normal[2]>
       
@@ -1478,12 +1478,12 @@
        2: Zero truncated normal    <normal[2]>
        3:                Normal    <normal[2]>
        4: Zero truncated normal    <normal[2]>
-       5:               Uniform               
+       5:               Uniform         [NULL]
        6:            Log normal <lognormal[2]>
        7: Zero truncated normal    <normal[2]>
        8: Zero truncated normal    <normal[2]>
        9: Zero truncated normal    <normal[2]>
-      10:               Uniform               
+      10:               Uniform         [NULL]
       11:            Log normal <lognormal[2]>
       12: Zero truncated normal    <normal[2]>
       
@@ -1958,12 +1958,12 @@
        7:                Normal    <normal[2]>
        8:                Normal    <normal[2]>
        9: Zero truncated normal    <normal[2]>
-      10:               Uniform               
+      10:               Uniform         [NULL]
       11:            Log normal <lognormal[2]>
       12: Zero truncated normal    <normal[2]>
       13: Zero truncated normal    <normal[2]>
       14: Zero truncated normal    <normal[2]>
-      15:               Uniform               
+      15:               Uniform         [NULL]
       16:            Log normal <lognormal[2]>
       17: Zero truncated normal    <normal[2]>
       

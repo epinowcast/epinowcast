@@ -51,8 +51,10 @@ observations (from most recent to least). This can be used both to convolve
 based on some assumed reporting delay and to rescale observations (by
 multiplying a probability mass function by some fraction) to account
 ascertainment etc. A list of PMFs can be provided to allow for time-varying
-PMFs. This should be the same length as the modelled time period plus the
-length of the generation time if supplied. A bounded \verb{<dist_spec>} from
+PMFs, with one PMF (all of the same length) per modelled time point. This
+is the length of the modelled time period plus the length of each PMF
+minus one, as the period is extended to cover the delay. A bounded
+\verb{<dist_spec>} from
 the \code{distspec} package (e.g. \code{distspec::LogNormal(mean = 5, sd = 2, max = 15)}) can be used in place of a PMF (including within a list) and
 is discretised using \code{\link[distspec:discretise]{distspec::discretise()}} with the first entry the
 probability of a delay of zero days.}

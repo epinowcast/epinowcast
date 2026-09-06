@@ -19,6 +19,10 @@
 
 - Added `distspec` as a dependency.
 
+## Bug fixes
+
+- `enw_expectation()` now accepts a list of time-varying `latent_reporting_delay` PMFs as documented. Previously a list errored, as the seeding observations summed the list and the modelled period was extended by the number of PMFs rather than their length.
+
 ## Documentation
 
 - Updated the prior examples in the ARIMA, Gaussian process, features, and Stan help vignettes to use `distspec` distributions, and added a `distspec` section to the discretised distributions vignette.

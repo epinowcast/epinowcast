@@ -163,7 +163,7 @@
                   distribution          prior
       1: Zero truncated normal    <normal[2]>
       2: Zero truncated normal    <normal[2]>
-      3:               Uniform               
+      3:               Uniform         [NULL]
       4:            Log normal <lognormal[2]>
       5: Zero truncated normal    <normal[2]>
       

@@ -483,8 +483,10 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' based on some assumed reporting delay and to rescale observations (by
 #' multiplying a probability mass function by some fraction) to account
 #' ascertainment etc. A list of PMFs can be provided to allow for time-varying
-#' PMFs. This should be the same length as the modelled time period plus the
-#' length of the generation time if supplied. A bounded `<dist_spec>` from
+#' PMFs, with one PMF (all of the same length) per modelled time point. This
+#' is the length of the modelled time period plus the length of each PMF
+#' minus one, as the period is extended to cover the delay. A bounded
+#' `<dist_spec>` from
 #' the `distspec` package (e.g. `distspec::LogNormal(mean = 5, sd = 2,
 #' max = 15)`) can be used in place of a PMF (including within a list) and
 #' is discretised using [distspec::discretise()] with the first entry the
@@ -531,13 +533,21 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   if (abs(sum(generation_time) - 1) > 1e-3) {
     cli::cli_abort("The generation time must sum to 1")
   }
+  # A list of PMFs gives a time-varying latent reporting delay; the first
+  # PMF applies to the seeding period.
+  lrd_list <- if (is.list(latent_reporting_delay)) {
+    latent_reporting_delay
+  } else {
+    list(latent_reporting_delay)
+  }
+  lrd_n <- length(lrd_list[[1]])
 
   # Set up growth rate features
   r_features <- data$metareference[[1]]
-  if (length(latent_reporting_delay) > 1) {
+  if (lrd_n > 1) {
     r_features <- enw_extend_date(
       r_features,
-      days = length(latent_reporting_delay) - 1, direction = "start"
+      days = lrd_n - 1, direction = "start"
     )
     suppressWarnings(enw_add_metaobs_features(r_features, ...))
   }
@@ -559,9 +569,10 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   ) - r_list$t
   r_list$ft <- r_list$t + r_list$r_seed
 
-  # Initial prior for seeding observations
+  # Initial prior for seeding observations, scaled by the latent reporting
+  # delay
   latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
-  seed_obs <- (latest_matrix[1, ] + 1) * sum(latent_reporting_delay)
+  seed_obs <- (latest_matrix[1, ] + 1) * sum(lrd_list[[1]])
   seed_obs <- purrr::map(seed_obs, ~ rep(log(.), r_list$gt_n))
   seed_obs <- round(unlist(seed_obs), 1)
 
@@ -576,9 +587,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 
   # Observation indicator variables
   obs_list <- list(
-    lrd_n = ifelse(is.list(latent_reporting_delay),
-      length(latent_reporting_delay[[1]]), length(latent_reporting_delay)
-    ),
+    lrd_n = lrd_n,
     lrd = convolution_matrix(
       latent_reporting_delay, r_list$ft,
       include_partial = FALSE
@@ -586,7 +595,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   )
 
   obs_list$obs <- as.numeric(
-    sum(latent_reporting_delay) != 1 || obs_list$lrd_n != 1 ||
+    any(vapply(lrd_list, sum, numeric(1)) != 1) || obs_list$lrd_n != 1 ||
       as_string_formula(observation) != "~1"
   )
   # Observation formula

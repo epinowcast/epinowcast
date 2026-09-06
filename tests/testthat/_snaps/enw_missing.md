@@ -218,7 +218,7 @@
       1:                Normal    <normal[2]>
       2: Zero truncated normal    <normal[2]>
       3: Zero truncated normal    <normal[2]>
-      4:               Uniform               
+      4:               Uniform         [NULL]
       5:            Log normal <lognormal[2]>
       6: Zero truncated normal    <normal[2]>
       
@@ -356,7 +356,7 @@
       1:                Normal    <normal[2]>
       2: Zero truncated normal    <normal[2]>
       3: Zero truncated normal    <normal[2]>
-      4:               Uniform               
+      4:               Uniform         [NULL]
       5:            Log normal <lognormal[2]>
       6: Zero truncated normal    <normal[2]>
       
