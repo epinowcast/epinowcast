@@ -21,7 +21,7 @@
 
 ## Bug fixes
 
-- `enw_expectation()` now accepts a list of time-varying `latent_reporting_delay` PMFs as documented. Previously a list errored, as the seeding observations summed the list and the modelled period was extended by the number of PMFs rather than their length.
+- `enw_expectation()` now accepts a list of time-varying `latent_reporting_delay` PMFs as documented. Previously a list failed with an error, as the seeding observations summed the list and the modelled period was extended by the number of PMFs rather than their length.
 
 ## Documentation
 
