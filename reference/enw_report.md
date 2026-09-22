@@ -233,8 +233,8 @@ enw_report(data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x562d05a91f80>
-#> <environment: 0x562d05a97ca8>
+#> <bytecode: 0x5642b84bda40>
+#> <environment: 0x5642b84c6268>
 #> 
 
 if (FALSE) { # \dontrun{
