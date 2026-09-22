@@ -50,11 +50,14 @@ further details.}
 \item{model}{The model to use within \code{fit}. By default this uses
 \code{\link[=enw_model]{enw_model()}}.}
 
-\item{priors}{A \code{data.frame} with columns \code{variable}, \code{mean},
-and \code{sd} describing normal priors that replace the module
-defaults.
+\item{priors}{A named list of \verb{<dist_spec>} objects from the
+\code{distspec} package (e.g.
+\code{list(refp_mean_int = distspec::Normal(mean = 2, sd = 0.5))}), or a
+\code{data.frame} with columns \code{variable}, \code{mean}, and \code{sd}, describing
+priors that replace the module defaults.
 Custom priors are merged with the defaults automatically.
-See Details for how to inspect and modify priors.}
+See Details and \code{\link[=enw_replace_priors]{enw_replace_priors()}} for how to inspect and modify
+priors.}
 
 \item{...}{Additional model modules to pass to \code{model}. User modules may
 be used but currently require the supplied \code{model} to be adapted.}
@@ -82,16 +85,23 @@ See \code{\link[=enw_reference]{enw_reference()}}, \code{\link[=enw_report]{enw_
 \code{\link[=enw_expectation]{enw_expectation()}}, \code{\link[=enw_missing]{enw_missing()}}, and \code{\link[=enw_obs]{enw_obs()}} for
 the prior variables available in each module.
 
-To replace specific defaults, pass a \code{data.frame} to the
-\code{priors} argument.
-Vectorised prior names (e.g. \code{"refp_mean_int[1]"}) are
-matched after stripping the index.
-See \code{\link[=enw_replace_priors]{enw_replace_priors()}} for details on the merging
-behaviour.
+Priors are specified using the \verb{<dist_spec>} objects of the
+\code{distspec} package (for example \code{\link[distspec:Normal]{distspec::Normal()}} and
+\code{\link[distspec:LogNormal]{distspec::LogNormal()}}), as in \code{EpiNow2}.
+To replace specific defaults, pass a named list of \verb{<dist_spec>}
+objects to the \code{priors} argument, e.g.
+\code{priors = list(refp_mean_int = distspec::Normal(mean = 2, sd = 0.5))}.
+A \code{data.frame} with \code{variable}, \code{mean}, and \code{sd} columns, such as
+returned by \code{summary(nowcast, type = "fit")}, is also supported.
+Vectorised prior names (e.g. \code{"expr_lelatent_int[1]"}) match the
+corresponding entry of a vectorised prior and are otherwise matched
+after stripping the index.
+See \code{\link[=enw_replace_priors]{enw_replace_priors()}} for details on the supported formats and
+the merging behaviour.
 }
 }
 \examples{
-\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Load data.table and ggplot2
 library(data.table)
 library(ggplot2)
@@ -129,9 +139,7 @@ latest_obs <- nat_germany_hosp |>
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 
 # Fit with custom priors
-my_priors <- data.frame(
-  variable = "refp_mean_int", mean = 2, sd = 0.5
-)
+my_priors <- list(refp_mean_int = distspec::Normal(mean = 2, sd = 0.5))
 nowcast <- epinowcast(pobs,
   priors = my_priors,
   fit = enw_fit_opts(

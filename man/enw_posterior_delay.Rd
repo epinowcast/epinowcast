@@ -51,7 +51,7 @@ the reference module's fixed-effect design (see \code{\link[=enw_reference]{enw_
 because a \code{cmdstanr} fit does not retain that design on its own.
 }
 \examples{
-\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 fit <- enw_example("nowcast")
 # Intercept-only delay
 enw_posterior_delay(fit$fit[[1]], max_delay = 20, draws = 50)

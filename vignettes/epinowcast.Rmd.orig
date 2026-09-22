@@ -159,6 +159,7 @@ The package comes equipped with several modules that we can combine to construct
 This ensures that models can be tailored to the specific data and context.
 
 Each module defines its own default priors which can be inspected and customised.
+Priors are specified using the distributions of the `distspec` package (for example `distspec::Normal()`), as in `EpiNow2`, and passed as a named list to the `priors` argument of `epinowcast()`.
 See `?epinowcast` for details on inspecting and setting priors.
 
 A commonly used process model in nowcasting is to model the expected counts by date of reference via a geometric random walk.

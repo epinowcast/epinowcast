@@ -128,3 +128,84 @@ test_that(
     )
   }
 )
+
+test_that("enw_expectation() accepts dist_spec generation times and latent
+           reporting delays", {
+  pobs <- enw_example("preprocessed")
+  gt <- distspec::Gamma(mean = 4, sd = 3, max = 10)
+  lrd <- distspec::LogNormal(mean = 5, sd = 2, max = 10)
+  from_dist <- enw_expectation(
+    ~1, generation_time = gt, latent_reporting_delay = lrd, data = pobs
+  )
+  # The generation time drops the (unsupported) zero delay and renormalises
+  # while the latent reporting delay starts from a delay of zero.
+  gt_pmf <- distspec::get_pmf(distspec::discretise(gt))
+  gt_pmf <- gt_pmf[-1] / sum(gt_pmf[-1])
+  lrd_pmf <- distspec::get_pmf(distspec::discretise(lrd))
+  from_pmf <- enw_expectation(
+    ~1, generation_time = gt_pmf, latent_reporting_delay = lrd_pmf,
+    data = pobs
+  )
+  expect_identical(from_dist$data, from_pmf$data)
+  expect_identical(from_dist$priors, from_pmf$priors)
+  expect_identical(from_dist$data$expr_gt_n, length(gt_pmf))
+  expect_identical(from_dist$data$expl_lrd_n, length(lrd_pmf))
+})
+
+test_that("enw_expectation() accepts a list of time-varying latent reporting
+           delays, including dist_spec objects", {
+  pobs <- enw_example("preprocessed")
+  lrd <- distspec::LogNormal(mean = 5, sd = 2, max = 5)
+  lrd_pmf <- distspec::get_pmf(distspec::discretise(lrd))
+  t <- pobs$time[[1]] + length(lrd_pmf) - 1
+  from_dist <- enw_expectation(
+    ~1, latent_reporting_delay = rep(list(lrd), t), data = pobs
+  )
+  from_pmf <- enw_expectation(
+    ~1, latent_reporting_delay = rep(list(lrd_pmf), t), data = pobs
+  )
+  single <- enw_expectation(~1, latent_reporting_delay = lrd_pmf, data = pobs)
+  expect_identical(from_dist$data, from_pmf$data)
+  expect_identical(from_dist$priors, from_pmf$priors)
+  expect_identical(from_dist$data$expl_lrd_n, length(lrd_pmf))
+  expect_identical(from_dist$data$expl_obs, 1)
+  expect_identical(from_dist$priors, single$priors)
+})
+
+test_that("enw_expectation() requires bounded dist_spec objects with fixed
+           parameters", {
+  pobs <- enw_example("preprocessed")
+  expect_error(
+    enw_expectation(
+      ~1, generation_time = distspec::Gamma(mean = 4, sd = 3), data = pobs
+    ),
+    "bounded"
+  )
+  expect_error(
+    enw_expectation(
+      ~1,
+      generation_time = distspec::Gamma(
+        shape = distspec::Normal(2, 0.5), rate = 1, max = 10
+      ),
+      data = pobs
+    ),
+    "fixed \\(numeric\\) parameters"
+  )
+  expect_error(
+    enw_expectation(
+      ~1, generation_time = distspec::Fixed(0, max = 1), data = pobs
+    ),
+    "no probability mass"
+  )
+})
+
+test_that(".enw_as_pmf() returns numeric vectors unchanged and convolves sums
+           of distributions", {
+  expect_identical(.enw_as_pmf(c(0.1, 0.9)), c(0.1, 0.9))
+  expect_identical(.enw_as_pmf(1), 1)
+  shifted <- .enw_as_pmf(distspec::Fixed(1) + distspec::Fixed(2, max = 5))
+  expect_identical(which.max(shifted), 4L)
+  expect_identical(.enw_as_pmf(distspec::Fixed(2, max = 5), drop_zero = TRUE),
+    c(0, 1)
+  )
+})

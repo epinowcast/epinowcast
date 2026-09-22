@@ -1,3 +1,33 @@
+# epinowcast 0.7.0.1000
+
+## Breaking changes
+
+- Priors are now specified using the `<dist_spec>` objects of the [distspec](https://epiforecasts.io/distspec/) package (for example `distspec::Normal()` and `distspec::LogNormal()`), the same interface used by `EpiNow2`.
+  The `priors` argument of `epinowcast()` and the `custom_priors` argument of `enw_replace_priors()` take a named list of `<dist_spec>` objects, e.g. `priors = list(refp_mean_int = distspec::Normal(mean = 2, sd = 0.5))`.
+  The `$priors` table of each model module replaces its numeric `mean` and `sd` columns with a `prior` list column of `<dist_spec>` objects, and `enw_priors_as_data_list()` converts these to the location and scale used by the Stan model.
+  A `data.frame` with `variable`, `mean`, and `sd` columns (such as `summary(nowcast, type = "fit")`) is still accepted, with the values used as the location and scale of the default prior family for each variable, so posterior summaries can still be used as priors.
+  Replacement priors are checked against the family the model applies (a normal for `"Normal"` and `"Zero truncated normal"` priors, and a log-normal for `"Log normal"` priors) and must have fixed parameters.
+  Priors given as a named list must name an existing prior variable, and vectorised priors (such as `expr_lelatent_int`) can be replaced by dimension using names of the form `variable[n]`; previously an indexed name replaced every entry with a single row.
+  The flat (Uniform) default of the ARIMA partial-autocorrelation priors is represented by a `NULL` prior rather than a zero standard deviation.
+
+## Model
+
+- `enw_expectation()` now accepts a bounded `<dist_spec>` (e.g. `distspec::Gamma(mean = 4, sd = 3, max = 15)`) for the `generation_time` and `latent_reporting_delay` arguments, which is discretised to a daily probability mass function using `distspec::discretise()` (and so the double interval censoring approach of `primarycensored`).
+  As the renewal equation has no weight for the current day, the probability of a generation time of zero days is dropped and the probability mass function renormalised.
+
+## Package
+
+- Added `distspec` as a dependency.
+
+## Bug fixes
+
+- `enw_expectation()` now accepts a list of time-varying `latent_reporting_delay` PMFs as documented. Previously a list failed with an error, as the seeding observations summed the list and the modelled period was extended by the number of PMFs rather than their length.
+
+## Documentation
+
+- Updated the prior examples in the ARIMA, Gaussian process, features, and Stan help vignettes to use `distspec` distributions, and added a `distspec` section to the discretised distributions vignette.
+- The single time series Rt estimation vignette now defines the generation time and latent reporting delay distributions with `distspec` rather than converting their parameters and discretising them by hand.
+
 # epinowcast 0.7.0
 
 ## Model

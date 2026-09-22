@@ -181,9 +181,12 @@ For example, to put a tighter length scale on the growth-rate process:
 
 ```{r}
 library(epinowcast)
-rho_prior <- data.frame(variable = "expr_gp_rho", mean = log(3), sd = 0.25)
+library(distspec)
+rho_prior <- list(expr_gp_rho = LogNormal(meanlog = log(3), sdlog = 0.25))
 # epinowcast(..., priors = rho_prior)
 ```
+
+The length scale can also be given by its mean and standard deviation on the natural scale, for example `LogNormal(mean = 3, sd = 1)`, which `distspec` converts to the log scale.
 
 The magnitude prior on $\alpha$ is the most consequential in practice; tighten it if the latent process is competing with the rest of the linear predictor for variance.
 The length-scale prior on $\rho$ is the lever for how wiggly the function is allowed to be: a smaller $\rho$ permits faster changes, a larger $\rho$ forces a smoother trajectory.

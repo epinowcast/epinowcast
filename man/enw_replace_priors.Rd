@@ -7,28 +7,34 @@
 enw_replace_priors(priors, custom_priors)
 }
 \arguments{
-\item{priors}{A \code{data.frame} with columns \code{variable},
-\code{mean}, and \code{sd} describing normal priors.
-Default priors in the appropriate format are returned by
-the \verb{$priors} element of \code{\link[=enw_reference]{enw_reference()}} and other model
-module functions.}
+\item{priors}{The default priors to update: a \code{data.frame} with a
+\code{variable} column and a \code{prior} list column of \verb{<dist_spec>} objects,
+as returned by the \verb{$priors} element of \code{\link[=enw_reference]{enw_reference()}} and other
+model module functions.}
 
-\item{custom_priors}{A \code{data.frame} with columns \code{variable},
-\code{mean}, and \code{sd} describing normal priors to use as
-replacements.
-Rows in \code{custom_priors} replace matching rows in \code{priors}
-by the \code{variable} column.
-Vectorised prior names (i.e. those of the form
-\code{variable[n]}) are matched after stripping the index
-(treated as \code{variable}).}
+\item{custom_priors}{The replacement priors as a named list of
+\verb{<dist_spec>} objects (e.g.
+\code{list(refp_mean_int = distspec::Normal(mean = 1, sd = 0.5))}), a
+\code{data.frame} with \code{variable} and \code{prior} columns, or a \code{data.frame} with
+\code{variable}, \code{mean}, and \code{sd} columns.
+Entries replace the matching rows of \code{priors} by the \code{variable} column.
+Vectorised prior names of the form \code{variable[n]} replace the entry with
+\code{dimension == n} when \code{variable} is vectorised (i.e. has a \code{dimension}
+index) and otherwise match \code{variable} after stripping the index.
+Every element of a named list must name a prior variable in \code{priors}
+(an error is raised otherwise), whereas rows of a \code{data.frame} that do
+not match a prior variable (such as the non-prior parameters in a
+posterior summary) are ignored.}
 }
 \value{
-A data.table of prior definitions (variable, mean and sd).
+A \code{data.table} of prior definitions with the same columns and
+rows as \code{priors} and the matched entries of the \code{prior} column replaced.
 }
 \description{
-Replaces default model priors with user specified ones
-(restricted to normal priors with specified mean and standard
-deviations).
+Replaces default model priors with user specified ones.
+Priors are specified using the \verb{<dist_spec>} objects of the \code{distspec}
+package (for example \code{\link[distspec:Normal]{distspec::Normal()}} and \code{\link[distspec:LogNormal]{distspec::LogNormal()}}),
+as in \code{EpiNow2}.
 A common use is extracting the posterior from a previous
 \code{\link[=epinowcast]{epinowcast()}} run (using \code{summary(nowcast, type = "fit")})
 and using it as a prior for subsequent fits.
@@ -38,12 +44,32 @@ Default priors can be obtained from each model module's
 \verb{$priors} element, e.g. \code{enw_reference(data = pobs)$priors}.
 See the \code{priors} argument of \code{\link[=epinowcast]{epinowcast()}} for a list of
 available prior variable names by module.
+
+Each default prior has a \code{distribution} describing how the Stan model
+applies it.
+A replacement must use the matching \verb{<dist_spec>} family:
+\code{\link[distspec:Normal]{distspec::Normal()}} for \code{"Normal"} and \code{"Zero truncated normal"} priors
+(the model truncates the latter at zero), \code{\link[distspec:LogNormal]{distspec::LogNormal()}} for
+\code{"Log normal"} priors, and \code{\link[distspec:Normal]{distspec::Normal()}} for \code{"Uniform"} priors
+(where a standard deviation of zero, or \code{NULL}, restores the flat
+default).
+Parameters must be fixed numbers rather than distributions.
+
+Priors given as a mean and standard deviation (for example from
+\code{summary(nowcast, type = "fit")}) are converted to the family of the
+default they replace.
+The values are used as the location and scale on the scale the model
+applies the prior, so for a \code{"Log normal"} prior they are the \code{meanlog}
+and \code{sdlog}.
+Use \code{\link[distspec:LogNormal]{distspec::LogNormal()}} with \code{mean} and \code{sd} to specify a log-normal
+prior by its natural-scale mean and standard deviation.
 }
 \examples{
-# Update priors from a data.frame
-priors <- data.frame(variable = c("x", "y"), mean = c(1, 2), sd = c(1, 2))
-custom_priors <- data.frame(variable = "x[1]", mean = 10, sd = 2)
-enw_replace_priors(priors, custom_priors)
+# Update priors from a named list of distributions
+priors <- enw_obs(data = enw_example("preprocessed"))$priors
+enw_replace_priors(
+  priors, list(sqrt_phi = distspec::Normal(mean = 0, sd = 1))
+)
 
 # Update priors from a previous model fit
 default_priors <- enw_reference(

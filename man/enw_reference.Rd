@@ -49,9 +49,11 @@ syntax.}
 }
 \value{
 A list containing the supplied formulas, data passed into a list
-describing the models, a \code{data.frame} describing the priors used, and a
-function that takes the output data and priors and returns a function that
-can be used to sample from a tightened version of the prior distribution.
+describing the models, a \code{data.table} describing the priors used (with a
+\code{prior} column of \verb{<dist_spec>} objects from the \code{distspec} package, see
+\code{\link[=enw_replace_priors]{enw_replace_priors()}}), and a function that takes the output data and
+priors and returns a function that can be used to sample from a tightened
+version of the prior distribution.
 }
 \description{
 Specifies the reference date reporting delay model using parametric

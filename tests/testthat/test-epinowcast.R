@@ -57,7 +57,7 @@ test_that("epinowcast() runs using default arguments only", {
   expect_data_table(priors)
   expect_named(
     priors,
-    c("variable", "dimension", "description", "distribution", "mean", "sd")
+    c("variable", "dimension", "description", "distribution", "prior")
   )
   # Assert the core model priors are all present rather than hard-coding the
   # exact set and count, so the test is robust to additive prior rows (the
@@ -74,11 +74,16 @@ test_that("epinowcast() runs using default arguments only", {
     "sqrt_phi"
   )
   expect_true(all(core_priors %in% priors[, variable]))
-  expect_true(all(is.finite(priors[, mean])))
-  # Prior sds are non-negative, and strictly positive except for the
-  # degenerate (Uniform) ARIMA partial-autocorrelation priors (sd == 0).
-  expect_true(all(priors[, sd] >= 0))
-  expect_true(all(priors[!variable %like% "arima_pacf", sd] > 0))
+  # Priors are <dist_spec> objects, except the flat (Uniform) ARIMA
+  # partial-autocorrelation priors which are NULL and ship a zero sd.
+  flat <- priors[, variable %like% "arima_pacf"]
+  expect_true(all(purrr::map_lgl(priors$prior[flat], is.null)))
+  expect_true(
+    all(purrr::map_lgl(priors$prior[!flat], inherits, "dist_spec"))
+  )
+  params <- vapply(priors$prior, .enw_prior_params, numeric(2))
+  expect_true(all(is.finite(params)))
+  expect_true(all(params[2, !flat] > 0))
   # Expectation-process priors carry a dimension index; the rest are NA.
   expect_true(all(priors[variable %like% "exp", dimension] == 1))
   expect_true(all(is.na(priors[!variable %like% "exp", dimension])))
@@ -575,10 +580,9 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
   # default prior it can become multimodal on some seeds. An informative delay
   # prior regularises it and it converges reliably. See issue #856 on revisiting
   # the package default prior.
-  weekly_priors <- data.table::data.table(
-    variable = c("refp_mean_int", "refp_sd_int"),
-    mean = c(2, 3),
-    sd = c(1, 1)
+  weekly_priors <- list(
+    refp_mean_int = distspec::Normal(mean = 2, sd = 1),
+    refp_sd_int = distspec::Normal(mean = 3, sd = 1)
   )
 
   # Fit model

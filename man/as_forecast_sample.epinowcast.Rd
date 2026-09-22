@@ -26,7 +26,7 @@ This function is used to convert an \code{epinowcast} as returned by
 used for scoring using the \code{scoringutils} package.
 }
 \examples{
-\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 library(scoringutils)
 
 nowcast <- enw_example("nowcast")

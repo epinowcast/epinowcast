@@ -87,6 +87,18 @@ ggplot(pmf, aes(x = delay, y = probability)) +
   theme_bw()
 ```
 
+The same discretisation is available in R through the [`distspec`](https://epiforecasts.io/distspec/) package, which represents a distribution as a single object and discretises it with `primarycensored`.
+Setting `max` truncates the distribution at the maximum delay, so the probability mass function above can be obtained as follows.
+
+```{r distspec}
+library(distspec)
+delay <- LogNormal(meanlog = 1, sdlog = 0.5, max = dmax)
+delay
+all.equal(get_pmf(discretise(delay)), pmf$probability)
+```
+
+`enw_expectation()` accepts `distspec` distributions for its `generation_time` and `latent_reporting_delay` arguments and discretises them in the same way, and priors across all modules are specified with `distspec` distributions (see `?enw_replace_priors`).
+
 The same `primarycensored` machinery underpins delay handling elsewhere in the ecosystem.
 [`epidist`](https://epidist.epinowcast.org) estimates delay distributions from individual line-list data, and [`EpiNow2::estimate_dist()`](https://epiforecasts.io/EpiNow2/) fits them from aggregated count data; both are powered by `primarycensored`, with the main difference being the data structure they expect.
 Estimating a delay with one of those tools and then passing it to `enw_reference()` keeps the censoring assumptions consistent across the workflow.

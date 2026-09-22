@@ -159,20 +159,19 @@ The latent scale $\sigma$ and the partial autocorrelations $r_k$ can both be ove
 
 - $z_{t,g} \sim \mathcal{N}(0, 1)$ — fixed by the non-centred parameterisation; not user-tunable.
 - $\sigma \sim \mathcal{N}_+(0, 0.2)$ (half-normal) — controls how strongly the latent series can deviate from zero. Set through the `<prefix>_arima_sigma` prior.
-- $r_k \sim \mathrm{Uniform}(-1, 1)$ — the default, implicit from the parameter bounds. Set through the `<prefix>_arima_pacf` prior: a positive standard deviation switches to a $\mathcal{N}(\mu, s)$ prior truncated to $(-1, 1)$, shrinking the autocorrelations toward $\mu$. A standard deviation of zero keeps the uniform default.
+- $r_k \sim \mathrm{Uniform}(-1, 1)$ — the default, implicit from the parameter bounds. Set through the `<prefix>_arima_pacf` prior: a `distspec::Normal(mean, sd)` prior switches to a $\mathcal{N}(\mu, s)$ prior truncated to $(-1, 1)$, shrinking the autocorrelations toward $\mu$. The default `NULL` prior keeps the uniform default.
 - $\theta_l \sim \mathcal{N}(0, 1)$ when MA terms are present — weakly informative.
 
 Here `<prefix>` is the module the term sits on (`expr` for the growth rate, `refp` for the parametric reference mean, and so on; see [Where you can use it](#where)).
 For example, to shrink the growth-rate AR term toward weak autocorrelation rather than leaving it uniform:
 
 ```{r}
-pacf_prior <- data.frame(
-  variable = "expr_arima_pacf", mean = 0, sd = 0.3,
-  stringsAsFactors = FALSE
-)
+library(distspec)
+pacf_prior <- list(expr_arima_pacf = Normal(mean = 0, sd = 0.3))
 ```
 
 Pass the result to `epinowcast()` through its `priors` argument.
+Priors are specified with the distributions of the `distspec` package; see `?enw_replace_priors` for the supported formats.
 
 The half-normal prior on $\sigma$ is the most consequential in practice; tighten it if the latent residual is competing with the rest of the linear predictor for variance.
 A tighter `pacf` prior is the lever for discouraging the near-unit-root AR behaviour that the uniform default permits.
