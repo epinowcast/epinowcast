@@ -12,7 +12,9 @@ var searchData=
   ['diagspd_5fmatern32_9',['diagSPD_Matern32',['../gaussian__process_8stan.html#ae443d4d2b3b752c07ed835b83ecd0e86',1,'gaussian_process.stan']]],
   ['diagspd_5fmatern52_10',['diagSPD_Matern52',['../gaussian__process_8stan.html#add4a066ad1281db47c82a5096af8099a',1,'gaussian_process.stan']]],
   ['diagspd_5fperiodic_11',['diagSPD_Periodic',['../gaussian__process_8stan.html#a56305a04b7b8ac024c83766cb6b6eafc',1,'gaussian_process.stan']]],
-  ['discretised_5fpcens_5flogit_5fhazard_12',['discretised_pcens_logit_hazard',['../primarycensored__pmf_8stan.html#a6cc05ea2169e67c6ec3d7ebb5ab46e7a',1,'primarycensored_pmf.stan']]],
-  ['dist_5fhas_5fpositive_5fsupport_13',['dist_has_positive_support',['../primarycensored_8stan.html#ac677200fa47a95f644537be481450960',1,'primarycensored.stan']]],
-  ['dist_5flcdf_14',['dist_lcdf',['../primarycensored_8stan.html#a0761ffd0ab06dc8b52d0ef30090941ce',1,'primarycensored.stan']]]
+  ['discretehazard_5flcdf_12',['discretehazard_lcdf',['../primarycensored_8stan.html#aaa4a0e181293de9c80c3af8f03b852db',1,'primarycensored.stan']]],
+  ['discretestep_5flcdf_13',['discretestep_lcdf',['../primarycensored_8stan.html#a7478bc2ddbf41081e9b519e720d06bc7',1,'primarycensored.stan']]],
+  ['discretised_5fpcens_5flogit_5fhazard_14',['discretised_pcens_logit_hazard',['../primarycensored__pmf_8stan.html#a6cc05ea2169e67c6ec3d7ebb5ab46e7a',1,'primarycensored_pmf.stan']]],
+  ['dist_5fhas_5fpositive_5fsupport_15',['dist_has_positive_support',['../primarycensored_8stan.html#ac677200fa47a95f644537be481450960',1,'primarycensored.stan']]],
+  ['dist_5flcdf_16',['dist_lcdf',['../primarycensored_8stan.html#a0761ffd0ab06dc8b52d0ef30090941ce',1,'primarycensored.stan']]]
 ];

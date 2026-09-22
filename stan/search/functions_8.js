@@ -6,6 +6,7 @@ var searchData=
   ['log_5fexpected_5fobs_5ffrom_5flatent_3',['log_expected_obs_from_latent',['../log__expected__obs__from__latent_8stan.html#a371632efee35396bab7afc7fb05c6cab',1,'log_expected_obs_from_latent.stan']]],
   ['log_5fhazard_5fto_5flogit_5fhazard_4',['log_hazard_to_logit_hazard',['../primarycensored__pmf_8stan.html#acbffe4a50f7fe04889eb84ff12b28465',1,'primarycensored_pmf.stan']]],
   ['log_5fweibull_5fg_5',['log_weibull_g',['../primarycensored_8stan.html#a2cc78a10c9ffbc81af20655c206acfc4',1,'primarycensored.stan']]],
-  ['lower_5ftoeplitz_6',['lower_toeplitz',['../arima__kernel_8stan.html#a43ba2e310df5c2c3006d416b1a73e158',1,'arima_kernel.stan']]],
-  ['lprob_5fto_5flog_5fhazard_7',['lprob_to_log_hazard',['../primarycensored__pmf_8stan.html#ac5495b06f567156f1a6eff1946474037',1,'primarycensored_pmf.stan']]]
+  ['lognormal_5flcdf_5funderflows_6',['lognormal_lcdf_underflows',['../primarycensored_8stan.html#a73fe2c7117cb1128e5a863ab21317683',1,'primarycensored.stan']]],
+  ['lower_5ftoeplitz_7',['lower_toeplitz',['../arima__kernel_8stan.html#a43ba2e310df5c2c3006d416b1a73e158',1,'arima_kernel.stan']]],
+  ['lprob_5fto_5flog_5fhazard_8',['lprob_to_log_hazard',['../primarycensored__pmf_8stan.html#ac5495b06f567156f1a6eff1946474037',1,'primarycensored_pmf.stan']]]
 ];
