@@ -503,8 +503,11 @@ test_that("epinowcast() can fit a simple combined parametric and non-parametric
     ),
     model = model
   ))
-  # treedepth headroom: this combined reference fit is borderline and can
-  # touch the default cap; divergences and R-hat still guard convergence.
+  # This combined parametric/non-parametric reference model sits at the
+  # treedepth-10 boundary; allow headroom (as already done elsewhere in this
+  # file) so the assertion is not sensitive to small sampler perturbations.
+  # The #833 intercept-centring can also shift this borderline fit; R-hat and
+  # divergences still guard convergence.
   expect_convergence(nowcast, treedepth = 12)
   expect_equal(
     summary(

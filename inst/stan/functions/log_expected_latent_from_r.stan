@@ -41,28 +41,36 @@ vector extract_group_rates(vector r, array[] int r_g, int k, int r_t) {
  * @param t Total number of time periods.
  *
  * @param g Number of groups.
- * 
- * @return An array of vectors containing log-transformed expected latent
- * values for each group and time period.
- * 
- * @note The function performs the following operations:
- *       1. For each group:
- *          a. Extracts a segment of rates specific to the current group.
- *          b. If 'gt_n' is 1 (constant generation time), directly applies a 
- *             cumulative sum on the log scale to model exponential growth.
- *          c. If 'gt_n' > 1 (vector generation time):
- *             i. Converts the log rate and log initial latent values to the 
- *                natural scale.
- *             ii. Uses a dot product with the generation time vector for each 
- *                 time point, following the renewal equation.
- *             iii. Converts the resulting expected values back to the log
- *                  scale, as this approach is expected to be more numerically
- *                  stable than performing the renewal equation directly in log
- *                  space.
+ *
+ * @param pop Initial susceptible population per group. Ignored when
+ * `use_pop == 0`.
+ *
+ * @param use_pop Susceptible-depletion switch (0 = off, 1 = on). When on,
+ * transmission is scaled by the remaining susceptible fraction over the whole
+ * post-seed series.
+ *
+ * @param pop_floor Minimum susceptible population, floored on the
+ * transmission-rate denominator only. Matches EpiNow2's `rt_opts(pop_floor)`.
+ * Only used when `use_pop > 0`.
+ *
+ * @return An array of vectors of log-transformed expected latent values by
+ * group and time.
+ *
+ * @note For each group: when `gt_n == 1` exponential growth is computed as a
+ * cumulative sum on the log scale; when `gt_n > 1` the renewal equation is
+ * applied on the natural scale (more stable) and logged afterwards.
+ *
+ * When `use_pop > 0`, new cases are capped by the remaining susceptibles
+ * (`fmax(0, pop - cum_cases)`) so depletion cannot exceed the pool, and a
+ * small `1e-8` floor keeps the subsequent `log()` finite near exhaustion.
+ * Groups are independent well-mixed populations with no waning or vital
+ * dynamics. Adapted from EpiNow2's `generate_infections()`
+ * (epiforecasts/EpiNow2, MIT licence).
  */
 array[] vector log_expected_latent_from_r(
   matrix lexp_latent_int, vector r, array[] int r_g, int r_t,
-  int r_seed, int gt_n, vector lrgt, int t, int g
+  int r_seed, int gt_n, vector lrgt, int t, int g,
+  vector pop, int use_pop, real pop_floor
 ) {
   array[g] vector[t] exp_lobs;
 
@@ -83,11 +91,27 @@ array[] vector log_expected_latent_from_r(
       // Extract and exponentiate growth rates in one step
       local_R = exp(extract_group_rates(r, r_g, k, r_t));
       exp_obs[1:r_seed] = exp(lexp_latent_int[1:r_seed, k]);
-      // Convolve recent cases with generation time to get new cases
-      for (i in 1:r_t) {
-        exp_obs[r_seed + i] = local_R[i] * dot_product(
-          segment(exp_obs, r_seed + i - gt_n, gt_n), rgt
-        );
+      if (use_pop) {
+        // Cumulative cases consumed from the pool (incl. seeds).
+        real cum_cases = sum(exp_obs[1:r_seed]);
+        for (i in 1:r_t) {
+          real infectiousness = dot_product(
+            segment(exp_obs, r_seed + i - gt_n, gt_n), rgt
+          );
+          // Scale by remaining susceptible fraction; cap new cases by the pool.
+          real remaining_susceptible = fmax(0, pop[k] - cum_cases);
+          real denom = fmax(pop_floor, remaining_susceptible);
+          real adj = 1 - exp(-local_R[i] * infectiousness / denom);
+          exp_obs[r_seed + i] = fmax(1e-8, remaining_susceptible * adj);
+          cum_cases += exp_obs[r_seed + i];
+        }
+      } else {
+        // Convolve recent cases with generation time to get new cases
+        for (i in 1:r_t) {
+          exp_obs[r_seed + i] = local_R[i] * dot_product(
+            segment(exp_obs, r_seed + i - gt_n, gt_n), rgt
+          );
+        }
       }
       exp_lobs[k] = log(exp_obs);
     }

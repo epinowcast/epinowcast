@@ -9,6 +9,10 @@ enw_expectation(
   generation_time = 1,
   observation = ~1,
   latent_reporting_delay = 1,
+  population = NULL,
+  population_floor = 1,
+  population_uncertain = FALSE,
+  population_cv = 0.1,
   data,
   ...
 )
@@ -47,6 +51,28 @@ multiplying a probability mass function by some fraction) to account
 ascertainment etc. A list of PMFs can be provided to allow for time-varying
 PMFs. This should be the same length as the modelled time period plus the
 length of the generation time if supplied.}
+
+\item{population}{Optional initial susceptible population for the
+susceptible-depletion adjustment of the renewal process. Defaults to \code{NULL}
+(no adjustment). When supplied, transmission is scaled by the remaining
+susceptible fraction so \code{Rt} bends down as the pool depletes. A single
+value is recycled across groups (with a warning) or a length-\code{groups} vector
+sets per-group values; groups are independent well-mixed populations. Only
+used on the renewal path (\code{length(generation_time) > 1}). Adapted from
+\code{EpiNow2::rt_opts(pop = ...)}.}
+
+\item{population_floor}{Numeric, defaulting to 1. Minimum susceptible
+population used as a numerical-stability floor on the transmission-rate
+denominator. Ignored when \code{population} is \code{NULL}.}
+
+\item{population_uncertain}{Logical, defaulting to \code{FALSE}. If \code{TRUE}, the
+population is estimated, fitted independently per group from a per-group
+LogNormal prior with median equal to that group's \code{population} value and
+coefficient of variation \code{population_cv}. Ignored when \code{population} is
+\code{NULL}.}
+
+\item{population_cv}{Numeric, defaulting to 0.1. Coefficient of variation of
+the LogNormal population prior when \code{population_uncertain} is \code{TRUE}.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 

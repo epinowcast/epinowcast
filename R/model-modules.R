@@ -425,6 +425,154 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   out
 }
 
+#' Validate and assemble susceptible-depletion population settings
+#'
+#' Internal helper for [enw_expectation()] that validates the population
+#' arguments and returns the Stan data components controlling the
+#' susceptible-depletion adjustment.
+#'
+#' @return A list with the population Stan data components (`use`, `uncertain`,
+#' `fixed`, `floor`) and, when uncertain, the per-group LogNormal prior
+#' parameters (`prior_medianlog`, a length-`groups` vector, and `prior_sdlog`).
+#' `fixed` is always length `groups` (one initial susceptible population per
+#' group).
+#'
+#' @inheritParams enw_expectation
+#' @importFrom cli cli_abort cli_warn
+#' @noRd
+.check_expectation_population <- function(population, population_floor,
+                                          population_uncertain, population_cv,
+                                          generation_time, groups) {
+  if (!is.numeric(population_floor) || length(population_floor) != 1 ||
+    !is.finite(population_floor) || population_floor < 0) {
+    cli::cli_abort(
+      "`population_floor` must be a single non-negative finite number."
+    )
+  }
+  out <- list(
+    use = 0L, uncertain = 0L, fixed = rep(0, groups),
+    floor = as.numeric(population_floor)
+  )
+  if (is.null(population)) {
+    if (isTRUE(population_uncertain)) {
+      cli::cli_abort(
+        "`population` must be supplied when `population_uncertain` is TRUE."
+      )
+    }
+    return(out)
+  }
+  population <- .check_population_values(population, groups)
+  if (length(generation_time) == 1) {
+    extra <- if (isTRUE(population_uncertain)) {
+      paste(
+        "The uncertain (fitted) population request is also ignored in this",
+        "case."
+      )
+    } else {
+      ""
+    }
+    cli::cli_warn(
+      paste(
+        "`population` is ignored for the daily growth rate model",
+        "(`generation_time = 1`); a renewal process",
+        "(`length(generation_time) > 1`) is required for",
+        "susceptible-depletion adjustment.", extra
+      )
+    )
+    return(out)
+  }
+  out$use <- 1L
+  out$fixed <- population
+  if (isTRUE(population_uncertain)) {
+    out <- .expectation_population_prior(out, population, population_cv)
+  }
+  out
+}
+
+#' Validate and recycle per-group population values
+#'
+#' Internal helper for [.check_expectation_population()] that checks the
+#' supplied `population` is a positive numeric of length 1 or `groups`, and
+#' returns a length-`groups` vector. A length-1 value is recycled across groups
+#' with an explicit warning when more than one group is present.
+#'
+#' @param population The supplied population value(s).
+#' @param groups Number of groups.
+#'
+#' @return A length-`groups` numeric vector of initial susceptible populations.
+#'
+#' @importFrom cli cli_abort cli_warn
+#' @noRd
+.check_population_values <- function(population, groups) {
+  if (!is.numeric(population) || !all(is.finite(population)) ||
+    any(population <= 0) || !length(population) %in% c(1L, groups)) {
+    cli::cli_abort(paste(
+      "`population` must be `NULL`, a single positive finite number, or a",
+      "positive finite numeric vector with one value per group",
+      "(length {groups})."
+    ))
+  }
+  if (length(population) == 1L && groups > 1L) {
+    cli::cli_warn(paste(
+      "A single `population` value was supplied but there are {groups}",
+      "groups; recycling it as each group's initial susceptible population.",
+      "Supply a length-{groups} vector to set group-specific populations."
+    ))
+    population <- rep(population, groups)
+  }
+  as.numeric(population)
+}
+
+#' Add the LogNormal population prior to the population settings
+#'
+#' Internal helper for [.check_expectation_population()] that validates
+#' `population_cv` and adds the LogNormal prior parameters for an estimated
+#' initial susceptible population.
+#'
+#' @param out The population settings list under construction.
+#' @param population The supplied (positive) length-`groups` population vector.
+#' Each group is fitted independently from its own LogNormal prior whose median
+#' equals that group's supplied value, sharing the CV-derived log sd.
+#' @param population_cv The natural-scale coefficient of variation.
+#'
+#' @return `out` with `uncertain`, `prior_medianlog` (a length-`groups` vector)
+#' and `prior_sdlog` set.
+#'
+#' @importFrom cli cli_abort
+#' @noRd
+.expectation_population_prior <- function(out, population, population_cv) {
+  if (!is.numeric(population_cv) || length(population_cv) != 1 ||
+    !is.finite(population_cv) || population_cv <= 0) {
+    cli::cli_abort("`population_cv` must be a single positive finite number.")
+  }
+  out$uncertain <- 1L
+  # Per-group LogNormal: median = population, natural-scale CV = population_cv.
+  out$prior_sdlog <- sqrt(log1p(population_cv^2))
+  out$prior_medianlog <- log(population)
+  out
+}
+
+#' Assemble susceptible-depletion Stan data entries
+#'
+#' Internal helper for [enw_expectation()] that turns the validated population
+#' settings (from [.check_expectation_population()]) into the Stan data entries
+#' controlling the susceptible-depletion adjustment.
+#'
+#' @param pop A list returned by [.check_expectation_population()].
+#'
+#' @return A named list of Stan data entries (`pop_use`, `pop_uncertain`,
+#' `pop_fixed`, `pop_floor`).
+#'
+#' @noRd
+.expectation_population_data <- function(pop) {
+  list(
+    pop_use = pop$use,
+    pop_uncertain = pop$uncertain,
+    pop_fixed = pop$fixed,
+    pop_floor = pop$floor
+  )
+}
+
 #' Expectation model module
 #'
 #' @param r A formula (as implemented in [enw_formula()]) describing
@@ -461,6 +609,28 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' PMFs. This should be the same length as the modelled time period plus the
 #' length of the generation time if supplied.
 #'
+#' @param population Optional initial susceptible population for the
+#' susceptible-depletion adjustment of the renewal process. Defaults to `NULL`
+#' (no adjustment). When supplied, transmission is scaled by the remaining
+#' susceptible fraction so \code{Rt} bends down as the pool depletes. A single
+#' value is recycled across groups (with a warning) or a length-`groups` vector
+#' sets per-group values; groups are independent well-mixed populations. Only
+#' used on the renewal path (\code{length(generation_time) > 1}). Adapted from
+#' \code{EpiNow2::rt_opts(pop = ...)}.
+#'
+#' @param population_floor Numeric, defaulting to 1. Minimum susceptible
+#' population used as a numerical-stability floor on the transmission-rate
+#' denominator. Ignored when `population` is `NULL`.
+#'
+#' @param population_uncertain Logical, defaulting to `FALSE`. If `TRUE`, the
+#' population is estimated, fitted independently per group from a per-group
+#' LogNormal prior with median equal to that group's `population` value and
+#' coefficient of variation `population_cv`. Ignored when `population` is
+#' `NULL`.
+#'
+#' @param population_cv Numeric, defaulting to 0.1. Coefficient of variation of
+#' the LogNormal population prior when `population_uncertain` is `TRUE`.
+#'
 #' @param ... Additional parameters passed to [enw_add_metaobs_features()]. The
 #' same arguments as passed to `enw_preprocess_data()` should be used here.
 #' @inherit enw_report return
@@ -473,6 +643,10 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' enw_expectation(data = enw_example("preprocessed"))
 enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
                             observation = ~1, latent_reporting_delay = 1,
+                            population = NULL,
+                            population_floor = 1,
+                            population_uncertain = FALSE,
+                            population_cv = 0.1,
                             data, ...) {
   if (as_string_formula(r) == "~0") {
     cli::cli_abort("An expectation model formula for r must be specified")
@@ -483,6 +657,10 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   if (abs(sum(generation_time) - 1) > 1e-3) {
     cli::cli_abort("The generation time must sum to 1")
   }
+  pop <- .check_expectation_population(
+    population, population_floor, population_uncertain,
+    population_cv, generation_time, data$groups[[1]]
+  )
 
   # Set up growth rate features
   r_features <- data$metareference[[1]]
@@ -510,6 +688,9 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
     rep(r_list$t, data$groups[[1]])
   ) - r_list$t
   r_list$ft <- r_list$t + r_list$r_seed
+
+  # Susceptible-depletion (population) adjustment data.
+  r_list <- c(r_list, .expectation_population_data(pop))
 
   # Initial prior for seeding observations
   latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
@@ -563,17 +744,32 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   names(obs_list) <- paste0("expl_", names(obs_list))
   out$data <- c(r_list, r_data, obs_list, obs_data)
 
+  # Per-group LogNormal prior (log scale) on the initial susceptible
+  # population. This is always supplied as data (so `expr_pop_p` exists in the
+  # Stan data, one column per group) but is only used when the population is
+  # estimated (`pop$uncertain == 1`). When the population is fixed or absent a
+  # placeholder prior is used for every group.
+  groups <- data$groups[[1]]
+  pop_medianlog <- rlang::`%||%`(pop$prior_medianlog, rep(0, groups))
+  if (length(pop_medianlog) == 1L) {
+    pop_medianlog <- rep(pop_medianlog, groups)
+  }
+  pop_sdlog <- rlang::`%||%`(pop$prior_sdlog, 1)
+
   out$priors <- data.table::data.table(
     variable = c(
       "expr_r_int", "expr_beta_sd",
       rep("expr_lelatent_int", length(seed_obs)),
       "expr_arima_sigma", "expr_arima_pacf",
       "expr_gp_rho", "expr_gp_alpha",
+      rep("expr_pop", groups),
       "expl_beta_sd",
       "expl_arima_sigma", "expl_arima_pacf",
       "expl_gp_rho", "expl_gp_alpha"
     ),
-    dimension = c(1, 1, seq_along(seed_obs), 1, 1, 1, 1, 1, 1, 1, 1, 1),
+    dimension = c(
+      1, 1, seq_along(seed_obs), 1, 1, 1, 1, seq_len(groups), 1, 1, 1, 1, 1
+    ),
     description = c(
       "Intercept of the log growth rate",
       "Standard deviation of scaled pooled log growth rate effects",
@@ -588,6 +784,14 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       .arima_pacf_prior_description("log growth rate"),
       .gp_rho_prior_description("log growth rate"),
       .gp_alpha_prior_description("log growth rate"),
+      rep(
+        paste(
+          "Initial susceptible population (per group) for the",
+          "susceptible-depletion adjustment (LogNormal, log scale; only used",
+          "when estimated)"
+        ),
+        groups
+      ),
       "Standard deviation of scaled pooled log growth rate effects",
       paste(
         "Standard deviation of the ARIMA latent residual on log",
@@ -601,15 +805,17 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       "Normal", "Zero truncated normal", rep("Normal", length(seed_obs)),
       "Zero truncated normal", "Uniform",
       "Log normal", "Zero truncated normal",
+      rep("Log normal", groups),
       "Zero truncated normal",
       "Zero truncated normal", "Uniform",
       "Log normal", "Zero truncated normal"
     ),
     mean = c(
-      0, 0, seed_obs, 0, 0, log(3), 0, 0, 0, 0, log(3), 0
+      0, 0, seed_obs, 0, 0, log(3), 0, pop_medianlog, 0, 0, 0, log(3), 0
     ),
     sd = c(
-      0.2, 1, rep(1, length(seed_obs)), 0.2, 0, 0.5, 0.05, 1, 0.2, 0, 0.5, 0.05
+      0.2, 1, rep(1, length(seed_obs)), 0.2, 0, 0.5, 0.05,
+      rep(pop_sdlog, groups), 1, 0.2, 0, 0.5, 0.05
     )
   )
   out$inits <- function(data, priors) {
@@ -648,6 +854,12 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       }
       init <- c(init, .arima_inits(data, priors, "expr"))
       init <- c(init, .gp_inits(data, priors, "expr"))
+      if (isTRUE(data$expr_pop_uncertain == 1)) {
+        init$expr_pop_est <- array(rlnorm(
+          data$g, as.vector(priors$expr_pop_p[1, ]),
+          as.vector(priors$expr_pop_p[2, ]) * 0.1
+        ))
+      }
       if (data$expl_fncol > 0) {
         init$expl_beta <- array(rnorm(data$expl_fncol, 0, 0.01))
       }
