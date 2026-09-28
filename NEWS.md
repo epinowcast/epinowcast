@@ -1,3 +1,13 @@
+# epinowcast 0.8.0.1000
+
+## Model
+
+- `enw_expectation()` now accepts uncertain generation time and latent reporting delay distributions specified with the new `enw_uncertain()` helper, in addition to the existing fixed numeric PMFs.
+  The distribution parameters are estimated from priors and the PMF is discretised (and, for the latent reporting delay, convolved) within the model, reusing epinowcast's own parametric reference date discretisation machinery.
+  This gives feature parity with the uncertain distribution support in `EpiNow2` (no `EpiNow2` code is used).
+  Fixed PMFs remain the default so existing models are unaffected.
+  See the distributions vignette and #177 and #178.
+
 # epinowcast 0.8.0
 
 This is the first release of `epinowcast` to CRAN.
