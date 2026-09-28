@@ -241,7 +241,9 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
   positive <- c("normal", "lognormal", "gamma", "exp")
   if (isTRUE(distribution == "Normal")) {
     "normal"
-  } else if (isTRUE(distribution %in% c("Zero truncated normal", "Log normal"))) {
+  } else if (
+    isTRUE(distribution %in% c("Zero truncated normal", "Log normal"))
+  ) {
     positive
   } else if (isTRUE(distribution == "Uniform")) {
     c("normal", "fixed")
