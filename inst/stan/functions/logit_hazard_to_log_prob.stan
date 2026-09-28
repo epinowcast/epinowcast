@@ -24,5 +24,7 @@
  * @note For delay slot d (1-based), `log p_d = log(h_d) +
  * sum_{j=1}^{d-1} log(1 - h_j)`, with `h_d = inv_logit(lh_d)` — the same
  * identity `hazard_to_log_prob()` computes, but as one fused operation.
+ * The C++ version works on the log scale, so it stays finite where `h`
+ * rounds to 0 or 1 and `hazard_to_log_prob()` returns `-inf`.
  */
 vector logit_hazard_to_log_prob(vector lh, int l);
