@@ -10,6 +10,8 @@ functions {
 #include functions/primarycensored.stan
 #include functions/primarycensored_pmf.stan
 #include functions/hazard.stan
+#include functions/logit_hazard_to_log_prob_stan.stan
+#include functions/logit_hazard_to_log_prob.stan
 #include functions/expected_obs.stan
 #include functions/combine_logit_hazards.stan
 #include functions/expected_obs_from.stan

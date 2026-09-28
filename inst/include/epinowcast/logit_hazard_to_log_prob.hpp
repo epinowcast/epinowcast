@@ -53,6 +53,16 @@ inline void check_logit_hazard_len(int lh_size, int l) {
 }
 
 // h_d = inv_logit(lh_d); log p_d = log(h_d) + running log-survival.
+//
+// log1m(h_d) is skipped for the last element (d == l - 1): its
+// contribution to log_surv is never read (the loop ends right after),
+// and h_{l-1} is the one element of h that hazard_to_log_prob() never
+// passes to log1m() either (cumulative_converse_log_hazard() only ever
+// sees h[1:(l-1)] in Stan's 1-based indexing). Skipping it matters
+// numerically, not just for avoiding wasted work: at a saturated hazard
+// (h_{l-1} rounds to exactly 1 for a large enough lh_{l-1}), Stan Math's
+// log1m() throws std::domain_error, which the Stan composition never
+// triggers for this element and this function must not either.
 inline Eigen::VectorXd logit_hazard_to_log_prob_forward(
     const Eigen::VectorXd& lh, Eigen::VectorXd* h_out) {
   const int l = lh.size();
@@ -62,7 +72,9 @@ inline Eigen::VectorXd logit_hazard_to_log_prob_forward(
   for (int d = 0; d < l; ++d) {
     h(d) = stan::math::inv_logit(lh(d));
     logp(d) = std::log(h(d)) + log_surv;
-    log_surv += stan::math::log1m(h(d));
+    if (d < l - 1) {
+      log_surv += stan::math::log1m(h(d));
+    }
   }
   if (h_out != nullptr) {
     *h_out = h;
@@ -72,14 +84,23 @@ inline Eigen::VectorXd logit_hazard_to_log_prob_forward(
 
 // hbar_j = pbar_j / h_j - T_j / (1 - h_j), T_j = sum_{d > j} pbar_d;
 // lhbar_d = hbar_d * h_d * (1 - h_d).
+//
+// T_{l-1} is exactly 0 (no d > l - 1), so the 1 / (1 - h_{l-1}) term is
+// skipped rather than computed and multiplied by a zero suffix_sum: at a
+// saturated hazard (h_{l-1} == 1 exactly) that product is 0 * Inf = NaN
+// in IEEE arithmetic, even though the true contribution is exactly zero.
+// This mirrors the forward pass skipping log1m(h_{l-1}) for the same
+// reason.
 inline Eigen::VectorXd logit_hazard_to_log_prob_reverse(
     const Eigen::VectorXd& h, const Eigen::VectorXd& logp_adj) {
   const int l = h.size();
   Eigen::VectorXd lhbar(l);
   double suffix_sum = 0.0;
   for (int d = l - 1; d >= 0; --d) {
-    const double hbar_d =
-        logp_adj(d) / h(d) - suffix_sum / (1.0 - h(d));
+    double hbar_d = logp_adj(d) / h(d);
+    if (suffix_sum != 0.0) {
+      hbar_d -= suffix_sum / (1.0 - h(d));
+    }
     lhbar(d) = hbar_d * h(d) * (1.0 - h(d));
     suffix_sum += logp_adj(d);
   }
