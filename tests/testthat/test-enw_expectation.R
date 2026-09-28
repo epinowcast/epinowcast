@@ -151,6 +151,37 @@ test_that(
   }
 )
 
+test_that("uncertain generation time/latent delay sd inits stay strictly
+           above the Stan `<lower=1e-3>` bound (#836)", {
+  # A tiny sd-prior scale forces the sd init draw well below 1e-3, so the
+  # floor is guaranteed to bind (`pmax()` clips it to the floor value).
+  gt_spec <- enw_uncertain(
+    "lognormal", mean = c(1, 1), sd = c(1e-8, 1e-8), max = 5
+  )
+  lrd_spec <- enw_uncertain(
+    "gamma", mean = c(1, 1), sd = c(1e-8, 1e-8), max = 5
+  )
+  expectation <- enw_expectation(
+    r = ~1, generation_time = gt_spec, latent_reporting_delay = lrd_spec,
+    data = pobs
+  )
+  set.seed(1)
+  # The `_p` prior-data fields (e.g. `expr_gt_mean_p`) are assembled from
+  # `$priors` by `epinowcast()` itself (see `enw_priors_as_data_list()`);
+  # reproduce that merge here to exercise `$inits()` as it is actually
+  # called.
+  data_list <- c(
+    expectation$data, list(g = pobs$groups[[1]]),
+    enw_priors_as_data_list(expectation$priors)
+  )
+  inits <- expectation$inits(data_list, expectation$priors)()
+  # Stan's unconstraining transform for `<lower=1e-3>` is `log(x - 1e-3)`,
+  # which is -Inf (and rejected) at exactly the bound, so the init must be
+  # strictly greater, not merely `>= 1e-3`.
+  expect_gt(as.vector(inits$expr_gt_sd), 1e-3)
+  expect_gt(as.vector(inits$expl_lrd_sd), 1e-3)
+})
+
 test_that("enw_expectation defaults to no susceptible-depletion adjustment", {
   expectation <- enw_expectation(data = pobs)
   expect_identical(expectation$data$expr_pop_use, 0L)

@@ -711,8 +711,10 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
         1, data$expr_gt_mean_p[1], data$expr_gt_mean_p[2] / 10
       ))
       if (data$expr_gt_dist > 1) {
-        # Floor at the Stan `<lower=1e-3>` bound on `expr_gt_sd`.
-        init$expr_gt_sd <- array(pmax(1e-3, abs(rnorm(
+        # Floor strictly above the Stan `<lower=1e-3>` bound on `expr_gt_sd`:
+        # Stan's unconstraining transform is `log(x - 1e-3)`, which is -Inf
+        # (and rejected) if the initial value lands exactly on the bound.
+        init$expr_gt_sd <- array(pmax(1e-3 + 1e-6, abs(rnorm(
           1, data$expr_gt_sd_p[1], data$expr_gt_sd_p[2] / 10
         ))))
       }
@@ -722,8 +724,9 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
         1, data$expl_lrd_mean_p[1], data$expl_lrd_mean_p[2] / 10
       ))
       if (data$expl_lrd_dist > 1) {
-        # Floor at the Stan `<lower=1e-3>` bound on `expl_lrd_sd`.
-        init$expl_lrd_sd <- array(pmax(1e-3, abs(rnorm(
+        # Floor strictly above the Stan `<lower=1e-3>` bound on
+        # `expl_lrd_sd` (see the `expr_gt_sd` comment above).
+        init$expl_lrd_sd <- array(pmax(1e-3 + 1e-6, abs(rnorm(
           1, data$expl_lrd_sd_p[1], data$expl_lrd_sd_p[2] / 10
         ))))
       }
@@ -975,15 +978,6 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   names(obs_list) <- paste0("expl_", names(obs_list))
   out$data <- c(r_list, r_data, obs_list, obs_data)
 
-  # Priors for the uncertain delay parameters are carried on the spec object
-  # (the `mean`/`sd` arguments of `enw_uncertain()`) and passed as Stan data
-  # directly, so they do not alter the user-facing `$priors` table for the
-  # default fixed-PMF case. The Stan parameters are sized 0 (and these data
-  # are unused) unless the corresponding delay is uncertain.
-  out$data$expr_gt_mean_p <- as.array(matrix(gt$mean_p, nrow = 2))
-  out$data$expr_gt_sd_p <- as.array(matrix(gt$sd_p, nrow = 2))
-  out$data$expl_lrd_mean_p <- as.array(matrix(lrd$mean_p, nrow = 2))
-  out$data$expl_lrd_sd_p <- as.array(matrix(lrd$sd_p, nrow = 2))
 
   # Per-group LogNormal prior (log scale) on the initial susceptible
   # population. This is always supplied as data (so `expr_pop_p` exists in the
@@ -1003,13 +997,16 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       rep("expr_lelatent_int", length(seed_obs)),
       "expr_arima_sigma", "expr_arima_pacf",
       "expr_gp_rho", "expr_gp_alpha",
+      "expr_gt_mean", "expr_gt_sd",
       rep("expr_pop", groups),
       "expl_beta_sd",
       "expl_arima_sigma", "expl_arima_pacf",
-      "expl_gp_rho", "expl_gp_alpha"
+      "expl_gp_rho", "expl_gp_alpha",
+      "expl_lrd_mean", "expl_lrd_sd"
     ),
     dimension = c(
-      1, 1, seq_along(seed_obs), 1, 1, 1, 1, seq_len(groups), 1, 1, 1, 1, 1
+      1, 1, seq_along(seed_obs), 1, 1, 1, 1, 1, 1, seq_len(groups),
+      1, 1, 1, 1, 1, 1, 1
     ),
     description = c(
       "Intercept of the log growth rate",
@@ -1025,6 +1022,17 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       .arima_pacf_prior_description("log growth rate"),
       .gp_rho_prior_description("log growth rate"),
       .gp_alpha_prior_description("log growth rate"),
+      paste(
+        "Prior location (mean, or meanlog for the lognormal family) for the",
+        "uncertain generation time distribution; only used when",
+        "generation_time is enw_uncertain()"
+      ),
+      paste(
+        "Prior scale (sd, or sdlog for the lognormal family) for the",
+        "uncertain generation time distribution; only used when",
+        "generation_time is enw_uncertain() with a distribution that has a",
+        "scale parameter"
+      ),
       rep(
         paste(
           "Initial susceptible population (per group) for the",
@@ -1040,23 +1048,39 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       ),
       .arima_pacf_prior_description("log latent-to-obs proportion"),
       .gp_rho_prior_description("log latent-to-obs proportion"),
-      .gp_alpha_prior_description("log latent-to-obs proportion")
+      .gp_alpha_prior_description("log latent-to-obs proportion"),
+      paste(
+        "Prior location (mean, or meanlog for the lognormal family) for the",
+        "uncertain latent reporting delay distribution; only used when",
+        "latent_reporting_delay is enw_uncertain()"
+      ),
+      paste(
+        "Prior scale (sd, or sdlog for the lognormal family) for the",
+        "uncertain latent reporting delay distribution; only used when",
+        "latent_reporting_delay is enw_uncertain() with a distribution that",
+        "has a scale parameter"
+      )
     ),
     distribution = c(
       "Normal", "Zero truncated normal", rep("Normal", length(seed_obs)),
       "Zero truncated normal", "Uniform",
       "Log normal", "Zero truncated normal",
+      "Normal", "Zero truncated normal",
       rep("Log normal", groups),
       "Zero truncated normal",
       "Zero truncated normal", "Uniform",
-      "Log normal", "Zero truncated normal"
+      "Log normal", "Zero truncated normal",
+      "Normal", "Zero truncated normal"
     ),
     mean = c(
-      0, 0, seed_obs, 0, 0, log(3), 0, pop_medianlog, 0, 0, 0, log(3), 0
+      0, 0, seed_obs, 0, 0, log(3), 0, gt$mean_p[1], gt$sd_p[1],
+      pop_medianlog, 0, 0, 0, log(3), 0, lrd$mean_p[1], lrd$sd_p[1]
     ),
     sd = c(
       0.2, 1, rep(1, length(seed_obs)), 0.2, 0, 0.5, 0.05,
-      rep(pop_sdlog, groups), 1, 0.2, 0, 0.5, 0.05
+      gt$mean_p[2], gt$sd_p[2],
+      rep(pop_sdlog, groups), 1, 0.2, 0, 0.5, 0.05,
+      lrd$mean_p[2], lrd$sd_p[2]
     )
   )
   out$inits <- .expectation_inits
