@@ -16,7 +16,7 @@ this should be different from the directory of the original model and the
 The path to the copied \code{epinowcast.hpp}.
 }
 \description{
-CmdStan's makefiles cannot use a \code{user_header} path that
+The CmdStan makefiles cannot use a \code{user_header} path that
 contains a space or a \verb{\%}, as the path to an installed package can (for
 example a Windows library under \verb{Program Files}). \code{\link[=enw_model]{enw_model()}} therefore
 compiles against a copy of the header in \code{target_dir}. Files are only

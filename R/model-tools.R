@@ -276,7 +276,7 @@ remove_profiling <- function(s) {
 #' Pure-Stan fallback body for a C++-backed Stan function
 #'
 #' @description Used by [write_stan_files_no_profile()] to replace a
-#' bodyless, C++-backed Stan function declaration with a pure-Stan body
+#' C++-backed Stan function declared without a body with a pure-Stan body
 #' when the C++ adjoint path is disabled (`use_cpp = FALSE`, see
 #' [enw_model()]). The fallback calls straight through to the retained
 #' `<fn>_stan()` pure-Stan reference, so the two are always in sync.
@@ -316,7 +316,7 @@ stan_cpp_fallback_body <- function(fn) {
 #' fallback body when `use_cpp = FALSE`.
 #'
 #' @return A named `character` vector mapping the relative path of each
-#' bodyless declaration file to the function name [stan_cpp_fallback_body()]
+#' declaration-only file to the function name [stan_cpp_fallback_body()]
 #' should be called with. Paths use `/` (matching `list.files(...,
 #' recursive = TRUE)`, which is always `/`-separated, unlike a Windows
 #' filesystem path).
@@ -709,13 +709,10 @@ enw_model <- function(model = system.file(
     }
     cpp_options$stan_threads <- threads
     dots <- list(...)
-    if (use_cpp) {
-      if (!"user_header" %in% names(dots)) {
-        dots$user_header <- stage_stan_header(target_dir)
-      }
-      # cmdstanr adds this itself when compiling with a user_header, but
-      # $check_syntax() only sees options passed here.
-      stanc_options[["allow-undefined"]] <- TRUE
+    if (use_cpp && !"user_header" %in% names(dots)) {
+      # cmdstanr adds allow-undefined to stanc_options when a user_header
+      # is set.
+      dots$user_header <- stage_stan_header(target_dir)
     }
     model_args <- c(
       list(
@@ -752,7 +749,7 @@ epinowcast_stan_header <- function() {
 
 #' Copy the C++ header into a model directory for compilation
 #'
-#' @description CmdStan's makefiles cannot use a `user_header` path that
+#' @description The CmdStan makefiles cannot use a `user_header` path that
 #' contains a space or a `%`, as the path to an installed package can (for
 #' example a Windows library under `Program Files`). [enw_model()] therefore
 #' compiles against a copy of the header in `target_dir`. Files are only
@@ -792,8 +789,8 @@ stage_stan_header <- function(target_dir) {
 #' files in the `include` directory. Note that the following files contain
 #' overloaded functions and cannot be exposed: "delay_lpmf.stan",
 #' "allocate_observed_obs.stan", "obs_lpmf.stan", and "effects_priors_lp.stan".
-#' Functions implemented in C++ (currently "logit_hazard_to_log_prob.stan"
-#' and "renewal_depletion.stan", see [enw_model()]'s `use_cpp` argument)
+#' Functions implemented in C++ (currently `logit_hazard_to_log_prob.stan`
+#' and `renewal_depletion.stan`, see [enw_model()]'s `use_cpp` argument)
 #' are exposed via their retained pure-Stan fallback instead, since
 #' `expose_functions()` cannot link the package's C++ header. The two agree
 #' to floating-point precision except where a hazard rounds to 0 or 1, where

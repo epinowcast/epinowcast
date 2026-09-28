@@ -143,12 +143,10 @@ test_that("enw_model() wires the C++ header only when use_cpp = TRUE", {
     unname(tools::md5sum(captured$user_header)),
     unname(tools::md5sum(epinowcast_stan_header()))
   )
-  expect_true(captured$stanc_options[["allow-undefined"]])
   cpp_model_file <- captured[[1]]
 
   enw_model(verbose = FALSE, use_cpp = FALSE, target_dir = target_dir)
   expect_null(captured$user_header)
-  expect_null(captured$stanc_options[["allow-undefined"]])
   # The pure-Stan build is cached separately, so switching use_cpp in one
   # cache never reuses the other build's binary.
   expect_false(identical(captured[[1]], cpp_model_file))
