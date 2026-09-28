@@ -14,17 +14,22 @@ list columns, or a \code{data.frame} with \code{variable}, \code{mean}, and \cod
 columns.}
 }
 \value{
-A named list with each entry specifying a prior as a \verb{2 x n}
-array of the location and scale of the prior on the scale used by the
-Stan model (the \code{mean} and \code{sd} of a normal prior and the \code{meanlog} and
-\code{sdlog} of a log-normal prior).
+A named list with, for each prior variable, a \verb{<variable>_p}
+entry giving the prior as a \verb{2 x n} array of its location and scale
+(the \code{mean} and \code{sd} of a normal prior, the \code{meanlog} and \code{sdlog} of a
+log-normal prior, the \code{shape} and \code{rate} of a gamma prior, and the \code{rate}
+of an exponential prior) and a \verb{<variable>_p_dist} entry giving the
+integer distribution id used by the Stan model (\code{0} flat, \code{1} normal,
+\code{2} log-normal, \code{3} gamma, \code{4} exponential). The entries of a vectorised
+prior must share a distribution family.
 }
 \description{
 Converts priors specified as \verb{<dist_spec>} objects into the list
 format used by the Stan model. Each prior becomes a \verb{2 x n} array with
 the location in the first row and the scale in the second (with \code{n > 1}
-for vectorised priors), and "_p" is added to each variable name so that
-priors can be distinguished from the corresponding parameters.
+for vectorised priors) together with an integer distribution id, and
+\verb{_p} (or \verb{_p_dist}) is added to each variable name so that priors can be
+distinguished from the corresponding parameters.
 }
 \examples{
 priors <- list(

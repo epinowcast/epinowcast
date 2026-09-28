@@ -98,6 +98,24 @@ test_that("enw_replace_priors ignores an index on a prior that is not
   expect_identical(updated$prior[[1]], distspec::Normal(mean = 0, sd = 1))
 })
 
+test_that("enw_replace_priors allows any family supported on a positive
+           parameter", {
+  priors <- example_priors()
+  updated <- enw_replace_priors(
+    priors,
+    list(
+      y = distspec::Gamma(shape = 2, rate = 4),
+      z = distspec::Normal(mean = 0, sd = 1)
+    )
+  )
+  expect_identical(updated$prior[[2]], distspec::Gamma(shape = 2, rate = 4))
+  expect_identical(updated$prior[[3]], distspec::Normal(mean = 0, sd = 1))
+  updated <- enw_replace_priors(
+    priors, list(y = distspec::Exponential(rate = 2))
+  )
+  expect_identical(updated$prior[[2]], distspec::Exponential(rate = 2))
+})
+
 test_that("enw_replace_priors checks the prior family and parameters", {
   priors <- example_priors()
   expect_error(
@@ -105,8 +123,12 @@ test_that("enw_replace_priors checks the prior family and parameters", {
     "must be a \"normal\" distribution"
   )
   expect_error(
-    enw_replace_priors(priors, list(z = distspec::Normal(1, 1))),
-    "must be a \"lognormal\" distribution"
+    enw_replace_priors(priors, list(x = distspec::Gamma(shape = 2, rate = 4))),
+    "must be a \"normal\" distribution"
+  )
+  expect_error(
+    enw_replace_priors(priors, list(y = distspec::Beta(shape1 = 1, shape2 = 1))),
+    "distribution"
   )
   expect_error(
     enw_replace_priors(

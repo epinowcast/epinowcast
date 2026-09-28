@@ -13,8 +13,9 @@ prior.}
 \value{
 A numeric vector of length two giving the location and scale used
 by the Stan model: the \code{mean} and \code{sd} of a normal prior, the \code{meanlog}
-and \code{sdlog} of a log-normal prior, the value and \code{0} for a fixed value,
-and \code{0} and \code{0} for a flat prior.
+and \code{sdlog} of a log-normal prior, the \code{shape} and \code{rate} of a gamma
+prior, the \code{rate} and \code{0} of an exponential prior, the value and \code{0} for
+a fixed value, and \code{0} and \code{0} for a flat prior.
 }
 \description{
 Extract the location and scale a prior passes to Stan

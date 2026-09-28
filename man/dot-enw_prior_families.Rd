@@ -7,8 +7,8 @@
 .enw_prior_families(distribution)
 }
 \arguments{
-\item{distribution}{A character string naming the prior family the Stan
-model applies (see \code{\link[=.enw_prior_table]{.enw_prior_table()}}), or \code{NA}.}
+\item{distribution}{A character string naming the default prior family
+the Stan model applies (see \code{\link[=.enw_prior_table]{.enw_prior_table()}}), or \code{NA}.}
 }
 \value{
 A character vector of the \verb{<dist_spec>} distribution types (as
@@ -16,6 +16,11 @@ returned by \code{\link[distspec:get_distribution]{distspec::get_distribution()}
 the prior.
 }
 \description{
-Prior families supported for each model prior distribution
+The default \code{distribution} of a prior (see \code{\link[=.enw_prior_table]{.enw_prior_table()}})
+identifies the support of the parameter it is placed on: \code{"Normal"}
+priors are on unbounded parameters, \code{"Zero truncated normal"} and
+\code{"Log normal"} priors on positive parameters, and \code{"Uniform"} priors on
+the ARIMA partial autocorrelations in (-1, 1). The prior family passed
+to the Stan model must be supported on that parameter.
 }
 \keyword{internal}

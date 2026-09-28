@@ -46,14 +46,19 @@ Default priors can be obtained from each model module's
 See the \code{priors} argument of \code{\link[=epinowcast]{epinowcast()}} for a list of
 available prior variable names by module.
 
-Each default prior has a \code{distribution} describing how the Stan model
-applies it.
-A replacement must use the matching \verb{<dist_spec>} family:
-\code{\link[distspec:Normal]{distspec::Normal()}} for \code{"Normal"} and \code{"Zero truncated normal"} priors
-(the model truncates the latter at zero), \code{\link[distspec:LogNormal]{distspec::LogNormal()}} for
-\code{"Log normal"} priors, and \code{\link[distspec:Normal]{distspec::Normal()}} for \code{"Uniform"} priors
-(where a standard deviation of zero, or \code{NULL}, restores the flat
-default).
+Each default prior has a \code{distribution} describing the default prior
+family, which also identifies the support of the parameter it is placed
+on.
+The prior family is passed to the Stan model, so a replacement can use
+any family supported on that parameter: \code{\link[distspec:Normal]{distspec::Normal()}} for
+\code{"Normal"} priors (on unbounded parameters such as intercepts);
+\code{\link[distspec:Normal]{distspec::Normal()}} (truncated at zero by the parameter bounds),
+\code{\link[distspec:LogNormal]{distspec::LogNormal()}}, \code{\link[distspec:Gamma]{distspec::Gamma()}}, or
+\code{\link[distspec:Exponential]{distspec::Exponential()}} for \code{"Zero truncated normal"} and
+\code{"Log normal"} priors (on positive parameters such as standard
+deviations and length scales); and \code{\link[distspec:Normal]{distspec::Normal()}} (truncated to
+(-1, 1)) for \code{"Uniform"} priors on the ARIMA partial autocorrelations,
+where \code{NULL} or a standard deviation of zero restores the flat default.
 Parameters must be fixed numbers rather than distributions.
 
 Priors given as a mean and standard deviation (for example from

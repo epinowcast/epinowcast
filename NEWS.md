@@ -10,6 +10,10 @@
   Priors given as a named list must name an existing prior variable, and vectorised priors (such as `expr_lelatent_int`) can be replaced by dimension using names of the form `variable[n]`; previously an indexed name replaced every entry with a single row (this only affects the new list form).
   The flat (Uniform) default of the ARIMA partial-autocorrelation priors is now represented internally by a `NULL` `prior`, with the derived `sd` column continuing to read `0` as before.
   See #893 by @seabbs.
+- The prior family is now passed to the Stan model rather than fixed by it, so priors on positive parameters (pooled effect standard deviations, ARIMA scales, Gaussian process length scales and magnitudes, and the overdispersion) can be given as a `distspec::Normal()` (half-normal), `distspec::LogNormal()`, `distspec::Gamma()`, or `distspec::Exponential()` distribution, e.g. `priors = list(sqrt_phi = distspec::Gamma(shape = 2, rate = 4))`.
+  Priors on unbounded parameters (intercepts and initial latent observations) remain normal, and the ARIMA partial autocorrelations accept a flat or normal prior.
+  `enw_priors_as_data_list()` passes each prior to Stan as its location and scale together with an integer distribution id (`<variable>_p_dist`), and the model applies it through a new `prior_lpdf()` Stan function.
+  See #893 by @seabbs.
 - `enw_expectation()` now accepts a bounded `<dist_spec>` (e.g. `distspec::Gamma(mean = 4, sd = 3, max = 15)`) for the `generation_time` and `latent_reporting_delay` arguments, which is discretised to a daily probability mass function using `distspec::discretise()` (and so the double interval censoring approach of `primarycensored`).
   As the renewal equation has no weight for the current day, the probability of a generation time of zero days is dropped and the probability mass function renormalised.
   See #893 by @seabbs.
@@ -26,7 +30,7 @@
 
 ## Documentation
 
-- Updated the prior examples in the ARIMA, Gaussian process, features, and Stan help vignettes to use `distspec` distributions, and added a `distspec` section to the discretised distributions vignette.
+- Updated the prior specification section of the features vignette to use `distspec` distributions.
   See #893 by @seabbs.
 - The single time series Rt estimation vignette now defines the generation time and latent reporting delay distributions with `distspec` rather than converting their parameters and discretising them by hand.
   See #893 by @seabbs.

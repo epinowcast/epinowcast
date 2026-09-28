@@ -207,7 +207,7 @@ enw_reference <- function(
     )
   )
   out$inits <- function(data, priors) {
-    priors <- enw_priors_as_data_list(priors)
+    priors <- .enw_priors_as_init_list(priors)
     fn <- function() {
       init <- list(
         refp_mean_int = numeric(0),
@@ -422,7 +422,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
     )
   )
   out$inits <- function(data, priors) {
-    priors <- enw_priors_as_data_list(priors)
+    priors <- .enw_priors_as_init_list(priors)
     fn <- function() {
       init <- list(
         rep_beta = numeric(0),
@@ -898,7 +898,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
     )
   )
   out$inits <- function(data, priors) {
-    priors <- enw_priors_as_data_list(priors)
+    priors <- .enw_priors_as_init_list(priors)
     fn <- function() {
       init <- list(
         expr_beta = numeric(0),
@@ -934,10 +934,10 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       init <- c(init, .arima_inits(data, priors, "expr"))
       init <- c(init, .gp_inits(data, priors, "expr"))
       if (isTRUE(data$expr_pop_uncertain == 1)) {
-        init$expr_pop_est <- array(rlnorm(
+        init$expr_pop_est <- array(abs(rnorm(
           data$g, as.vector(priors$expr_pop_p[1, ]),
           as.vector(priors$expr_pop_p[2, ]) * 0.1
-        ))
+        )))
       }
       if (data$expl_fncol > 0) {
         init$expl_beta <- array(rnorm(data$expl_fncol, 0, 0.01))
@@ -1093,7 +1093,7 @@ enw_missing <- function(formula = ~1, data) {
   )
   # Define a function for sampling from the priors and data
   out$inits <- function(data, priors) {
-    priors <- enw_priors_as_data_list(priors)
+    priors <- .enw_priors_as_init_list(priors)
     fn <- function() {
       init <- list(
         miss_int = numeric(0),
@@ -1284,7 +1284,7 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
     prior = list(distspec::Normal(mean = 0, sd = 0.5))
   )
   out$inits <- function(data, priors) {
-    priors <- enw_priors_as_data_list(priors)
+    priors <- .enw_priors_as_init_list(priors)
     fn <- function() {
       init <- list(
         sqrt_phi = numeric(0),

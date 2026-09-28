@@ -735,7 +735,6 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
 # is `TRUE` (the parametric reference, which shares a GP between the mean
 # and sd) the second magnitude `<prefix>_gp_sd_alpha` is also declared
 # and filled when `model_refp > 1`, mirroring the ARIMA `sd_sigma`.
-#' @importFrom stats rlnorm
 .gp_inits <- function(data, priors, prefix, with_sd_alpha = FALSE) {
   eta_nm <- paste0(prefix, "_gp_eta")
   rho_nm <- paste0(prefix, "_gp_rho")
@@ -767,7 +766,7 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
   }
 
   rho_p <- priors[[paste0(prefix, "_gp_rho_p")]]
-  init[[rho_nm]] <- array(rlnorm(1, rho_p[1], rho_p[2] / 10))
+  init[[rho_nm]] <- array(abs(rnorm(1, rho_p[1], rho_p[2] / 10)))
   alpha_p <- priors[[paste0(prefix, "_gp_alpha_p")]]
   init[[alpha_nm]] <- array(abs(rnorm(1, alpha_p[1], alpha_p[2] / 10 + 1e-3)))
   if (with_sd_alpha && isTRUE(data$model_refp > 1)) {

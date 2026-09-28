@@ -624,3 +624,30 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
   expect_lt(nowcast$max_rhat, 1.05)
   expect_lt(nowcast$per_divergent_transitions, 0.1)
 })
+
+
+test_that("epinowcast() fits with gamma, log-normal and exponential priors on
+           positive parameters", {
+  skip_on_cran()
+  skip_on_local()
+  pobs <- enw_example("preprocessed")
+  nowcast <- suppressMessages(epinowcast(
+    pobs,
+    expectation = enw_expectation(~ 1 + rw(week), data = pobs),
+    priors = list(
+      sqrt_phi = distspec::Gamma(shape = 2, rate = 4),
+      refp_sd_int = distspec::LogNormal(meanlog = log(0.5), sdlog = 0.5),
+      expr_beta_sd = distspec::Exponential(rate = 2)
+    ),
+    fit = enw_fit_opts(
+      sampler = silent_enw_sample,
+      save_warmup = FALSE, pp = FALSE,
+      chains = 2, iter_warmup = 250, iter_sampling = 250
+    )
+  ))
+  expect_convergence(nowcast)
+  data_list <- nowcast$data[[1]]
+  expect_identical(data_list$sqrt_phi_p_dist, 3L)
+  expect_identical(data_list$refp_sd_int_p_dist, 2L)
+  expect_identical(data_list$expr_beta_sd_p_dist, 4L)
+})
