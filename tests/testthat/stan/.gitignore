@@ -3,6 +3,3 @@
 *.exe
 test_expected_obs
 logit_hazard_gradient
-test_renewal_depletion_stan
-test_renewal_depletion
-test_renewal_depletion_cpp
