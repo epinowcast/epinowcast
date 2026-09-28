@@ -196,13 +196,13 @@ epinowcast <- function(data,
     expectation, reference, report, missing, obs, fit, secondary, ...
   )
   names(modules) <- as.character(seq_along(modules))
-  purrr::walk(modules, check_module)
+  walk(modules, check_module)
   check_modules_compatible(modules)
 
-  modules <- purrr::transpose(modules)
-  data_as_list <- purrr::flatten(modules$data)
+  modules <- transpose(modules)
+  data_as_list <- flatten(modules$data)
 
-  default_priors <- data.table::rbindlist(
+  default_priors <- rbindlist(
     modules$priors,
     fill = TRUE, use.names = TRUE
   )
@@ -219,7 +219,7 @@ epinowcast <- function(data,
   )
 
   if (missing$formula != "~0") {
-    cli::cli_warn(
+    cli_warn(
       paste0(
         "The missing data model is highly experimental. There is a ",
         "significant chance of bugs in its implementation."
@@ -228,12 +228,12 @@ epinowcast <- function(data,
   }
 
   inits <- purrr::compact(modules$inits)
-  init_fns <- purrr::map(names(inits), ~ inits[[.]](data_as_list, priors))
+  init_fns <- map(names(inits), ~ inits[[.]](data_as_list, priors))
 
   init_fn <- function(init_fns = init_fns) {
     init_inner_fn <- function() {
-      inits <- purrr::map(init_fns, do.call, args = list())
-      inits <- purrr::flatten(inits)
+      inits <- map(init_fns, do.call, args = list())
+      inits <- flatten(inits)
       inits
     }
     init_inner_fn

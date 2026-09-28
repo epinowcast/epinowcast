@@ -73,7 +73,7 @@ enw_reference <- function(
   if (data$max_delay[[1]] == 1 &&
     (as_string_formula(parametric) != "~0" ||
       as_string_formula(non_parametric) != "~0")) {
-    cli::cli_abort(paste0(
+    cli_abort(paste0(
       "Reference date models cannot be used with ",
       "{.arg max_delay} = 1 (no reporting delays to model)"
     ))
@@ -86,7 +86,7 @@ enw_reference <- function(
   distribution <- match.arg(distribution)
   if ((as_string_formula(non_parametric) == "~0") &&
     distribution == "none" && data$max_delay[[1]] > 1) {
-    cli::cli_abort(
+    cli_abort(
       paste0(
         "A non-parametric model must be specified if no parametric model ",
         "is specified"
@@ -100,7 +100,7 @@ enw_reference <- function(
     model_refnp <- 1
   }
 
-  distribution <- data.table::fcase(
+  distribution <- fcase(
     distribution == "none", 0,
     distribution == "exponential", 1,
     distribution == "lognormal", 2,
@@ -121,8 +121,8 @@ enw_reference <- function(
 
   # Define non-parametric model
   metanp <- merge(
-    data.table::copy(data$metareference[[1]])[, delay := NULL][, id := 1],
-    data.table::copy(data$metadelay[[1]])[, id := 1],
+    copy(data$metareference[[1]])[, delay := NULL][, id := 1],
+    copy(data$metadelay[[1]])[, id := 1],
     by = "id",
     allow.cartesian = TRUE
   )[, id := NULL]
@@ -147,7 +147,7 @@ enw_reference <- function(
   out$formula$parametric <- pform$formula
   out$formula$non_parametric <- npform$formula
   out$data <- c(pdata, npdata)
-  out$priors <- data.table::data.table(
+  out$priors <- data.table(
     variable = c(
       "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd",
       "refp_arima_sigma", "refp_arima_sd_sigma", "refp_arima_pacf",
@@ -320,7 +320,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   if (data$max_delay[[1]] == 1 &&
     (as_string_formula(non_parametric) != "~0" ||
       !is.null(structural))) {
-    cli::cli_abort(paste0(
+    cli_abort(paste0(
       "Report date models, including structural reporting, ",
       "cannot be used with ",
       "{.arg max_delay} = 1 (no reporting delays to model)"
@@ -365,7 +365,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   # map report date effects to groups and times
   rep_t <- nrow(data$metareport[[1]]) %/% data$groups[[1]]
   if (rep_t * data$groups[[1]] != nrow(data$metareport[[1]])) {
-    cli::cli_abort("Report metadata is not rectangular across groups.")
+    cli_abort("Report metadata is not rectangular across groups.")
   }
   data_list$rep_findex <- t(
     matrix(data_list$rep_findex, ncol = data$groups[[1]], nrow = rep_t)
@@ -378,7 +378,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   out <- list()
   out$formula$non_parametric <- form$formula
   out$data <- data_list
-  out$priors <- data.table::data.table(
+  out$priors <- data.table(
     variable = c(
       "rep_beta_sd", "rep_arima_sigma", "rep_arima_pacf",
       "rep_gp_rho", "rep_gp_alpha"
@@ -475,13 +475,13 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
                             observation = ~1, latent_reporting_delay = 1,
                             data, ...) {
   if (as_string_formula(r) == "~0") {
-    cli::cli_abort("An expectation model formula for r must be specified")
+    cli_abort("An expectation model formula for r must be specified")
   }
   if (as_string_formula(observation) == "~0") {
     observation <- ~1
   }
   if (abs(sum(generation_time) - 1) > 1e-3) {
-    cli::cli_abort("The generation time must sum to 1")
+    cli_abort("The generation time must sum to 1")
   }
 
   # Set up growth rate features
@@ -514,7 +514,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   # Initial prior for seeding observations
   latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
   seed_obs <- (latest_matrix[1, ] + 1) * sum(latent_reporting_delay)
-  seed_obs <- purrr::map(seed_obs, ~ rep(log(.), r_list$gt_n))
+  seed_obs <- map(seed_obs, ~ rep(log(.), r_list$gt_n))
   seed_obs <- round(unlist(seed_obs), 1)
 
   # Growth rate model formula
@@ -563,7 +563,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   names(obs_list) <- paste0("expl_", names(obs_list))
   out$data <- c(r_list, r_data, obs_list, obs_data)
 
-  out$priors <- data.table::data.table(
+  out$priors <- data.table(
     variable = c(
       "expr_r_int", "expr_beta_sd",
       rep("expr_lelatent_int", length(seed_obs)),
@@ -619,7 +619,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
         expr_beta = numeric(0),
         expr_beta_sd = numeric(0),
         expr_lelatent_int = matrix(
-          purrr::map2_dbl(
+          map2_dbl(
             as.vector(priors$expr_lelatent_int_p[1]),
             as.vector(priors$expr_lelatent_int_p[2]),
             function(x, y) {
@@ -693,7 +693,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 enw_missing <- function(formula = ~1, data) {
   if (nrow(data$missing_reference[[1]]) == 0 &&
     as_string_formula(formula) != "~0") {
-    cli::cli_abort(
+    cli_abort(
       paste0(
         "A missingness model has been specified, but no observations ",
         "with missing reference date are in the preprocessed data."
@@ -741,7 +741,7 @@ enw_missing <- function(formula = ~1, data) {
 
     # Get (and order) reported cases with a missing reference date
     missing_reference <- coerce_dt(data$missing_reference[[1]])
-    data.table::setkeyv(missing_reference, c(".group", "report_date"))
+    setkeyv(missing_reference, c(".group", "report_date"))
     data_list$missing_reference <- coerce_dt(missing_reference)[
       rep_w_complete_ref,
       on = c("report_date", ".group")
@@ -765,7 +765,7 @@ enw_missing <- function(formula = ~1, data) {
   out$formula <- as_string_formula(formula)
   out$data <- data_list
   # Define default priors
-  out$priors <- data.table::data.table(
+  out$priors <- data.table(
     variable = c(
       "miss_int", "miss_beta_sd", "miss_arima_sigma", "miss_arima_pacf",
       "miss_gp_rho", "miss_gp_alpha"
@@ -886,7 +886,7 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
   # then ignore it.
   if (delay_only) {
     if (family_supplied) {
-      cli::cli_warn(
+      cli_warn(
         c(
           paste(
             "{.arg family} is ignored when {.code delay_only = TRUE}."
@@ -908,7 +908,7 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
       "reference_date", "delay", "confirm", observation_indicator
     )
   )
-  data.table::setkeyv(new_confirm, c(".group", "reference_date", "delay"))
+  setkeyv(new_confirm, c(".group", "reference_date", "delay"))
   check_observation_indicator(new_confirm, observation_indicator)
 
   # filter out observations beyond the maximum observation
@@ -964,7 +964,7 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
   proc_data$latest_obs <- latest_obs_as_matrix(data$latest[[1]])
 
   # Add a switch for the observation model
-  proc_data$model_obs <- data.table::fcase(
+  proc_data$model_obs <- fcase(
     family == "poisson", 0,
     family == "negbin", 1,
     family == "negbin1d", 2
@@ -980,7 +980,7 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
   out <- list()
   out$family <- family
   out$data <- proc_data
-  out$priors <- data.table::data.table(
+  out$priors <- data.table(
     variable = "sqrt_phi",
     description = "One over the square root of the reporting overdispersion",
     distribution = "Zero truncated normal",
@@ -1081,7 +1081,7 @@ enw_secondary_opts <- function(type = c("incidence", "prevalence"),
     if (!is.null(overrides[[nm]])) {
       val <- overrides[[nm]]
       if (length(val) != 1 || !isTRUE(val %in% c(0L, 1L, 0, 1))) {
-        cli::cli_abort(
+        cli_abort(
           "`{nm}` must be a single value of 0 or 1."
         )
       }
@@ -1089,7 +1089,7 @@ enw_secondary_opts <- function(type = c("incidence", "prevalence"),
     }
   }
 
-  stats::setNames(defaults, paste0("sec_", names(defaults)))
+  setNames(defaults, paste0("sec_", names(defaults)))
 }
 
 #' Secondary observation model module
@@ -1176,7 +1176,7 @@ enw_secondary <- function(secondary = enw_secondary_opts(), obs = NULL,
                           family = c("poisson", "negbin", "negbin1d"),
                           data, ...) {
   family <- match.arg(family)
-  sec_model_obs <- data.table::fcase(
+  sec_model_obs <- fcase(
     family == "poisson", 0L,
     family == "negbin", 1L,
     family == "negbin1d", 2L
@@ -1193,7 +1193,7 @@ enw_secondary <- function(secondary = enw_secondary_opts(), obs = NULL,
   }
 
   if (!is.list(secondary)) {
-    cli::cli_abort(
+    cli_abort(
       paste0(
         "`secondary` must be a call to `enw_secondary_opts()` or the formula ",
         "`~0` to disable the secondary model."
@@ -1208,7 +1208,7 @@ enw_secondary <- function(secondary = enw_secondary_opts(), obs = NULL,
     )
   )
   if (!all(required %in% names(secondary))) {
-    cli::cli_abort(
+    cli_abort(
       "`secondary` must be created with `enw_secondary_opts()`."
     )
   }
@@ -1222,7 +1222,7 @@ enw_secondary <- function(secondary = enw_secondary_opts(), obs = NULL,
     logical(1)
   )
   if (!all(delay_sums_ok)) {
-    cli::cli_abort("Each secondary `delay` distribution must sum to 1.")
+    cli_abort("Each secondary `delay` distribution must sum to 1.")
   }
 
   delay_n <- if (is.list(delay)) length(delay[[1]]) else length(delay)
@@ -1303,22 +1303,22 @@ enw_secondary <- function(secondary = enw_secondary_opts(), obs = NULL,
     obs,
     required_cols = c("reference_date", "confirm", by)
   )
-  obs[, reference_date := data.table::as.IDate(reference_date)]
+  obs[, reference_date := as.IDate(reference_date)]
   ref <- coerce_dt(
     data$metareference[[1]],
     select = c("date", ".group", by)
   )
-  data.table::setnames(ref, "date", "reference_date")
+  setnames(ref, "date", "reference_date")
   join_by <- c("reference_date", by)
   merged <- merge(ref, obs, by = join_by, all.x = TRUE)
-  data.table::setkeyv(merged, c(".group", "reference_date"))
+  setkeyv(merged, c(".group", "reference_date"))
   merged[, observed := as.integer(!is.na(confirm))]
   merged[is.na(confirm), confirm := 0L]
-  obs_mat <- data.table::dcast(
+  obs_mat <- dcast(
     merged, reference_date ~ .group,
     value.var = "confirm"
   )
-  lookup_mat <- data.table::dcast(
+  lookup_mat <- dcast(
     merged, reference_date ~ .group,
     value.var = "observed"
   )
@@ -1333,7 +1333,7 @@ enw_secondary <- function(secondary = enw_secondary_opts(), obs = NULL,
 # zero-length (scaling off, no random effects, or Poisson family); the
 # corresponding parameters and priors are then inert in Stan.
 .secondary_priors <- function() {
-  data.table::data.table(
+  data.table(
     variable = c("sec_scale_int", "sec_beta_sd", "sec_sqrt_phi"),
     description = c(
       "Log-scale intercept of the primary-to-secondary scaling",
