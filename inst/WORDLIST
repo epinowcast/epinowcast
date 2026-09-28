@@ -66,7 +66,6 @@ Vehtari
 Vscode
 WardBrian
 Wolffram
-adaptDelta
 adrian
 ae
 allcontributors
@@ -118,7 +117,6 @@ hannah
 infty
 int
 iter
-iters
 jamesmbaazam
 jbracher
 jessalynnsebastian
@@ -145,13 +143,10 @@ mathbb
 mathbf
 mathcal
 mathrm
-maxTree
 medewitt
 micahwiesner
 mis
 miscalibration
-modelData
-modelParams
 modeldesign
 modeled
 modeling
@@ -186,7 +181,6 @@ pitmonticone
 pkgdown
 pmatrix
 poisson
-posteriorPreds
 postprocess
 postprocessing
 pratikunterwegs
@@ -206,12 +200,10 @@ rhat
 rumackaaron
 runtimes
 rw
-samplerParams
 sbfnk
 sd
 se
 seabbs
-settingPriors
 sim
 sl
 sobolova
