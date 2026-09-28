@@ -385,8 +385,8 @@ enw_obs(data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x561c64c6de18>
-#> <environment: 0x561c64c6cf60>
+#> <bytecode: 0x55988721a958>
+#> <environment: 0x559887217c28>
 #> 
 # Delay-only model conditional on known totals
 enw_obs(delay_only = TRUE, data = enw_example("preprocessed"))
@@ -695,7 +695,7 @@ enw_obs(delay_only = TRUE, data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x561c64c6de18>
-#> <environment: 0x561c634d5e28>
+#> <bytecode: 0x55988721a958>
+#> <environment: 0x559885aac258>
 #> 
 ```

@@ -17,7 +17,7 @@ their own."><meta property="og:image" content="https://package.epinowcast.org/re
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -124,10 +124,10 @@ section below for a comprehensive explanation of the supported syntax.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">remove_arima_terms</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age_group</span> <span class="op">+</span> <span class="fu"><a href="arima.html">arima</a></span><span class="op">(</span><span class="va">week</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~1 + age_group</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x561c7460e2c0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5598959856d8&gt;</span>
 <span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">remove_arima_terms</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age_group</span> <span class="op">+</span> <span class="fu"><a href="ar.html">ar</a></span><span class="op">(</span><span class="va">week</span>, p <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~1 + age_group</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x561c78483118&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5598959c18a8&gt;</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

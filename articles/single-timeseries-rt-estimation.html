@@ -38,7 +38,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,7 +99,7 @@
                         <h4 data-toc-skip class="author">Epinowcast Team</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/vignettes/single-timeseries-rt-estimation.Rmd" class="external-link"><code>vignettes/single-timeseries-rt-estimation.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/vignettes/articles/single-timeseries-rt-estimation.Rmd" class="external-link"><code>vignettes/articles/single-timeseries-rt-estimation.Rmd</code></a></small>
       <div class="d-none name"><code>single-timeseries-rt-estimation.Rmd</code></div>
     </div>
 
@@ -108,11 +108,14 @@
 <div class="alert alert-warning">
 <p>This vignette is partly based on this <a href="https://github.com/epiforecasts/nowcasting.example" class="external-link">nowcasting example</a> by Sebastian Funk and Sam Abbott.</p>
 </div>
-<p>In this case study we walk through a simple approach to jointly estimating the effective reproduction number over time and the delay from a positive test to this test being reported. For more on the <code>epinowcast</code> package see the <a href="https://package.epinowcast.org/">documentation</a>.</p>
+<p>In this case study we walk through a simple approach to jointly estimating the effective reproduction number over time and the delay from a positive test to this test being reported.
+For more on the <code>epinowcast</code> package see the <a href="https://package.epinowcast.org/">documentation</a>.</p>
 <div class="section level2 unnumbered alert alert-primary">
 <h2 id="use-case">Use case<a class="anchor" aria-label="anchor" href="#use-case"></a>
 </h2>
-<p>An epidemic is in progress. We want to know what the <strong>effective reproduction number is at the current time</strong>. This is the average number of secondary infections caused by a single infected individual at a given point in time and is a measure of the transmissibility of the infection in the population at that time.</p>
+<p>An epidemic is in progress.
+We want to know what the <strong>effective reproduction number is at the current time</strong>.
+This is the average number of secondary infections caused by a single infected individual at a given point in time and is a measure of the transmissibility of the infection in the population at that time.</p>
 <p>Unfortunately, we can’t directly observe infections and the data we do observe suffers from reporting delays.</p>
 </div>
 <div class="alert alert-secondary">
@@ -140,7 +143,9 @@
 </div>
 </div>
 <div class="alert alert-warning">
-<p><code>epinowcast</code> is still in development and so the following case study has pain points and limitations that we are working on improving. If you have any suggestions or feedback please get in touch via the <a href="https://github.com/epinowcast/epinowcast/issues" class="external-link">issues page</a>. We also welcome contributions via pull requests (see our <a href="https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md" class="external-link">contributing guidelines</a>.</p>
+<p><code>epinowcast</code> is still in development and so the following case study has pain points and limitations that we are working on improving.
+If you have any suggestions or feedback please get in touch via the <a href="https://github.com/epinowcast/epinowcast/issues" class="external-link">issues page</a>.
+We also welcome contributions via pull requests (see our <a href="https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md" class="external-link">contributing guidelines</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="getting-setup">Getting setup<a class="anchor" aria-label="anchor" href="#getting-setup"></a>
@@ -168,7 +173,11 @@
 <div class="section level3">
 <h3 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h3>
-<p>In this case study, we use data sourced from the <a href="https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence" class="external-link">Robert Koch Institute via the Germany Nowcasting hub</a>. The data represent hospitalisation counts by date of positive test and date of test report in Germany. These data have been used extensively for nowcasting and forecasting COVID-19 hospitalisations in Germany and are described in detail in <a href="https://doi.org/10.1101/2023.04.17.23288668" class="external-link">Wolffram et al. (2023)</a>. We use these data as they are a good example of the type of data that are available in many settings. We first summarise the data,</p>
+<p>In this case study, we use data sourced from the <a href="https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence" class="external-link">Robert Koch Institute via the Germany Nowcasting hub</a>.
+The data represent hospitalisation counts by date of positive test and date of test report in Germany.
+These data have been used extensively for nowcasting and forecasting COVID-19 hospitalisations in Germany and are described in detail in <a href="https://doi.org/10.1101/2023.04.17.23288668" class="external-link">Wolffram et al. (2023)</a>.
+We use these data as they are a good example of the type of data that are available in many settings.
+We first summarise the data,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">germany_covid19_hosp</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  reference_date          location      age_group         confirm       </span></span>
@@ -187,7 +196,8 @@
 <span><span class="co">#&gt;  3rd Qu.:2021-09-11  </span></span>
 <span><span class="co">#&gt;  Max.   :2021-10-20  </span></span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
-</details><p>In this case study we only consider national level data without stratification by age group. We can filter these data using <code>data.table</code> as follows,</p>
+</details><p>In this case study we only consider national level data without stratification by age group.
+We can filter these data using <code>data.table</code> as follows,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">germany_hosp</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span><span class="op">]</span></span>
 <span><span class="va">germany_hosp</span> <span class="op">&lt;-</span> <span class="va">germany_hosp</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">reference_date</span>, <span class="va">report_date</span>, <span class="va">confirm</span><span class="op">)</span><span class="op">]</span></span>
@@ -216,7 +226,8 @@
 <li>a report date (column <code>report_date</code>): the date of report for a given set of observations by reference date</li>
 <li>a count (column <code>confirm</code>): the total number of hospitalisations by reference date and report date. Note that this is cumulative by report date.</li>
 </ul>
-<p>The package also provides a range of tools to convert data from line list, incidence, or other common formats into the required format (see <a href="https://package.epinowcast.org/dev/reference/index.html#data-converters">Data converters</a>). For example we could convert the data to a individual case linelist,</p>
+<p>The package also provides a range of tools to convert data from line list, incidence, or other common formats into the required format (see <a href="https://package.epinowcast.org/dev/reference/index.html#data-converters">Data converters</a>).
+For example we could convert the data to a individual case linelist,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">germany_covid19_hosp_linelist</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_filter_reference_dates_by_report_start.html">enw_filter_reference_dates_by_report_start</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -276,13 +287,16 @@
 <span><span class="co">#&gt; 2049596:     1</span></span>
 <span><span class="co">#&gt; 2049597:     0</span></span></code></pre></div>
 </details><div class="alert alert-warning">
-<p>Here we have specified the <code>reference_date</code> and <code>report_date</code> columns, the <code>by</code> columns (which are used to group the data), and the <code>max_delay</code> which is the maximum delay between the reference date and the report date (note that the observed delay is longer than our specified delay and so is used instead). The <code><a href="../reference/enw_linelist_to_incidence.html">enw_linelist_to_incidence()</a></code> function will then calculate the incidence by reference date and report date for each group.</p>
+<p>Here we have specified the <code>reference_date</code> and <code>report_date</code> columns, the <code>by</code> columns (which are used to group the data), and the <code>max_delay</code> which is the maximum delay between the reference date and the report date (note that the observed delay is longer than our specified delay and so is used instead).
+The <code><a href="../reference/enw_linelist_to_incidence.html">enw_linelist_to_incidence()</a></code> function will then calculate the incidence by reference date and report date for each group.</p>
 </div>
 </div>
 <div class="section level3">
 <h3 id="filtering-the-data">Filtering the data<a class="anchor" aria-label="anchor" href="#filtering-the-data"></a>
 </h3>
-<p>For this case study we will only consider data from the 1st of March 2020 onwards. As a first step, we filter the data to only include observations from the 1st of May 2021 until the 1st of August 2021. We do this using the <code><a href="../reference/enw_filter_report_dates.html">enw_filter_report_dates()</a></code> and <code><a href="../reference/enw_filter_reference_dates.html">enw_filter_reference_dates()</a></code> functions,</p>
+<p>For this case study we will only consider data from the 1st of March 2020 onwards.
+As a first step, we filter the data to only include observations from the 1st of May 2021 until the 1st of August 2021.
+We do this using the <code><a href="../reference/enw_filter_report_dates.html">enw_filter_report_dates()</a></code> and <code><a href="../reference/enw_filter_reference_dates.html">enw_filter_reference_dates()</a></code> functions,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">complete_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">germany_hosp</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_filter_report_dates.html">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-08-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -290,8 +304,10 @@
 <span>  <span class="fu"><a href="../reference/enw_complete_dates.html">enw_complete_dates</a></span><span class="op">(</span>missing_reference <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_filter_reference_dates_by_report_start.html">enw_filter_reference_dates_by_report_start</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_add_incidence.html">enw_add_incidence</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</details><p>Here we have also used <code><a href="../reference/enw_complete_dates.html">enw_complete_dates()</a></code> to make sure that we have complete data for all dates between the earliest and latest dates. We have also used <code><a href="../reference/enw_add_incidence.html">enw_add_incidence()</a></code> to add the incidence column to the data.</p>
-<p>Next we split the data into two parts, the data that was available at the time and that will be used to fit the model (<code>rt_nat_germany</code>) and the data that was available retrospectively about the same time period will be used to evaluate the model (<code>retro_nat_germany</code>). We again do this using the <code><a href="../reference/enw_filter_report_dates.html">enw_filter_report_dates()</a></code> and <code><a href="../reference/enw_filter_reference_dates.html">enw_filter_reference_dates()</a></code> functions as follows:</p>
+</details><p>Here we have also used <code><a href="../reference/enw_complete_dates.html">enw_complete_dates()</a></code> to make sure that we have complete data for all dates between the earliest and latest dates.
+We have also used <code><a href="../reference/enw_add_incidence.html">enw_add_incidence()</a></code> to add the incidence column to the data.</p>
+<p>Next we split the data into two parts, the data that was available at the time and that will be used to fit the model (<code>rt_nat_germany</code>) and the data that was available retrospectively about the same time period will be used to evaluate the model (<code>retro_nat_germany</code>).
+We again do this using the <code><a href="../reference/enw_filter_report_dates.html">enw_filter_report_dates()</a></code> and <code><a href="../reference/enw_filter_reference_dates.html">enw_filter_reference_dates()</a></code> functions as follows:</p>
 <ul>
 <li>Create the real-time dataset (<code>rt_nat_germany</code>) by filtering the data to only include reported observations from the 1st of May 2021 until the 1st of July 2021;</li>
 </ul>
@@ -355,7 +371,8 @@ We do this using the <code><a href="../reference/enw_obs_at_delay.html">enw_obs_
 <div class="section level3">
 <h3 id="visualising-the-data">Visualising the data<a class="anchor" aria-label="anchor" href="#visualising-the-data"></a>
 </h3>
-<p>Before we define, or fit, a model we should visualise the data to get an idea of the trends in the data and its reporting structure. There is currently no function in <code>epinowcast</code> to visualise the data, but we can use the <code>ggplot2</code> package to do this manually as follows,</p>
+<p>Before we define, or fit, a model we should visualise the data to get an idea of the trends in the data and its reporting structure.
+There is currently no function in <code>epinowcast</code> to visualise the data, but we can use the <code>ggplot2</code> package to do this manually as follows,</p>
 <details class="chunk-details"><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gh_vis_cohorts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">retro_germany</span><span class="op">)</span><span class="op">[</span></span>
 <span>  ,</span>
@@ -417,15 +434,25 @@ We do this using the <code><a href="../reference/enw_obs_at_delay.html">enw_obs_
 <div class="section level2">
 <h2 id="model">Model<a class="anchor" aria-label="anchor" href="#model"></a>
 </h2>
-<p>The <code>epinowcast</code> package provides a flexible framework for modelling the incidence of infections and subsequent measures such as hospitalisations that are themselves reported with some delay. The framework is based on a generative model that describes the hypothesised process by which the data are generated. The generative model is then used to define a likelihood function that describes the probability of observing the data given the model parameters. The likelihood function is then combined with prior information used to fit the model parameters to the data. In the following sections we describe the generative model for the incidence of infections and hospitalisations. If you would like to know more about the general framework see the <a href="https://package.epinowcast.org/articles/model.html">model vignette</a>.</p>
+<p>The <code>epinowcast</code> package provides a flexible framework for modelling the incidence of infections and subsequent measures such as hospitalisations that are themselves reported with some delay.
+The framework is based on a generative model that describes the hypothesised process by which the data are generated.
+The generative model is then used to define a likelihood function that describes the probability of observing the data given the model parameters.
+The likelihood function is then combined with prior information used to fit the model parameters to the data.
+In the following sections we describe the generative model for the incidence of infections and hospitalisations.
+If you would like to know more about the general framework see the <a href="https://package.epinowcast.org/articles/model.html">model vignette</a>.</p>
 <div class="section level3">
 <h3 id="expected-hospitalisations">Expected hospitalisations<a class="anchor" aria-label="anchor" href="#expected-hospitalisations"></a>
 </h3>
-<p>The first part of the generative process we consider is the expected number of hospitalisations by date positive test. This is the number of hospitalisations that we would expect to observe if we had perfect reporting of hospitalisations and there was no unmodelled variance. This part of the model is also decomposed into three parts: the expected number of infections, the delay from infection to positive test, and the probability of hospitalisation given an infection. These three parts are combined to give the expected number of hospitalisations by date positive test. We describe each of these parts in turn.</p>
+<p>The first part of the generative process we consider is the expected number of hospitalisations by date positive test.
+This is the number of hospitalisations that we would expect to observe if we had perfect reporting of hospitalisations and there was no unmodelled variance.
+This part of the model is also decomposed into three parts: the expected number of infections, the delay from infection to positive test, and the probability of hospitalisation given an infection.
+These three parts are combined to give the expected number of hospitalisations by date positive test.
+We describe each of these parts in turn.</p>
 <div class="section level4">
 <h4 id="expected-infections">Expected infections<a class="anchor" aria-label="anchor" href="#expected-infections"></a>
 </h4>
-<p>We model expected infections as a function of the effective (instantaneous) reproduction number and previous infections weighted by the generation time using the renewal equation<span class="citation"><sup>[<a href="#ref-Fraser2007">1</a>,<a href="#ref-Cori2013">2</a>]</sup></span>. This corresponds to the commonly used Susceptible-Exposed-Infected-Recovered (SEIR) model when the appropriate generation time is specified<span class="citation"><sup>[<a href="#ref-champredon">3</a>]</sup></span>.</p>
+<p>We model expected infections as a function of the effective (instantaneous) reproduction number and previous infections weighted by the generation time using the renewal equation<span class="citation"><sup>[<a href="#ref-Fraser2007">1</a>,<a href="#ref-Cori2013">2</a>]</sup></span>.
+This corresponds to the commonly used Susceptible-Exposed-Infected-Recovered (SEIR) model when the appropriate generation time is specified<span class="citation"><sup>[<a href="#ref-champredon">3</a>]</sup></span>.</p>
 <div class="section level5">
 <h5 id="instantaneous-reproduction-number">Instantaneous reproduction number<a class="anchor" aria-label="anchor" href="#instantaneous-reproduction-number"></a>
 </h5>
@@ -436,24 +463,40 @@ We do this using the <code><a href="../reference/enw_obs_at_delay.html">enw_obs_
   \sigma_{\epsilon} &amp;\sim \text{HalfNormal}\left(0, 1 \right)
 \end{align}\]</span></p>
 <p>where <span class="math inline">\(r_0\)</span> is the intercept, and <span class="math inline">\(\sum_{i = 0}^{t \% 7} \epsilon_i\)</span> is a weekly random walk.</p>
-<p>We choose this model because it is flexible, can be used to model a range of different scenarios, and is parsimonious. For example, if we set <span class="math inline">\(\sigma_{\epsilon} = 0\)</span> then the model reduces to a constant reproduction number. If we set <span class="math inline">\(\sigma_{\epsilon} &gt; 0\)</span> then the model allows for changes in the reproduction number over time. Other sensible choices for the model include a random walk with a longer time scale (e.g. monthly) or shorter time scale (e.g. daily), a random walk with a drift term, or a random walk with a drift term and a seasonal component.</p>
+<p>We choose this model because it is flexible, can be used to model a range of different scenarios, and is parsimonious.
+For example, if we set <span class="math inline">\(\sigma_{\epsilon} = 0\)</span> then the model reduces to a constant reproduction number.
+If we set <span class="math inline">\(\sigma_{\epsilon} &gt; 0\)</span> then the model allows for changes in the reproduction number over time.
+Other sensible choices for the model include a random walk with a longer time scale (e.g. monthly) or shorter time scale (e.g. daily), a random walk with a drift term, or a random walk with a drift term and a seasonal component.</p>
 </div>
 <div class="section level5">
 <h5 id="latent-infections">Latent infections<a class="anchor" aria-label="anchor" href="#latent-infections"></a>
 </h5>
-<p>We model the expected number of infections/latent notifications (<span class="math inline">\(\lambda^l\)</span>) using a renewal process<span class="citation"><sup>[<a href="#ref-Fraser2007">1</a>,<a href="#ref-Cori2013">2</a>]</sup></span>. This model is a generalisation of the default <code>epinowcast</code> model and implies that current infections/notifications are dependent on past infections/notifications based on a kernel. This kernel is defined by the generation time distribution, the probability distribution of the time between infection and subsequent infectiousness, and the previously defined model for the effective reproduction number. The model is defined as follows,</p>
+<p>We model the expected number of infections/latent notifications (<span class="math inline">\(\lambda^l\)</span>) using a renewal process<span class="citation"><sup>[<a href="#ref-Fraser2007">1</a>,<a href="#ref-Cori2013">2</a>]</sup></span>.
+This model is a generalisation of the default <code>epinowcast</code> model and implies that current infections/notifications are dependent on past infections/notifications based on a kernel.
+This kernel is defined by the generation time distribution, the probability distribution of the time between infection and subsequent infectiousness, and the previously defined model for the effective reproduction number.
+The model is defined as follows,</p>
 <p><span class="math display">\[\begin{align}
   \lambda^l_{t} &amp;\sim \text{LogNormal}\left(\mu^{l}, \sigma^{l} \right),\ t \leq P \\
   \lambda^l_{t} &amp;= R_{t} \sum_{p = 1}^{P} g\left(t - p \right)  \lambda^l_{t-p},\ t \gt P  
 \end{align}\]</span></p>
-<p>We assume the generation time (<span class="math inline">\(g\)</span>) is a gamma distribution with mean 4 days and a standard deviation of 3 days. To initialise the model we assume that the first <span class="math inline">\(P\)</span> latent notifications are log-normally distributed with mean <span class="math inline">\(\mu^{l}_{g,t}\)</span> and standard deviation <span class="math inline">\(\sigma^{l}_{g,t}\)</span>. This is equivalent to assuming that the first <span class="math inline">\(P\)</span> latent notifications are independent and identically distributed. The mean of the log-normal distribution for each group is the log of the latest reported case count for the first reference date for that group scaled by the sum of the latent reporting delay. The standard deviation is assumed to be 1.</p>
+<p>We assume the generation time (<span class="math inline">\(g\)</span>) is a gamma distribution with mean 4 days and a standard deviation of 3 days.
+To initialise the model we assume that the first <span class="math inline">\(P\)</span> latent notifications are log-normally distributed with mean <span class="math inline">\(\mu^{l}_{g,t}\)</span> and standard deviation <span class="math inline">\(\sigma^{l}_{g,t}\)</span>.
+This is equivalent to assuming that the first <span class="math inline">\(P\)</span> latent notifications are independent and identically distributed.
+The mean of the log-normal distribution for each group is the log of the latest reported case count for the first reference date for that group scaled by the sum of the latent reporting delay.
+The standard deviation is assumed to be 1.</p>
 </div>
 </div>
 <div class="section level4">
 <h4 id="latent-reporting-delay-and-ascertainment">Latent reporting delay and ascertainment<a class="anchor" aria-label="anchor" href="#latent-reporting-delay-and-ascertainment"></a>
 </h4>
-<p>In many settings, such as in this case study, there may be additional reporting delays on top of those that are directly observed in the data, and therefore “nowcastable”, a common example is the delay from exposure to symptom onset. For these settings we support modelling “latent” reporting delays as a convolution of the underlying expected counts with the potential for these delays to vary over time and by group. This implementation is similar to that implemented in <code>EpiNow2</code> and <code>epidemia</code> as well as other similar models<span class="citation"><sup>[<a href="#ref-EpiNow2">4</a>–<a href="#ref-Lison2022">7</a>]</sup></span>. In addition to this, we support modelling ascertainment through the use of improper probability mass functions (i.e. by not enforcing a sum to 1 constraint) and inferring ascertainment where possible (for example day of the week reporting patterns).</p>
-<p>Here we assume an infection to hospitalisation ratio of 2% modified by a random effect for the day of the week to account for within week reporting periodicity. We also assume a lognormal reporting delay with a mean of 5 days and a standard deviation of 2 days, representing the delay from infection to positive test. We assume that the reporting delay is the same for all days of the week. This model is defined as follows,</p>
+<p>In many settings, such as in this case study, there may be additional reporting delays on top of those that are directly observed in the data, and therefore “nowcastable”, a common example is the delay from exposure to symptom onset.
+For these settings we support modelling “latent” reporting delays as a convolution of the underlying expected counts with the potential for these delays to vary over time and by group.
+This implementation is similar to that implemented in <code>EpiNow2</code> and <code>epidemia</code> as well as other similar models<span class="citation"><sup>[<a href="#ref-EpiNow2">4</a>–<a href="#ref-Lison2022">7</a>]</sup></span>.
+In addition to this, we support modelling ascertainment through the use of improper probability mass functions (i.e. by not enforcing a sum to 1 constraint) and inferring ascertainment where possible (for example day of the week reporting patterns).</p>
+<p>Here we assume an infection to hospitalisation ratio of 2% modified by a random effect for the day of the week to account for within week reporting periodicity.
+We also assume a lognormal reporting delay with a mean of 5 days and a standard deviation of 2 days, representing the delay from infection to positive test.
+We assume that the reporting delay is the same for all days of the week.
+This model is defined as follows,</p>
 <p><span class="math display">\[\begin{align}
   \lambda_{t} &amp;= \nu_{t \% 7} \sum_{\tau = 0}^{L - 1} f_{g}\left(t - \tau \right)  \lambda^l_{t - \tau} \\
   \text{log} (\nu_{i}) &amp;\sim \text{Normal}\left(-3.91, \sigma_{\nu} \right) \\
@@ -464,10 +507,14 @@ We do this using the <code><a href="../reference/enw_obs_at_delay.html">enw_obs_
 <div class="section level4">
 <h4 id="specifying-the-model-using-epinowcastenw_expectation">Specifying the model using <code>epinowcast::enw_expectation()</code><a class="anchor" aria-label="anchor" href="#specifying-the-model-using-epinowcastenw_expectation"></a>
 </h4>
-<p>We first need to define the weekly random walk model for the effective reproduction number. We can do this using the formula interface as follows,</p>
+<p>We first need to define the weekly random walk model for the effective reproduction number.
+We can do this using the formula interface as follows,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rt_formula</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="../reference/rw.html">rw</a></span><span class="op">(</span><span class="va">week</span><span class="op">)</span></span></code></pre></div>
-</details><p>Next we define the generation time distribution. As already discussed, we assume a gamma distribution with mean 4 days and a standard deviation of 3 days. These summary parameters first need to be transformed to the shape and scale parameters used for the gamma distribution. We then need to account for daily censoring and finally normalise the probability mass function (PMF) to account for right truncation.</p>
+</details><p>Next we define the generation time distribution.
+As already discussed, we assume a gamma distribution with mean 4 days and a standard deviation of 3 days.
+These summary parameters first need to be transformed to the shape and scale parameters used for the gamma distribution.
+We then need to account for daily censoring and finally normalise the probability mass function (PMF) to account for right truncation.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># first transform mean and sd to shape and scale</span></span>
 <span><span class="va">gamma_mean</span> <span class="op">&lt;-</span> <span class="fl">4</span></span>
@@ -486,7 +533,8 @@ We do this using the <code><a href="../reference/enw_obs_at_delay.html">enw_obs_
 <div class="alert alert-warning">
 <p>Here and for other PMFs we set the maximum delay to be 15 days as this gives good coverage of the majority of the distribution and limits the computational burden of fitting the model.</p>
 </div>
-<p>Now we define the latent reporting delay in a similar way remembering we specified a lognormal distribution with a mean of 5 days and a standard deviation of 2 days. We again also need to account for daily censoring and normalise the PMF to account for right truncation.</p>
+<p>Now we define the latent reporting delay in a similar way remembering we specified a lognormal distribution with a mean of 5 days and a standard deviation of 2 days.
+We again also need to account for daily censoring and normalise the PMF to account for right truncation.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lgn_mean</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
 <span><span class="va">lgn_sd</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
@@ -503,10 +551,13 @@ We do this using the <code><a href="../reference/enw_obs_at_delay.html">enw_obs_
 </details><div class="float">
 <img src="figures/single-timeseries-rt-estimation-unnamed-chunk-13-1.png" alt="Probability mass function of the assumed latent (unobserved) reporting distribution"><div class="figcaption">Probability mass function of the assumed latent (unobserved) reporting distribution</div>
 </div>
-<p>The last part of the model to define is the remaining part of the ascertainment model for expected hospitalisations. As we have already defined the base ascertainment ratio (i.e. the 2% infection to hospitalisation ratio) we only need to define the day of the week random effect. We can do this using the formula interface as follows,</p>
+<p>The last part of the model to define is the remaining part of the ascertainment model for expected hospitalisations.
+As we have already defined the base ascertainment ratio (i.e. the 2% infection to hospitalisation ratio) we only need to define the day of the week random effect.
+We can do this using the formula interface as follows,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">observation_formula</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day_of_week</span><span class="op">)</span></span></code></pre></div>
-</details><p>Finally, we can combine these four parts of the model to define the expected hospitalisations by date of positive test. We do this using the <code><a href="../reference/enw_expectation.html">epinowcast::enw_expectation()</a></code> function as follows,</p>
+</details><p>Finally, we can combine these four parts of the model to define the expected hospitalisations by date of positive test.
+We do this using the <code><a href="../reference/enw_expectation.html">epinowcast::enw_expectation()</a></code> function as follows,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">expectation_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/partial.html" class="external-link">partial</a></span><span class="op">(</span></span>
 <span>  <span class="fu">epinowcast</span><span class="fu">::</span><span class="va"><a href="../reference/enw_expectation.html">enw_expectation</a></span>,</span>
@@ -548,7 +599,8 @@ See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for deta
 <div class="section level4">
 <h4 id="defining-the-observation-model">Defining the observation model<a class="anchor" aria-label="anchor" href="#defining-the-observation-model"></a>
 </h4>
-<p>Expected notifications by date of positive test (<span class="math inline">\(t\)</span>) and reporting date can now be found by multiplying expected final notifications by date of positive test for each <span class="math inline">\(t\)</span> with the probability of reporting for each day of delay (<span class="math inline">\(p_{t,d}\)</span>). We assume a Poisson observation model and produce a nowcast of final observed hospitalisations at each reference date by summing posterior estimates for unobserved notification and observed notifications for that reference date.</p>
+<p>Expected notifications by date of positive test (<span class="math inline">\(t\)</span>) and reporting date can now be found by multiplying expected final notifications by date of positive test for each <span class="math inline">\(t\)</span> with the probability of reporting for each day of delay (<span class="math inline">\(p_{t,d}\)</span>).
+We assume a Poisson observation model and produce a nowcast of final observed hospitalisations at each reference date by summing posterior estimates for unobserved notification and observed notifications for that reference date.</p>
 <p><span class="math display">\[\begin{align}
   n_{t,d} \mid \lambda_{t},p_{t,d}  &amp;\sim \text{Poisson} \left(\lambda_{t} \times p_{t,d} \right),\ t=1,...,T. \\
   N_{t} &amp;= \sum_{d=0}^{D} n_{t,d}
@@ -569,7 +621,10 @@ See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for deta
 <div class="section level3">
 <h3 id="preprocess-the-data">Preprocess the data<a class="anchor" aria-label="anchor" href="#preprocess-the-data"></a>
 </h3>
-<p>Before fitting the model we have just defined we need to preprocess the data in order for it to be in the correct format to work with <code>epinowcast</code> and to produce metadata that describes aspects of the data we use in the model (for example the maximum delay, the number of groups, and the number of observations in each group). We do this using the <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code> function as follows for both the real-time and retrospective datasets. Note that we set <code>max_delay = 30</code> to constrain the modelled maximum delay to 30 days. This is a pragmatic choice to ensure that the model can be fit in a reasonable amount of time, but we could also set this to be longer if we wanted to and if the data suggested a longer delay was possible.</p>
+<p>Before fitting the model we have just defined we need to preprocess the data in order for it to be in the correct format to work with <code>epinowcast</code> and to produce metadata that describes aspects of the data we use in the model (for example the maximum delay, the number of groups, and the number of observations in each group).
+We do this using the <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code> function as follows for both the real-time and retrospective datasets.
+Note that we set <code>max_delay = 30</code> to constrain the modelled maximum delay to 30 days.
+This is a pragmatic choice to ensure that the model can be fit in a reasonable amount of time, but we could also set this to be longer if we wanted to and if the data suggested a longer delay was possible.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rt_germany_pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">rt_germany</span>, max_delay <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
 <span><span class="va">rt_germany_pobs</span></span>
@@ -652,7 +707,11 @@ This is useful when we want to estimate Rt from data that is already (approximat
 <div class="section level4">
 <h4 id="specifying-the-fitting-options">Specifying the fitting options<a class="anchor" aria-label="anchor" href="#specifying-the-fitting-options"></a>
 </h4>
-<p>Before we are ready to fit the model we need to first specify some fitting options for using <code>cmdstanr</code> (more information on these options can be found in the <code>cmdstanr</code> documentation). We use 2 chains with 2 threads per chain (so using 4 CPU cores in total) 500 warmup samples and 1000 iterations per chain. As this is a complex model we set <code>adapt_delta</code> to 0.98 (the default is 0.8) so that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently. For the same reason, we have also set the <code>max_treedepth</code> to 15 (the default is 10). Finally, we set <code>save_warmup</code> to <code>FALSE</code> to save space (we don’t need the warmup samples for this analysis), and <code>pp</code> to <code>TRUE</code> so that we can use posterior predictive checks to assess the model fit.</p>
+<p>Before we are ready to fit the model we need to first specify some fitting options for using <code>cmdstanr</code> (more information on these options can be found in the <code>cmdstanr</code> documentation).
+We use 2 chains with 2 threads per chain (so using 4 CPU cores in total) 500 warmup samples and 1000 iterations per chain.
+As this is a complex model we set <code>adapt_delta</code> to 0.98 (the default is 0.8) so that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently.
+For the same reason, we have also set the <code>max_treedepth</code> to 15 (the default is 10).
+Finally, we set <code>save_warmup</code> to <code>FALSE</code> to save space (we don’t need the warmup samples for this analysis), and <code>pp</code> to <code>TRUE</code> so that we can use posterior predictive checks to assess the model fit.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/partial.html" class="external-link">partial</a></span><span class="op">(</span><span class="va">enw_fit_opts</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -667,13 +726,16 @@ This is useful when we want to estimate Rt from data that is already (approximat
 <span>  refresh <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span>, <span class="fl">100</span>, <span class="fl">0</span><span class="op">)</span> <span class="co"># remove this to show fitting progress</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><div class="alert alert-warning">
-<p>If you have more than 4 CPU cores available you can increase the number of threads per chain to make use of these additional cores. For example if you have 8 CPU cores available you could set <code>threads_per_chain = 4</code> to use all 8 cores (as there are 2 chains).</p>
+<p>If you have more than 4 CPU cores available you can increase the number of threads per chain to make use of these additional cores.
+For example if you have 8 CPU cores available you could set <code>threads_per_chain = 4</code> to use all 8 cores (as there are 2 chains).</p>
 </div>
 </div>
 <div class="section level4">
 <h4 id="compiling-the-model">Compiling the model<a class="anchor" aria-label="anchor" href="#compiling-the-model"></a>
 </h4>
-<p>We also need to compile the model using <code>cmdstanr</code> before fitting it (we only have to do this once after installing the package). In order for this line to work you should have followed the installation guide in the <a href="https://package.epinowcast.org">README</a>. This will take around a minute to run when called for the first time.</p>
+<p>We also need to compile the model using <code>cmdstanr</code> before fitting it (we only have to do this once after installing the package).
+In order for this line to work you should have followed the installation guide in the <a href="https://package.epinowcast.org">README</a>.
+This will take around a minute to run when called for the first time.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">epinowcast_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_model.html">enw_model</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </details>
@@ -681,7 +743,8 @@ This is useful when we want to estimate Rt from data that is already (approximat
 <div class="section level4">
 <h4 id="fitting-the-model">Fitting the model<a class="anchor" aria-label="anchor" href="#fitting-the-model"></a>
 </h4>
-<p>Now we are ready to bring together all the modules we have specified, combine them with the model we have just compiled, and fit our synthetic data. We first fit to the data that would have been available in real-time,</p>
+<p>Now we are ready to bring together all the modules we have specified, combine them with the model we have just compiled, and fit our synthetic data.
+We first fit to the data that would have been available in real-time,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">germany_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">rt_germany_pobs</span>,</span>
@@ -719,7 +782,8 @@ This is useful when we want to estimate Rt from data that is already (approximat
 <span><span class="co">#&gt;   Max treedepth: 10 (25 at max, 1.2%) </span></span>
 <span><span class="co">#&gt;   Run time: 76.9 secs</span></span></code></pre></div>
 </details><div class="alert alert-warning">
-<p>Fitting this model with the default options will take around 5 minutes to run on a laptop with 4 CPU cores. If you have more CPU cores available you can reduce the time it takes to fit the model by increasing the number of threads per chain (see the <a href="#fitting-the-epinowcast-model">fitting options</a> section above).</p>
+<p>Fitting this model with the default options will take around 5 minutes to run on a laptop with 4 CPU cores.
+If you have more CPU cores available you can reduce the time it takes to fit the model by increasing the number of threads per chain (see the <a href="#fitting-the-epinowcast-model">fitting options</a> section above).</p>
 </div>
 <p>and then on the retrospectively observed data.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
@@ -759,7 +823,10 @@ This is useful when we want to estimate Rt from data that is already (approximat
 <span><span class="co">#&gt;   Max treedepth: 10 (53 at max, 2.6%) </span></span>
 <span><span class="co">#&gt;   Run time: 81.8 secs</span></span></code></pre></div>
 </details><div class="alert alert-warning">
-<p>You may see a number of warning messages from <code>cmdstanr</code> when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in <code>epinowcast</code>. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are actively working on improving in future versions of <code>epinowcast</code>.</p>
+<p>You may see a number of warning messages from <code>cmdstanr</code> when fitting the model.
+These generally occur when the model is being initialised and are due to this process not currently being optimised in <code>epinowcast</code>.
+The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase).
+This is something we are actively working on improving in future versions of <code>epinowcast</code>.</p>
 </div>
 <p>Finally, we fit the model to the retrospective data without delay estimation.
 Here we set <code>parametric = ~0</code> and <code>non_parametric = ~0</code> for both the reference and report date models, disabling the delay model entirely.
@@ -815,7 +882,9 @@ The model only estimates the expectation (Rt and latent process) from the final 
 <div class="section level4">
 <h4 id="plotting-the-nowcast-based-on-real-time-data">Plotting the nowcast based on real-time data<a class="anchor" aria-label="anchor" href="#plotting-the-nowcast-based-on-real-time-data"></a>
 </h4>
-<p>We first plot the nowcast based on real-time data. Effectively here we are trying to use our model to estimate the hospitalisations that will ultimately be reported based on the data that is currently available. We can compare this to the most recent observations to see how well the model is doing.</p>
+<p>We first plot the nowcast based on real-time data.
+Effectively here we are trying to use our model to estimate the hospitalisations that will ultimately be reported based on the data that is currently available.
+We can compare this to the most recent observations to see how well the model is doing.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
 <span>  <span class="va">germany_nowcast</span>, <span class="va">latest_germany_hosp</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-01"</span><span class="op">)</span><span class="op">]</span></span>
@@ -824,15 +893,21 @@ The model only estimates the expectation (Rt and latent process) from the final 
 <img src="figures/single-timeseries-rt-estimation-plot-germany-nowcast-1.png" alt="Nowcast of hospitalisations in Germany based on real-time data"><div class="figcaption">Nowcast of hospitalisations in Germany based on real-time data</div>
 </div>
 <p>Internally, this plotting function (see <code>?plot.epinowcast()</code>) sums observed data and posterior estimates for unobserved data to produce a nowcast of the number of hospitalisations that will ultimately be reported.</p>
-<p>In this instance, the model has done a good job of estimating the number of hospitalisations that will ultimately be reported based on the data that is currently available. This is not always the case, and the model can sometimes over or under estimate the number of hospitalisations that will ultimately be reported.</p>
+<p>In this instance, the model has done a good job of estimating the number of hospitalisations that will ultimately be reported based on the data that is currently available.
+This is not always the case, and the model can sometimes over or under estimate the number of hospitalisations that will ultimately be reported.</p>
 <div class="alert alert-warning">
-<p>An important thing to note here is that this model is clearly not perfect with more complete data being less well estimated by the model. This likely indicates some misspecification in the reporting delay model which could be fixed by making it more complex or even by making it entirely non-parametric (vs being based on a LogNormal).</p>
+<p>An important thing to note here is that this model is clearly not perfect with more complete data being less well estimated by the model.
+This likely indicates some misspecification in the reporting delay model which could be fixed by making it more complex or even by making it entirely non-parametric (vs being based on a LogNormal).</p>
 </div>
 </div>
 <div class="section level4">
 <h4 id="plotting-the-nowcast-based-on-retrospective-data">Plotting the nowcast based on retrospective data<a class="anchor" aria-label="anchor" href="#plotting-the-nowcast-based-on-retrospective-data"></a>
 </h4>
-<p>We can also plot the nowcast based on the retrospective data. As this plot uses observed data where available this is effectively plotting observed data after a 30 day delay (as this was the maximum we specified) compared to data that will ultimately be observed. This can be used to get a feel for how well specified our maximum delay is. Here we see that a small number of hospitalisations will be reported after 30 days. This will impact the performance of even an ideal model as it will not be able to predict these hospitalisations and so should be accounted for in the model evaluation.</p>
+<p>We can also plot the nowcast based on the retrospective data.
+As this plot uses observed data where available this is effectively plotting observed data after a 30 day delay (as this was the maximum we specified) compared to data that will ultimately be observed.
+This can be used to get a feel for how well specified our maximum delay is.
+Here we see that a small number of hospitalisations will be reported after 30 days.
+This will impact the performance of even an ideal model as it will not be able to predict these hospitalisations and so should be accounted for in the model evaluation.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
 <span>  <span class="va">retro_germany_nowcast</span>,</span>
@@ -846,7 +921,10 @@ The model only estimates the expectation (Rt and latent process) from the final 
 <div class="section level3">
 <h3 id="posterior-predictions-for-cases-by-date-of-positive-test-and-report">Posterior predictions for cases by date of positive test and report<a class="anchor" aria-label="anchor" href="#posterior-predictions-for-cases-by-date-of-positive-test-and-report"></a>
 </h3>
-<p>To better understand the fit of the model to data we can instead plot the posterior predictions for the observed data. This is effectively the same as the plot above but instead of plotting the posterior predictions for the unobserved data we plot the posterior predictions for the observed data. This can be used to get a feel for how well the model is able to predict the observed data. Rather than using the build in plot function (by changing <code>type = "posterior_prediction"</code>) we instead use <code><a href="../reference/enw_plot_pp_quantiles.html">enw_plot_pp_quantiles()</a></code> so we can control the number of references dates we plot (as otherwise the plot will be quite overwhelming!).</p>
+<p>To better understand the fit of the model to data we can instead plot the posterior predictions for the observed data.
+This is effectively the same as the plot above but instead of plotting the posterior predictions for the unobserved data we plot the posterior predictions for the observed data.
+This can be used to get a feel for how well the model is able to predict the observed data.
+Rather than using the build in plot function (by changing <code>type = "posterior_prediction"</code>) we instead use <code><a href="../reference/enw_plot_pp_quantiles.html">enw_plot_pp_quantiles()</a></code> so we can control the number of references dates we plot (as otherwise the plot will be quite overwhelming!).</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_select_pp_dates</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">nowcast</span>, <span class="va">dates</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">nowcast</span> <span class="op">|&gt;</span></span>
@@ -863,13 +941,19 @@ The model only estimates the expectation (Rt and latent process) from the final 
 <img src="figures/single-timeseries-rt-estimation-plot-retro-germany-nowcast-obs-1.png" alt="Posterior predictions of hospitalisations in Germany based on retrospective data"><div class="figcaption">Posterior predictions of hospitalisations in Germany based on retrospective data</div>
 </div>
 <div class="alert alert-warning">
-<p>It is clear from this plot that for these example dates the model is in the main able to predict the observed data well. However, there are also some aspects of the data that the model is less well able to predict, in particular the apparent periodicity in the reporting delay. This is likely due to the model not being able to account for the day of the week reporting periodicity. This could be fixed by adding a day of the week random effect to the reporting delay model which we demonstrate in the <a href="https://package.epinowcast.org">package README</a>.</p>
+<p>It is clear from this plot that for these example dates the model is in the main able to predict the observed data well.
+However, there are also some aspects of the data that the model is less well able to predict, in particular the apparent periodicity in the reporting delay.
+This is likely due to the model not being able to account for the day of the week reporting periodicity.
+This could be fixed by adding a day of the week random effect to the reporting delay model which we demonstrate in the <a href="https://package.epinowcast.org">package README</a>.</p>
 </div>
 </div>
 <div class="section level3">
 <h3 id="real-time-and-retrospective-estimates-of-the-effective-reproduction-number">Real-time and retrospective estimates of the effective reproduction number<a class="anchor" aria-label="anchor" href="#real-time-and-retrospective-estimates-of-the-effective-reproduction-number"></a>
 </h3>
-<p>A key output of the model is the posterior distribution of the effective reproduction number. We can plot this for both the real-time and retrospective data to see how the estimates change as more data becomes available. Ideally, we would hope that the real-time estimates would overlap with the retrospective estimates. This would indicate that our model is able to accurately estimate hospitalisations that will be ultimately reported based on those that have already been reported.</p>
+<p>A key output of the model is the posterior distribution of the effective reproduction number.
+We can plot this for both the real-time and retrospective data to see how the estimates change as more data becomes available.
+Ideally, we would hope that the real-time estimates would overlap with the retrospective estimates.
+This would indicate that our model is able to accurately estimate hospitalisations that will be ultimately reported based on those that have already been reported.</p>
 <details class="chunk-details"><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">get_rt_posterior</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">nowcast</span>, <span class="va">expectation</span> <span class="op">=</span> <span class="va">expectation_module</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">rt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_posterior.html">enw_posterior</a></span><span class="op">(</span><span class="va">nowcast</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, variables <span class="op">=</span> <span class="st">"r"</span><span class="op">)</span></span>
@@ -983,8 +1067,11 @@ Note that the retrospective model without delay estimation is not included here 
 <div class="section level3">
 <h3 id="estimates-of-the-number-of-expected-hospitalisations-both-in-real-time-and-retrospectively">Estimates of the number of expected hospitalisations both in real-time and retrospectively<a class="anchor" aria-label="anchor" href="#estimates-of-the-number-of-expected-hospitalisations-both-in-real-time-and-retrospectively"></a>
 </h3>
-<p>We can also plot the posterior predictions for the number of expected hospitalisations. This is the number of hospitalisations that would be reported if there was no observation error. We can compare this to the number of hospitalisations that are ultimately reported to see how well the model is doing.</p>
-<p>Retrospectively, we would expect the model to fit very well to this data with any differences being due to the observation error. If this is not the case it indicates we may need to revisit our expected hospitalisation model specification to make it closer to the generative process of the data we have.</p>
+<p>We can also plot the posterior predictions for the number of expected hospitalisations.
+This is the number of hospitalisations that would be reported if there was no observation error.
+We can compare this to the number of hospitalisations that are ultimately reported to see how well the model is doing.</p>
+<p>Retrospectively, we would expect the model to fit very well to this data with any differences being due to the observation error.
+If this is not the case it indicates we may need to revisit our expected hospitalisation model specification to make it closer to the generative process of the data we have.</p>
 <p>In real-time, we would expect the model to fit less well to this data as it is trying to estimate the number of hospitalisations that will ultimately be reported based on the data that is currently available (i.e. it also has to account for the reporting delay which is now partially unobserved).</p>
 <details class="chunk-details"><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">get_expected_infections</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">nowcast</span>, <span class="va">expectation</span> <span class="op">=</span> <span class="va">expectation_module</span><span class="op">)</span> <span class="op">{</span></span>
@@ -1034,7 +1121,8 @@ Note that the retrospective model without delay estimation is not included here 
 </div>
 <p>The black points here are the counts at the maximum modelled delay (<code>latest_germany_hosp</code>, the rolling “obs at max delay” set) — the same data the retrospective models see, which is what <code><a href="../reference/enw_retrospective.html">enw_retrospective()</a></code> also uses internally.
 The ribbons show posterior uncertainty on the <em>expected</em> observations (<code>exp_lobs</code>), not posterior predictive draws, so they do not include Poisson observation noise and individual points will scatter around the fitted mean even for a well-specified model.</p>
-<p>As expected the retrospective estimates fit very well to the data. The real-time estimates are slightly less good, but still capture the recent change in trend in the data which would not be possible without a nowcast (as estimates would be biased towards underpredicting due to the delay in reporting leading to right truncation).</p>
+<p>As expected the retrospective estimates fit very well to the data.
+The real-time estimates are slightly less good, but still capture the recent change in trend in the data which would not be possible without a nowcast (as estimates would be biased towards underpredicting due to the delay in reporting leading to right truncation).</p>
 </div>
 </div>
 <div class="section level2">

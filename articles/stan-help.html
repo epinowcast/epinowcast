@@ -38,7 +38,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -106,7 +106,9 @@
     
     
 <div class="alert alert-warning">
-<p>Before we start, it is important to know that Bayesian modelling can be complex and most, if not all, practitioners (including the authors of <a href="https://package.epinowcast.org">epinowcast</a>) are still learning on the job. Having problems that you may need to work through is part of the process. Part of the aim of the <a href="https://package.epinowcast.org">epinowcast</a> community is to lower the barriers to entry for this type of modelling in real-time infectious disease analysis so we really appreciate any input into how to make our documentation easier to use.</p>
+<p>Before we start, it is important to know that Bayesian modelling can be complex and most, if not all, practitioners (including the authors of <a href="https://package.epinowcast.org">epinowcast</a>) are still learning on the job.
+Having problems that you may need to work through is part of the process.
+Part of the aim of the <a href="https://package.epinowcast.org">epinowcast</a> community is to lower the barriers to entry for this type of modelling in real-time infectious disease analysis so we really appreciate any input into how to make our documentation easier to use.</p>
 </div>
 <div class="section level2">
 <h2 id="epinowcast-and-stan">Epinowcast and Stan<a class="anchor" aria-label="anchor" href="#epinowcast-and-stan"></a>
@@ -264,7 +266,9 @@ The default value is 0.8, but this will likely need to be set slightly higher li
 <span>    show_messages <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><div class="alert alert-warning">
-<p>For very simple models <code>threads_per_chain = 1</code> may lead to models fitting faster even if more cores are available due to the overhead from within chain multi-threading. This may also be the case for models with very complex generative processes (i.e. models that use complex <span class="math inline">\(R_t\)</span> formulas). We suggest you explore what works best for your data and models.</p>
+<p>For very simple models <code>threads_per_chain = 1</code> may lead to models fitting faster even if more cores are available due to the overhead from within chain multi-threading.
+This may also be the case for models with very complex generative processes (i.e. models that use complex <span class="math inline">\(R_t\)</span> formulas).
+We suggest you explore what works best for your data and models.</p>
 </div>
 </div>
 </div>

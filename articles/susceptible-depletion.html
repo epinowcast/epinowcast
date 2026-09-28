@@ -38,7 +38,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,19 +99,15 @@
                         <h4 data-toc-skip class="author">Epinowcast Team</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/vignettes/susceptible-depletion.Rmd" class="external-link"><code>vignettes/susceptible-depletion.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/vignettes/articles/susceptible-depletion.Rmd" class="external-link"><code>vignettes/articles/susceptible-depletion.Rmd</code></a></small>
       <div class="d-none name"><code>susceptible-depletion.Rmd</code></div>
     </div>
 
     
     
-<p>The renewal expectation model in <code>epinowcast</code> can optionally account for
-susceptible depletion.
-Given an initial susceptible population, transmission is scaled by the remaining
-susceptible fraction, so the effective reproduction number bends down as the
-pool depletes.
-This vignette demonstrates the adjustment on simulated data where depletion
-plays a clear role, fitting the expectation-only model with and without it.</p>
+<p>The renewal expectation model in <code>epinowcast</code> can optionally account for susceptible depletion.
+Given an initial susceptible population, transmission is scaled by the remaining susceptible fraction, so the effective reproduction number bends down as the pool depletes.
+This vignette demonstrates the adjustment on simulated data where depletion plays a clear role, fitting the expectation-only model with and without it.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://package.epinowcast.org">epinowcast</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
@@ -121,14 +117,9 @@ plays a clear role, fitting the expectation-only model with and without it.</p>
 </details><div class="section level2">
 <h2 id="a-depleting-epidemic-on-simulated-data">A depleting epidemic on simulated data<a class="anchor" aria-label="anchor" href="#a-depleting-epidemic-on-simulated-data"></a>
 </h2>
-<p>We simulate a single well-mixed population of <code>N = 4000</code> susceptibles seeded
-with a few cases and driven by a renewal process with a fixed generation time
-and a constant reproduction number.
-Because the population is small, the susceptible pool is depleted over the
-epidemic, so the wave peaks and then declines even though transmissibility is
-constant.
-We observe the wave to near completion, so the realised final size is
-informative about the susceptible population.</p>
+<p>We simulate a single well-mixed population of <code>N = 4000</code> susceptibles seeded with a few cases and driven by a renewal process with a fixed generation time and a constant reproduction number.
+Because the population is small, the susceptible pool is depleted over the epidemic, so the wave peaks and then declines even though transmissibility is constant.
+We observe the wave to near completion, so the realised final size is informative about the susceptible population.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simulate_depleting</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">population</span>, <span class="va">rt</span>, <span class="va">generation_time</span>, <span class="va">n_days</span>,</span>
 <span>                                <span class="va">seed_cases</span> <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">{</span></span>
@@ -155,14 +146,12 @@ informative about the susceptible population.</p>
 <span>  confirm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">incidence</span><span class="op">)</span>, <span class="va">sim</span><span class="op">$</span><span class="va">incidence</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">obs</span><span class="op">[</span>, <span class="va">report_date</span> <span class="op">:=</span> <span class="va">reference_date</span><span class="op">]</span></span></code></pre></div>
-</details><p>The realised attack size consumes almost the whole population, so depletion
-drives the dynamics and the wave is not explained by transmissibility alone.</p>
+</details><p>The realised attack size consumes almost the whole population, so depletion drives the dynamics and the wave is not explained by transmissibility alone.</p>
 </div>
 <div class="section level2">
 <h2 id="preprocessing">Preprocessing<a class="anchor" aria-label="anchor" href="#preprocessing"></a>
 </h2>
-<p>We treat the simulated counts as fully reported (no reporting delay) so the
-expectation model is the only component being tested.</p>
+<p>We treat the simulated counts as fully reported (no reporting delay) so the expectation model is the only component being tested.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/enw_complete_dates.html">enw_complete_dates</a></span><span class="op">(</span><span class="va">obs</span>, max_delay <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, max_delay <span class="op">=</span> <span class="fl">2</span></span>
@@ -172,11 +161,8 @@ expectation model is the only component being tested.</p>
 <div class="section level2">
 <h2 id="fitting-with-and-without-susceptible-depletion">Fitting with and without susceptible depletion<a class="anchor" aria-label="anchor" href="#fitting-with-and-without-susceptible-depletion"></a>
 </h2>
-<p>We fit the same renewal model twice: once with the susceptible-depletion
-adjustment (<code>population = N</code>) and once without it (the default).
-Both use a constant reproduction number (<code>~1</code>), matching the data-generating
-process, so the only way the unadjusted model can explain the observed slowdown
-is by inferring a lower reproduction number than the truth.</p>
+<p>We fit the same renewal model twice: once with the susceptible-depletion adjustment (<code>population = N</code>) and once without it (the default).
+Both use a constant reproduction number (<code>~1</code>), matching the data-generating process, so the only way the unadjusted model can explain the observed slowdown is by inferring a lower reproduction number than the truth.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_opts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span></span>
 <span>  save_warmup <span class="op">=</span> <span class="cn">FALSE</span>, pp <span class="op">=</span> <span class="cn">FALSE</span>, chains <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -206,14 +192,10 @@ is by inferring a lower reproduction number than the truth.</p>
 <div class="section level2">
 <h2 id="estimated-latent-epidemic">Estimated latent epidemic<a class="anchor" aria-label="anchor" href="#estimated-latent-epidemic"></a>
 </h2>
-<p>We plot the full posterior of latent cases as a 90% credible ribbon rather than
-a single point estimate, so the spread of plausible trajectories is visible.
+<p>We plot the full posterior of latent cases as a 90% credible ribbon rather than a single point estimate, so the spread of plausible trajectories is visible.
 The simulated truth is overlaid for comparison.
-The adjusted model recovers the wave by attributing the peak and decline to a
-shrinking susceptible pool.
-The unadjusted model has a constant reproduction number and no depletion, so it
-cannot produce a peak and instead compromises between the growth and the decline,
-biasing its reconstruction of the latent epidemic.</p>
+The adjusted model recovers the wave by attributing the peak and decline to a shrinking susceptible pool.
+The unadjusted model has a constant reproduction number and no depletion, so it cannot produce a peak and instead compromises between the growth and the decline, biasing its reconstruction of the latent epidemic.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">latent_posterior</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">nowcast</span>, <span class="va">label</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">draws</span> <span class="op">&lt;-</span> <span class="fu">posterior</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/posterior/reference/draws_matrix.html" class="external-link">as_draws_matrix</a></span><span class="op">(</span></span>
@@ -259,10 +241,8 @@ biasing its reconstruction of the latent epidemic.</p>
 <div class="section level2">
 <h2 id="fitting-an-uncertain-population">Fitting an uncertain population<a class="anchor" aria-label="anchor" href="#fitting-an-uncertain-population"></a>
 </h2>
-<p>When the initial susceptible population is unknown, it can be estimated by
-setting <code>population_uncertain = TRUE</code>.
-<code>population</code> then provides the median of a LogNormal prior with coefficient of
-variation <code>population_cv</code>.</p>
+<p>When the initial susceptible population is unknown, it can be estimated by setting <code>population_uncertain = TRUE</code>.
+<code>population</code> then provides the median of a LogNormal prior with coefficient of variation <code>population_cv</code>.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast_uncertain</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span></span>
 <span>  <span class="va">pobs</span>,</span>
@@ -273,10 +253,8 @@ variation <code>population_cv</code>.</p>
 <span>  obs <span class="op">=</span> <span class="fu"><a href="../reference/enw_obs.html">enw_obs</a></span><span class="op">(</span>family <span class="op">=</span> <span class="st">"poisson"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit_opts</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</details><p>We plot the full posterior of the estimated population against the true value
-used to simulate the data.
-The posterior concentrates around the truth, showing the population is
-recovered from the depletion signal alone.</p>
+</details><p>We plot the full posterior of the estimated population against the true value used to simulate the data.
+The posterior concentrates around the truth, showing the population is recovered from the depletion signal alone.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pop_draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span></span>
 <span>  pop_est <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span></span>
@@ -304,14 +282,10 @@ recovered from the depletion signal alone.</p>
 <div class="section level2">
 <h2 id="assumptions">Assumptions<a class="anchor" aria-label="anchor" href="#assumptions"></a>
 </h2>
-<p>The adjustment assumes a single well-mixed population per group with no waning
-of immunity and no births or deaths, so the susceptible pool is only ever
-depleted by modelled latent cases.
+<p>The adjustment assumes a single well-mixed population per group with no waning of immunity and no births or deaths, so the susceptible pool is only ever depleted by modelled latent cases.
 It applies only to the renewal path (<code>length(generation_time) &gt; 1</code>).
-The <a href="model.html">model vignette</a> describes the adjustment and gives the
-references for the susceptible-depletion form it follows.
-See <code><a href="../reference/enw_expectation.html">?enw_expectation</a></code> for the <code>population</code>, <code>population_floor</code>,
-<code>population_uncertain</code>, and <code>population_cv</code> arguments.</p>
+The <a href="model.html">model vignette</a> describes the adjustment and gives the references for the susceptible-depletion form it follows.
+See <code><a href="../reference/enw_expectation.html">?enw_expectation</a></code> for the <code>population</code>, <code>population_floor</code>, <code>population_uncertain</code>, and <code>population_cv</code> arguments.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -544,7 +544,7 @@ documentation for each module function
 [`?enw_report`](https://package.epinowcast.org/reference/enw_report.md),
 [`?enw_expectation`](https://package.epinowcast.org/reference/enw_expectation.md))
 and the age-stratified nowcasting vignette
-([`vignette("germany-age-stratified-nowcasting")`](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.md)).
+(`vignette("germany-age-stratified-nowcasting")`).
 
 ## References
 

@@ -1,6 +1,8 @@
 # Changelog
 
-## epinowcast 0.7.0
+## epinowcast 0.8.0
+
+This is the first release of `epinowcast` to CRAN.
 
 ### Model
 
@@ -128,6 +130,20 @@
   introduced in R 4.4. See
   [\#811](https://github.com/epinowcast/epinowcast/issues/811) by
   [@seabbs](https://github.com/seabbs).
+- Re-vendored `inst/stan/functions/primarycensored.stan` from upstream
+  `primarycensored` twice via the `check-primarycensored` workflow
+  ([\#894](https://github.com/epinowcast/epinowcast/issues/894),
+  [\#895](https://github.com/epinowcast/epinowcast/issues/895)). The
+  first update pulled in `primarycensored`’s non-parametric step and
+  hazard delay distributions, its exponential-growth helpers, and its
+  analytical generalised gamma functions; none of these are yet exposed
+  through
+  [`enw_reference()`](https://package.epinowcast.org/reference/enw_reference.md),
+  so this adds unused vendored code only. The second update picked up a
+  performance refactor of the vectorised PMF that shares analytical CDF
+  terms across neighbouring windows (`primarycensored`
+  [\#356](https://github.com/epinowcast/epinowcast/issues/356));
+  upstream reports values are unchanged and gradients match to rounding.
 
 ### Documentation
 
@@ -145,6 +161,14 @@
   `inst/examples/germany_weekly_reporting_daily_process_model.R`. See
   [\#668](https://github.com/epinowcast/epinowcast/issues/668) by
   [@seabbs](https://github.com/seabbs).
+- Moved the eight vignettes that fit Stan models (`delay-estimation`,
+  `epinowcast`, `germany-age-stratified-nowcasting`,
+  `inference-methods`, `latent-processes`,
+  `single-timeseries-rt-estimation`, `susceptible-depletion`,
+  `temporal-aggregation`) to `vignettes/articles/`, following pkgdown’s
+  articles convention. They still render on the package website but are
+  no longer built or shipped by `R CMD build`, which was most of the
+  installed package’s size. No vignette content changed or was removed.
 
 ### Bug fixes
 

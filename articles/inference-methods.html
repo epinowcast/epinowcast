@@ -38,7 +38,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,7 +99,7 @@
                         <h4 data-toc-skip class="author">Epinowcast Team</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/vignettes/inference-methods.Rmd" class="external-link"><code>vignettes/inference-methods.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/vignettes/articles/inference-methods.Rmd" class="external-link"><code>vignettes/articles/inference-methods.Rmd</code></a></small>
       <div class="d-none name"><code>inference-methods.Rmd</code></div>
     </div>
 
@@ -312,7 +312,8 @@ Increasing the number of paths is a standard way to improve pathfinder performan
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><table style="width:100%;" class="table">
-<caption>Runtime and sampling efficiency for each spec and method. Min ESS/s is the minimum bulk effective sample size per second and is reported only for NUTS fits.</caption>
+<caption>Runtime and sampling efficiency for each spec and method.
+Min ESS/s is the minimum bulk effective sample size per second and is reported only for NUTS fits.</caption>
 <colgroup>
 <col width="34%">
 <col width="33%">
@@ -364,7 +365,8 @@ Increasing the number of paths is a standard way to improve pathfinder performan
 </tr>
 </tbody>
 </table>
-<p>Note that the runtime for pathfinder-initialised NUTS reported here only includes the NUTS sampling step. The pathfinder initialisation itself is an additional overhead (though often small compared to sampling).</p>
+<p>Note that the runtime for pathfinder-initialised NUTS reported here only includes the NUTS sampling step.
+The pathfinder initialisation itself is an additional overhead (though often small compared to sampling).</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">runtime_dt</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">method</span>, y <span class="op">=</span> <span class="va">runtime</span>, fill <span class="op">=</span> <span class="va">spec</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>position <span class="op">=</span> <span class="st">"dodge"</span><span class="op">)</span> <span class="op">+</span></span>

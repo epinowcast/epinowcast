@@ -679,8 +679,6 @@ adaptation introduces some run-to-run variability.
 - Use the **daily timestep** when daily data are available and daily
   resolution is required for downstream decisions.
 
-See
-[`vignette("epinowcast")`](https://package.epinowcast.org/articles/epinowcast.md)
-for the default daily walk-through and
-[`vignette("inference-methods")`](https://package.epinowcast.org/articles/inference-methods.md)
-for the inference options that apply equally to all four approaches.
+See `vignette("epinowcast")` for the default daily walk-through and
+`vignette("inference-methods")` for the inference options that apply
+equally to all four approaches.

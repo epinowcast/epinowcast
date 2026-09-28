@@ -17,8 +17,6 @@ manipulation, `ggplot2` for plotting, `knitr` to produce tables of
 output, `loo` to approximately evaluate out of sample performance and
 `scoringutils` to evaluate out of sample forecast performance.
 
-Code
-
 ``` r
 
 library(epinowcast)
@@ -37,8 +35,6 @@ half the number of real cores available (here 6 as we are using 2 MCMC
 chains and have 12 real cores available). Note this may cause conflicts
 with other processes running on your computer and if this is an issue
 reduce the number of threads used.
-
-Code
 
 ``` r
 
@@ -68,8 +64,6 @@ reported hospitalisations are adjusted.
 We first filter out the data that would have been available on the 1st
 of September for the last 40 days.
 
-Code
-
 ``` r
 
 nat_germany_hosp <- epinowcast::germany_covid19_hosp[location == "DE"]
@@ -95,8 +89,6 @@ retro_nat_germany
 
 Similarly we then find the data that were available on the 20th of
 October for these dates, which will serve as the target “true” data.
-
-Code
 
 ``` r
 
@@ -138,8 +130,6 @@ Another way to approach this would be to only model age stratified
 hospitalisations and then to aggregate the nowcast estimates into total
 counts after fitting the model.
 
-Code
-
 ``` r
 
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40, by = "age_group")
@@ -176,8 +166,6 @@ requirements but this may not be sufficient for many real world use
 cases. Finally, note that here we have silenced fitting progress and
 potential warning messages but in general this should not be done.
 
-Code
-
 ``` r
 
 fit <- enw_fit_opts(
@@ -195,8 +183,6 @@ nowcast <- epinowcast(pobs,
 
 We first visualise the observations available to the model, the nowcast
 of final reported hospitalisations and the actual reported observations.
-
-Code
 
 ``` r
 
@@ -217,8 +203,6 @@ is not a truly Bayesian approach and in some situations may be
 problematic. See
 [`?epinowcast`](https://package.epinowcast.org/reference/epinowcast.md)
 for general guidance on inspecting and setting priors.
-
-Code
 
 ``` r
 
@@ -252,8 +236,6 @@ We can specify this using the
 [`enw_expectation()`](https://package.epinowcast.org/reference/enw_expectation.md)
 module and the formula interface as follows.
 
-Code
-
 ``` r
 
 expectation_module <- enw_expectation(
@@ -268,8 +250,6 @@ exp_nowcast <- epinowcast(pobs,
 ```
 
 We again visualise the nowcasts
-
-Code
 
 ``` r
 
@@ -294,8 +274,6 @@ plot by oscillations in each facet that appear to move from left to
 right across facets. This indicates that some kind of week day
 adjustment may be needed.
 
-Code
-
 ``` r
 
 plot(exp_nowcast, type = "posterior") +
@@ -319,8 +297,6 @@ Note that `epinowcast` uses a sparse design matrix to reduce runtimes
 for some modules so the design matrix shows only unique rows with
 `index` containing the mapping to the full design matrix.
 
-Code
-
 ``` r
 
 report_module_dow <- enw_report(~ (1 | day_of_week), data = pobs)
@@ -328,8 +304,6 @@ report_module_dow <- enw_report(~ (1 | day_of_week), data = pobs)
 
 We now repeat the nowcasting step with the day of the week reporting
 model included.
-
-Code
 
 ``` r
 
@@ -346,8 +320,6 @@ variation across age groups with the 35-59 year old nowcast appearing
 quite poor (and as a result the aggregate nowcast also not showing great
 performance). We could also plot the posterior predictions for this
 model in the same way as for the previous model.
-
-Code
 
 ``` r
 
@@ -367,8 +339,6 @@ by age and that this may be driving the variation in nowcast performance
 noted for the last model. Here we model this using a random effect for 5
 year age group (as these were the groups supplied in the data).
 
-Code
-
 ``` r
 
 reference_module_age <- enw_reference(~ 1 + (1 | age_group), data = pobs)
@@ -376,8 +346,6 @@ reference_module_age <- enw_reference(~ 1 + (1 | age_group), data = pobs)
 
 We again nowcast this time using both the age adjusted reference date
 model and the day of the week adjusted report date model.
-
-Code
 
 ``` r
 
@@ -393,8 +361,6 @@ age_nowcast <- epinowcast(pobs,
 Fit looks slightly better with this adjustment though uncertainty has
 also increased for all age groups and performance for the final day of
 data may have reduced compared to the first model.
-
-Code
 
 ``` r
 
@@ -418,8 +384,6 @@ model to the number of weeks of data and as this is an expensive
 computational step using this approach to introducing a time-varying
 parameter limits the additional computational overhead.
 
-Code
-
 ``` r
 
 reference_module_age_week <- enw_reference(
@@ -428,8 +392,6 @@ reference_module_age_week <- enw_reference(
 ```
 
 As before we fit the nowcasting model,
-
-Code
 
 ``` r
 
@@ -445,8 +407,6 @@ week_nowcast <- epinowcast(pobs,
 In comparison to the previous model it looks like the introduction of
 variation over time has introduce a slight improvement in capturing
 hospitalisations in some age groups.
-
-Code
 
 ``` r
 
@@ -467,8 +427,6 @@ this scenario the assumption is that delays may evolve differently over
 time for each age group but reporting effects and measurement error are
 still shared across data sets.
 
-Code
-
 ``` r
 
 reference_module_week_by_age <- enw_reference(
@@ -477,8 +435,6 @@ reference_module_week_by_age <- enw_reference(
 ```
 
 We can now fit this model as before.
-
-Code
 
 ``` r
 
@@ -494,8 +450,6 @@ age_week_nowcast <- epinowcast(pobs,
 In comparison to the previous model it looks like the introduction of
 variation over time has introduce a slight improvement in capturing
 hospitalisations in some age groups.
-
-Code
 
 ``` r
 
@@ -522,8 +476,6 @@ lead to long fit times for no real benefit. Instead here we write a
 small helper function to preprocess our input data, define report and
 reference date models and then run a nowcast.
 
-Code
-
 ``` r
 
 independent_epinowcast <- function(obs, max_delay = 40, ...) {
@@ -545,8 +497,6 @@ independent_epinowcast <- function(obs, max_delay = 40, ...) {
 We can now use this wrapper function on the data available for each age
 group, summarise the resulting nowcast, and then join these into a
 single data.frame.
-
-Code
 
 ``` r
 
@@ -581,8 +531,6 @@ least as well as in the hierarchical models with only minor reductions
 in performance in other age groups. This suggests that for this dataset
 and nowcast date there may be relatively little benefit to jointly
 modelling age groups.
-
-Code
 
 ``` r
 
@@ -637,8 +585,6 @@ and potentially draw some useful initial conclusions.
 We first list all models (including the simplest case) and give them
 informative names,
 
-Code
-
 ``` r
 
 nowcasts <- list(
@@ -652,8 +598,6 @@ nowcasts <- list(
 
 and then summarise the nowcast posterior for each model and join into a
 tidy `data.frame` to make further analysis easier.
-
-Code
 
 ``` r
 
@@ -686,8 +630,6 @@ models with uncertainty generally decreasing as model complexity
 increases. Some age groups are clearly better nowcast than others with
 the 35-59 year old age group in particular having poor nowcast coverage.
 
-Code
-
 ``` r
 
 enw_plot_nowcast_quantiles(
@@ -708,8 +650,6 @@ though note this is not typically appropriate for time series data
 better](https://cran.r-project.org/web//packages/loo/vignettes/loo2-lfo.html)),
 the approximation used here to avoid refitting is likely to be poor, and
 we are not accounting for this by refitting the model as required.
-
-Code
 
 ``` r
 
@@ -747,8 +687,6 @@ models that include at least day of the week, age groups and variation
 by week performing comparably. Other performance characteristics are
 relatively similar across models (with all models being biased towards
 underprediction for example).
-
-Code
 
 ``` r
 
@@ -793,8 +731,6 @@ performance but also highlights more variation across reference dates
 and age groups between models. The difference in performance between the
 hierarchical by age models and the model that treats age groups
 independently is also very clear.
-
-Code
 
 ``` r
 
