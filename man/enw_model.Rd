@@ -58,8 +58,8 @@ messages be shown.}
 
 \item{use_cpp}{Logical, defaults to \code{getOption("epinowcast.use_cpp", TRUE)}.
 Should the package's custom reverse-mode adjoints (currently:
-\code{logit_hazard_to_log_prob()}, see \code{\link[=epinowcast_stan_header]{epinowcast_stan_header()}} and
-\verb{inst/include/epinowcast/}) be compiled in via
+\code{logit_hazard_to_log_prob()} and \code{renewal_depletion()}, see
+\code{\link[=epinowcast_stan_header]{epinowcast_stan_header()}} and \verb{inst/include/epinowcast/}) be compiled in via
 \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}'s \code{user_header}, with the matching Stan
 functions declared without a body and \code{allow-undefined} passed to
 \code{stanc_options}? If \code{FALSE}, every such function is instead compiled
