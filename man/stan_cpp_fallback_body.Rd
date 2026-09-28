@@ -15,7 +15,7 @@ A character string of Stan code defining \code{fn}.
 }
 \description{
 Used by \code{\link[=write_stan_files_no_profile]{write_stan_files_no_profile()}} to replace a
-bodyless, C++-backed Stan function declaration with a pure-Stan body
+C++-backed Stan function declared without a body with a pure-Stan body
 when the C++ adjoint path is disabled (\code{use_cpp = FALSE}, see
 \code{\link[=enw_model]{enw_model()}}). The fallback calls straight through to the retained
 \verb{<fn>_stan()} pure-Stan reference, so the two are always in sync.

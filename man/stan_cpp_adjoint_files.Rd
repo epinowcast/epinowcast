@@ -8,7 +8,7 @@ stan_cpp_adjoint_files()
 }
 \value{
 A named \code{character} vector mapping the relative path of each
-bodyless declaration file to the function name \code{\link[=stan_cpp_fallback_body]{stan_cpp_fallback_body()}}
+declaration-only file to the function name \code{\link[=stan_cpp_fallback_body]{stan_cpp_fallback_body()}}
 should be called with. Paths use \code{/} (matching \code{list.files(..., recursive = TRUE)}, which is always \code{/}-separated, unlike a Windows
 filesystem path).
 }
