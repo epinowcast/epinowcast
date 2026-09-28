@@ -727,6 +727,31 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
   distspec::Normal(mean = 0, sd = 1)
 }
 
+#' Draw initial values for a positive parameter on the log scale
+#'
+#' Draws `n` initial values from the log-normal distribution with the given
+#' natural-scale mean and standard deviation, with the log-scale standard
+#' deviation shrunk by `scale` so that draws sit close to the prior median.
+#' For a log-normal prior this recovers its `meanlog` and `sdlog` exactly, so
+#' the draws are centred on the prior median rather than its mean.
+#'
+#' @param n Number of draws.
+#'
+#' @param mean Natural-scale prior means (recycled to length `n`).
+#'
+#' @param sd Natural-scale prior standard deviations (recycled to length
+#' `n`).
+#'
+#' @param scale Factor applied to the log-scale standard deviation.
+#'
+#' @return A numeric vector of length `n`.
+#' @keywords internal
+.enw_rlnorm_init <- function(n, mean, sd, scale = 0.1) {
+  sdlog <- sqrt(log1p((sd / mean)^2))
+  meanlog <- log(mean) - sdlog^2 / 2
+  rlnorm(n, meanlog, sdlog * scale)
+}
+
 # Build conditional Gaussian process initial values for a module's
 # prefix. Mirrors `.arima_inits()`: declares empty defaults for the
 # spectral coefficients (`<prefix>_gp_eta`), length scale
@@ -766,7 +791,7 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
   }
 
   rho_p <- priors[[paste0(prefix, "_gp_rho_p")]]
-  init[[rho_nm]] <- array(abs(rnorm(1, rho_p[1], rho_p[2] / 10)))
+  init[[rho_nm]] <- array(.enw_rlnorm_init(1, rho_p[1], rho_p[2]))
   alpha_p <- priors[[paste0(prefix, "_gp_alpha_p")]]
   init[[alpha_nm]] <- array(abs(rnorm(1, alpha_p[1], alpha_p[2] / 10 + 1e-3)))
   if (with_sd_alpha && isTRUE(data$model_refp > 1)) {

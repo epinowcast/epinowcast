@@ -934,10 +934,10 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       init <- c(init, .arima_inits(data, priors, "expr"))
       init <- c(init, .gp_inits(data, priors, "expr"))
       if (isTRUE(data$expr_pop_uncertain == 1)) {
-        init$expr_pop_est <- array(abs(rnorm(
+        init$expr_pop_est <- array(.enw_rlnorm_init(
           data$g, as.vector(priors$expr_pop_p[1, ]),
-          as.vector(priors$expr_pop_p[2, ]) * 0.1
-        )))
+          as.vector(priors$expr_pop_p[2, ])
+        ))
       }
       if (data$expl_fncol > 0) {
         init$expl_beta <- array(rnorm(data$expl_fncol, 0, 0.01))

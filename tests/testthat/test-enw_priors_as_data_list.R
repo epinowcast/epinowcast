@@ -125,3 +125,19 @@ test_that(".enw_priors_as_init_list gives prior means and standard
     as.vector(.enw_priors_as_init_list(list(w = NULL))$w_p), c(0, 0)
   )
 })
+
+test_that(".enw_rlnorm_init draws around the median of a log-normal prior", {
+  prior <- distspec::LogNormal(meanlog = log(4000), sdlog = 0.5)
+  moments <- .enw_prior_moments(prior)
+  expect_equal(
+    .enw_rlnorm_init(2, 4000, 0, scale = 0), c(4000, 4000),
+    tolerance = 1e-12
+  )
+  set.seed(1)
+  draws <- .enw_rlnorm_init(2000, moments[1], moments[2])
+  expect_length(draws, 2000)
+  expect_true(all(draws > 0))
+  expect_lt(abs(median(log(draws)) - log(4000)), 0.01)
+  expect_lt(sd(log(draws)), 0.06)
+  expect_gt(sd(log(draws)), 0.04)
+})
