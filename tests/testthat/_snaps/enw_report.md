@@ -56,6 +56,9 @@
       6                  0                    0
       7                  1                    0
       
+      $data$rep_fdesign_means
+      [1] 0.1355932 0.1355932 0.1355932 0.1525424 0.1355932 0.1525424
+      
       $data$rep_rdesign
         (Intercept)
       1           1

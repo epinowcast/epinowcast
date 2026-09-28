@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# A Bayesian Framework for Real-time Infectious Disease Surveillance <a href="https://package.epinowcast.org/"><img src="man/figures/logo.png" align="right" height="139" alt="epinowcast website" /></a>
+# A Bayesian Framework for Real-Time Infectious Disease Surveillance <a href="https://package.epinowcast.org/"><img src="man/figures/logo.png" align="right" height="139" alt="epinowcast website" /></a>
 
 <!-- badges: start -->
 
@@ -44,7 +44,7 @@ count data.
 data.** It can fail with multimodal or complex delay patterns. Evaluate
 model fit and consider alternatives (e.g., non-parametric hazards) as
 needed. See the [package
-vignettes](https://package.epinowcast.org/articles) for guidance.
+vignettes](https://package.epinowcast.org/articles/) for guidance.
 
 ## Installation
 
@@ -175,7 +175,7 @@ R Vignettes
 </summary>
 
 We have created [package
-vignettes](https://package.epinowcast.org/articles) to help you [get
+vignettes](https://package.epinowcast.org/articles/) to help you [get
 started
 nowcasting](https://package.epinowcast.org/articles/epinowcast.html),
 see a [quick reference to package
@@ -313,7 +313,8 @@ specification. Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/epinowcast/commits?author=Lnrivas">Lnrivas</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=natemcintosh">natemcintosh</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=nikosbosse">nikosbosse</a>,
-<a href="https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs">pratikunterwegs</a>
+<a href="https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs">pratikunterwegs</a>,
+<a href="https://github.com/epinowcast/epinowcast/commits?author=nicholasdavies">nicholasdavies</a>
 
 ### Issue Authors
 

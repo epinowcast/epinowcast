@@ -1,7 +1,13 @@
-# epinowcast 0.6.0.1000
+# epinowcast 0.7.0
 
 ## Model
 
+- The fixed-effects design and integrated (`d >= 1`) `arima()` and `gp()` residuals are now centred against the module intercept, decorrelating the intercept from the slopes and from the latent drift to improve sampling geometry.
+  For modules with a free intercept (`expr`, `refp` mean, `refnp`, `miss`) the design is centred on its observation-weighted column means, as `brms` does by default, and the grand mean (over time and groups) of the integrated residual is removed.
+  The sampled intercept (`<prefix>_int_c`) is on the centred scale; the original-scale intercept the prior applies to is recovered as `<prefix>_int` by undoing both the design and latent centring (a unit-Jacobian shift, so the prior keeps its meaning and the posterior is unchanged, as in EpiNow2's reproduction-number centring).
+  Only the shared grand-mean level is removed, so each group keeps its own level and drift: a grouped latent (`arima(time, group, ...)`, `G > 1`) is unchanged in meaning and the reparameterisation is exact for any number of groups.
+  On a weekly random-walk growth model the centred form samples roughly twice as fast at the `adapt_delta` these models use (it is sharper, so benefits from `adapt_delta >= 0.95`).
+  Modules without a free intercept (`expl`, `rep`) and the log-link `refp` standard deviation are left uncentred.
 - Added an experimental, opt-in embedded-Laplace inference path (`enw_laplace_marginal()`, `enw_laplace_marginal_data()`, `enw_laplace_marginal_model()`).
   It marginalises the latent log-expected-count field analytically with Stan's embedded Laplace approximation (`laplace_marginal_*`, CmdStan >= 2.39) instead of sampling it, while still sampling the hyperparameters with NUTS.
   The expectation is modelled as the log level of expected counts with an additive covariance assembled from the expectation's fixed effects, random effects and/or a single `gp()` term; the delay reuses the static parametric reference discretisation and the observation family is negative binomial (NB2) or Poisson.
@@ -13,6 +19,19 @@
   An integer `d` argument (matching `arima()`'s `d`) integrates the process `d` times: `d = 0` is stationary (the default, like EpiNow2's `gp_on = "R0"`), `d = 1` gives a smoothly drifting trend (like EpiNow2's default `gp_on = "R_t-1"`), and `d >= 2` integrates further, anchoring the first `d` values to zero so the level and slope are carried by the fixed effects.
   The Stan implementation is adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2, MIT licensed).
   See #824.
+- Added an optional susceptible-depletion (population) adjustment to the renewal expectation model via the new `population`, `population_floor`, `population_uncertain`, and `population_cv` arguments to `enw_expectation()`.
+  When a population size is supplied the effective reproduction number bends down as the susceptible pool is depleted by modelled latent cases, scaling transmission by the remaining susceptible fraction.
+  The population can be fixed or fitted via a LogNormal prior, and is per-group: groups are treated as independent well-mixed populations (a single value is recycled across groups with a warning, or a length-`groups` vector sets group-specific values).
+  The adjustment is opt-in and applies to the renewal path only; the renewal logic is adapted from `EpiNow2` (`rt_opts(pop = ...)`, MIT licence).
+  See #826.
+- Added a delay-only model that fits the reporting-delay distribution conditional on known per-reference-date totals, treating those totals as fixed truth (the standard delay-estimation pattern of Kalbfleisch & Lawless, 1989; Höhle & an der Heiden, 2014).
+  Enable it with `enw_obs(delay_only = TRUE)`: a delay-only fit is just `epinowcast(data, obs = enw_obs(delay_only = TRUE, data = data))`, as `epinowcast()` minimises the (now inert) expectation automatically.
+  The latent process and per-cell observation model are replaced by a (truncated) multinomial likelihood over the reported cells of each reference date.
+  When the known totals are final retrospective totals this is the plain multinomial; when they are running totals observed only up to some horizon the likelihood renormalises over all delays up to the observation cutoff to give the truncated multinomial.
+  An `observation_indicator` is supported (interior cells unobserved but before the cutoff keep their weight).
+  `delay_only = TRUE` selects the multinomial likelihood internally regardless of `family`, warning if a `family` is supplied.
+  See the delay estimation vignette and #775 and #776.
+  Also adds `enw_posterior_delay()` to extract posterior samples of the parametric delay distribution; it returns one PMF per reference-design row (with a `row` column) for delay models with reference covariates, random effects, or time- or group-varying delays.
 - The parametric reference delay is now discretised with the double interval censoring approach from the [primarycensored](https://primarycensored.epinowcast.org) package, replacing the previous uniform-interval approximation.
   This more exactly accounts for primary event censoring, secondary interval censoring, and right truncation, and is used unconditionally for the lognormal, gamma, and exponential distributions.
   The log-logistic distribution has been dropped from `enw_reference()` because `primarycensored` does not yet support it (epinowcast/primarycensored#321); it can be restored once upstream support lands.
@@ -41,6 +60,10 @@
 - Fixed a Stan dimension mismatch when the expectation, reference, report, or missing data formula has an intercept and a single numeric covariate (e.g., `r = ~ 1 + week`).
   The fixed-effects design matrix was collapsing to a vector after the intercept was dropped, causing Stan to error with `mismatch in number dimensions declared and found in context`.
   See #783 by @seabbs.
+
+- Fixed `enw_report()` recycling the report-date index (`rep_findex`) when the report axis is longer than `time + max_delay - 1`, for example after `enw_complete_dates(completion_beyond_max_report = TRUE)`.
+  Previously this emitted a "data length is not a sub-multiple or multiple" warning and mis-mapped report-date effects across groups and times; the number of report dates per group is now read from the report metadata.
+  See #868.
 
 # epinowcast 0.6.0
 

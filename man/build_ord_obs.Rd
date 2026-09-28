@@ -30,10 +30,14 @@ Build the ord_obs \code{data.table}.
 }
 \seealso{
 Functions used for postprocessing of model fits
+\code{\link{.check_primarycensored}()},
+\code{\link{.delay_draw_columns}()},
+\code{\link{.discretise_parametric_pmf}()},
 \code{\link{enw_add_latest_obs_to_nowcast}()},
 \code{\link{enw_nowcast_samples}()},
 \code{\link{enw_nowcast_summary}()},
 \code{\link{enw_posterior}()},
+\code{\link{enw_posterior_delay}()},
 \code{\link{enw_pp_summary}()},
 \code{\link{enw_quantiles_to_long}()},
 \code{\link{enw_summarise_samples}()},
