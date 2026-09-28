@@ -8,6 +8,11 @@
   Only the shared grand-mean level is removed, so each group keeps its own level and drift: a grouped latent (`arima(time, group, ...)`, `G > 1`) is unchanged in meaning and the reparameterisation is exact for any number of groups.
   On a weekly random-walk growth model the centred form samples roughly twice as fast at the `adapt_delta` these models use (it is sharper, so benefits from `adapt_delta >= 0.95`).
   Modules without a free intercept (`expl`, `rep`) and the log-link `refp` standard deviation are left uncentred.
+- Added an experimental, opt-in embedded-Laplace inference path (`enw_laplace_marginal()`, `enw_laplace_marginal_data()`, `enw_laplace_marginal_model()`).
+  It marginalises the latent log-expected-count field analytically with Stan's embedded Laplace approximation (`laplace_marginal_*`, CmdStan >= 2.39) instead of sampling it, while still sampling the hyperparameters with NUTS.
+  The expectation is modelled as the log level of expected counts with an additive covariance assembled from the expectation's fixed effects, random effects and/or a single `gp()` term; the delay reuses the static parametric reference discretisation and the observation family is negative binomial (NB2) or Poisson.
+  The renewal expectation, non-parametric reference hazards, report-date models, missing-reference models and time-varying delays are not supported and raise a clear error.
+  This path is experimental and is validated against a matched NUTS reference in `inst/dev/embedded-laplace/`.
 - Added a `gp()` formula helper that places an approximate Gaussian process on any module's linear predictor, the same way `arima()` and `rw()` work.
   It uses a Hilbert-space reduced-rank (spectral) approximation with selectable kernels (Matern 3/2 default, Matern 5/2, Ornstein-Uhlenbeck, squared exponential, periodic) and a `basis_prop` accuracy-speed control.
   A `gp()` term can be placed on the growth rate (`expr`), the latent-to-obs proportion (`expl`), the parametric (`refp`) and non-parametric (`refnp`) reference delay, the report-time hazards (`rep`), and the missing-reference proportion (`miss`).
