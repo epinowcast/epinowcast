@@ -111,7 +111,8 @@ test_that("logit_hazard_to_log_prob() is finite where hazards saturate", {
     expect_true(all(is.finite(cpp$grad)))
     logp <- logit_hazard_log_prob_r(lh)
     expect_equal(
-      cpp$lp, sum(r * logp) - 0.5 * sum(logp^2), tolerance = 1e-12
+      cpp$lp, sum(r * logp) - 0.5 * sum(logp^2),
+      tolerance = 1e-12
     )
     expect_equal(
       as.numeric(cpp$grad), logit_hazard_target_grad_r(lh, r),
@@ -220,7 +221,8 @@ test_that("epinowcast models agree in log density and gradient with use_cpp on a
   draws <- fit$output_files()
   cpp <- cmdstan_log_prob(mod_cpp, fit$data_file(), constrained_csv = draws)
   stan <- cmdstan_log_prob(
-    mod_stan, fit$data_file(), constrained_csv = draws
+    mod_stan, fit$data_file(),
+    constrained_csv = draws
   )
   expect_length(cpp$lp, 10)
   expect_equal(cpp$lp, stan$lp, tolerance = 1e-12)

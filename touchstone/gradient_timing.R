@@ -90,7 +90,7 @@ cases <- list(
   # 2.1) should be timed against, since it is the only one that reaches
   # those branches.
   renewal_gt4_depletion = function() {
-    source("touchstone/preprocessing.R", local = TRUE)
+    source(file.path("touchstone", "preprocessing.R"), local = TRUE)
     list(
       pobs = pobs,
       expectation = enw_expectation(
@@ -122,7 +122,7 @@ cases <- list(
       data = case_args$pobs,
       fit = enw_fit_opts(
         sampler = function(init, data, ...) {
-          data.table::data.table(init = list(init), data = list(data))
+          data.table(init = list(init), data = list(data))
         }
       ),
       model = NULL
@@ -132,7 +132,8 @@ cases <- list(
   stan_data <- inputs$data[[1]]
   adapted <- models$cpp$sample(
     data = stan_data, init = inputs$init[[1]], chains = 1,
-    threads_per_chain = 1, iter_warmup = 200, iter_sampling = 1, seed = seed, refresh = 0,
+    threads_per_chain = 1, iter_warmup = 200, iter_sampling = 1,
+    seed = seed, refresh = 0,
     show_messages = FALSE
   )
   list(stan_data = stan_data, adapted = adapted)
@@ -143,7 +144,8 @@ cases <- list(
   adapted <- setup$adapted
   fit <- model$sample(
     data = setup$stan_data, init = adapted, chains = 1,
-    threads_per_chain = 1, iter_warmup = 0, iter_sampling = iter_timed, adapt_engaged = FALSE,
+    threads_per_chain = 1, iter_warmup = 0, iter_sampling = iter_timed,
+    adapt_engaged = FALSE,
     step_size = adapted$metadata()$step_size_adaptation,
     inv_metric = adapted$inv_metric(matrix = FALSE)[[1]],
     seed = seed, refresh = 0, show_messages = FALSE
@@ -157,14 +159,14 @@ cases <- list(
 
 # ---- Run ---------------------------------------------------------------
 
-results <- data.table::rbindlist(lapply(names(cases), function(case_name) {
+results <- rbindlist(lapply(names(cases), function(case_name) {
   cat(sprintf("Timing case: %s\n", case_name))
   case_args <- cases[[case_name]]()
   setup <- .setup_case(case_args)
-  timings <- data.table::rbindlist(lapply(seq_len(n_reps), function(rep) {
-    data.table::rbindlist(lapply(names(models), function(arm) {
+  timings <- rbindlist(lapply(seq_len(n_reps), function(rep) {
+    rbindlist(lapply(names(models), function(arm) {
       t <- .time_per_gradient(models[[arm]], setup)
-      data.table::data.table(
+      data.table(
         arm = arm, rep = rep,
         us_per_gradient = t[["seconds"]] * 1e6,
         n_leapfrog = t[["n_leapfrog"]]
@@ -185,7 +187,7 @@ results <- data.table::rbindlist(lapply(names(cases), function(case_name) {
   )][]
 }))
 
-speedup <- data.table::dcast(results, case ~ arm, value.var = "us_per_gradient")
+speedup <- dcast(results, case ~ arm, value.var = "us_per_gradient")
 speedup[, speedup := stan / cpp]
 
 cat("\n--- Machine ---\n")
