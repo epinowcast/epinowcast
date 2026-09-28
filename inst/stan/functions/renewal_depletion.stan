@@ -2,9 +2,9 @@
  * Renewal equation with optional susceptible depletion
  *
  * Replaces the `gt_n > 1` loop in log_expected_latent_from_r()
- * (log_expected_latent_from_r.stan), for a single group, whenever the
- * susceptible-depletion adjustment is enabled or disabled. The
- * implementation is in C++, with a hand-derived reverse-mode adjoint:
+ * (log_expected_latent_from_r.stan) for a single group, with or
+ * without susceptible depletion. The implementation is in C++, with a
+ * hand-derived reverse-mode adjoint:
  * see inst/include/epinowcast/renewal_depletion.hpp.
  *
  * When the C++ adjoint path is disabled (`epinowcast.use_cpp = FALSE`,

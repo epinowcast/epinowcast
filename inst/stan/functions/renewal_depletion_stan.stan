@@ -6,9 +6,10 @@
  * (inst/include/epinowcast/renewal_depletion.hpp) when the C++ adjoint
  * path is enabled (see `epinowcast.use_cpp` in `enw_model()`). Used as
  * the fallback implementation when the C++ path is disabled, and by the
- * tests to check that implementation's values and gradients. Kept
- * byte-for-byte equivalent to the loop it replaced in
- * log_expected_latent_from_r.stan.
+ * tests to check that implementation's values and gradients. It gives
+ * the same values as the loop it replaced in
+ * log_expected_latent_from_r.stan, since the seeding period there
+ * always equals the generation-time length.
  *
  * @param seed Seeding latent values, length n0.
  *
