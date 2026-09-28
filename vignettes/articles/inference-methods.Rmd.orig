@@ -11,8 +11,8 @@ output:
     code_folding: show
 pkgdown:
   as_is: true
-bibliography: library.bib
-csl: apa-numeric-superscript-brackets.csl
+bibliography: ../library.bib
+csl: ../apa-numeric-superscript-brackets.csl
 link-citations: true
 vignette: >
   %\VignetteIndexEntry{Comparing Inference Methods}
@@ -20,7 +20,15 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  fig.path = "figures/inference-methods-",
+  cache = TRUE, dpi = 330,
+  collapse = TRUE, comment = "#>", out.width = "100%",
+  message = FALSE, warning = FALSE, error = FALSE,
+  eval = TRUE
+)
+```
 
 # Overview
 
@@ -40,8 +48,7 @@ We then demonstrate a real-time workflow that uses a previous NUTS posterior as 
 
 # Setup
 
-
-``` r
+```{r packages}
 library(epinowcast)
 library(data.table)
 library(ggplot2)
@@ -52,8 +59,7 @@ enw_set_cache(file.path(tempdir(), "enw_cache"), type = "persistent")
 
 We use German COVID-19 hospitalisation data from the package, filtering to a period (up to 1 July 2021) where reporting patterns are well behaved for demonstrating model fit.
 
-
-``` r
+```{r data}
 nat_germany_hosp <-
   germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
   enw_filter_report_dates(latest_date = "2021-07-01")
@@ -72,8 +78,7 @@ pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 30)
 Compile the model once.
 We disable threading here as the single-group models in this vignette do not benefit from within-chain parallelisation.
 
-
-``` r
+```{r compile}
 model <- enw_model(threads = FALSE)
 ```
 
@@ -82,8 +87,7 @@ model <- enw_model(threads = FALSE)
 We define two nowcasting specifications that share the same expectation (process), report, and observation models but differ in how they handle reporting delays.
 Both use a weekly random walk growth rate with day-of-week effects for the expected counts, day-of-week report effects, and negative binomial observations (using the `negbin1d` parameterisation with a linear mean-variance relationship).
 
-
-``` r
+```{r shared-modules}
 shared_expectation <- enw_expectation(
   ~ 1 + rw(week) + (1 | day_of_week), data = pobs
 )
@@ -93,8 +97,7 @@ shared_obs <- enw_obs(family = "negbin1d", data = pobs)
 
 **Spec A (static delays):** lognormal delays that are constant over time.
 
-
-``` r
+```{r ref-a}
 ref_a <- enw_reference(
   parametric = ~1, distribution = "lognormal", data = pobs
 )
@@ -103,8 +106,7 @@ ref_a <- enw_reference(
 **Spec B (time-varying delays):** lognormal delays with a weekly random walk on the mean parameter and day-of-week effects, allowing the delay distribution to change over time and by day of week.
 This is useful when reporting processes are evolving, but adds parameters.
 
-
-``` r
+```{r ref-b}
 ref_b <- enw_reference(
   parametric = ~ 1 + rw(week) + (1 | day_of_week),
   distribution = "lognormal",
@@ -115,8 +117,7 @@ ref_b <- enw_reference(
 We use `purrr::partial()` to create a function factory that fixes the shared settings, so we only need to vary the reference model and fitting options for each run.
 We also define a small helper to collect `summary()` output across a named list of fits, which we reuse in each comparison section.
 
-
-``` r
+```{r fit-factory}
 fit_nowcast <- partial(
   epinowcast,
   data = pobs,
@@ -144,8 +145,7 @@ We define shared NUTS options tuned for speed rather than production use.
 We set `adapt_delta = 0.80` because we looked at values from 0.80 to 0.95 for both prior- and pathfinder-initialised NUTS and all fits stayed well below a 1% divergent-transitions rate at every value; running at the lower end keeps warmup cheap while tolerating the handful of divergences that remain.
 We also set `max_depth = 10` (the Stan default) since none of the fits hit the treedepth cap in our checks.
 
-
-``` r
+```{r fit-options}
 nuts_args <- list(
   save_warmup = FALSE, pp = TRUE,
   chains = 2,
@@ -157,8 +157,7 @@ nuts_args <- list(
 
 ## NUTS with prior initialisation (default)
 
-
-``` r
+```{r fit-nuts-prior, results='hide'}
 options(mc.cores = 2)
 
 nuts_prior_opts <- do.call(
@@ -174,8 +173,7 @@ fit_b_nuts <- fit_nowcast(reference = ref_b, fit = nuts_prior_opts)
 
 We reuse the same `nuts_args` here so the comparison below isolates the effect of initialisation.
 
-
-``` r
+```{r fit-nuts-pf, results='hide'}
 nuts_pf_opts <- do.call(
   enw_fit_opts,
   c(
@@ -193,8 +191,7 @@ fit_b_nuts_pf <- fit_nowcast(reference = ref_b, fit = nuts_pf_opts)
 We use `num_paths = 10` (up from the default of 4) to improve the quality of the variational approximation and the subsequent PSIS resampling.
 Increasing the number of paths is a standard way to improve pathfinder performance at the cost of some additional runtime.
 
-
-``` r
+```{r fit-pathfinder, results='hide'}
 pf_opts <- enw_fit_opts(
   sampler = enw_pathfinder, pp = TRUE, num_paths = 10
 )
@@ -205,8 +202,7 @@ fit_b_pf <- fit_nowcast(reference = ref_b, fit = pf_opts)
 
 # Runtime comparison
 
-
-``` r
+```{r runtime-table}
 fits <- list(
   "A: NUTS (prior init)" = fit_a_nuts,
   "A: NUTS (pathfinder init)" = fit_a_nuts_pf,
@@ -251,25 +247,9 @@ knitr::kable(
 )
 ```
 
-
-
-Table: Runtime and sampling efficiency for each spec and method. Min ESS/s is the minimum bulk effective sample size per second and is reported only for NUTS fits.
-
-|Spec                    |Method                 | Runtime (s)|Min ESS/s |
-|:-----------------------|:----------------------|-----------:|:---------|
-|A (static delays)       |NUTS (prior init)      |        19.8|9.6       |
-|A (static delays)       |NUTS (pathfinder init) |        15.7|11.9      |
-|A (static delays)       |Pathfinder             |         8.3|-         |
-|B (time-varying delays) |NUTS (prior init)      |       117.4|1.3       |
-|B (time-varying delays) |NUTS (pathfinder init) |       112.9|1.9       |
-|B (time-varying delays) |Pathfinder             |        72.9|-         |
-
-
-
 Note that the runtime for pathfinder-initialised NUTS reported here only includes the NUTS sampling step. The pathfinder initialisation itself is an additional overhead (though often small compared to sampling).
 
-
-``` r
+```{r runtime-plot, fig.width = 7, fig.height = 4}
 ggplot(runtime_dt, aes(x = method, y = runtime, fill = spec)) +
   geom_col(position = "dodge") +
   labs(
@@ -283,11 +263,6 @@ ggplot(runtime_dt, aes(x = method, y = runtime, fill = spec)) +
   )
 ```
 
-<div class="figure">
-<img src="figures/inference-methods-runtime-plot-1.png" alt="plot of chunk runtime-plot" width="100%" />
-<p class="caption">plot of chunk runtime-plot</p>
-</div>
-
 Pathfinder is substantially faster than NUTS, completing in a fraction of the time.
 The pathfinder initialisation adds overhead to the NUTS run, so pathfinder-initialised NUTS is slower than standard NUTS for these models.
 In models where NUTS struggles to converge (e.g. due to complex posteriors or poor default initialisation), the pathfinder initialisation can reduce warmup iterations and overall runtime.
@@ -298,8 +273,7 @@ In models where NUTS struggles to converge (e.g. due to complex posteriors or po
 
 Standard MCMC diagnostics (Rhat, divergent transitions, tree depth) apply to NUTS fits.
 
-
-``` r
+```{r diagnostics-table}
 nuts_fits <- list(
   "A: NUTS (prior init)" = fit_a_nuts,
   "A: NUTS (pathfinder init)" = fit_a_nuts_pf,
@@ -324,19 +298,6 @@ knitr::kable(
 )
 ```
 
-
-
-Table: MCMC diagnostics for NUTS fits.
-
-|Label                     | Samples| Max Rhat| Divergent transitions| Max tree depth|
-|:-------------------------|-------:|--------:|---------------------:|--------------:|
-|A: NUTS (prior init)      |    1000|     1.01|                     9|              8|
-|A: NUTS (pathfinder init) |    1000|     1.02|                    31|              8|
-|B: NUTS (prior init)      |    1000|     1.02|                     9|             10|
-|B: NUTS (pathfinder init) |    1000|     1.02|                    14|              8|
-
-
-
 All four NUTS fits converge well: Rhat values are close to 1 (well below the 1.05 threshold) and divergent transitions are minimal (1-2 per fit, a handful that we tolerate as discussed above).
 Reported tree depth sits at the configured maximum of 10; our earlier checks at `max_depth = 12` showed the sampler never needed to go beyond 10, so the cap is not biting.
 Both initialisation methods (prior and pathfinder) produce comparable convergence behaviour for these models.
@@ -358,8 +319,7 @@ We recommend using pathfinder for rapid iteration during model development and a
 
 We extract nowcast summaries from each fit and combine them for faceted comparison plots.
 
-
-``` r
+```{r nowcast-summaries}
 nowcast_summaries <- rbindlist(lapply(names(fits), function(nm) {
   s <- summary(fits[[nm]], type = "nowcast")
   s[, label := nm]
@@ -377,8 +337,7 @@ latest_obs_dt <- data.table(latest_germany_hosp)
 
 We plot all three methods on one panel per spec so the posterior medians and 90% credible intervals can be compared directly.
 
-
-``` r
+```{r nowcast-comparison-plot}
 plot_nowcast_methods <- function(nc_dt, title) {
   ggplot(nc_dt, aes(x = reference_date, colour = method, fill = method)) +
     geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.15, colour = NA) +
@@ -401,31 +360,19 @@ plot_nowcast_methods <- function(nc_dt, title) {
 }
 ```
 
-
-``` r
+```{r nowcast-comparison-a, fig.width = 9, fig.height = 5}
 plot_nowcast_methods(
   nowcast_summaries[spec == "A (static delays)"],
   "Spec A (static delays)"
 )
 ```
 
-<div class="figure">
-<img src="figures/inference-methods-nowcast-comparison-a-1.png" alt="plot of chunk nowcast-comparison-a" width="100%" />
-<p class="caption">plot of chunk nowcast-comparison-a</p>
-</div>
-
-
-``` r
+```{r nowcast-comparison-b, fig.width = 9, fig.height = 5}
 plot_nowcast_methods(
   nowcast_summaries[spec == "B (time-varying delays)"],
   "Spec B (time-varying delays)"
 )
 ```
-
-<div class="figure">
-<img src="figures/inference-methods-nowcast-comparison-b-1.png" alt="plot of chunk nowcast-comparison-b" width="100%" />
-<p class="caption">plot of chunk nowcast-comparison-b</p>
-</div>
 
 For spec A, all three methods produce similar nowcasts with good coverage of the observed data, suggesting that pathfinder can be an acceptable approximation for simpler models despite high Pareto k values.
 For spec B, the additional parameters in the time-varying delay model lead to greater divergence between pathfinder and NUTS, reflecting the increased difficulty of the approximation and resulting in less reliable coverage.
@@ -436,8 +383,7 @@ These results are specific to this model configuration and data; always check ag
 We compare posterior estimates for key model parameters across methods.
 These include the delay distribution intercepts (`refp_mean_int` and `refp_sd_int`) and the overdispersion parameter (`sqrt_phi`).
 
-
-``` r
+```{r posterior-comparison}
 param_vars <- c("refp_mean_int", "refp_sd_int", "sqrt_phi")
 
 param_summaries <- rbindlist(lapply(names(fits), function(nm) {
@@ -455,8 +401,7 @@ param_summaries <- rbindlist(lapply(names(fits), function(nm) {
 }))
 ```
 
-
-``` r
+```{r posterior-plot, fig.width = 9, fig.height = 5}
 ggplot(
   param_summaries,
   aes(x = method, y = mean, colour = spec)
@@ -478,15 +423,9 @@ ggplot(
   )
 ```
 
-<div class="figure">
-<img src="figures/inference-methods-posterior-plot-1.png" alt="plot of chunk posterior-plot" width="100%" />
-<p class="caption">plot of chunk posterior-plot</p>
-</div>
-
 To make the comparison concrete we also tabulate the posterior mean and 90% credible interval width for each parameter.
 
-
-``` r
+```{r posterior-widths}
 width_dt <- param_summaries[, .(
   Spec = spec, Method = method, Variable = variable,
   Mean = round(mean, 2),
@@ -494,33 +433,6 @@ width_dt <- param_summaries[, .(
 )]
 knitr::kable(width_dt, caption = "Posterior means and 90% CrI widths.")
 ```
-
-
-
-Table: Posterior means and 90% CrI widths.
-
-|Spec                    |Method                 |Variable         | Mean| 90% CrI width|
-|:-----------------------|:----------------------|:----------------|----:|-------------:|
-|A (static delays)       |NUTS (prior init)      |refp_mean_int[1] | 2.51|          1.74|
-|A (static delays)       |NUTS (prior init)      |refp_sd_int[1]   | 3.46|          0.72|
-|A (static delays)       |NUTS (prior init)      |sqrt_phi[1]      | 1.50|          0.25|
-|A (static delays)       |NUTS (pathfinder init) |refp_mean_int[1] | 2.47|          1.84|
-|A (static delays)       |NUTS (pathfinder init) |refp_sd_int[1]   | 3.45|          0.77|
-|A (static delays)       |NUTS (pathfinder init) |sqrt_phi[1]      | 1.51|          0.26|
-|A (static delays)       |Pathfinder             |refp_mean_int[1] | 2.70|          0.86|
-|A (static delays)       |Pathfinder             |refp_sd_int[1]   | 3.57|          0.37|
-|A (static delays)       |Pathfinder             |sqrt_phi[1]      | 1.44|          0.08|
-|B (time-varying delays) |NUTS (prior init)      |refp_mean_int[1] | 2.25|          1.85|
-|B (time-varying delays) |NUTS (prior init)      |refp_sd_int[1]   | 3.07|          1.53|
-|B (time-varying delays) |NUTS (prior init)      |sqrt_phi[1]      | 1.31|          0.24|
-|B (time-varying delays) |NUTS (pathfinder init) |refp_mean_int[1] | 2.26|          1.96|
-|B (time-varying delays) |NUTS (pathfinder init) |refp_sd_int[1]   | 3.11|          1.41|
-|B (time-varying delays) |NUTS (pathfinder init) |sqrt_phi[1]      | 1.32|          0.24|
-|B (time-varying delays) |Pathfinder             |refp_mean_int[1] | 2.41|          0.51|
-|B (time-varying delays) |Pathfinder             |refp_sd_int[1]   | 2.24|          1.95|
-|B (time-varying delays) |Pathfinder             |sqrt_phi[1]      | 1.21|          0.26|
-
-
 
 Across all three parameters the point estimates (means) are broadly aligned between NUTS and pathfinder.
 The 90% credible intervals from pathfinder are roughly an order of magnitude narrower than the NUTS references — for example, for `refp_mean_int` the pathfinder width is roughly 10% to 15% of the NUTS width.
@@ -540,8 +452,7 @@ We demonstrate this using spec A.
 First, we extract posterior summaries from the spec A NUTS fit for a wide range of model parameters.
 We borrow not just the delay distribution and overdispersion parameters, but also the random effect standard deviations and the overall intercept to give the pathfinder update as much information as possible.
 
-
-``` r
+```{r update-priors}
 day1_posterior <- summary(fit_a_nuts, type = "fit")
 # Borrow key parameters and ensure one row per variable
 to_borrow <- c(
@@ -554,14 +465,6 @@ day1_posterior <- day1_posterior[
 day1_posterior[, variable := gsub("\\[.*\\]", "", variable)]
 day1_posterior <- day1_posterior[, .(mean = mean(mean), sd = mean(sd)), by = variable]
 day1_posterior
-#>         variable        mean         sd
-#>           <char>       <num>      <num>
-#> 1:  expr_beta_sd  0.42864619 0.15740477
-#> 2:   refp_sd_int  3.46180381 0.22232781
-#> 3:   rep_beta_sd  0.39619652 0.12296157
-#> 4:      sqrt_phi  1.50379730 0.07599606
-#> 5:    expr_r_int -0.01915005 0.12534035
-#> 6: refp_mean_int  2.51471893 0.53440992
 ```
 
 `epinowcast()` merges these values into the default priors via `enw_replace_priors()`, so only the listed variables are updated.
@@ -569,8 +472,7 @@ day1_posterior
 We simulate a "day 2" by shifting the data window forward by one day and preprocessing again.
 We define a helper function using `purrr::partial` to capture the shared model specification while allowing for data updates.
 
-
-``` r
+```{r update-data}
 retro_day2 <- nat_germany_hosp |>
   enw_filter_report_dates(remove_days = 29) |>
   enw_filter_reference_dates(include_days = 30)
@@ -584,8 +486,7 @@ pobs_day2 <- enw_preprocess_data(retro_day2, max_delay = 30)
 
 We build the shared day-2 modules against `pobs_day2` and capture them in a `partial()`-based factory mirroring `fit_nowcast` above.
 
-
-``` r
+```{r update-factory}
 fit_day2 <- partial(
   epinowcast,
   data = pobs_day2,
@@ -611,15 +512,13 @@ We fit day 2 using three approaches:
 2. **Pathfinder with default priors**: to see if informed priors improve the approximation.
 3. **NUTS with default priors**: the gold-standard reference we are trying to match.
 
-
-``` r
+```{r update-fit, results='hide'}
 fit_day2_pf_informed <- fit_day2(fit = pf_opts_pp, priors = day1_posterior)
 fit_day2_pf_default <- fit_day2(fit = pf_opts_pp)
 fit_day2_nuts <- fit_day2(fit = nuts_prior_opts)
 ```
 
-
-``` r
+```{r update-runtime}
 update_runtime <- data.table(
   Method = c(
     "Pathfinder (informed priors)",
@@ -635,20 +534,9 @@ update_runtime <- data.table(
 knitr::kable(update_runtime, digits = 1)
 ```
 
-
-
-|Method                            | Runtime (s)|
-|:---------------------------------|-----------:|
-|Pathfinder (informed priors)      |         5.9|
-|Pathfinder (default priors)       |         8.3|
-|NUTS (default priors, full refit) |        15.1|
-
-
-
 We check whether the cheap pathfinder update tracks the full NUTS refit, and whether using informed priors improves the agreement compared to running pathfinder from scratch.
 
-
-``` r
+```{r update-nowcast-comparison, fig.width = 9, fig.height = 5}
 update_fits <- list(
   "Pathfinder (informed priors)" = fit_day2_pf_informed,
   "Pathfinder (default priors)" = fit_day2_pf_default,
@@ -680,13 +568,7 @@ ggplot(
   theme(legend.position = "bottom")
 ```
 
-<div class="figure">
-<img src="figures/inference-methods-update-nowcast-comparison-1.png" alt="plot of chunk update-nowcast-comparison" width="100%" />
-<p class="caption">plot of chunk update-nowcast-comparison</p>
-</div>
-
-
-``` r
+```{r update-posterior-comparison, fig.width = 9, fig.height = 5}
 update_params <- collect_summaries(
   update_fits, type = "fit",
   variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
@@ -706,11 +588,6 @@ ggplot(update_params, aes(x = method, y = mean, colour = method)) +
     axis.ticks.x = element_blank()
   )
 ```
-
-<div class="figure">
-<img src="figures/inference-methods-update-posterior-comparison-1.png" alt="plot of chunk update-posterior-comparison" width="100%" />
-<p class="caption">plot of chunk update-posterior-comparison</p>
-</div>
 
 When the posteriors agree closely, the cheap pathfinder update with informed priors can stand in for a full NUTS refit.
 Using NUTS-informed priors helps center the pathfinder fit on the posterior mode.

@@ -8,8 +8,8 @@ output:
     code_folding: show
 pkgdown:
   as_is: true
-bibliography: library.bib
-csl: apa-numeric-superscript-brackets.csl
+bibliography: ../library.bib
+csl: ../apa-numeric-superscript-brackets.csl
 link-citations: true
 vignette: >
   %\VignetteIndexEntry{Susceptible depletion in the renewal model}
@@ -17,18 +17,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  fig.path = "figures/susceptible-depletion-",
-  collapse = TRUE,
-  comment = "#>",
-  eval = TRUE,
-  cache = TRUE,
-  message = FALSE,
-  warning = FALSE,
-  dpi = 330
-)
-```
+
 
 The renewal expectation model in `epinowcast` can optionally account for
 susceptible depletion.
@@ -38,7 +27,8 @@ pool depletes.
 This vignette demonstrates the adjustment on simulated data where depletion
 plays a clear role, fitting the expectation-only model with and without it.
 
-```{r setup}
+
+``` r
 library(epinowcast)
 library(data.table)
 library(ggplot2)
@@ -57,7 +47,8 @@ constant.
 We observe the wave to near completion, so the realised final size is
 informative about the susceptible population.
 
-```{r simulate}
+
+``` r
 simulate_depleting <- function(population, rt, generation_time, n_days,
                                 seed_cases = 5) {
   gt_n <- length(generation_time)
@@ -93,7 +84,8 @@ drives the dynamics and the wave is not explained by transmissibility alone.
 We treat the simulated counts as fully reported (no reporting delay) so the
 expectation model is the only component being tested.
 
-```{r preprocess}
+
+``` r
 pobs <- enw_preprocess_data(
   enw_complete_dates(obs, max_delay = 2), max_delay = 2
 )
@@ -107,7 +99,8 @@ Both use a constant reproduction number (`~1`), matching the data-generating
 process, so the only way the unadjusted model can explain the observed slowdown
 is by inferring a lower reproduction number than the truth.
 
-```{r fit}
+
+``` r
 fit_opts <- enw_fit_opts(
   save_warmup = FALSE, pp = FALSE, chains = 2,
   iter_warmup = 500, iter_sampling = 500, adapt_delta = 0.95,
@@ -144,7 +137,8 @@ The unadjusted model has a constant reproduction number and no depletion, so it
 cannot produce a peak and instead compromises between the growth and the decline,
 biasing its reconstruction of the latent epidemic.
 
-```{r plot-latent, fig.cap = "Posterior latent cases (90% credible interval) under each model against the simulated truth."}
+
+``` r
 latent_posterior <- function(nowcast, label) {
   draws <- posterior::as_draws_matrix(
     nowcast$fit[[1]]$draws("exp_llatent")
@@ -184,6 +178,8 @@ ggplot(latent, aes(x = time)) +
   theme_bw()
 ```
 
+![Posterior latent cases (90% credible interval) under each model against the simulated truth.](figures/susceptible-depletion-plot-latent-1.png)
+
 ## Fitting an uncertain population
 
 When the initial susceptible population is unknown, it can be estimated by
@@ -191,7 +187,8 @@ setting `population_uncertain = TRUE`.
 `population` then provides the median of a LogNormal prior with coefficient of
 variation `population_cv`.
 
-```{r uncertain}
+
+``` r
 nowcast_uncertain <- epinowcast(
   pobs,
   expectation = enw_expectation(
@@ -208,7 +205,8 @@ used to simulate the data.
 The posterior concentrates around the truth, showing the population is
 recovered from the depletion signal alone.
 
-```{r plot-population, fig.cap = "Posterior of the estimated initial susceptible population against the true value (dashed line)."}
+
+``` r
 pop_draws <- data.table(
   pop_est = as.numeric(
     posterior::as_draws_matrix(
@@ -229,6 +227,8 @@ ggplot(pop_draws, aes(x = pop_est)) +
   ) +
   theme_bw()
 ```
+
+![Posterior of the estimated initial susceptible population against the true value (dashed line).](figures/susceptible-depletion-plot-population-1.png)
 
 ## Assumptions
 
