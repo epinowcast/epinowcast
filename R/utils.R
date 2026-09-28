@@ -35,20 +35,27 @@ is.Date <- function(x) {
 
 #' Read in a stan function file as a character string
 #'
+#' @param overrides An optional named `character` vector. For any entry of
+#' `files` matching a name, the file is not read from `include`; the
+#' matching value is used as its Stan code instead. Used to substitute a
+#' pure-Stan fallback body for a C++-backed function that cannot be
+#' compiled without the package header (see [stan_cpp_fallback_body()]).
+#'
 #' @inheritParams enw_stan_to_r
 #' @return A character string in the of stan functions.
 #' @family utils
 #' @importFrom purrr map_chr
-stan_fns_as_string <- function(files, include) {
+stan_fns_as_string <- function(files, include, overrides = NULL) {
+  read_fn <- function(f) {
+    if (f %in% names(overrides)) {
+      overrides[[f]]
+    } else {
+      paste(readLines(file.path(include, f)), collapse = "\n")
+    }
+  }
   functions <- paste0(
     "\n functions{ \n",
-    paste(
-      purrr::map_chr(
-        files,
-        ~ paste(readLines(file.path(include, .)), collapse = "\n")
-      ),
-      collapse = "\n"
-    ),
+    paste(purrr::map_chr(files, read_fn), collapse = "\n"),
     "\n }"
   )
   functions

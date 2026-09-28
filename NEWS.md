@@ -35,6 +35,9 @@
   See #848 (addressing #438 and #297) by @seabbs.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
+- Added infrastructure for custom reverse-mode adjoints implemented in C++, following the approach used by `EpiNow2` (https://github.com/epiforecasts/EpiNow2), and the first such adjoint: `logit_hazard_to_log_prob()`, which fuses the `inv_logit()` and `hazard_to_log_prob()` calls in `expected_obs()` into a single autodiff node on the hot path of every model with a report-date model.
+  `enw_model()` compiles this path in via `cmdstanr`'s `user_header` by default whenever a report-date model is present; set `enw_model(use_cpp = FALSE)` or `options(epinowcast.use_cpp = FALSE)` to compile a pure-Stan fallback that does not require the package's C++ header, following the same reasoning as `BVDOutbreakSize`'s Mooncake rules on/off switch.
+  The C++ implementation and its retained pure-Stan reference (`logit_hazard_to_log_prob_stan()`) are checked for value and gradient parity, including against central finite differences, in `tests/testthat/test-stan_logit_hazard_to_log_prob.R`.
 
 ## Package
 
