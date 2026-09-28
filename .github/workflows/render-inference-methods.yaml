@@ -3,7 +3,7 @@
 on:
   push:
     paths:
-      - 'vignettes/inference-methods.Rmd.orig'
+      - 'vignettes/articles/inference-methods.Rmd.orig'
     branches: [main]
   schedule:
     - cron: '0 0 1 * *'
@@ -42,7 +42,7 @@ jobs:
 
       - name: Render vignette
         run: |
-            setwd("vignettes")
+            setwd("vignettes/articles")
             knitr::knit(
               "inference-methods.Rmd.orig",
               "inference-methods.Rmd"
@@ -66,5 +66,5 @@ jobs:
           labels: "documentation"
           reviewers: seabbs
           add-paths: |
-            vignettes
+            vignettes/articles
           token: ${{ secrets.GITHUB_TOKEN }}

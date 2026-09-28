@@ -3,7 +3,7 @@
 on:
   push:
     paths:
-      - 'vignettes/germany-age-stratified-nowcasting.Rmd.orig'
+      - 'vignettes/articles/germany-age-stratified-nowcasting.Rmd.orig'
     branches: [main]
   schedule:
     - cron: '0 0 1 * *'
@@ -42,7 +42,7 @@ jobs:
 
       - name: Render vignette
         run: |
-            setwd("vignettes")
+            setwd("vignettes/articles")
             knitr::knit(
               "germany-age-stratified-nowcasting.Rmd.orig",
               "germany-age-stratified-nowcasting.Rmd"
@@ -66,6 +66,6 @@ jobs:
           labels: "documentation"
           reviewers: seabbs
           add-paths: |
-            vignettes
+            vignettes/articles
           token: ${{ secrets.GITHUB_TOKEN }}
   
