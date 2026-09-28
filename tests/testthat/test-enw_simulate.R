@@ -104,3 +104,32 @@ test_that("enw_simulate() growth rate sets the trajectory direction", {
   declining <- sim_declining$fit[[1]]$summary("pp_inf_obs")$mean
   expect_gt(growing[length(growing)], declining[length(declining)])
 })
+
+test_that("the growth rate override exactly replaces the modelled r", {
+  skip_on_cran()
+  skip_on_local()
+
+  # This is the mechanism enw_forecast() relies on: expr_r_override wires
+  # the supplied trajectory directly into the `r` transformed parameter
+  # (inst/stan/epinowcast.stan), bypassing the regression entirely. Since
+  # this is a deterministic assignment (no observation-model noise), the
+  # fixed-parameter draws must reproduce the supplied trajectory exactly,
+  # point for point, not just in direction.
+  pobs <- enw_example("preprocessed")
+  expectation <- enw_expectation(r = ~1, data = pobs)
+  expr_len <- expectation$data$expr_t * pobs$groups[[1]]
+  true_r <- seq(-0.1, 0.15, length.out = expr_len)
+
+  sims <- suppressMessages(enw_simulate(
+    pobs,
+    growth_rate = true_r,
+    parameters = list(refp_mean_int = 1.5, refp_sd_int = 0.5),
+    reference = enw_reference(~1, data = pobs),
+    expectation = expectation,
+    model = model,
+    draws = 5
+  ))
+
+  r_mean <- sims$fit[[1]]$summary("r")$mean
+  expect_equal(r_mean, true_r, tolerance = 1e-6)
+})

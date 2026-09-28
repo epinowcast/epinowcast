@@ -52,6 +52,17 @@ test_that("enw_forecast() horizon > 0 requires an r override", {
   )
 })
 
+test_that("enw_forecast() horizon > 0 fails clearly rather than silently", {
+  # Even with a valid r override, projecting past the fitted window is not
+  # yet implemented (see #838): this must error rather than return a
+  # forecast that looks plausible but is not actually extended forward.
+  fit <- structure(list(), class = "epinowcast")
+  expect_error(
+    enw_forecast(fit, overrides = list(r = 0.1), horizon = 5, model = NULL),
+    "not yet implemented"
+  )
+})
+
 test_that("enw_resolve_growth_rate() guards against a mismatched fit", {
   # Stub fit whose posterior growth rate length does not match expr_len
   stub_fit <- list(
@@ -108,6 +119,30 @@ test_that("enw_forecast() responds to a new growth rate override", {
   growing <- forecast_up$fit[[1]]$summary("pp_inf_obs")$mean
   declining <- forecast_down$fit[[1]]$summary("pp_inf_obs")$mean
   expect_gt(growing[length(growing)], declining[length(declining)])
+})
+
+test_that("enw_forecast() wires the override exactly into the Stan data", {
+  skip_on_cran()
+  skip_on_local()
+
+  # `r` is a transformed parameter, so it is not present in the standalone
+  # generate_quantities() output and cannot be re-read from forecast$fit
+  # directly; test-enw_simulate.R separately confirms, from the Stan side,
+  # that expr_r_override deterministically sets `r` to
+  # expr_r_override_value with no observation-model noise involved (both
+  # enw_simulate() and enw_forecast() inject through the same hook). This
+  # test closes the loop on the R side: a partial-length override is
+  # resolved and recycled to the full window and passed through to Stan
+  # unchanged, exactly, not merely in the right direction.
+  fit <- fit_for_forecast()
+  expr_len <- fit$data[[1]]$expr_t * fit$data[[1]]$g
+  true_r <- seq(-0.1, 0.1, length.out = expr_len)
+  forecast <- suppressMessages(
+    enw_forecast(fit, overrides = list(r = true_r), model = model)
+  )
+
+  expect_identical(forecast$data[[1]]$expr_r_override, 1L)
+  expect_identical(forecast$data[[1]]$expr_r_override_value, true_r)
 })
 
 test_that("enw_forecast() validates the growth rate override length", {
