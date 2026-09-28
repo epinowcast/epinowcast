@@ -301,6 +301,9 @@ test_that("each module exposes a Uniform-by-default arima_pacf prior", {
     # implicit Uniform(-1, 1) prior from the parameter bounds in place.
     expect_null(row$prior[[1]])
     expect_identical(row$distribution, "Uniform")
+    # The derived `sd` column keeps reading as 0 for a NULL (flat) prior,
+    # so old-style consumers of the numeric prior columns are unaffected.
+    expect_identical(row$sd, 0)
   }
 })
 

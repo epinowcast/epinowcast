@@ -57,7 +57,14 @@ test_that("epinowcast() runs using default arguments only", {
   expect_data_table(priors)
   expect_named(
     priors,
-    c("variable", "dimension", "description", "distribution", "prior")
+    c(
+      "variable", "dimension", "description", "distribution", "prior",
+      "mean", "sd"
+    )
+  )
+  expect_identical(
+    unname(rbind(priors$mean, priors$sd)),
+    vapply(priors$prior, .enw_prior_params, numeric(2))
   )
   # Assert the core model priors are all present rather than hard-coding the
   # exact set and count, so the test is robust to additive prior rows (the

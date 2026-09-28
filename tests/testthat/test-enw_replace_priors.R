@@ -18,12 +18,19 @@ test_that("enw_replace_priors can replace a default prior with a custom
     priors, list(x = distspec::Normal(mean = 10, sd = 2))
   )
   expect_data_table(updated)
-  expect_named(updated, c("variable", "description", "distribution", "prior"))
+  expect_named(
+    updated,
+    c("variable", "description", "distribution", "prior", "mean", "sd")
+  )
   expect_identical(updated$variable, priors$variable)
   expect_identical(updated$description, priors$description)
   expect_identical(updated$prior[[1]], distspec::Normal(mean = 10, sd = 2))
   expect_identical(updated$prior[[2]], priors$prior[[2]])
   expect_identical(updated$prior[[3]], priors$prior[[3]])
+  # The derived mean/sd columns are refreshed for the replaced prior and
+  # unchanged for the others.
+  expect_identical(updated$mean, c(10, priors$mean[2:3]))
+  expect_identical(updated$sd, c(2, priors$sd[2:3]))
 })
 
 test_that("enw_replace_priors accepts a data.frame with a prior column", {
@@ -131,6 +138,19 @@ test_that("enw_replace_priors checks the prior family and parameters", {
     enw_replace_priors(priors, data.frame(variable = "x", mean = 1)),
     "mean"
   )
+})
+
+test_that("enw_replace_priors allows a Fixed prior when the target prior's
+           distribution family is unknown (regression test: a zero-scale
+           Fixed prior must not be rejected by the positive-scale check
+           just because the target distribution isn't literally
+           \"Uniform\")", {
+  # A priors table with no `distribution` column (e.g. a bare named list)
+  # leaves `distribution` as NA, under which `.enw_prior_families()`
+  # permits a \"fixed\" prior family.
+  priors <- list(x = distspec::Normal(mean = 0, sd = 1))
+  updated <- enw_replace_priors(priors, list(x = distspec::Fixed(5)))
+  expect_identical(updated$prior[[1]], distspec::Fixed(5))
 })
 
 test_that("enw_replace_priors errors for an unknown prior in a list but

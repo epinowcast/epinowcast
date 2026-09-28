@@ -186,7 +186,11 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
 #' of a vectorised prior. Defaults to `NULL` (no `dimension` column).
 #'
 #' @return A `data.table` with columns `variable`, `dimension` (when
-#' supplied), `description`, `distribution`, and `prior`.
+#' supplied), `description`, `distribution`, `prior`, `mean`, and `sd`.
+#' `mean` and `sd` are derived from `prior` (the location and scale the
+#' Stan model applies, e.g. `meanlog`/`sdlog` for a `"Log normal"` prior;
+#' see [.enw_prior_params()]) and kept for backwards compatibility with
+#' code that reads the numeric prior location and scale directly.
 #' @keywords internal
 #' @importFrom cli cli_abort
 .enw_prior_table <- function(variable, description, distribution, prior,
@@ -211,6 +215,9 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
   purrr::pwalk(
     list(out$prior, out$distribution, out$variable), .enw_check_prior
   )
+  params <- purrr::map(out$prior, .enw_prior_params)
+  data.table::set(out, j = "mean", value = vapply(params, `[`, numeric(1), 1))
+  data.table::set(out, j = "sd", value = vapply(params, `[`, numeric(1), 2))
   out[]
 }
 
@@ -344,7 +351,8 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
       "The prior for {.var {variable}} must have finite scalar parameters"
     )
   }
-  if (params[2] <= 0 && !identical(distribution, "Uniform")) {
+  if (params[2] <= 0 && !identical(distribution, "Uniform") &&
+        !identical(family, "fixed")) {
     cli::cli_abort(
       "The prior for {.var {variable}} must have a positive scale"
     )
@@ -654,6 +662,17 @@ enw_replace_priors <- function(priors, custom_priors) {
     new_prior[rows] <- rep(list(prior), sum(rows))
   }
   data.table::set(priors, j = "prior", value = list(new_prior))
+  # Keep the derived `mean`/`sd` columns (see `.enw_prior_table()`) in sync
+  # with any replaced priors, when the input table has them.
+  if (all(c("mean", "sd") %in% colnames(priors))) {
+    params <- purrr::map(new_prior, .enw_prior_params)
+    data.table::set(
+      priors, j = "mean", value = vapply(params, `[`, numeric(1), 1)
+    )
+    data.table::set(
+      priors, j = "sd", value = vapply(params, `[`, numeric(1), 2)
+    )
+  }
   priors[]
 }
 

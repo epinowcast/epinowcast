@@ -47,6 +47,27 @@ test_that("enw_priors_as_data_list supports mean and sd columns", {
   )
 })
 
+test_that(".enw_prior_table derives mean and sd columns from prior", {
+  priors <- .enw_prior_table(
+    variable = c("x", "z", "z"),
+    dimension = c(NA, 1, 2),
+    description = c("x", "z1", "z2"),
+    distribution = c("Normal", "Log normal", "Log normal"),
+    prior = list(
+      distspec::Normal(mean = 1, sd = 2),
+      distspec::LogNormal(meanlog = 2, sdlog = 3),
+      distspec::LogNormal(meanlog = 3, sdlog = 1)
+    )
+  )
+  expect_named(
+    priors,
+    c("variable", "dimension", "description", "distribution", "prior",
+      "mean", "sd")
+  )
+  expect_identical(priors$mean, c(1, 2, 3))
+  expect_identical(priors$sd, c(2, 3, 1))
+})
+
 test_that("enw_priors_as_data_list uses the natural parameters of each
            prior family", {
   priors <- enw_report(data = enw_example("preprocessed"))$priors

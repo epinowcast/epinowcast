@@ -94,9 +94,11 @@ same arguments as passed to \code{enw_preprocess_data()} should be used here.}
 A list containing the supplied formulas, data passed into a list
 describing the models, a \code{data.table} describing the priors used (with a
 \code{prior} column of \verb{<dist_spec>} objects from the \code{distspec} package, see
-\code{\link[=enw_replace_priors]{enw_replace_priors()}}), and a function that takes the output data and
-priors and returns a function that can be used to sample from a tightened
-version of the prior distribution.
+\code{\link[=enw_replace_priors]{enw_replace_priors()}}, plus \code{mean} and \code{sd} columns derived from \code{prior}
+for backwards compatibility with code that reads the numeric prior
+location and scale directly), and a function that takes the output data
+and priors and returns a function that can be used to sample from a
+tightened version of the prior distribution.
 }
 \description{
 Expectation model module

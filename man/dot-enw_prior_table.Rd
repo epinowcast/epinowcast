@@ -25,7 +25,11 @@ of a vectorised prior. Defaults to \code{NULL} (no \code{dimension} column).}
 }
 \value{
 A \code{data.table} with columns \code{variable}, \code{dimension} (when
-supplied), \code{description}, \code{distribution}, and \code{prior}.
+supplied), \code{description}, \code{distribution}, \code{prior}, \code{mean}, and \code{sd}.
+\code{mean} and \code{sd} are derived from \code{prior} (the location and scale the
+Stan model applies, e.g. \code{meanlog}/\code{sdlog} for a \code{"Log normal"} prior;
+see \code{\link[=.enw_prior_params]{.enw_prior_params()}}) and kept for backwards compatibility with
+code that reads the numeric prior location and scale directly.
 }
 \description{
 Internal constructor for the \code{data.table} of priors returned in the

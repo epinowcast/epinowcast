@@ -40,9 +40,11 @@
 #' @return A list containing the supplied formulas, data passed into a list
 #' describing the models, a `data.table` describing the priors used (with a
 #' `prior` column of `<dist_spec>` objects from the `distspec` package, see
-#' [enw_replace_priors()]), and a function that takes the output data and
-#' priors and returns a function that can be used to sample from a tightened
-#' version of the prior distribution.
+#' [enw_replace_priors()], plus `mean` and `sd` columns derived from `prior`
+#' for backwards compatibility with code that reads the numeric prior
+#' location and scale directly), and a function that takes the output data
+#' and priors and returns a function that can be used to sample from a
+#' tightened version of the prior distribution.
 #'
 #' @inheritParams enw_obs
 #' @family modelmodules
@@ -881,7 +883,10 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
         .gp_alpha_prior()
       ),
       purrr::map(
-        pop_medianlog, ~ distspec::LogNormal(meanlog = ., sdlog = pop_sdlog)
+        pop_medianlog,
+        function(medianlog) {
+          distspec::LogNormal(meanlog = medianlog, sdlog = pop_sdlog)
+        }
       ),
       list(
         .beta_sd_prior(),
