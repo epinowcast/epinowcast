@@ -246,7 +246,7 @@ As for cases with known reference dates other observation models are supported. 
 
 # Secondary observations
 
-A secondary outcome can be modelled jointly with the primary series.
+A secondary outcome can be modelled jointly with the primary series, following the approach implemented in `EpiNow2` [@EpiNow2].
 The expected secondary value is built from the expected primary observations $\lambda_{g,t}$ by convolving with a delay distribution, applying a log-scale ascertainment term, and combining the convolved and current contributions into either an incidence target (a scaled, delayed convolution) or a prevalence target (contributions accumulated and removed over time, e.g. bed occupancy).
 Because both series are fitted together, uncertainty in the primary nowcast propagates into the secondary estimate.
 

@@ -752,6 +752,7 @@ transformed parameters{
     sec_lscale = regression_predictor(
       sec_scale_int, sec_beta, sec_fnindex, sec_fncol, sec_fdesign,
       sec_sparse, sec_beta_sd, sec_rdesign, model_sec_scale, sparse_design,
+      model_sec_scale,
       0, 0, 0, 0, 0, 0, 0,
       rep_matrix(0.0, 0, 0), rep_vector(0.0, 0), rep_vector(0.0, 0),
       {0.0}, {0},
