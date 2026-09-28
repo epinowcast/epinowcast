@@ -286,10 +286,15 @@ Code
 
 ``` r
 
-library(epinowcast)
-rho_prior <- data.frame(variable = "expr_gp_rho", mean = log(3), sd = 0.25)
-# epinowcast(..., priors = rho_prior)
+rho_prior <- data.frame(
+  variable = "expr_gp_rho", mean = log(3), sd = 0.25,
+  stringsAsFactors = FALSE
+)
 ```
+
+Pass this to
+[`epinowcast()`](https://package.epinowcast.org/reference/epinowcast.md)
+through its `priors` argument.
 
 The magnitude prior on \\\alpha\\ is the most consequential in practice;
 tighten it if the latent process is competing with the rest of the

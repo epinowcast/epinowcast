@@ -27,8 +27,8 @@ program that is **distinct** from but interfaced through R. R calling a
 separate program to execute calculations is similar to
 [`{rjags}`](https://CRAN.R-project.org/package=rjags) which relies on
 the [JAGS library](https://mcmc-jags.sourceforge.io/) and
-[R-INLA](https://www.r-inla.org/what-is-inla). As described in the
-[epinowcast](https://package.epinowcast.org) project
+[R-INLA](https://www.r-inla.org/whatisinla/index.html). As described in
+the [epinowcast](https://package.epinowcast.org) project
 [README](https://package.epinowcast.org/articles/index.md), if you wish
 to do model fitting and nowcasting you will need to install
 [`{cmdstanr}`](https://mc-stan.org/cmdstanr/), an optional dependency
@@ -354,9 +354,8 @@ predictions with your data, you may be able to both qualitatively and
 quantitatively discern if your posteriors captured your data and if
 there are patterns which hint at issues. Issues in your posterior
 predictions without any warnings from the diagnostics could indicate
-that you need to examine your
-[priors](https://package.epinowcast.org/articles/.settingPriors) and
-your underlying data. Utilise the `enw_plot_pp_quantiles` to examine the
+that you need to examine your [priors](#settingPriors) and your
+underlying data. Utilise the `enw_plot_pp_quantiles` to examine the
 posterior predictive quantiles from the nowcast fits.
 
 ### Approaches to solve common problems
@@ -372,14 +371,11 @@ model”). In other words, you may have a mismatch between your data and
 the model you are trying to fit. There a few simple steps to assist with
 this:
 
-1.  Increase the
-    [`max_treedepth`](https://package.epinowcast.org/articles/.maxTree)
-    argument to 15 which will allow longer trajectories to be used for
-    steps when sampling. This is especially important if the
-    `per_at_max_treedepth` value is high in the returned CmdStan
-    diagnostics.
-2.  Use more [informative
-    priors](https://package.epinowcast.org/articles/.settingPriors).
+1.  Increase the [`max_treedepth`](#maxTree) argument to 15 which will
+    allow longer trajectories to be used for steps when sampling. This
+    is especially important if the `per_at_max_treedepth` value is high
+    in the returned CmdStan diagnostics.
+2.  Use more [informative priors](#settingPriors).
 3.  Try to simplify the model to understand potential degeneracies.
 4.  Reduce the amount of data you are trying to fit. This might include
     reducing the duration of time points over which you are trying to
@@ -436,8 +432,7 @@ the `iter_sample` argument. If `r_hat` is large and `ess_bulk`/
 1.  Increasing your [adapt_delta](#adaptDelta) argument to a numeric
     value near 1 (e.g., 0.99). This will reduce the step size and could
     help with sampling at the risk of possible increases in runtime.
-2.  Use more [informative
-    priors](https://package.epinowcast.org/articles/.settingPriors).
+2.  Use more [informative priors](#settingPriors).
 
 #### The posterior estimates are very wide
 

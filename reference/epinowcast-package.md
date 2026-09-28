@@ -1,4 +1,4 @@
-# epinowcast: A Bayesian Framework for Real-time Infectious Disease Surveillance
+# epinowcast: A Bayesian Framework for Real-Time Infectious Disease Surveillance
 
 A modular Bayesian framework for real-time infectious disease
 surveillance. Provides tools for nowcasting, reproduction number

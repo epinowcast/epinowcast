@@ -114,7 +114,7 @@
 The statistical models used in <a href="https://package.epinowcast.org">epinowcast</a> are primarily written in the <a href="https://mc-stan.org/docs/reference-manual/index.html" class="external-link">Stan programming language</a>, a statically typed programming language with syntax similar to C/C++.
 <a href="https://package.epinowcast.org">epinowcast</a> utilises the <a href="https://mc-stan.org/cmdstanr/" class="external-link"><code>{cmdstanr}</code></a> package to interface with CmdStan, the program which executes the models written in the Stan programming language.
 It is important to understand that CmdStan is a program that is <strong>distinct</strong> from but interfaced through R.
-R calling a separate program to execute calculations is similar to <a href="https://CRAN.R-project.org/package=rjags" class="external-link"><code>{rjags}</code></a> which relies on the <a href="https://mcmc-jags.sourceforge.io/" class="external-link">JAGS library</a> and <a href="https://www.r-inla.org/what-is-inla" class="external-link">R-INLA</a>.
+R calling a separate program to execute calculations is similar to <a href="https://CRAN.R-project.org/package=rjags" class="external-link"><code>{rjags}</code></a> which relies on the <a href="https://mcmc-jags.sourceforge.io/" class="external-link">JAGS library</a> and <a href="https://www.r-inla.org/whatisinla/index.html" class="external-link">R-INLA</a>.
 As described in the <a href="https://package.epinowcast.org">epinowcast</a> project <a href="./index.html">README</a>, if you wish to do model fitting and nowcasting you will need to install <a href="https://mc-stan.org/cmdstanr/" class="external-link"><code>{cmdstanr}</code></a>, an optional dependency not installed automatically with <code>epinowcast</code>, which also has the ability to install CmdStan using an R interface.
 Additionally, you will need to make sure that the software required by CmdStan is installed and configured on your machine.</p>
 <div class="section level3">
@@ -194,7 +194,7 @@ Additionally, <a href="https://package.epinowcast.org">epinowcast</a> provides s
 The solutions to these issues typically require you to investigate your <a href="#samplerParams">sampler settings</a>, <a href="#modelParams">model settings</a>, or <a href="#modelData">interrogate your data</a> further.
 It is also important to examine your posterior predictive</p>
 <div class="section level3">
-<h3 id="sampler-settings">Sampler settings<a class="anchor" aria-label="anchor" href="#sampler-settings"></a>
+<h3 id="samplerParams">Sampler settings<a class="anchor" aria-label="anchor" href="#samplerParams"></a>
 </h3>
 <p><a href="https://package.epinowcast.org">epinowcast</a> provides users the ability to pass arguments directly to CmdStan which can improve model run time and produce better inferences.
 These parameters can be passed the <code>enw_fit_opts</code> function.</p>
@@ -218,7 +218,7 @@ Please note that the <code>theads_per_chain</code> has no impact on model conver
 </div>
 </div>
 <div class="section level4">
-<h4 id="iter_warmup-and-iter_sampling">iter_warmup and iter_sampling<a class="anchor" aria-label="anchor" href="#iter_warmup-and-iter_sampling"></a>
+<h4 id="iters">iter_warmup and iter_sampling<a class="anchor" aria-label="anchor" href="#iters"></a>
 </h4>
 <p>The number of samples used for the warmup phase of Stan and the number of sampling iterations are controlled by the <code>iter_warmup</code> and <code>iter_sampling</code> arguments, respectively.
 Stan requires a sufficient number of warmup iterations to dynamically estimate the step change sizes during model fitting.
@@ -231,7 +231,7 @@ Starting with slightly short warm-ups can speed up model development timelines.
 Typically we have found that 1000-2000 samples per chain for <code>iter_sampling</code> are good starting values for initial model fitting.</p>
 </div>
 <div class="section level4">
-<h4 id="max_treedepth">max_treedepth<a class="anchor" aria-label="anchor" href="#max_treedepth"></a>
+<h4 id="maxTree">max_treedepth<a class="anchor" aria-label="anchor" href="#maxTree"></a>
 </h4>
 <p>This value controls the maximum size of the trajectory taken by the sample (in power of 2) for each step.
 If this value is too low, the sampler may terminate too early causing excess runtimes.
@@ -240,7 +240,7 @@ You can increase the <code>max_treedepth</code> to an integer value greater than
 For the models used in <a href="https://package.epinowcast.org">epinowcast</a> it is common to have the <code>max_treedepth</code> set between 12 and 15.</p>
 </div>
 <div class="section level4">
-<h4 id="adapt_delta">adapt_delta<a class="anchor" aria-label="anchor" href="#adapt_delta"></a>
+<h4 id="adaptDelta">adapt_delta<a class="anchor" aria-label="anchor" href="#adaptDelta"></a>
 </h4>
 <p>This parameter sets the target average proposal acceptance probability during NUTS sampling (and is a real number value between 0 and 1).
 Higher values of <code>adapt_delta</code> will result in smaller step sizes during sampling which will slow the model fitting time but can help to address <em>divergent transitions.</em>
@@ -268,10 +268,10 @@ The default value is 0.8, but this will likely need to be set slightly higher li
 </div>
 </div>
 <div class="section level3">
-<h3 id="model-settings">Model settings<a class="anchor" aria-label="anchor" href="#model-settings"></a>
+<h3 id="modelParams">Model settings<a class="anchor" aria-label="anchor" href="#modelParams"></a>
 </h3>
 <div class="section level4">
-<h4 id="setting-priors">Setting priors<a class="anchor" aria-label="anchor" href="#setting-priors"></a>
+<h4 id="settingPriors">Setting priors<a class="anchor" aria-label="anchor" href="#settingPriors"></a>
 </h4>
 <p>Setting sensible priors is important for Bayesian inference.
 See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for an overview of how to inspect and customise priors across all model modules.
@@ -297,7 +297,7 @@ As shown below, you can retrieve your current files and manipulate them as neede
 </div>
 </div>
 <div class="section level3">
-<h3 id="exploring-your-data">Exploring your data<a class="anchor" aria-label="anchor" href="#exploring-your-data"></a>
+<h3 id="modelData">Exploring your data<a class="anchor" aria-label="anchor" href="#modelData"></a>
 </h3>
 <p>It is important to understand the data being passed to <code>epinowcast</code> and have some ideas regarding the data-generating process for your data.
 For instance, if there are significant changes in your reporting triangle, this could manifest as multi-modality in the posterior distribution (i.e., Stan is trying to fit two different reporting delays with the same parameters).
@@ -307,12 +307,12 @@ These problems can also manifest over longer timescales, so while more data are 
 Sometimes it is easier to examine these features before you fit your model due to domain knowledge; however, a key component of the Bayesian Workflow is to examine your <a href="#posteriorPreds">posterior predictions</a>.</p>
 </div>
 <div class="section level3">
-<h3 id="posterior-predictions">Posterior predictions<a class="anchor" aria-label="anchor" href="#posterior-predictions"></a>
+<h3 id="posteriorPreds">Posterior predictions<a class="anchor" aria-label="anchor" href="#posteriorPreds"></a>
 </h3>
 <p><a href="https://mc-stan.org/docs/stan-users-guide/ppcs.html" class="external-link">Posterior predictions</a>, in addition to model fitting diagnostics, provides a way to examine how well <a href="https://betanalpha.github.io/assets/case_studies/principled_bayesian_workflow.html#Step_Fourteen:_Posterior_Retrodictive_Checks65" class="external-link">your model captured your data</a>.
 If your model poorly captured your data (e.g., your data points were consistently outside of the posterior credible intervals), your model will likely lead to poor inferences.
 However, by examining the posterior predictions with your data, you may be able to both qualitatively and quantitatively discern if your posteriors captured your data and if there are patterns which hint at issues.
-Issues in your posterior predictions without any warnings from the diagnostics could indicate that you need to examine your <a href=".settingPriors">priors</a> and your underlying data.
+Issues in your posterior predictions without any warnings from the diagnostics could indicate that you need to examine your <a href="#settingPriors">priors</a> and your underlying data.
 Utilise the <code>enw_plot_pp_quantiles</code> to examine the posterior predictive quantiles from the nowcast fits.</p>
 </div>
 <div class="section level3">
@@ -326,8 +326,8 @@ This can occur because the sampler is having difficulty exploring the posterior 
 In other words, you may have a mismatch between your data and the model you are trying to fit.
 There a few simple steps to assist with this:</p>
 <ol style="list-style-type: decimal">
-<li>Increase the <a href=".maxTree"><code>max_treedepth</code></a> argument to 15 which will allow longer trajectories to be used for steps when sampling. This is especially important if the <code>per_at_max_treedepth</code> value is high in the returned CmdStan diagnostics.</li>
-<li>Use more <a href=".settingPriors">informative priors</a>.</li>
+<li>Increase the <a href="#maxTree"><code>max_treedepth</code></a> argument to 15 which will allow longer trajectories to be used for steps when sampling. This is especially important if the <code>per_at_max_treedepth</code> value is high in the returned CmdStan diagnostics.</li>
+<li>Use more <a href="#settingPriors">informative priors</a>.</li>
 <li>Try to simplify the model to understand potential degeneracies.</li>
 <li>Reduce the amount of data you are trying to fit. This might include reducing the duration of time points over which you are trying to fit. Once you can confirm that the model will fit your data, it may just be a question of computational power when fitting larger data.</li>
 <li>Head to the <a href="https://community.epinowcast.org/" class="external-link">community forum</a> and ask for some assistance.</li>
@@ -358,7 +358,7 @@ Ideally, you want these values to be near your total number of samples passed in
 If <code>r_hat</code> is large and <code>ess_bulk</code>/ <code>ess_tail</code> are low, consider:</p>
 <ol style="list-style-type: decimal">
 <li>Increasing your <a href="#adaptDelta">adapt_delta</a> argument to a numeric value near 1 (e.g., 0.99). This will reduce the step size and could help with sampling at the risk of possible increases in runtime.</li>
-<li>Use more <a href=".settingPriors">informative priors</a>.</li>
+<li>Use more <a href="#settingPriors">informative priors</a>.</li>
 </ol>
 </div>
 <div class="section level4">
