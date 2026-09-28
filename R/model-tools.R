@@ -699,13 +699,10 @@ enw_model <- function(model = system.file(
     }
     cpp_options$stan_threads <- threads
     dots <- list(...)
-    if (use_cpp) {
-      if (!"user_header" %in% names(dots)) {
-        dots$user_header <- stage_stan_header(target_dir)
-      }
-      # cmdstanr adds this itself when compiling with a user_header, but
-      # $check_syntax() only sees options passed here.
-      stanc_options[["allow-undefined"]] <- TRUE
+    if (use_cpp && !"user_header" %in% names(dots)) {
+      # cmdstanr adds allow-undefined to stanc_options when a user_header
+      # is set.
+      dots$user_header <- stage_stan_header(target_dir)
     }
     model_args <- c(
       list(
