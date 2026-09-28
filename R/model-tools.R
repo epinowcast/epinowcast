@@ -71,7 +71,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
   )
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
-      cli::cli_abort(
+      cli_abort(
         paste0(
           "formula must be an object of class enw_formula as produced using ",
           "`enw_formula()`"
@@ -109,7 +109,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     data$rdesign <- formula$random$design
 
     if (length(formula$arima) > 1L) {
-      cli::cli_abort(
+      cli_abort(
         "Only one `arima()` term per formula is currently supported."
       )
     }
@@ -132,7 +132,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     }
 
     if (length(formula$gp) > 1L) {
-      cli::cli_abort(
+      cli_abort(
         "Only one `gp()` term per formula is currently supported."
       )
     }
@@ -180,7 +180,7 @@ enw_priors_as_data_list <- function(priors) {
   priors <- coerce_dt(priors, select = c("variable", "mean", "sd"))
   priors[, variable := paste0(variable, "_p")]
   priors <- split(priors, by = "variable", keep.by = FALSE)
-  priors <- purrr::map(priors, ~ as.array(t(.)))
+  priors <- map(priors, ~ as.array(t(.)))
   priors
 }
 
@@ -296,7 +296,7 @@ stan_cpp_fallback_body <- function(fn) {
     )
   )
   if (!fn %in% names(fallbacks)) {
-    cli::cli_abort("No pure-Stan fallback is defined for {.val {fn}}.")
+    cli_abort("No pure-Stan fallback is defined for {.val {fn}}.")
   }
   fallbacks[[fn]]
 }
@@ -460,13 +460,13 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 enw_sample <- function(data, model = epinowcast::enw_model(),
                        init = NULL, init_method = c("prior", "pathfinder"),
                        init_method_args = list(), diagnostics = TRUE, ...) {
-  init_method <- rlang::arg_match(init_method)
+  init_method <- arg_match(init_method)
 
   updated_inits <- update_inits(
     data, model, init, init_method, init_method_args, ...
   )
 
-  cli::cli_alert_info("Fitting the model using NUTS")
+  cli_alert_info("Fitting the model using NUTS")
   fit <- model$sample(data = data, init = updated_inits$init, ...)
 
   out <- data.table(
@@ -483,7 +483,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
       samples = nrow(diag),
       max_rhat = round(max(
         fit$summary(
-          variables = NULL, posterior::rhat,
+          variables = NULL, rhat,
           .args = list(na.rm = TRUE)
         )$`posterior::rhat`,
         na.rm = TRUE
@@ -515,12 +515,12 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 update_inits <- function(data, model, init,
                          init_method = c("prior", "pathfinder"),
                          init_method_args = list(), ...) {
-  rlang::arg_match(init_method)
+  arg_match(init_method)
   dot_args <- list(...)
 
   if (init_method == "pathfinder") {
     init_method_args$threads_per_chain <- dot_args$threads_per_chain
-    cli::cli_alert_info("Using pathfinder initialization.")
+    cli_alert_info("Using pathfinder initialization.")
     pf <- do.call(
       enw_pathfinder,
       c(list(data = data, model = model, init = init), init_method_args)
@@ -528,7 +528,7 @@ update_inits <- function(data, model, init,
     updated_init <- pf$fit[[1]]
     method_output <- pf
   } else if (init_method == "prior") {
-    cli::cli_alert_info("Using prior initialization.")
+    cli_alert_info("Using prior initialization.")
     updated_init <- init
     method_output <- NULL
   }
@@ -571,7 +571,7 @@ update_inits <- function(data, model, init,
 enw_pathfinder <- function(data, model = epinowcast::enw_model(),
                            diagnostics = TRUE, init = NULL, ...) {
   if (is.null(model[["pathfinder"]])) {
-    cli::cli_abort(
+    cli_abort(
       "`pathfinder` algorithm unavailable. Requires CmdStan >=2.34."
     )
   }
@@ -667,9 +667,9 @@ enw_model <- function(model = system.file(
                       use_cpp = getOption("epinowcast.use_cpp", TRUE), ...) {
   check_cmdstanr()
   if (verbose) {
-    cli::cli_alert_info("Using model {model}.")
-    cli::cli_alert_info("Include is {toString(include)}.")
-    cli::cli_alert_info(
+    cli_alert_info("Using model {model}.")
+    cli_alert_info("Include is {toString(include)}.")
+    cli_alert_info(
       "C++ adjoints are {if (use_cpp) 'enabled' else 'disabled'}."
     )
   }
@@ -757,7 +757,7 @@ stage_stan_header <- function(target_dir) {
     from <- file.path(src, f)
     to <- file.path(dest, f)
     if (!file.exists(to) ||
-          unname(tools::md5sum(to)) != unname(tools::md5sum(from))) {
+      unname(tools::md5sum(to)) != unname(tools::md5sum(from))) {
       dir.create(dirname(to), recursive = TRUE, showWarnings = FALSE)
       file.copy(from, to, overwrite = TRUE, copy.date = TRUE)
     }
@@ -825,7 +825,7 @@ enw_stan_to_r <- function(
     "regression.stan"
   )
   if (any(files %in% overloaded_fns)) {
-    cli::cli_warn(c(
+    cli_warn(c(
       "The following functions are overloaded and cannot be exposed: ",
       toString(overloaded_fns)
     ))
@@ -835,7 +835,7 @@ enw_stan_to_r <- function(
   names(cpp_adjoint_fns) <- basename(names(cpp_adjoint_fns))
   cpp_only_fns <- names(cpp_adjoint_fns)
   if (any(files %in% cpp_only_fns)) {
-    cli::cli_warn(c(
+    cli_warn(c(
       paste0(
         "The following functions are implemented in C++ and are exposed ",
         "here via their pure-Stan fallback instead, since ",
@@ -845,14 +845,14 @@ enw_stan_to_r <- function(
     ))
   }
   if (length(files) == 0 || is.null(files)) {
-    cli::cli_abort(paste0(
+    cli_abort(paste0(
       "No non-overloaded files specified. Please specify files to expose ",
       "using the `files` argument."
     ))
   }
   include_files <- list.files(include)
   if (!all(files %in% include_files)) {
-    cli::cli_abort(c(
+    cli_abort(c(
       paste0(
         "The following files are not in the include directory: ",
         toString(files[!files %in% include_files])
@@ -917,10 +917,10 @@ enw_stan_to_r <- function(
 #' }
 #' }
 enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
-  type <- rlang::arg_match(type, multiple = TRUE)
+  type <- arg_match(type, multiple = TRUE)
 
   if (!is.character(path)) {
-    cli::cli_abort("`path` must be a valid file path.")
+    cli_abort("`path` must be a valid file path.")
   }
 
   candidate_path <- normalizePath(path, winslash = "\\", mustWork = FALSE)
@@ -943,7 +943,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
       con = env_contents_active[["env_path"]], sep = "\n"
     )
 
-    cli::cli_alert_success(
+    cli_alert_success(
       "Added `{enw_environment}` to `.Renviron` at {env_contents_active[['env_path']]}" # nolint line_length
     )
   }
@@ -951,11 +951,11 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
   if (any(type %in% c("session", "all"))) {
     prior_cache <- Sys.getenv("enw_cache_location", unset = "", names = NA)
     if (!check_environment_unset(prior_cache)) {
-      cli::cli_alert_warning(
+      cli_alert_warning(
         "Environment variable `enw_cache_location` exists and will be overwritten" # nolint line_length
       )
     }
-    cli::cli_alert_success(
+    cli_alert_success(
       "Set `enw_cache_location` to {candidate_path}"
     )
     Sys.setenv(enw_cache_location = candidate_path)
@@ -986,7 +986,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
 #' @examplesIf interactive()
 #' enw_unset_cache()
 enw_unset_cache <- function(type = c("session", "persistent", "all")) {
-  type <- rlang::arg_match(type, multiple = TRUE)
+  type <- arg_match(type, multiple = TRUE)
 
   prior_location <- NULL
 
@@ -994,20 +994,20 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
     prior_location <- Sys.getenv("enw_cache_location")
     if (prior_location != "") {
       Sys.unsetenv("enw_cache_location")
-      cli::cli_alert_success(
+      cli_alert_success(
         "Removed `enw_cache_location = {prior_location}` from the local environment." # nolint line_length
       )
       if (any(type == "session")) {
         environ <- get_renviron_contents()
         cache_in_environ <- check_renviron_for_cache(environ)
         if (any(cache_in_environ)) {
-          cli::cli_alert_info(
+          cli_alert_info(
             "To revert to the persistent cache, run `readRenviron('~/.Renviron')`" # nolint line_length
           )
         }
       }
     } else {
-      cli::cli_alert_danger(
+      cli_alert_danger(
         "`enw_cache_location` not set in the local environment. Nothing to unset." # nolint line_length
       )
     }
@@ -1034,7 +1034,7 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
 enw_get_cache <- function() {
   cache_location <- Sys.getenv("enw_cache_location")
 
-  cli::cli_inform(cache_location_message())
+  cli_inform(cache_location_message())
 
   if (check_environment_unset(cache_location)) {
     cache_location <- tempdir()
