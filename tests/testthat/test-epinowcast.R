@@ -633,21 +633,23 @@ test_that("epinowcast() fits with gamma, log-normal and exponential priors on
   pobs <- enw_example("preprocessed")
   nowcast <- suppressMessages(epinowcast(
     pobs,
-    expectation = enw_expectation(~ 1 + rw(week), data = pobs),
+    report = enw_report(~ 1 + (1 | day_of_week), data = pobs),
     priors = list(
       sqrt_phi = distspec::Gamma(shape = 2, rate = 4),
-      refp_sd_int = distspec::LogNormal(meanlog = log(0.5), sdlog = 0.5),
-      expr_beta_sd = distspec::Exponential(rate = 2)
+      refp_sd_int = distspec::LogNormal(meanlog = log(0.5), sdlog = 1),
+      rep_beta_sd = distspec::Exponential(rate = 1)
     ),
     fit = enw_fit_opts(
       sampler = silent_enw_sample,
       save_warmup = FALSE, pp = FALSE,
-      chains = 2, iter_warmup = 250, iter_sampling = 250
-    )
+      chains = 2, iter_warmup = 250, iter_sampling = 1000,
+      refresh = 0, show_messages = FALSE
+    ),
+    model = model
   ))
   expect_convergence(nowcast)
   data_list <- nowcast$data[[1]]
   expect_identical(data_list$sqrt_phi_p_dist, 3L)
   expect_identical(data_list$refp_sd_int_p_dist, 2L)
-  expect_identical(data_list$expr_beta_sd_p_dist, 4L)
+  expect_identical(data_list$rep_beta_sd_p_dist, 4L)
 })
