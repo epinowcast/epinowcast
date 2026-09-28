@@ -3,11 +3,15 @@ library(knitr)
 library(usethis)
 
 wd <- getwd() # assuming somewhere in the project ...
-setwd(proj_path("vignettes"))
+vignettes_dir <- proj_path("vignettes")
 markerpat <- "\\.orig$"
-tocompile <- list.files(pattern = markerpat)
+# Recurse so heavy vignettes moved to vignettes/articles/ (pkgdown-only,
+# R CMD build ignored) are still picked up.
+tocompile <- list.files(vignettes_dir, pattern = markerpat, recursive = TRUE)
 knit_vignette <- function(x) {
-  knit(x, sub(markerpat, "", x))
+  setwd(file.path(vignettes_dir, dirname(x)))
+  on.exit(setwd(wd))
+  knit(basename(x), sub(markerpat, "", basename(x)))
 }
 lapply(tocompile, knit_vignette)
 setwd(wd)

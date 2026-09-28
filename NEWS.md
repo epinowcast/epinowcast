@@ -1,4 +1,4 @@
-# epinowcast 0.7.0.1000
+# epinowcast 0.8.0.1000
 
 ## Model
 
@@ -35,7 +35,9 @@
 - The single time series Rt estimation vignette now defines the generation time and latent reporting delay distributions with `distspec` rather than converting their parameters and discretising them by hand.
   See #893 by @seabbs.
 
-# epinowcast 0.7.0
+# epinowcast 0.8.0
+
+This is the first release of `epinowcast` to CRAN.
 
 ## Model
 
@@ -78,6 +80,9 @@
 - Lowered the minimum R version from 4.4.0 to 4.3.0 so users on R 4.3.x can install the package.
   No code in the package relies on features introduced in R 4.4.
   See #811 by @seabbs.
+- Re-vendored `inst/stan/functions/primarycensored.stan` from upstream `primarycensored` twice via the `check-primarycensored` workflow (#894, #895).
+  The first update pulled in `primarycensored`'s non-parametric step and hazard delay distributions, its exponential-growth helpers, and its analytical generalised gamma functions; none of these are yet exposed through `enw_reference()`, so this adds unused vendored code only.
+  The second update picked up a performance refactor of the vectorised PMF that shares analytical CDF terms across neighbouring windows (`primarycensored` #356); upstream reports values are unchanged and gradients match to rounding.
 
 ## Documentation
 
@@ -86,6 +91,9 @@
 - Added a temporal aggregation guide vignette covering the weekly timestep, daily-process / weekly-reporting (fitted and structural variants), and a daily benchmark, with weekly-scale CRPS comparison via `scoringutils`.
   Replaces the standalone scripts at `inst/examples/germany_weekly_process_model.R` and `inst/examples/germany_weekly_reporting_daily_process_model.R`.
   See #668 by @seabbs.
+- Moved the eight vignettes that fit Stan models (`delay-estimation`, `epinowcast`, `germany-age-stratified-nowcasting`, `inference-methods`, `latent-processes`, `single-timeseries-rt-estimation`, `susceptible-depletion`, `temporal-aggregation`) to `vignettes/articles/`, following pkgdown's articles convention.
+  They still render on the package website but are no longer built or shipped by `R CMD build`, which was most of the installed package's size.
+  No vignette content changed or was removed.
 
 ## Bug fixes
 
