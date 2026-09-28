@@ -768,10 +768,9 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   }
   pop_sdlog <- rlang::`%||%`(pop$prior_sdlog, 1)
 
-  # Multi-stratum overlay (Phase 0): record the validated, ordered
-  # per-stratum structure on the module output. No new Stan data is
-  # emitted yet, so the scalar path (and every existing fit) is byte-for-
-  # byte unchanged; later phases add the strata wiring to `out$data`.
+  # `out$strata` is NULL unless `r` is a per-stratum named list; not yet
+  # consumed when building Stan data (`out$data`), so the scalar path
+  # (and every existing fit) is byte-for-byte unchanged.
   out$strata <- strata_spec
 
 

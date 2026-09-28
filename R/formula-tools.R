@@ -296,9 +296,45 @@ remove_gp_terms <- function(formula) {
 #' epinowcast:::secondary_terms(~ 1 + secondary(cases, delay = ~ 1 + week))
 secondary_terms <- function(formula) {
   trms <- attr(terms(formula), "term.labels")
-  match <- grepl("^secondary\\(.*\\)$", trms)
-  match <- match & !grepl("|", trms, fixed = TRUE)
-  trms[match]
+  # No further filtering needed: `term.labels` entries are already whole,
+  # correctly-parenthesis-balanced terms (R's own parser has already
+  # resolved any nesting, including a `(1 | group)` random effect inside a
+  # secondary()'s own ascertainment/delay/report argument), so the anchored
+  # match below cannot pick up a non-secondary() term.
+  grep("^secondary\\(.*\\)$", trms, value = TRUE)
+}
+
+#' Find the substring of a `secondary(...)` call with balanced parens
+#'
+#' @description Unlike `rw()`, `arima()`, and `gp()`, a [secondary()] call's
+#' own arguments (`ascertainment`, `delay`, `report`) are themselves formulas
+#' and may contain arbitrarily nested parens (most commonly a `(1 | group)`
+#' random effect), so the closing paren of the whole call cannot be found
+#' with a non-greedy regex (which stops at the first, inner, closing paren).
+#' This walks the string counting paren depth from each `secondary(` match to
+#' find its actual matching close.
+#'
+#' @param form A `character` string, the deparsed formula to search.
+#'
+#' @return A `character` vector of the exact `secondary(...)` substrings
+#' found in `form`, in order of appearance.
+#' @noRd
+.balanced_secondary_calls <- function(form) {
+  starts <- gregexpr("secondary(", form, fixed = TRUE)[[1]]
+  if (starts[1] == -1) {
+    return(character(0))
+  }
+  vapply(starts, function(start) {
+    open <- start + nchar("secondary(") - 1L
+    chars <- strsplit(substring(form, open), "", fixed = TRUE)[[1]]
+    step <- data.table::fcase(
+      chars == "(", 1L,
+      chars == ")", -1L,
+      default = 0L
+    )
+    close <- open + which(cumsum(step) == 0)[1] - 1L
+    substring(form, start, close)
+  }, character(1))
 }
 
 #' Remove secondary stratum terms from a formula object
@@ -312,11 +348,16 @@ secondary_terms <- function(formula) {
 #' @family formulatools
 #' @examples
 #' epinowcast:::remove_secondary_terms(~ 1 + secondary(cases))
+#' epinowcast:::remove_secondary_terms(
+#'   ~ 1 + secondary(cases, ascertainment = ~ 1 + (1 | region))
+#' )
 remove_secondary_terms <- function(formula) {
   form <- as_string_formula(formula)
-  form <- gsub("secondary\\(.*?\\) \\+ ", "", form)
-  form <- gsub("\\+ secondary\\(.*?\\)", "", form)
-  form <- gsub("secondary\\(.*?\\)", "", form)
+  for (call in .balanced_secondary_calls(form)) {
+    form <- sub(paste0(call, " + "), "", form, fixed = TRUE)
+    form <- sub(paste0("+ ", call), "", form, fixed = TRUE)
+    form <- sub(call, "", form, fixed = TRUE)
+  }
 
   form <- tryCatch(
     {

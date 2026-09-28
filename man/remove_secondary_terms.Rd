@@ -22,6 +22,9 @@ own.
 }
 \examples{
 epinowcast:::remove_secondary_terms(~ 1 + secondary(cases))
+epinowcast:::remove_secondary_terms(
+  ~ 1 + secondary(cases, ascertainment = ~ 1 + (1 | region))
+)
 }
 \seealso{
 Functions used to help convert formulas into model designs

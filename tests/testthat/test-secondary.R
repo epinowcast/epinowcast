@@ -65,10 +65,49 @@ test_that("secondary_terms() and remove_secondary_terms() find/strip", {
   )
 })
 
+test_that("secondary_terms() and remove_secondary_terms() handle a nested
+           `(1 | group)` random effect inside a secondary()'s own argument
+           (#864 review finding)", {
+  f <- ~ 1 + secondary(cases, ascertainment = ~ 1 + (1 | region))
+  # A lazy `secondary\\(.*?\\)` match would stop at the first `)` (the one
+  # closing `(1 | region)`), not the one closing the whole call.
+  expect_identical(
+    secondary_terms(f),
+    "secondary(cases, ascertainment = ~1 + (1 | region))"
+  )
+  expect_identical(as_string_formula(remove_secondary_terms(f)), "~1")
+})
+
 test_that("parse_formula() routes secondary() terms", {
   pf <- parse_formula(~ secondary(cases, delay = ~ 1 + week))
   expect_identical(pf$secondary, "secondary(cases, delay = ~1 + week)")
   expect_identical(pf$fixed, "1")
+})
+
+test_that("parse_formula() routes a secondary() term whose own argument
+           contains a nested `(1 | group)` random effect (#864 review
+           finding)", {
+  pf <- parse_formula(
+    ~ secondary(cases, ascertainment = ~ 1 + (1 | region))
+  )
+  expect_identical(
+    pf$secondary, "secondary(cases, ascertainment = ~1 + (1 | region))"
+  )
+  expect_identical(pf$fixed, "1")
+})
+
+test_that("enw_formula() accepts a secondary() term whose ascertainment
+           surface uses a random effect, the exact usage shown in
+           secondary()'s own roxygen example (#864 review finding)", {
+  f <- enw_formula(
+    ~ secondary(cases, ascertainment = ~ 1 + (1 | region)),
+    data = data.frame(region = "a")
+  )
+  expect_s3_class(f, "enw_formula")
+  expect_identical(f$secondary$parent, "cases")
+  expect_identical(
+    as_string_formula(f$secondary$ascertainment), "~1 + (1 | region)"
+  )
 })
 
 test_that("enw_formula() recognises a secondary-only stratum formula", {

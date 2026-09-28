@@ -46,8 +46,4 @@ spec <- list(
 )
 enw_topo_sort_strata(spec)
 }
-\seealso{
-Other strata: 
-\code{\link{.resolve_stratum_spec}()}
-}
 \concept{strata}
