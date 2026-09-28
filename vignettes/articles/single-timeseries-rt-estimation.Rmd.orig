@@ -11,8 +11,8 @@ output:
     code_folding: show
 pkgdown:
   as_is: true
-bibliography: library.bib
-csl: apa-numeric-superscript-brackets.csl
+bibliography: ../library.bib
+csl: ../apa-numeric-superscript-brackets.csl
 link-citations: true
 vignette: >
   %\VignetteIndexEntry{Estimating the effective reproduction number in real-time for a single timeseries with reporting delays}
@@ -37,12 +37,15 @@ knitr::opts_chunk$set(
 This vignette is partly based on this [nowcasting example](https://github.com/epiforecasts/nowcasting.example) by Sebastian Funk and Sam Abbott.
 :::
 
-In this case study we walk through a simple approach to jointly estimating the effective reproduction number over time and the delay from a positive test to this test being reported. For more on the `epinowcast` package see the [documentation](https://package.epinowcast.org/).
+In this case study we walk through a simple approach to jointly estimating the effective reproduction number over time and the delay from a positive test to this test being reported.
+For more on the `epinowcast` package see the [documentation](https://package.epinowcast.org/).
 
 ::: {.alert .alert-primary}
 ## Use case {-}
 
-An epidemic is in progress. We want to know what the **effective reproduction number is at the current time**. This is the average number of secondary infections caused by a single infected individual at a given point in time and is a measure of the transmissibility of the infection in the population at that time.
+An epidemic is in progress.
+We want to know what the **effective reproduction number is at the current time**.
+This is the average number of secondary infections caused by a single infected individual at a given point in time and is a measure of the transmissibility of the infection in the population at that time.
 
 Unfortunately, we can't directly observe infections and the data we do observe suffers from reporting delays.
 
@@ -69,11 +72,13 @@ Unfortunately, we can't directly observe infections and the data we do observe s
 :::
 
 ::: {.alert .alert-warning}
-`epinowcast` is still in development and so the following case study has pain points and limitations that we are working on improving. If you have any suggestions or feedback please get in touch via the [issues page](https://github.com/epinowcast/epinowcast/issues). We also welcome contributions via pull requests (see our [contributing guidelines](https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md).
+`epinowcast` is still in development and so the following case study has pain points and limitations that we are working on improving.
+If you have any suggestions or feedback please get in touch via the [issues page](https://github.com/epinowcast/epinowcast/issues).
+We also welcome contributions via pull requests (see our [contributing guidelines](https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md).
 :::
 ## Getting setup
 
-See the [package documentation](https://package.epinowcast.org/) for guidance on installing the package and getting setup with `cmdstanr` (the backend used here for fitting models). 
+See the [package documentation](https://package.epinowcast.org/) for guidance on installing the package and getting setup with `cmdstanr` (the backend used here for fitting models).
 
 As well as the `epinowcast` package we will use the following packages in this vignette.
 
@@ -97,13 +102,18 @@ library(primarycensored)
 
 ### Overview
 
-In this case study, we use data sourced from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence). The data represent hospitalisation counts by date of positive test and date of test report in Germany. These data have been used extensively for nowcasting and forecasting COVID-19 hospitalisations in Germany and are described in detail in [Wolffram et al. (2023)](https://doi.org/10.1101/2023.04.17.23288668). We use these data as they are a good example of the type of data that are available in many settings. We first summarise the data,
+In this case study, we use data sourced from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence).
+The data represent hospitalisation counts by date of positive test and date of test report in Germany.
+These data have been used extensively for nowcasting and forecasting COVID-19 hospitalisations in Germany and are described in detail in [Wolffram et al. (2023)](https://doi.org/10.1101/2023.04.17.23288668).
+We use these data as they are a good example of the type of data that are available in many settings.
+We first summarise the data,
 
 ```{r}
 summary(germany_covid19_hosp)
 ```
 
-In this case study we only consider national level data without stratification by age group. We can filter these data using `data.table` as follows,
+In this case study we only consider national level data without stratification by age group.
+We can filter these data using `data.table` as follows,
 
 
 ```{r}
@@ -120,7 +130,8 @@ These data are already in a format that can be used with `epinowcast`, as it con
 - a report date (column `report_date`): the date of report for a given set of observations by reference date
 - a count (column `confirm`): the total number of hospitalisations by reference date and report date. Note that this is cumulative by report date.
 
-The package also provides a range of tools to convert data from line list, incidence, or other common formats into the required format (see [Data converters](https://package.epinowcast.org/dev/reference/index.html#data-converters)). For example we could convert the data to a individual case linelist,
+The package also provides a range of tools to convert data from line list, incidence, or other common formats into the required format (see [Data converters](https://package.epinowcast.org/dev/reference/index.html#data-converters)).
+For example we could convert the data to a individual case linelist,
 
 ```{r}
 germany_covid19_hosp_linelist <- germany_covid19_hosp |>
@@ -146,12 +157,15 @@ incidence_from_linelist
 ```
 
 ::: {.alert .alert-warning}
-Here we have specified the `reference_date` and `report_date` columns, the `by` columns (which are used to group the data), and the `max_delay` which is the maximum delay between the reference date and the report date (note that the observed delay is longer than our specified delay and so is used instead). The `enw_linelist_to_incidence()` function will then calculate the incidence by reference date and report date for each group.
+Here we have specified the `reference_date` and `report_date` columns, the `by` columns (which are used to group the data), and the `max_delay` which is the maximum delay between the reference date and the report date (note that the observed delay is longer than our specified delay and so is used instead).
+The `enw_linelist_to_incidence()` function will then calculate the incidence by reference date and report date for each group.
 :::
 
 ### Filtering the data
 
-For this case study we will only consider data from the 1st of March 2020 onwards. As a first step, we filter the data to only include observations from the 1st of May 2021 until the 1st of August 2021. We do this using the `enw_filter_report_dates()` and `enw_filter_reference_dates()` functions,
+For this case study we will only consider data from the 1st of March 2020 onwards.
+As a first step, we filter the data to only include observations from the 1st of May 2021 until the 1st of August 2021.
+We do this using the `enw_filter_report_dates()` and `enw_filter_reference_dates()` functions,
 
 ```{r}
 complete_germany_hosp <- germany_hosp |>
@@ -162,9 +176,11 @@ complete_germany_hosp <- germany_hosp |>
   enw_add_incidence()
 ```
 
-Here we have also used `enw_complete_dates()` to make sure that we have complete data for all dates between the earliest and latest dates. We have also used `enw_add_incidence()` to add the incidence column to the data. 
+Here we have also used `enw_complete_dates()` to make sure that we have complete data for all dates between the earliest and latest dates.
+We have also used `enw_add_incidence()` to add the incidence column to the data.
 
-Next we split the data into two parts, the data that was available at the time and that will be used to fit the model (`rt_nat_germany`) and the data that was available retrospectively about the same time period will be used to evaluate the model (`retro_nat_germany`). We again do this using the `enw_filter_report_dates()` and `enw_filter_reference_dates()` functions as follows:  
+Next we split the data into two parts, the data that was available at the time and that will be used to fit the model (`rt_nat_germany`) and the data that was available retrospectively about the same time period will be used to evaluate the model (`retro_nat_germany`).
+We again do this using the `enw_filter_report_dates()` and `enw_filter_reference_dates()` functions as follows:
 
 - Create the real-time dataset (`rt_nat_germany`) by filtering the data to only include reported observations from the 1st of May 2021 until the 1st of July 2021;
 
@@ -193,7 +209,8 @@ head(latest_germany_hosp, n = 10)
 
 ### Visualising the data
 
-Before we define, or fit, a model we should visualise the data to get an idea of the trends in the data and its reporting structure. There is currently no function in `epinowcast` to visualise the data, but we can use the `ggplot2` package to do this manually as follows,
+Before we define, or fit, a model we should visualise the data to get an idea of the trends in the data and its reporting structure.
+There is currently no function in `epinowcast` to visualise the data, but we can use the `ggplot2` package to do this manually as follows,
 
 ```{r,  class.source = "fold-hide"}
 #| fig.cap: "Hospitalisations in Germany by date of positive test and date of report" # nolint
@@ -253,15 +270,25 @@ gh_vis_cohorts_by_ref_rep |>
 
 ## Model
 
-The `epinowcast` package provides a flexible framework for modelling the incidence of infections and subsequent measures such as hospitalisations that are themselves reported with some delay. The framework is based on a generative model that describes the hypothesised process by which the data are generated. The generative model is then used to define a likelihood function that describes the probability of observing the data given the model parameters. The likelihood function is then combined with prior information used to fit the model parameters to the data. In the following sections we describe the generative model for the incidence of infections and hospitalisations. If you would like to know more about the general framework see the [model vignette](https://package.epinowcast.org/articles/model.html).
+The `epinowcast` package provides a flexible framework for modelling the incidence of infections and subsequent measures such as hospitalisations that are themselves reported with some delay.
+The framework is based on a generative model that describes the hypothesised process by which the data are generated.
+The generative model is then used to define a likelihood function that describes the probability of observing the data given the model parameters.
+The likelihood function is then combined with prior information used to fit the model parameters to the data.
+In the following sections we describe the generative model for the incidence of infections and hospitalisations.
+If you would like to know more about the general framework see the [model vignette](https://package.epinowcast.org/articles/model.html).
 
 ### Expected hospitalisations
 
-The first part of the generative process we consider is the expected number of hospitalisations by date positive test. This is the number of hospitalisations that we would expect to observe if we had perfect reporting of hospitalisations and there was no unmodelled variance. This part of the model is also decomposed into three parts: the expected number of infections, the delay from infection to positive test, and the probability of hospitalisation given an infection. These three parts are combined to give the expected number of hospitalisations by date positive test. We describe each of these parts in turn.
+The first part of the generative process we consider is the expected number of hospitalisations by date positive test.
+This is the number of hospitalisations that we would expect to observe if we had perfect reporting of hospitalisations and there was no unmodelled variance.
+This part of the model is also decomposed into three parts: the expected number of infections, the delay from infection to positive test, and the probability of hospitalisation given an infection.
+These three parts are combined to give the expected number of hospitalisations by date positive test.
+We describe each of these parts in turn.
 
 #### Expected infections
 
-We model expected infections as a function of the effective (instantaneous) reproduction number and previous infections weighted by the generation time using the renewal equation [@Fraser2007; @Cori2013]. This corresponds to the commonly used Susceptible-Exposed-Infected-Recovered (SEIR) model when the appropriate generation time is specified [@champredon].
+We model expected infections as a function of the effective (instantaneous) reproduction number and previous infections weighted by the generation time using the renewal equation [@Fraser2007; @Cori2013].
+This corresponds to the commonly used Susceptible-Exposed-Infected-Recovered (SEIR) model when the appropriate generation time is specified [@champredon].
 
 ##### Instantaneous reproduction number
 
@@ -275,24 +302,40 @@ We model the instantaneous reproduction number ($R_t$) on the log scale as a wee
 
 where $r_0$ is the intercept, and $\sum_{i = 0}^{t \% 7} \epsilon_i$ is a weekly random walk.
 
-We choose this model because it is flexible, can be used to model a range of different scenarios, and is parsimonious. For example, if we set $\sigma_{\epsilon} = 0$ then the model reduces to a constant reproduction number. If we set $\sigma_{\epsilon} > 0$ then the model allows for changes in the reproduction number over time. Other sensible choices for the model include a random walk with a longer time scale (e.g. monthly) or shorter time scale (e.g. daily), a random walk with a drift term, or a random walk with a drift term and a seasonal component. 
+We choose this model because it is flexible, can be used to model a range of different scenarios, and is parsimonious.
+For example, if we set $\sigma_{\epsilon} = 0$ then the model reduces to a constant reproduction number.
+If we set $\sigma_{\epsilon} > 0$ then the model allows for changes in the reproduction number over time.
+Other sensible choices for the model include a random walk with a longer time scale (e.g. monthly) or shorter time scale (e.g. daily), a random walk with a drift term, or a random walk with a drift term and a seasonal component.
 
 ##### Latent infections
 
-We model the expected number of infections/latent notifications ($\lambda^l$) using a renewal process [@Fraser2007; @Cori2013]. This model is a generalisation of the default `epinowcast` model and implies that current infections/notifications are dependent on past infections/notifications based on a kernel. This kernel is defined by the generation time distribution, the probability distribution of the time between infection and subsequent infectiousness, and the previously defined model for the effective reproduction number. The model is defined as follows,
+We model the expected number of infections/latent notifications ($\lambda^l$) using a renewal process [@Fraser2007; @Cori2013].
+This model is a generalisation of the default `epinowcast` model and implies that current infections/notifications are dependent on past infections/notifications based on a kernel.
+This kernel is defined by the generation time distribution, the probability distribution of the time between infection and subsequent infectiousness, and the previously defined model for the effective reproduction number.
+The model is defined as follows,
 
 \begin{align}
   \lambda^l_{t} &\sim \text{LogNormal}\left(\mu^{l}, \sigma^{l} \right),\ t \leq P \\
   \lambda^l_{t} &= R_{t} \sum_{p = 1}^{P} g\left(t - p \right)  \lambda^l_{t-p},\ t \gt P  
 \end{align}
 
-We assume the generation time ($g$) is a gamma distribution with mean 4 days and a standard deviation of 3 days. To initialise the model we assume that the first $P$ latent notifications are log-normally distributed with mean $\mu^{l}_{g,t}$ and standard deviation $\sigma^{l}_{g,t}$. This is equivalent to assuming that the first $P$ latent notifications are independent and identically distributed. The mean of the log-normal distribution for each group is the log of the latest reported case count for the first reference date for that group scaled by the sum of the latent reporting delay. The standard deviation is assumed to be 1. 
+We assume the generation time ($g$) is a gamma distribution with mean 4 days and a standard deviation of 3 days.
+To initialise the model we assume that the first $P$ latent notifications are log-normally distributed with mean $\mu^{l}_{g,t}$ and standard deviation $\sigma^{l}_{g,t}$.
+This is equivalent to assuming that the first $P$ latent notifications are independent and identically distributed.
+The mean of the log-normal distribution for each group is the log of the latest reported case count for the first reference date for that group scaled by the sum of the latent reporting delay.
+The standard deviation is assumed to be 1.
 
 #### Latent reporting delay and ascertainment
 
-In many settings, such as in this case study, there may be additional reporting delays on top of those that are directly observed in the data, and therefore "nowcastable", a common example is the delay from exposure to symptom onset. For these settings we support modelling "latent" reporting delays as a convolution of the underlying expected counts with the potential for these delays to vary over time and by group. This implementation is similar to that implemented in `EpiNow2` and `epidemia` as well as other similar models  [@EpiNow2; @Abbott2020; @Bhatt2020; @Lison2022]. In addition to this, we support modelling ascertainment through the use of improper probability mass functions (i.e. by not enforcing a sum to 1 constraint) and inferring ascertainment where possible (for example day of the week reporting patterns).
+In many settings, such as in this case study, there may be additional reporting delays on top of those that are directly observed in the data, and therefore "nowcastable", a common example is the delay from exposure to symptom onset.
+For these settings we support modelling "latent" reporting delays as a convolution of the underlying expected counts with the potential for these delays to vary over time and by group.
+This implementation is similar to that implemented in `EpiNow2` and `epidemia` as well as other similar models  [@EpiNow2; @Abbott2020; @Bhatt2020; @Lison2022].
+In addition to this, we support modelling ascertainment through the use of improper probability mass functions (i.e. by not enforcing a sum to 1 constraint) and inferring ascertainment where possible (for example day of the week reporting patterns).
 
-Here we assume an infection to hospitalisation ratio of 2% modified by a random effect for the day of the week to account for within week reporting periodicity. We also assume a lognormal reporting delay with a mean of 5 days and a standard deviation of 2 days, representing the delay from infection to positive test. We assume that the reporting delay is the same for all days of the week. This model is defined as follows,
+Here we assume an infection to hospitalisation ratio of 2% modified by a random effect for the day of the week to account for within week reporting periodicity.
+We also assume a lognormal reporting delay with a mean of 5 days and a standard deviation of 2 days, representing the delay from infection to positive test.
+We assume that the reporting delay is the same for all days of the week.
+This model is defined as follows,
 
 \begin{align}
   \lambda_{t} &= \nu_{t \% 7} \sum_{\tau = 0}^{L - 1} f_{g}\left(t - \tau \right)  \lambda^l_{t - \tau} \\
@@ -304,13 +347,17 @@ Where $\nu_{i}$ is a random effect for each day of the week which represents rep
 
 #### Specifying the model using `epinowcast::enw_expectation()`
 
-We first need to define the weekly random walk model for the effective reproduction number. We can do this using the formula interface as follows,
+We first need to define the weekly random walk model for the effective reproduction number.
+We can do this using the formula interface as follows,
 
 ```{r}
 rt_formula <- ~ 1 + rw(week)
 ```
 
-Next we define the generation time distribution. As already discussed, we assume a gamma distribution with mean 4 days and a standard deviation of 3 days. These summary parameters first need to be transformed to the shape and scale parameters used for the gamma distribution. We then need to account for daily censoring and finally normalise the probability mass function (PMF) to account for right truncation.
+Next we define the generation time distribution.
+As already discussed, we assume a gamma distribution with mean 4 days and a standard deviation of 3 days.
+These summary parameters first need to be transformed to the shape and scale parameters used for the gamma distribution.
+We then need to account for daily censoring and finally normalise the probability mass function (PMF) to account for right truncation.
 
 ```{r}
 #| fig.cap: "Probability mass function of the assumed generation interval distribution" # nolint
@@ -331,7 +378,8 @@ plot(gt_pmf)
 Here and for other PMFs we set the maximum delay to be 15 days as this gives good coverage of the majority of the distribution and limits the computational burden of fitting the model.
 :::
 
-Now we define the latent reporting delay in a similar way remembering we specified a lognormal distribution with a mean of 5 days and a standard deviation of 2 days. We again also need to account for daily censoring and normalise the PMF to account for right truncation.
+Now we define the latent reporting delay in a similar way remembering we specified a lognormal distribution with a mean of 5 days and a standard deviation of 2 days.
+We again also need to account for daily censoring and normalise the PMF to account for right truncation.
 
 ```{r}
 #| fig.cap: "Probability mass function of the assumed latent (unobserved) reporting distribution" # nolint
@@ -349,13 +397,16 @@ reporting_pmf <- 0:14 |>
 plot(reporting_pmf)
 ```
 
-The last part of the model to define is the remaining part of the ascertainment model for expected hospitalisations. As we have already defined the base ascertainment ratio (i.e. the 2% infection to hospitalisation ratio) we only need to define the day of the week random effect. We can do this using the formula interface as follows,
+The last part of the model to define is the remaining part of the ascertainment model for expected hospitalisations.
+As we have already defined the base ascertainment ratio (i.e. the 2% infection to hospitalisation ratio) we only need to define the day of the week random effect.
+We can do this using the formula interface as follows,
 
 ```{r}
 observation_formula <- ~ 1 + (1 | day_of_week)
 ```
 
-Finally, we can combine these four parts of the model to define the expected hospitalisations by date of positive test. We do this using the `epinowcast::enw_expectation()` function as follows,
+Finally, we can combine these four parts of the model to define the expected hospitalisations by date of positive test.
+We do this using the `epinowcast::enw_expectation()` function as follows,
 
 ```{r expected-infections}
 expectation_module <- partial(
@@ -371,7 +422,7 @@ expectation_module <- partial(
 
 #### Defining the delay distribution
 
-Given case counts both by date of reference and by date of report, we can estimate the reporting delay distribution directly and jointly with the underlying process model, rather than relying on external estimates from other sources (though we may want to account for external information in our priors). 
+Given case counts both by date of reference and by date of report, we can estimate the reporting delay distribution directly and jointly with the underlying process model, rather than relying on external estimates from other sources (though we may want to account for external information in our priors).
 See `?epinowcast` for details on inspecting and customising priors.
 
 We consider the reporting delay to follow a $\text{LogNormal} \left(\mu^d, \sigma^d \right)$ distribution, with parameters
@@ -395,7 +446,8 @@ reference_module <- partial(enw_reference, ~1, distribution = "lognormal")
 
 #### Defining the observation model
 
-Expected notifications by date of positive test ($t$) and reporting date can now be found by multiplying expected final notifications by date of positive test for each $t$ with the probability of reporting for each day of delay ($p_{t,d}$). We assume a Poisson observation model and produce a nowcast of final observed hospitalisations at each reference date by summing posterior estimates for unobserved notification and observed notifications for that reference date.
+Expected notifications by date of positive test ($t$) and reporting date can now be found by multiplying expected final notifications by date of positive test for each $t$ with the probability of reporting for each day of delay ($p_{t,d}$).
+We assume a Poisson observation model and produce a nowcast of final observed hospitalisations at each reference date by summing posterior estimates for unobserved notification and observed notifications for that reference date.
 
 \begin{align}
   n_{t,d} \mid \lambda_{t},p_{t,d}  &\sim \text{Poisson} \left(\lambda_{t} \times p_{t,d} \right),\ t=1,...,T. \\
@@ -412,7 +464,10 @@ obs_module <- partial(enw_obs, family = "poisson")
 
 ### Preprocess the data
 
-Before fitting the model we have just defined we need to preprocess the data in order for it to be in the correct format to work with `epinowcast` and to produce metadata that describes aspects of the data we use in the model (for example the maximum delay, the number of groups, and the number of observations in each group). We do this using the `enw_preprocess_data()` function as follows for both the real-time and retrospective datasets. Note that we set `max_delay = 30` to constrain the modelled maximum delay to 30 days. This is a pragmatic choice to ensure that the model can be fit in a reasonable amount of time, but we could also set this to be longer if we wanted to and if the data suggested a longer delay was possible.
+Before fitting the model we have just defined we need to preprocess the data in order for it to be in the correct format to work with `epinowcast` and to produce metadata that describes aspects of the data we use in the model (for example the maximum delay, the number of groups, and the number of observations in each group).
+We do this using the `enw_preprocess_data()` function as follows for both the real-time and retrospective datasets.
+Note that we set `max_delay = 30` to constrain the modelled maximum delay to 30 days.
+This is a pragmatic choice to ensure that the model can be fit in a reasonable amount of time, but we could also set this to be longer if we wanted to and if the data suggested a longer delay was possible.
 
 ```{r}
 rt_germany_pobs <- enw_preprocess_data(rt_germany, max_delay = 30)
@@ -446,7 +501,11 @@ retro_nodelay_pobs
 
 #### Specifying the fitting options
 
-Before we are ready to fit the model we need to first specify some fitting options for using `cmdstanr` (more information on these options can be found in the `cmdstanr` documentation). We use 2 chains with 2 threads per chain (so using 4 CPU cores in total) 500 warmup samples and 1000 iterations per chain. As this is a complex model we set `adapt_delta` to 0.98 (the default is 0.8) so that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently. For the same reason, we have also set the `max_treedepth` to 15 (the default is 10). Finally, we set `save_warmup` to `FALSE` to save space (we don't need the warmup samples for this analysis), and `pp` to `TRUE` so that we can use posterior predictive checks to assess the model fit.
+Before we are ready to fit the model we need to first specify some fitting options for using `cmdstanr` (more information on these options can be found in the `cmdstanr` documentation).
+We use 2 chains with 2 threads per chain (so using 4 CPU cores in total) 500 warmup samples and 1000 iterations per chain.
+As this is a complex model we set `adapt_delta` to 0.98 (the default is 0.8) so that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently.
+For the same reason, we have also set the `max_treedepth` to 15 (the default is 10).
+Finally, we set `save_warmup` to `FALSE` to save space (we don't need the warmup samples for this analysis), and `pp` to `TRUE` so that we can use posterior predictive checks to assess the model fit.
 
 ```{r fit-options}
 fit_module <- partial(enw_fit_opts,
@@ -464,12 +523,15 @@ fit_module <- partial(enw_fit_opts,
 ```
 
 ::: {.alert .alert-warning}
-If you have more than 4 CPU cores available you can increase the number of threads per chain to make use of these additional cores. For example if you have 8 CPU cores available you could set `threads_per_chain = 4` to use all 8 cores (as there are 2 chains).
+If you have more than 4 CPU cores available you can increase the number of threads per chain to make use of these additional cores.
+For example if you have 8 CPU cores available you could set `threads_per_chain = 4` to use all 8 cores (as there are 2 chains).
 :::
 
 #### Compiling the model
 
-We also need to compile the model using `cmdstanr` before fitting it (we only have to do this once after installing the package). In order for this line to work you should have followed the installation guide in the [README](https://package.epinowcast.org). This will take around a minute to run when called for the first time.
+We also need to compile the model using `cmdstanr` before fitting it (we only have to do this once after installing the package).
+In order for this line to work you should have followed the installation guide in the [README](https://package.epinowcast.org).
+This will take around a minute to run when called for the first time.
 
 ```{r compile-model}
 epinowcast_model <- enw_model()
@@ -477,7 +539,8 @@ epinowcast_model <- enw_model()
 
 #### Fitting the model
 
-Now we are ready to bring together all the modules we have specified, combine them with the model we have just compiled, and fit our synthetic data. We first fit to the data that would have been available in real-time,
+Now we are ready to bring together all the modules we have specified, combine them with the model we have just compiled, and fit our synthetic data.
+We first fit to the data that would have been available in real-time,
 
 ```{r}
 germany_nowcast <- epinowcast(
@@ -492,7 +555,8 @@ germany_nowcast
 ```
 
 ::: {.alert .alert-warning}
-Fitting this model with the default options will take around 5 minutes to run on a laptop with 4 CPU cores. If you have more CPU cores available you can reduce the time it takes to fit the model by increasing the number of threads per chain (see the [fitting options](#fitting-the-epinowcast-model) section above).
+Fitting this model with the default options will take around 5 minutes to run on a laptop with 4 CPU cores.
+If you have more CPU cores available you can reduce the time it takes to fit the model by increasing the number of threads per chain (see the [fitting options](#fitting-the-epinowcast-model) section above).
 :::
 
 and then on the retrospectively observed data.
@@ -510,7 +574,10 @@ retro_germany_nowcast
 ```
 
 ::: {.alert .alert-warning}
-You may see a number of warning messages from `cmdstanr` when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in `epinowcast`. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are actively working on improving in future versions of `epinowcast`.
+You may see a number of warning messages from `cmdstanr` when fitting the model.
+These generally occur when the model is being initialised and are due to this process not currently being optimised in `epinowcast`.
+The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase).
+This is something we are actively working on improving in future versions of `epinowcast`.
 :::
 
 Finally, we fit the model to the retrospective data without delay estimation.
@@ -541,7 +608,9 @@ This model fits much faster than the models with delay estimation as it has far 
 
 #### Plotting the nowcast based on real-time data
 
-We first plot the nowcast based on real-time data. Effectively here we are trying to use our model to estimate the hospitalisations that will ultimately be reported based on the data that is currently available. We can compare this to the most recent observations to see how well the model is doing.
+We first plot the nowcast based on real-time data.
+Effectively here we are trying to use our model to estimate the hospitalisations that will ultimately be reported based on the data that is currently available.
+We can compare this to the most recent observations to see how well the model is doing.
 ```{r plot-germany-nowcast}
 #| fig.cap: "Nowcast of hospitalisations in Germany based on real-time data"
 plot(
@@ -551,15 +620,21 @@ plot(
 
 Internally, this plotting function (see `?plot.epinowcast()`) sums observed data and posterior estimates for unobserved data to produce a nowcast of the number of hospitalisations that will ultimately be reported.
 
-In this instance, the model has done a good job of estimating the number of hospitalisations that will ultimately be reported based on the data that is currently available. This is not always the case, and the model can sometimes over or under estimate the number of hospitalisations that will ultimately be reported. 
+In this instance, the model has done a good job of estimating the number of hospitalisations that will ultimately be reported based on the data that is currently available.
+This is not always the case, and the model can sometimes over or under estimate the number of hospitalisations that will ultimately be reported.
 
 ::: {.alert .alert-warning}
-An important thing to note here is that this model is clearly not perfect with more complete data being less well estimated by the model. This likely indicates some misspecification in the reporting delay model which could be fixed by making it more complex or even by making it entirely non-parametric (vs being based on a LogNormal).
+An important thing to note here is that this model is clearly not perfect with more complete data being less well estimated by the model.
+This likely indicates some misspecification in the reporting delay model which could be fixed by making it more complex or even by making it entirely non-parametric (vs being based on a LogNormal).
 :::
 
 #### Plotting the nowcast based on retrospective data
 
-We can also plot the nowcast based on the retrospective data. As this plot uses observed data where available this is effectively plotting observed data after a 30 day delay (as this was the maximum we specified) compared to data that will ultimately be observed. This can be used to get a feel for how well specified our maximum delay is. Here we see that a small number of hospitalisations will be reported after 30 days. This will impact the performance of even an ideal model as it will not be able to predict these hospitalisations and so should be accounted for in the model evaluation.
+We can also plot the nowcast based on the retrospective data.
+As this plot uses observed data where available this is effectively plotting observed data after a 30 day delay (as this was the maximum we specified) compared to data that will ultimately be observed.
+This can be used to get a feel for how well specified our maximum delay is.
+Here we see that a small number of hospitalisations will be reported after 30 days.
+This will impact the performance of even an ideal model as it will not be able to predict these hospitalisations and so should be accounted for in the model evaluation.
 
 ```{r plot-retro-germany-nowcast}
 #| fig.cap: "Nowcast of hospitalisations in Germany based on retrospective data"
@@ -571,7 +646,10 @@ plot(
 
 ### Posterior predictions for cases by date of positive test and report
 
-To better understand the fit of the model to data we can instead plot the posterior predictions for the observed data. This is effectively the same as the plot above but instead of plotting the posterior predictions for the unobserved data we plot the posterior predictions for the observed data. This can be used to get a feel for how well the model is able to predict the observed data. Rather than using the build in plot function (by changing `type = "posterior_prediction"`) we instead use `enw_plot_pp_quantiles()` so we can control the number of references dates we plot (as otherwise the plot will be quite overwhelming!).
+To better understand the fit of the model to data we can instead plot the posterior predictions for the observed data.
+This is effectively the same as the plot above but instead of plotting the posterior predictions for the unobserved data we plot the posterior predictions for the observed data.
+This can be used to get a feel for how well the model is able to predict the observed data.
+Rather than using the build in plot function (by changing `type = "posterior_prediction"`) we instead use `enw_plot_pp_quantiles()` so we can control the number of references dates we plot (as otherwise the plot will be quite overwhelming!).
 
 ```{r plot-retro-germany-nowcast-obs}
 #| fig.cap: "Posterior predictions of hospitalisations in Germany based on retrospective data" # nolint
@@ -589,12 +667,18 @@ plot_select_pp_dates(
 ```
 
 ::: {.alert .alert-warning}
-It is clear from this plot that for these example dates the model is in the main able to predict the observed data well. However, there are also some aspects of the data that the model is less well able to predict, in particular the apparent periodicity in the reporting delay. This is likely due to the model not being able to account for the day of the week reporting periodicity. This could be fixed by adding a day of the week random effect to the reporting delay model which we demonstrate in the [package README](https://package.epinowcast.org).
+It is clear from this plot that for these example dates the model is in the main able to predict the observed data well.
+However, there are also some aspects of the data that the model is less well able to predict, in particular the apparent periodicity in the reporting delay.
+This is likely due to the model not being able to account for the day of the week reporting periodicity.
+This could be fixed by adding a day of the week random effect to the reporting delay model which we demonstrate in the [package README](https://package.epinowcast.org).
 :::
 
 ### Real-time and retrospective estimates of the effective reproduction number
 
-A key output of the model is the posterior distribution of the effective reproduction number. We can plot this for both the real-time and retrospective data to see how the estimates change as more data becomes available. Ideally, we would hope that the real-time estimates would overlap with the retrospective estimates. This would indicate that our model is able to accurately estimate hospitalisations that will be ultimately reported based on those that have already been reported.
+A key output of the model is the posterior distribution of the effective reproduction number.
+We can plot this for both the real-time and retrospective data to see how the estimates change as more data becomes available.
+Ideally, we would hope that the real-time estimates would overlap with the retrospective estimates.
+This would indicate that our model is able to accurately estimate hospitalisations that will be ultimately reported based on those that have already been reported.
 
 ```{r plot-germany-rt,  class.source = "fold-hide"}
 #| fig.cap: "Real-time and retrospective estimates of the effective reproduction number in Germany" # nolint
@@ -710,9 +794,12 @@ The estimates are a fairly good match indicating that the delay is being well es
 
 ### Estimates of the number of expected hospitalisations both in real-time and retrospectively
 
-We can also plot the posterior predictions for the number of expected hospitalisations. This is the number of hospitalisations that would be reported if there was no observation error. We can compare this to the number of hospitalisations that are ultimately reported to see how well the model is doing. 
+We can also plot the posterior predictions for the number of expected hospitalisations.
+This is the number of hospitalisations that would be reported if there was no observation error.
+We can compare this to the number of hospitalisations that are ultimately reported to see how well the model is doing.
 
-Retrospectively, we would expect the model to fit very well to this data with any differences being due to the observation error. If this is not the case it indicates we may need to revisit our expected hospitalisation model specification to make it closer to the generative process of the data we have.
+Retrospectively, we would expect the model to fit very well to this data with any differences being due to the observation error.
+If this is not the case it indicates we may need to revisit our expected hospitalisation model specification to make it closer to the generative process of the data we have.
 
 In real-time, we would expect the model to fit less well to this data as it is trying to estimate the number of hospitalisations that will ultimately be reported based on the data that is currently available (i.e. it also has to account for the reporting delay which is now partially unobserved).
 
@@ -765,7 +852,8 @@ ggplot(exp_cases) +
 The black points here are the counts at the maximum modelled delay (`latest_germany_hosp`, the rolling "obs at max delay" set) — the same data the retrospective models see, which is what `enw_retrospective()` also uses internally.
 The ribbons show posterior uncertainty on the *expected* observations (`exp_lobs`), not posterior predictive draws, so they do not include Poisson observation noise and individual points will scatter around the fitted mean even for a well-specified model.
 
-As expected the retrospective estimates fit very well to the data. The real-time estimates are slightly less good, but still capture the recent change in trend in the data which would not be possible without a nowcast (as estimates would be biased towards underpredicting due to the delay in reporting leading to right truncation).
+As expected the retrospective estimates fit very well to the data.
+The real-time estimates are slightly less good, but still capture the recent change in trend in the data which would not be possible without a nowcast (as estimates would be biased towards underpredicting due to the delay in reporting leading to right truncation).
 
 ## Wrapping up
 

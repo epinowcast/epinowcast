@@ -29,7 +29,8 @@ library(epinowcast)
 
 ## Available distributions
 
-The currently available parametric delay distributions are continuous probability distributions with (up to) two parameters $\mu_{g,t}$ and $\upsilon_{g,t}$. The table below provides a link to the definition of each distribution, specifies how the parameters $\mu_{g,t}$ and $\upsilon_{g,t}$ are mapped to the parameters of the distribution (according to the referenced definition), and states the resulting mean of the distribution (before discretization and adjustment for the assumed maximum delay).
+The currently available parametric delay distributions are continuous probability distributions with (up to) two parameters $\mu_{g,t}$ and $\upsilon_{g,t}$.
+The table below provides a link to the definition of each distribution, specifies how the parameters $\mu_{g,t}$ and $\upsilon_{g,t}$ are mapped to the parameters of the distribution (according to the referenced definition), and states the resulting mean of the distribution (before discretization and adjustment for the assumed maximum delay).
 
 | Distribution 	| Parametrization | Mean |
 | :--------------:	| :------------:  | :------------------:	|

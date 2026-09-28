@@ -1,4 +1,16 @@
-# epinowcast 0.7.0
+# epinowcast 0.8.0.1000
+
+## Model
+
+- `enw_expectation()` now accepts uncertain generation time and latent reporting delay distributions specified with the new `enw_uncertain()` helper, in addition to the existing fixed numeric PMFs.
+  The distribution parameters are estimated from priors and the PMF is discretised (and, for the latent reporting delay, convolved) within the model, reusing epinowcast's own parametric reference date discretisation machinery.
+  This gives feature parity with the uncertain distribution support in `EpiNow2` (no `EpiNow2` code is used).
+  Fixed PMFs remain the default so existing models are unaffected.
+  See the distributions vignette and #177 and #178.
+
+# epinowcast 0.8.0
+
+This is the first release of `epinowcast` to CRAN.
 
 ## Model
 
@@ -14,11 +26,6 @@
   An integer `d` argument (matching `arima()`'s `d`) integrates the process `d` times: `d = 0` is stationary (the default, like EpiNow2's `gp_on = "R0"`), `d = 1` gives a smoothly drifting trend (like EpiNow2's default `gp_on = "R_t-1"`), and `d >= 2` integrates further, anchoring the first `d` values to zero so the level and slope are carried by the fixed effects.
   The Stan implementation is adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2, MIT licensed).
   See #824.
-- `enw_expectation()` now accepts uncertain generation time and latent reporting delay distributions specified with the new `enw_uncertain()` helper, in addition to the existing fixed numeric PMFs.
-  The distribution parameters are estimated from priors and the PMF is discretised (and, for the latent reporting delay, convolved) within the model, reusing epinowcast's own parametric reference date discretisation machinery.
-  This gives feature parity with the uncertain distribution support in `EpiNow2` (no `EpiNow2` code is used).
-  Fixed PMFs remain the default so existing models are unaffected.
-  See the distributions vignette and #177 and #178.
 - Added an optional susceptible-depletion (population) adjustment to the renewal expectation model via the new `population`, `population_floor`, `population_uncertain`, and `population_cv` arguments to `enw_expectation()`.
   When a population size is supplied the effective reproduction number bends down as the susceptible pool is depleted by modelled latent cases, scaling transmission by the remaining susceptible fraction.
   The population can be fixed or fitted via a LogNormal prior, and is per-group: groups are treated as independent well-mixed populations (a single value is recycled across groups with a warning, or a length-`groups` vector sets group-specific values).
@@ -46,6 +53,9 @@
 - Lowered the minimum R version from 4.4.0 to 4.3.0 so users on R 4.3.x can install the package.
   No code in the package relies on features introduced in R 4.4.
   See #811 by @seabbs.
+- Re-vendored `inst/stan/functions/primarycensored.stan` from upstream `primarycensored` twice via the `check-primarycensored` workflow (#894, #895).
+  The first update pulled in `primarycensored`'s non-parametric step and hazard delay distributions, its exponential-growth helpers, and its analytical generalised gamma functions; none of these are yet exposed through `enw_reference()`, so this adds unused vendored code only.
+  The second update picked up a performance refactor of the vectorised PMF that shares analytical CDF terms across neighbouring windows (`primarycensored` #356); upstream reports values are unchanged and gradients match to rounding.
 
 ## Documentation
 
@@ -54,6 +64,9 @@
 - Added a temporal aggregation guide vignette covering the weekly timestep, daily-process / weekly-reporting (fitted and structural variants), and a daily benchmark, with weekly-scale CRPS comparison via `scoringutils`.
   Replaces the standalone scripts at `inst/examples/germany_weekly_process_model.R` and `inst/examples/germany_weekly_reporting_daily_process_model.R`.
   See #668 by @seabbs.
+- Moved the eight vignettes that fit Stan models (`delay-estimation`, `epinowcast`, `germany-age-stratified-nowcasting`, `inference-methods`, `latent-processes`, `single-timeseries-rt-estimation`, `susceptible-depletion`, `temporal-aggregation`) to `vignettes/articles/`, following pkgdown's articles convention.
+  They still render on the package website but are no longer built or shipped by `R CMD build`, which was most of the installed package's size.
+  No vignette content changed or was removed.
 
 ## Bug fixes
 

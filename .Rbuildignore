@@ -17,8 +17,7 @@
 ^inst/make_hexsticker\.R$
 ^inst/scripts$
 ^vignettes/precompile\.R$
-^vignettes/germany-age-stratified-nowcasting\.Rmd\.orig$
-^vignettes/single-timeseries-rt-estimation\.Rmd\.orig$
+^vignettes/articles$
 ^vignettes/chunks$
 ^doc$
 ^Meta$

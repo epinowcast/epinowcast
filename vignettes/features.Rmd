@@ -142,7 +142,9 @@ Specify the generative model for the expected latent process (e.g., infections, 
 - `enw_expectation()`: Specify latent process model and observation modifiers
 - See `?enw_expectation` for details
 
-**Where to see it:** The [latent processes vignette](latent-processes.html) compares random walks, ARIMA(p, d, q) residuals, stationary AR, and periodic terms on the growth rate, with the [ARIMA reference](arima.html) covering the maths, priors, and usage. The [Rt estimation vignette](single-timeseries-rt-estimation.html) demonstrates renewal process models with generation times, and the [susceptible depletion vignette](susceptible-depletion.html) shows the population adjustment on simulated data. See `?enw_uncertain` for examples of uncertain generation time and latent reporting delay distributions.
+**Where to see it:** The [latent processes vignette](latent-processes.html) compares random walks, ARIMA(p, d, q) residuals, stationary AR, and periodic terms on the growth rate, with the [ARIMA reference](arima.html) covering the maths, priors, and usage.
+The [Rt estimation vignette](single-timeseries-rt-estimation.html) demonstrates renewal process models with generation times, and the [susceptible depletion vignette](susceptible-depletion.html) shows the population adjustment on simulated data.
+See `?enw_uncertain` for examples of uncertain generation time and latent reporting delay distributions.
 
 # Hierarchical Structure {#hierarchical}
 
@@ -273,7 +275,8 @@ Control computational efficiency and parallelisation.
 - `enw_fit_opts()`: Specify computational options
 - See `?enw_fit_opts` for details
 
-**Where to see it:** The [inference methods vignette](inference-methods.html) compares NUTS, pathfinder, and pathfinder-initialised NUTS with runtime and posterior comparisons. See also the [Stan help vignette](stan-help.html) for guidance on computational settings.
+**Where to see it:** The [inference methods vignette](inference-methods.html) compares NUTS, pathfinder, and pathfinder-initialised NUTS with runtime and posterior comparisons.
+See also the [Stan help vignette](stan-help.html) for guidance on computational settings.
 
 # Data Handling
 

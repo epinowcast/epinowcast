@@ -708,7 +708,7 @@ transformed parameters{
     refnp_lh = regression_predictor(
       refnp_int_c, refnp_beta, refnp_fnindex, refnp_fncol, refnp_fdesign,
       refnp_sparse, refnp_beta_sd, refnp_rdesign, refnp_fintercept,
-      sparse_design, refnp_fintercept,
+      refnp_use_sparse, refnp_fintercept,
       refnp_arima_present, refnp_arima_T, refnp_arima_G,
       refnp_arima_p, refnp_arima_d, refnp_arima_q, refnp_arima_n_obs,
       refnp_arima_z, refnp_arima_pacf, refnp_arima_theta, refnp_arima_sigma,
