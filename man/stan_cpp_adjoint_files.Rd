@@ -9,7 +9,8 @@ stan_cpp_adjoint_files()
 \value{
 A named \code{character} vector mapping the relative path of each
 bodyless declaration file to the function name \code{\link[=stan_cpp_fallback_body]{stan_cpp_fallback_body()}}
-should be called with.
+should be called with. Paths use \code{/} (matching \code{list.files(..., recursive = TRUE)}, which is always \code{/}-separated, unlike a Windows
+filesystem path).
 }
 \description{
 The lookup used by \code{\link[=write_stan_files_no_profile]{write_stan_files_no_profile()}} to
@@ -31,6 +32,7 @@ Functions used to help convert models into the format required for stan
 \code{\link{enw_unset_cache}()},
 \code{\link{epinowcast_stan_header}()},
 \code{\link{remove_profiling}()},
+\code{\link{stage_stan_header}()},
 \code{\link{stan_cpp_fallback_body}()},
 \code{\link{write_stan_files_no_profile}()}
 }

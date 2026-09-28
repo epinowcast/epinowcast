@@ -63,9 +63,12 @@ Should the package's custom reverse-mode adjoints (currently:
 \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}'s \code{user_header}, with the matching Stan
 functions declared without a body and \code{allow-undefined} passed to
 \code{stanc_options}? If \code{FALSE}, every such function is instead compiled
-from a pure-Stan fallback body (see \code{\link[=stan_cpp_fallback_body]{stan_cpp_fallback_body()}}), and no
-C++ header or compiler support for it is required. Set
-\code{options(epinowcast.use_cpp = FALSE)} to change the default package-wide.}
+from a pure-Stan fallback body (see \code{\link[=stan_cpp_fallback_body]{stan_cpp_fallback_body()}}). Both
+settings need the same C++ toolchain as any other Stan model. Models
+compiled with \code{use_cpp = FALSE} are cached in a \code{no-cpp} subdirectory of
+\code{target_dir}, so switching this setting never reuses the wrong binary.
+Set \code{options(epinowcast.use_cpp = FALSE)} to change the default
+package-wide.}
 
 \item{...}{Additional arguments passed to \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}.}
 }
@@ -96,6 +99,7 @@ Functions used to help convert models into the format required for stan
 \code{\link{enw_unset_cache}()},
 \code{\link{epinowcast_stan_header}()},
 \code{\link{remove_profiling}()},
+\code{\link{stage_stan_header}()},
 \code{\link{stan_cpp_adjoint_files}()},
 \code{\link{stan_cpp_fallback_body}()},
 \code{\link{write_stan_files_no_profile}()}
