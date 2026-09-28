@@ -120,11 +120,11 @@ test_that("enw_replace_priors checks the prior family and parameters", {
   priors <- example_priors()
   expect_error(
     enw_replace_priors(priors, list(x = distspec::LogNormal(1, 1))),
-    "must be a \"normal\" distribution"
+    "must be a `distspec::Normal\\(\\)` distribution"
   )
   expect_error(
     enw_replace_priors(priors, list(x = distspec::Gamma(shape = 2, rate = 4))),
-    "must be a \"normal\" distribution"
+    "must be a `distspec::Normal\\(\\)` distribution"
   )
   expect_error(
     enw_replace_priors(priors, list(y = distspec::Beta(shape1 = 1, shape2 = 1))),
