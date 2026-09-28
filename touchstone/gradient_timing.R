@@ -93,14 +93,32 @@ cases <- list(
       report = enw_report(~ (1 | day_of_week), data = pobs),
       obs = enw_obs(family = "negbin", data = pobs)
     )
+  },
+  # Identical to `renewal_gt4` but with `population`/`population_floor`
+  # added to the `enw_expectation()` call (PR #831), so the
+  # `fmax(0, pop - cum_cases)` depletion-floor branches in
+  # `log_expected_latent_from_r.stan` are exercised. This is the case
+  # an adjoint's gradient-equivalence test (speed-up review, candidate
+  # 2.1) should be timed against, since it is the only one that reaches
+  # those branches.
+  renewal_gt4_depletion = function() {
+    source("touchstone/preprocessing.R", local = TRUE)
+    list(
+      pobs = pobs,
+      expectation = enw_expectation(
+        r = ~ 1 + rw(week),
+        generation_time = c(0.1, 0.4, 0.4, 0.1),
+        observation = ~ (1 | day_of_week),
+        latent_reporting_delay = 0.4 * c(0.05, 0.3, 0.6, 0.05),
+        population = 8000,
+        population_floor = 1,
+        data = pobs
+      ),
+      reference = enw_reference(~1, data = pobs),
+      report = enw_report(~ (1 | day_of_week), data = pobs),
+      obs = enw_obs(family = "negbin", data = pobs)
+    )
   }
-  # PENDING(#831): add a `renewal_gt4_depletion` case here, identical to
-  # `renewal_gt4` but with `population = 8000, population_floor = 1`
-  # added to the `enw_expectation()` call, once PR #831 merges (see the
-  # matching note in `touchstone/script.R`). This is the case an
-  # adjoint's gradient-equivalence test (speed-up review, candidate 2.1)
-  # should be timed against, since it is the only one that exercises the
-  # `fmax()` depletion-floor branches.
 )
 
 # ---- Timing helpers ----------------------------------------------------
