@@ -4,3 +4,4 @@
 test_expected_obs
 test_renewal_depletion_stan
 test_renewal_depletion
+test_renewal_depletion_cpp

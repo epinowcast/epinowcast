@@ -1,14 +1,15 @@
-// Stan-only test model for renewal_depletion_stan(). Includes the
-// package's real reference implementation
-// (inst/stan/functions/renewal_depletion_stan.stan) via include_paths
-// rather than a local copy, so it stays byte-identical to what
-// log_expected_latent_from_r() and the C++ fallback both call. Kept
-// separate from test_renewal_depletion.stan because that file declares
-// renewal_depletion() without a body, which needs `allow_undefined` and
-// a user_header to compile at all; this file avoids that so it can
-// compile and run without the C++ path.
+// Stan-only-call-site test model for the C++ renewal_depletion() adjoint,
+// mirroring test_renewal_depletion_stan.stan but calling only the C++
+// function (no runtime dispatch). Kept separate from the use_cpp-flagged
+// dispatcher in test_renewal_depletion.stan because cmdstanr's
+// compile_model_methods = TRUE (needed for log_prob()/grad_log_prob() in
+// the gradient-parity tests) does not build correctly against that
+// file's runtime `if (ctrl[2]) { ... } return ...;` dispatch — a
+// cmdstanr/Rcpp standalone-build limitation, not a problem with
+// renewal_depletion() itself (the plain, non-model-methods compile of
+// the dispatcher succeeds; see test-stan_renewal_depletion.R).
 functions {
-#include functions/renewal_depletion_stan.stan
+#include functions/renewal_depletion.stan
 }
 
 data {
@@ -39,14 +40,14 @@ model {
   vector[r_t] R_v = R_param ? exp(log_R) : R_data;
   vector[n0] rgt_v = rgt_param ? exp(log_rgt) : rgt_data;
   real pop_v = pop_param ? exp(log_pop[1]) : pop_data;
-  vector[n0 + r_t] z = renewal_depletion_stan(
+  vector[n0 + r_t] z = renewal_depletion(
     seed_v, R_v, rgt_v, pop_v, use_pop, pop_floor
   );
   target += dot_product(r, log1p(z));
 }
 
 generated quantities {
-  vector[n0 + r_t] z_data = renewal_depletion_stan(
+  vector[n0 + r_t] z_data = renewal_depletion(
     seed_data, R_data, rgt_data, pop_data, use_pop, pop_floor
   );
 }

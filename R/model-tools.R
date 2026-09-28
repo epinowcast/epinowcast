@@ -293,6 +293,13 @@ stan_cpp_fallback_body <- function(fn) {
       "  return logit_hazard_to_log_prob_stan(lh, l);",
       "}",
       sep = "\n"
+    ),
+    renewal_depletion = paste(
+      "vector renewal_depletion(vector seed, vector r, vector rgt,",
+      "                         real pop, int use_pop, data real pop_floor) {", # nolint
+      "  return renewal_depletion_stan(seed, r, rgt, pop, use_pop, pop_floor);", # nolint
+      "}",
+      sep = "\n"
     )
   )
   if (!fn %in% names(fallbacks)) {
@@ -318,8 +325,11 @@ stan_cpp_adjoint_files <- function() {
   # Stan #include-style relative path, matched against
   # list.files(..., recursive = TRUE)'s always-"/" output; not a
   # filesystem path, so file.path() would be wrong here.
-  path <- "functions/logit_hazard_to_log_prob.stan" # nolint
-  stats::setNames("logit_hazard_to_log_prob", path)
+  paths <- c(
+    "functions/logit_hazard_to_log_prob.stan", # nolint
+    "functions/renewal_depletion.stan" # nolint
+  )
+  stats::setNames(c("logit_hazard_to_log_prob", "renewal_depletion"), paths)
 }
 
 #' Write copies of the .stan files of a Stan model and its #include files,
@@ -630,8 +640,8 @@ enw_pathfinder <- function(data, model = epinowcast::enw_model(),
 #'
 #' @param use_cpp Logical, defaults to `getOption("epinowcast.use_cpp", TRUE)`.
 #' Should the package's custom reverse-mode adjoints (currently:
-#' `logit_hazard_to_log_prob()`, see [epinowcast_stan_header()] and
-#' `inst/include/epinowcast/`) be compiled in via
+#' `logit_hazard_to_log_prob()` and `renewal_depletion()`, see
+#' [epinowcast_stan_header()] and `inst/include/epinowcast/`) be compiled in via
 #' [cmdstanr::cmdstan_model()]'s `user_header`, with the matching Stan
 #' functions declared without a body and `allow-undefined` passed to
 #' `stanc_options`? If `FALSE`, every such function is instead compiled
@@ -741,12 +751,14 @@ epinowcast_stan_header <- function() {
 #' files in the `include` directory. Note that the following files contain
 #' overloaded functions and cannot be exposed: "delay_lpmf.stan",
 #' "allocate_observed_obs.stan", "obs_lpmf.stan", and "effects_priors_lp.stan".
-#' Functions implemented in C++ (currently "logit_hazard_to_log_prob.stan",
-#' see [enw_model()]'s `use_cpp` argument) are exposed via their retained
-#' pure-Stan fallback instead, since `expose_functions()` cannot link the
-#' package's C++ header; the exposed function's values match the C++
-#' implementation exactly (see `tests/testthat/test-stan_logit_hazard_to_log_prob.R`), # nolint
-#' but not its performance.
+#' Functions implemented in C++ (currently "logit_hazard_to_log_prob.stan"
+#' and "renewal_depletion.stan", see [enw_model()]'s `use_cpp` argument)
+#' are exposed via their retained pure-Stan fallback instead, since
+#' `expose_functions()` cannot link the package's C++ header; the exposed
+#' function's values match the C++ implementation exactly (see
+#' `tests/testthat/test-stan_logit_hazard_to_log_prob.R` and
+#' `tests/testthat/test-stan_renewal_depletion.R`), but not its
+#' performance.
 #'
 #' @param include A character string specifying the directory containing Stan
 #' files. Defaults to the 'stan/functions' directory of the [epinowcast()]

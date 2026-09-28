@@ -5,6 +5,8 @@ functions {
 #include functions/arima_kernel.stan
 #include functions/gaussian_process.stan
 #include functions/regression.stan
+#include functions/renewal_depletion_stan.stan
+#include functions/renewal_depletion.stan
 #include functions/log_expected_latent_from_r.stan
 #include functions/log_expected_obs_from_latent.stan
 #include functions/primarycensored.stan

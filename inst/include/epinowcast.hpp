@@ -6,5 +6,6 @@
 // compiling with cmdstanr (see epinowcast_stan_header() in
 // R/model-tools.R). Each new adjoint adds one more #include line here.
 #include "epinowcast/logit_hazard_to_log_prob.hpp"
+#include "epinowcast/renewal_depletion.hpp"
 
 #endif

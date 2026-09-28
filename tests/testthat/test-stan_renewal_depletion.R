@@ -3,38 +3,52 @@ skip_on_os("windows")
 skip_on_os("mac")
 skip_on_local()
 
-# Tests for the custom reverse-mode adjoint renewal_depletion(), which will
-# replace the `gt_n > 1` loop in log_expected_latent_from_r() (see
-# inst/stan/functions/log_expected_latent_from_r.stan and the derivation in
-# scratchpad/renewal-adjoint-log.md). The C++ implementation itself lands
-# once the inst/include plumbing from branch feat/cpp-adjoints is merged
-# here (tracked in the same log); until then `cpp_adjoint_available` gates
-# every test that needs it, and only the pure-Stan reference
-# (renewal_depletion_stan(), tests/testthat/stan/renewal_depletion_stan.stan)
-# is exercised.
-cpp_adjoint_available <- FALSE
+# Tests for the custom reverse-mode adjoint renewal_depletion(), which
+# replaces the `gt_n > 1` loop in log_expected_latent_from_r() (see
+# inst/stan/functions/log_expected_latent_from_r.stan and the derivation
+# in scratchpad/renewal-adjoint-log.md). Both test models below include
+# the package's real inst/stan/functions/renewal_depletion.stan and
+# renewal_depletion_stan.stan (via include_paths) rather than local
+# copies, so they stay byte-identical to what enw_model() compiles.
 
-# Stan-only model (no undefined-function declaration), usable today.
-# compile_model_methods = TRUE enables fit$log_prob()/grad_log_prob() below;
-# force_recompile = TRUE avoids cmdstanr reusing a cached executable that
-# was built without model methods (e.g. from a plain syntax check).
+stan_include <- function() {
+  system.file("stan", package = "epinowcast")
+}
+
+# Stan-only model (no undefined-function declaration), usable without a
+# C++ toolchain.
 renewal_stan_model <- function() {
   cmdstanr::cmdstan_model(
     file.path("stan", "test_renewal_depletion_stan.stan"),
-    compile_model_methods = TRUE,
-    force_recompile = TRUE,
+    include_paths = stan_include(),
     quiet = TRUE
   )
 }
 
-# Dispatcher model with the C++ declaration, only ever compiled once
-# cpp_adjoint_available is TRUE (it needs allow_undefined and a header).
+# Always calls the C++ renewal_depletion(). Needs the package's C++
+# header (epinowcast_stan_header()) as user_header, which cmdstanr's
+# compile() passes `allow-undefined` for automatically.
+renewal_cpp_model <- function() {
+  cmdstanr::cmdstan_model(
+    file.path("stan", "test_renewal_depletion_cpp.stan"),
+    include_paths = stan_include(),
+    user_header = epinowcast_stan_header(),
+    quiet = TRUE
+  )
+}
+
+# Dispatcher model switching between renewal_depletion() and
+# renewal_depletion_stan() on a runtime use_cpp data flag; used only for
+# the fixed_param value-parity test below, not for gradients (cmdstanr's
+# compile_model_methods build does not link a user_header, so
+# log_prob()/grad_log_prob() are unavailable on a C++-backed model; the
+# gradient tests use $diagnose() against renewal_cpp_model() and
+# renewal_stan_model() instead, which needs no such support).
 renewal_dispatch_model <- function() {
   cmdstanr::cmdstan_model(
     file.path("stan", "test_renewal_depletion.stan"),
-    stanc_options = list("allow-undefined" = TRUE),
-    compile_model_methods = TRUE,
-    force_recompile = TRUE,
+    include_paths = stan_include(),
+    user_header = epinowcast_stan_header(),
     quiet = TRUE
   )
 }
@@ -156,12 +170,6 @@ test_that("renewal_depletion_stan log_prob gradients match finite differences", 
   skip_if_not_installed("cmdstanr")
   skip_if(is.null(cmdstanr::cmdstan_path()), "CmdStan is not installed")
   model <- renewal_stan_model()
-  fd_grad <- function(fit, upars, h = 1e-4) {
-    vapply(seq_along(upars), function(i) {
-      e <- replace(numeric(length(upars)), i, h)
-      (fit$log_prob(upars + e) - fit$log_prob(upars - e)) / (2 * h)
-    }, numeric(1))
-  }
   params <- expand.grid(seed = 0:1, R = 0:1, rgt = 0:1, pop = 0:1)[-1, ]
   set.seed(789)
   for (case in renewal_cases) {
@@ -177,36 +185,26 @@ test_that("renewal_depletion_stan log_prob gradients match finite differences", 
         ),
         setNames(as.list(as.integer(p)), paste0(names(p), "_param"))
       )
-      fit <- model$sample(
-        data = data, chains = 1, iter_warmup = 1, iter_sampling = 1,
-        refresh = 0, show_messages = FALSE
-      )
-      fit$init_model_methods()
-      upars <- c(
-        if (p$seed) log(x$seed), if (p$R) log(x$R), if (p$rgt) log(x$rgt),
-        if (p$pop) log(case$pop)
-      )
-      upars <- upars + rnorm(length(upars), sd = 0.01)
-      # grad_log_prob() attaches a log_prob attribute; drop it for the
-      # comparison against fd_grad()'s plain vector. The tolerance is
-      # looser than the C++-vs-Stan comparisons above: central
-      # differences of a chained r_t-step recurrence (especially near
-      # the pop_floor / fmax(1e-8, .) kinks) accumulate more rounding
-      # error than comparing two exact reverse-mode gradients.
-      grad <- as.vector(fit$grad_log_prob(upars))
-      expect_equal(grad, fd_grad(fit, upars), tolerance = 2e-3)
+      # $diagnose() (CmdStan's own gradient-check mode) evaluates the
+      # analytic ("model") and central-finite-difference gradients at a
+      # random init point on the unconstrained scale; comparing them
+      # here needs no model_methods support, unlike log_prob()/
+      # grad_log_prob(). error = 1e-3 (looser than CmdStan's 1e-6
+      # default) stops $diagnose() itself erroring out on ordinary
+      # finite-difference noise; the actual comparison below uses its
+      # own, explicit tolerance.
+      diag <- model$diagnose(data = data, seed = i, error = 1e-3)
+      grads <- diag$gradients()
+      # Central finite differences (epsilon = 1e-6 default) of a chained
+      # r_t-step recurrence accumulate more rounding error than the
+      # tight analytic-vs-analytic comparisons below, so this tolerance
+      # is looser.
+      expect_equal(grads$model, grads$finite_diff, tolerance = 1e-4)
     }
   }
 })
 
 test_that("renewal_depletion() C++ adjoint matches the Stan reference", {
-  skip_if_not(
-    cpp_adjoint_available,
-    paste(
-      "C++ adjoint plumbing (branch feat/cpp-adjoints) is not yet merged;",
-      "see scratchpad/renewal-adjoint-log.md."
-    )
-  )
   skip_if_not_installed("cmdstanr")
   skip_if(is.null(cmdstanr::cmdstan_path()), "CmdStan is not installed")
   model <- renewal_dispatch_model()
@@ -228,50 +226,34 @@ test_that("renewal_depletion() C++ adjoint matches the Stan reference", {
 })
 
 test_that("renewal_depletion() gradients match the Stan reference", {
-  skip_if_not(
-    cpp_adjoint_available,
-    paste(
-      "C++ adjoint plumbing (branch feat/cpp-adjoints) is not yet merged;",
-      "see scratchpad/renewal-adjoint-log.md."
-    )
-  )
   skip_if_not_installed("cmdstanr")
   skip_if(is.null(cmdstanr::cmdstan_path()), "CmdStan is not installed")
-  model <- renewal_dispatch_model()
+  model_cpp <- renewal_cpp_model()
+  model_stan <- renewal_stan_model()
   params <- expand.grid(seed = 0:1, R = 0:1, rgt = 0:1, pop = 0:1)[-1, ]
   set.seed(321)
   for (case in renewal_cases) {
     x <- renewal_inputs(case)
     for (i in seq_len(nrow(params))) {
       p <- params[i, ]
-      base_data <- list(
-        n0 = case$n0, r_t = case$r_t, use_pop = case$use_pop,
-        pop_floor = case$floor, seed_data = x$seed, R_data = x$R,
-        rgt_data = x$rgt, pop_data = case$pop,
-        r = as.array(rnorm(case$n0 + case$r_t))
+      data <- c(
+        list(
+          n0 = case$n0, r_t = case$r_t, use_pop = case$use_pop,
+          pop_floor = case$floor, seed_data = x$seed, R_data = x$R,
+          rgt_data = x$rgt, pop_data = case$pop,
+          r = as.array(rnorm(case$n0 + case$r_t))
+        ),
+        setNames(as.list(as.integer(p)), paste0(names(p), "_param"))
       )
-      param_flags <- setNames(as.list(as.integer(p)), paste0(names(p), "_param")) # nolint: line_length_linter.
-      fits <- lapply(c(cpp = 1L, stan = 0L), function(use_cpp) {
-        data <- c(base_data, param_flags, list(use_cpp = use_cpp))
-        fit <- model$sample(
-          data = data, chains = 1, iter_warmup = 1, iter_sampling = 1,
-          refresh = 0, show_messages = FALSE
-        )
-        fit$init_model_methods()
-        fit
-      })
-      upars <- c(
-        if (p$seed) log(x$seed), if (p$R) log(x$R), if (p$rgt) log(x$rgt),
-        if (p$pop) log(case$pop)
-      )
-      upars <- upars + rnorm(length(upars), sd = 0.01)
+      # Same data and the same $diagnose() seed give both models the
+      # same (random) unconstrained init point, so their analytic
+      # gradients ("model") and log-densities can be compared directly.
+      # error = 1e-3: see the note in the finite-differences test above.
+      diag_cpp <- model_cpp$diagnose(data = data, seed = i, error = 1e-3)
+      diag_stan <- model_stan$diagnose(data = data, seed = i, error = 1e-3)
+      expect_equal(diag_cpp$lp(), diag_stan$lp(), tolerance = 1e-10)
       expect_equal(
-        fits$cpp$log_prob(upars), fits$stan$log_prob(upars),
-        tolerance = 1e-10
-      )
-      expect_equal(
-        as.vector(fits$cpp$grad_log_prob(upars)),
-        as.vector(fits$stan$grad_log_prob(upars)),
+        diag_cpp$gradients()$model, diag_stan$gradients()$model,
         tolerance = 1e-8
       )
     }
@@ -279,13 +261,63 @@ test_that("renewal_depletion() gradients match the Stan reference", {
 })
 
 test_that("renewal_depletion() full-model log_prob/grad_log_prob parity", {
-  skip_if_not(
-    cpp_adjoint_available,
-    paste(
-      "C++ adjoint plumbing (branch feat/cpp-adjoints) is not yet merged,",
-      "and log_expected_latent_from_r() does not yet dispatch on use_cpp;",
-      "see scratchpad/renewal-adjoint-log.md."
-    )
+  skip_if_not_installed("cmdstanr")
+  skip_if(is.null(cmdstanr::cmdstan_path()), "CmdStan is not installed")
+
+  # A small line list with a real generation time and susceptible
+  # depletion enabled, so the compiled model actually exercises
+  # renewal_depletion() (gt_n > 1, use_pop = 1) rather than the
+  # exponential-growth branch.
+  set.seed(999)
+  gt <- c(0.3, 0.4, 0.3)
+  population <- 500
+  n_days <- 30
+  inc <- rep(5, n_days)
+  cum_cases <- sum(inc[seq_len(length(gt))])
+  for (i in (length(gt) + 1):n_days) {
+    infectiousness <- sum(inc[(i - length(gt)):(i - 1)] * rev(gt))
+    remaining <- max(0, population - cum_cases)
+    inc[i] <- remaining * (1 - exp(-1.6 * infectiousness / max(1, remaining)))
+    cum_cases <- cum_cases + inc[i]
+  }
+  counts <- rpois(n_days, pmax(inc, 1e-3))
+  dates <- as.Date("2021-01-01") + seq_len(n_days) - 1
+  obs <- data.table::data.table(
+    reference_date = dates, report_date = dates, confirm = counts
   )
-  skip("full-model parity is added once epinowcast.stan wires in use_cpp")
+  pobs <- suppressWarnings(enw_preprocess_data(
+    enw_complete_dates(obs, max_delay = 2), max_delay = 2
+  ))
+
+  # Capture the assembled Stan data list without sampling (same trick as
+  # helper-functions.R's epinowcast_as_data()).
+  built <- epinowcast(
+    data = pobs,
+    expectation = enw_expectation(
+      r = ~ 0 + (1 | day:.group), generation_time = gt,
+      population = population, population_floor = 1, data = pobs
+    ),
+    fit = enw_fit_opts(
+      sampler = function(init, data, ...) {
+        data.table::data.table(init = list(init), data = list(data))
+      }
+    ),
+    model = NULL
+  )
+  stan_data <- built$data[[1]]
+
+  # $diagnose() with the same seed gives both models the same random
+  # unconstrained init point across the full parameter set, without
+  # needing compile_model_methods (which does not link a user_header).
+  diag_cpp <- enw_model(use_cpp = TRUE, verbose = FALSE)$diagnose(
+    data = stan_data, seed = 2026, error = 1e-3
+  )
+  diag_stan <- enw_model(use_cpp = FALSE, verbose = FALSE)$diagnose(
+    data = stan_data, seed = 2026, error = 1e-3
+  )
+  expect_equal(diag_cpp$lp(), diag_stan$lp(), tolerance = 1e-10)
+  expect_equal(
+    diag_cpp$gradients()$model, diag_stan$gradients()$model,
+    tolerance = 1e-6
+  )
 })
