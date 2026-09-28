@@ -30,14 +30,18 @@ Subset observations data table for either modelled dates
 or not-modelled earlier dates.
 }
 \seealso{
-Functions used for postprocessing of model fits
-\code{\link{build_ord_obs}()},
-\code{\link{enw_add_latest_obs_to_nowcast}()},
-\code{\link{enw_nowcast_samples}()},
-\code{\link{enw_nowcast_summary}()},
-\code{\link{enw_posterior}()},
-\code{\link{enw_pp_summary}()},
-\code{\link{enw_quantiles_to_long}()},
-\code{\link{enw_summarise_samples}()}
+Functions used for postprocessing of model fits:
+\code{\link[=.check_primarycensored]{.check_primarycensored()}},
+\code{\link[=.delay_draw_columns]{.delay_draw_columns()}},
+\code{\link[=.discretise_parametric_pmf]{.discretise_parametric_pmf()}},
+\code{\link[=build_ord_obs]{build_ord_obs()}},
+\code{\link[=enw_add_latest_obs_to_nowcast]{enw_add_latest_obs_to_nowcast()}},
+\code{\link[=enw_nowcast_samples]{enw_nowcast_samples()}},
+\code{\link[=enw_nowcast_summary]{enw_nowcast_summary()}},
+\code{\link[=enw_posterior]{enw_posterior()}},
+\code{\link[=enw_posterior_delay]{enw_posterior_delay()}},
+\code{\link[=enw_pp_summary]{enw_pp_summary()}},
+\code{\link[=enw_quantiles_to_long]{enw_quantiles_to_long()}},
+\code{\link[=enw_summarise_samples]{enw_summarise_samples()}}
 }
 \concept{postprocess}

@@ -65,10 +65,10 @@ nat_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 enw_aggregate_cumulative(nat_hosp, timestep = "week")
 }
 \seealso{
-Data converters
-\code{\link{enw_add_cumulative}()},
-\code{\link{enw_add_incidence}()},
-\code{\link{enw_incidence_to_linelist}()},
-\code{\link{enw_linelist_to_incidence}()}
+Data converters:
+\code{\link[=enw_add_cumulative]{enw_add_cumulative()}},
+\code{\link[=enw_add_incidence]{enw_add_incidence()}},
+\code{\link[=enw_incidence_to_linelist]{enw_incidence_to_linelist()}},
+\code{\link[=enw_linelist_to_incidence]{enw_linelist_to_incidence()}}
 }
 \concept{dataconverters}

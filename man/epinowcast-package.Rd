@@ -23,6 +23,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Sam Abbott \email{contact@samabbott.co.uk} (\href{https://orcid.org/0000-0001-8057-8037}{ORCID})
   \item Adrian Lison \email{adrian.lison@bsse.ethz.ch} (\href{https://orcid.org/0000-0002-6822-8437}{ORCID})
   \item Sebastian Funk \email{sebastian.funk@lshtm.ac.uk}
   \item Carl Pearson \email{carl.ab.pearson@gmail.com} (\href{https://orcid.org/0000-0003-0701-7860}{ORCID})

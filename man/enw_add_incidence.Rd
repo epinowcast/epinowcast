@@ -58,10 +58,10 @@ dt <- enw_filter_reference_dates_by_report_start(dt)
 enw_add_incidence(dt)
 }
 \seealso{
-Data converters
-\code{\link{enw_add_cumulative}()},
-\code{\link{enw_aggregate_cumulative}()},
-\code{\link{enw_incidence_to_linelist}()},
-\code{\link{enw_linelist_to_incidence}()}
+Data converters:
+\code{\link[=enw_add_cumulative]{enw_add_cumulative()}},
+\code{\link[=enw_aggregate_cumulative]{enw_aggregate_cumulative()}},
+\code{\link[=enw_incidence_to_linelist]{enw_incidence_to_linelist()}},
+\code{\link[=enw_linelist_to_incidence]{enw_linelist_to_incidence()}}
 }
 \concept{dataconverters}

@@ -24,13 +24,13 @@ A character string in the of stan functions.
 Read in a stan function file as a character string
 }
 \seealso{
-Utility functions
-\code{\link{coerce_date}()},
-\code{\link{coerce_dt}()},
-\code{\link{date_to_numeric_modulus}()},
-\code{\link{enw_get_data}()},
-\code{\link{enw_rolling_sum}()},
-\code{\link{get_internal_timestep}()},
-\code{\link{is.Date}()}
+Utility functions:
+\code{\link[=coerce_date]{coerce_date()}},
+\code{\link[=coerce_dt]{coerce_dt()}},
+\code{\link[=date_to_numeric_modulus]{date_to_numeric_modulus()}},
+\code{\link[=enw_get_data]{enw_get_data()}},
+\code{\link[=enw_rolling_sum]{enw_rolling_sum()}},
+\code{\link[=get_internal_timestep]{get_internal_timestep()}},
+\code{\link[=is.Date]{is.Date()}}
 }
 \concept{utils}

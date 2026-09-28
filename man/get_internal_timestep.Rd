@@ -24,13 +24,13 @@ number). For "day", "week", it returns 1 and 7 respectively.
 If the input is a numeric whole number, it is returned as is.
 }
 \seealso{
-Utility functions
-\code{\link{coerce_date}()},
-\code{\link{coerce_dt}()},
-\code{\link{date_to_numeric_modulus}()},
-\code{\link{enw_get_data}()},
-\code{\link{enw_rolling_sum}()},
-\code{\link{is.Date}()},
-\code{\link{stan_fns_as_string}()}
+Utility functions:
+\code{\link[=coerce_date]{coerce_date()}},
+\code{\link[=coerce_dt]{coerce_dt()}},
+\code{\link[=date_to_numeric_modulus]{date_to_numeric_modulus()}},
+\code{\link[=enw_get_data]{enw_get_data()}},
+\code{\link[=enw_rolling_sum]{enw_rolling_sum()}},
+\code{\link[=is.Date]{is.Date()}},
+\code{\link[=stan_fns_as_string]{stan_fns_as_string()}}
 }
 \concept{utils}

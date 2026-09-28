@@ -77,13 +77,14 @@ enw_reference(
 )
 }
 \seealso{
-Model modules
-\code{\link{enw_expectation}()},
-\code{\link{enw_fit_opts}()},
-\code{\link{enw_missing}()},
-\code{\link{enw_obs}()},
-\code{\link{enw_report}()},
-\code{\link{enw_secondary}()},
-\code{\link{enw_secondary_opts}()}
+Model modules:
+\code{\link[=.expectation_is_minimal]{.expectation_is_minimal()}},
+\code{\link[=enw_expectation]{enw_expectation()}},
+\code{\link[=enw_fit_opts]{enw_fit_opts()}},
+\code{\link[=enw_missing]{enw_missing()}},
+\code{\link[=enw_obs]{enw_obs()}},
+\code{\link[=enw_report]{enw_report()}},
+\code{\link[=enw_secondary]{enw_secondary()}},
+\code{\link[=enw_secondary_opts]{enw_secondary_opts()}}
 }
 \concept{modelmodules}

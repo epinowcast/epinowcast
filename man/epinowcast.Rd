@@ -155,13 +155,13 @@ plot(nowcast, type = "posterior") +
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-Other epinowcast: 
-\code{\link{plot.enw_preprocess_data}()},
-\code{\link{plot.epinowcast}()},
-\code{\link{print.enw_preprocess_data}()},
-\code{\link{print.epinowcast}()},
-\code{\link{print.summary.enw_preprocess_data}()},
-\code{\link{summary.enw_preprocess_data}()},
-\code{\link{summary.epinowcast}()}
+Other epinowcast:
+\code{\link[=plot.enw_preprocess_data]{plot.enw_preprocess_data()}},
+\code{\link[=plot.epinowcast]{plot.epinowcast()}},
+\code{\link[=print.enw_preprocess_data]{print.enw_preprocess_data()}},
+\code{\link[=print.epinowcast]{print.epinowcast()}},
+\code{\link[=print.summary.enw_preprocess_data]{print.summary.enw_preprocess_data()}},
+\code{\link[=summary.enw_preprocess_data]{summary.enw_preprocess_data()}},
+\code{\link[=summary.epinowcast]{summary.epinowcast()}}
 }
 \concept{epinowcast}
