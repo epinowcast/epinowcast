@@ -19,13 +19,9 @@ vignette: >
 
 
 
-The renewal expectation model in `epinowcast` can optionally account for
-susceptible depletion.
-Given an initial susceptible population, transmission is scaled by the remaining
-susceptible fraction, so the effective reproduction number bends down as the
-pool depletes.
-This vignette demonstrates the adjustment on simulated data where depletion
-plays a clear role, fitting the expectation-only model with and without it.
+The renewal expectation model in `epinowcast` can optionally account for susceptible depletion.
+Given an initial susceptible population, transmission is scaled by the remaining susceptible fraction, so the effective reproduction number bends down as the pool depletes.
+This vignette demonstrates the adjustment on simulated data where depletion plays a clear role, fitting the expectation-only model with and without it.
 
 
 ``` r
@@ -38,14 +34,9 @@ set.seed(2024)
 
 ## A depleting epidemic on simulated data
 
-We simulate a single well-mixed population of `N = 4000` susceptibles seeded
-with a few cases and driven by a renewal process with a fixed generation time
-and a constant reproduction number.
-Because the population is small, the susceptible pool is depleted over the
-epidemic, so the wave peaks and then declines even though transmissibility is
-constant.
-We observe the wave to near completion, so the realised final size is
-informative about the susceptible population.
+We simulate a single well-mixed population of `N = 4000` susceptibles seeded with a few cases and driven by a renewal process with a fixed generation time and a constant reproduction number.
+Because the population is small, the susceptible pool is depleted over the epidemic, so the wave peaks and then declines even though transmissibility is constant.
+We observe the wave to near completion, so the realised final size is informative about the susceptible population.
 
 
 ``` r
@@ -76,13 +67,11 @@ obs <- data.table(
 obs[, report_date := reference_date]
 ```
 
-The realised attack size consumes almost the whole population, so depletion
-drives the dynamics and the wave is not explained by transmissibility alone.
+The realised attack size consumes almost the whole population, so depletion drives the dynamics and the wave is not explained by transmissibility alone.
 
 ## Preprocessing
 
-We treat the simulated counts as fully reported (no reporting delay) so the
-expectation model is the only component being tested.
+We treat the simulated counts as fully reported (no reporting delay) so the expectation model is the only component being tested.
 
 
 ``` r
@@ -93,11 +82,8 @@ pobs <- enw_preprocess_data(
 
 ## Fitting with and without susceptible depletion
 
-We fit the same renewal model twice: once with the susceptible-depletion
-adjustment (`population = N`) and once without it (the default).
-Both use a constant reproduction number (`~1`), matching the data-generating
-process, so the only way the unadjusted model can explain the observed slowdown
-is by inferring a lower reproduction number than the truth.
+We fit the same renewal model twice: once with the susceptible-depletion adjustment (`population = N`) and once without it (the default).
+Both use a constant reproduction number (`~1`), matching the data-generating process, so the only way the unadjusted model can explain the observed slowdown is by inferring a lower reproduction number than the truth.
 
 
 ``` r
@@ -128,14 +114,10 @@ nowcast_unadjusted <- epinowcast(
 
 ## Estimated latent epidemic
 
-We plot the full posterior of latent cases as a 90% credible ribbon rather than
-a single point estimate, so the spread of plausible trajectories is visible.
+We plot the full posterior of latent cases as a 90% credible ribbon rather than a single point estimate, so the spread of plausible trajectories is visible.
 The simulated truth is overlaid for comparison.
-The adjusted model recovers the wave by attributing the peak and decline to a
-shrinking susceptible pool.
-The unadjusted model has a constant reproduction number and no depletion, so it
-cannot produce a peak and instead compromises between the growth and the decline,
-biasing its reconstruction of the latent epidemic.
+The adjusted model recovers the wave by attributing the peak and decline to a shrinking susceptible pool.
+The unadjusted model has a constant reproduction number and no depletion, so it cannot produce a peak and instead compromises between the growth and the decline, biasing its reconstruction of the latent epidemic.
 
 
 ``` r
@@ -182,10 +164,8 @@ ggplot(latent, aes(x = time)) +
 
 ## Fitting an uncertain population
 
-When the initial susceptible population is unknown, it can be estimated by
-setting `population_uncertain = TRUE`.
-`population` then provides the median of a LogNormal prior with coefficient of
-variation `population_cv`.
+When the initial susceptible population is unknown, it can be estimated by setting `population_uncertain = TRUE`.
+`population` then provides the median of a LogNormal prior with coefficient of variation `population_cv`.
 
 
 ``` r
@@ -200,10 +180,8 @@ nowcast_uncertain <- epinowcast(
 )
 ```
 
-We plot the full posterior of the estimated population against the true value
-used to simulate the data.
-The posterior concentrates around the truth, showing the population is
-recovered from the depletion signal alone.
+We plot the full posterior of the estimated population against the true value used to simulate the data.
+The posterior concentrates around the truth, showing the population is recovered from the depletion signal alone.
 
 
 ``` r
@@ -232,11 +210,7 @@ ggplot(pop_draws, aes(x = pop_est)) +
 
 ## Assumptions
 
-The adjustment assumes a single well-mixed population per group with no waning
-of immunity and no births or deaths, so the susceptible pool is only ever
-depleted by modelled latent cases.
+The adjustment assumes a single well-mixed population per group with no waning of immunity and no births or deaths, so the susceptible pool is only ever depleted by modelled latent cases.
 It applies only to the renewal path (`length(generation_time) > 1`).
-The [model vignette](model.html) describes the adjustment and gives the
-references for the susceptible-depletion form it follows.
-See `?enw_expectation` for the `population`, `population_floor`,
-`population_uncertain`, and `population_cv` arguments.
+The [model vignette](model.html) describes the adjustment and gives the references for the susceptible-depletion form it follows.
+See `?enw_expectation` for the `population`, `population_floor`, `population_uncertain`, and `population_cv` arguments.

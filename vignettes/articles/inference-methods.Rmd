@@ -253,7 +253,8 @@ knitr::kable(
 
 
 
-Table: Runtime and sampling efficiency for each spec and method. Min ESS/s is the minimum bulk effective sample size per second and is reported only for NUTS fits.
+Table: Runtime and sampling efficiency for each spec and method.
+Min ESS/s is the minimum bulk effective sample size per second and is reported only for NUTS fits.
 
 |Spec                    |Method                 | Runtime (s)|Min ESS/s |
 |:-----------------------|:----------------------|-----------:|:---------|
@@ -266,7 +267,8 @@ Table: Runtime and sampling efficiency for each spec and method. Min ESS/s is th
 
 
 
-Note that the runtime for pathfinder-initialised NUTS reported here only includes the NUTS sampling step. The pathfinder initialisation itself is an additional overhead (though often small compared to sampling).
+Note that the runtime for pathfinder-initialised NUTS reported here only includes the NUTS sampling step.
+The pathfinder initialisation itself is an additional overhead (though often small compared to sampling).
 
 
 ``` r
