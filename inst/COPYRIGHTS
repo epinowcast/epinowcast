@@ -1,0 +1,22 @@
+# Third-party material included in epinowcast
+
+The package as a whole is released under the MIT licence (see LICENSE).
+The following components are copyright of other parties and are included
+under their own licences, which are preserved alongside them.
+
+## inst/stan/functions/primarycensored.stan
+
+Vendored Stan functions from the primarycensored package
+(https://github.com/epinowcast/primarycensored).
+Copyright (c) 2024 primarycensored authors.
+Licence: MIT, see inst/stan/functions/LICENSE.primarycensored.
+
+## vignettes/apa-numeric-superscript-brackets.csl
+
+Citation style "APA Style 7th edition (numeric, superscript, brackets)"
+from the Citation Style Language styles repository
+(https://github.com/citation-style-language/styles).
+Authors: Brenton M. Wiernik and Andrew Dunning.
+Licence: Creative Commons Attribution-ShareAlike 3.0
+(http://creativecommons.org/licenses/by-sa/3.0/).
+This file is used only to format vignette bibliographies.

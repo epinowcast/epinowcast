@@ -7,5 +7,7 @@
 !setup.R
 !missing-setup.R
 !multigroup-setup.R
+!many-snapshots-setup.R
 !preprocessing.R
 !threaded-setup.R
+!gradient_timing.R
