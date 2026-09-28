@@ -3,9 +3,9 @@ title: Case studies
 description: "A place to document how epinowcast has been used"
 pkgdown:
   as_is: true
-csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+csl: apa-numeric-superscript-brackets.csl
 vignette: >
-  %\VignetteIndexEntry{Package use cases}
+  %\VignetteIndexEntry{Case studies}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

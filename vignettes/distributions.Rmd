@@ -4,7 +4,7 @@ description: "Distributions and their discretisation in epinowcast"
 author: Epinowcast Team
 output: rmarkdown::html_document
 bibliography: library.bib
-csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+csl: apa-numeric-superscript-brackets.csl
 vignette: >
   %\VignetteIndexEntry{Discretised distributions}
   %\VignetteEngine{knitr::rmarkdown}
