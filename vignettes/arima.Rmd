@@ -5,7 +5,7 @@ author: Epinowcast Team
 pkgdown:
   as_is: true
 bibliography: library.bib
-csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+csl: apa-numeric-superscript-brackets.csl
 link-citations: true
 vignette: >
   %\VignetteIndexEntry{ARIMA latent residuals: maths, priors, and usage}
