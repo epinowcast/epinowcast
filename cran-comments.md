@@ -8,16 +8,17 @@ This is a new submission.
 ## Test environments
 
 - Local: macOS 26 (Tahoe), R 4.6.0 (aarch64-apple-darwin23)
-- GitHub Actions: ubuntu-latest, R release, oldrel-1, and 4.3 (the package's
-  stated minimum)
+- GitHub Actions: ubuntu-latest, R release, oldrel-1, and 4.3 (the package's stated minimum)
 - Not yet run: win-builder, R-hub, and a macOS CI job.
-  The package's GitHub Actions matrix currently only covers Ubuntu; running
-  `devtools::check_win_devel()` and an R-hub Windows/macOS check before
-  submission is recommended (see the readiness report).
+  The package's GitHub Actions matrix currently only covers Ubuntu.
+  Running `devtools::check_win_devel()` and an R-hub Windows/macOS check before submission is recommended.
 
 ## R CMD check results
 
-0 errors | 0 warnings | 0 notes
+0 errors | 0 warnings | 1 note
+
+The single NOTE is the expected "CRAN incoming feasibility" NOTE for a new submission.
+It records that `cmdstanr` (Suggests) is not in a mainstream repository and is available via the `Additional_repositories` field (https://stan-dev.r-universe.dev).
 
 ## Downstream dependencies
 
