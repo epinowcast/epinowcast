@@ -44,7 +44,7 @@ count data.
 data.** It can fail with multimodal or complex delay patterns. Evaluate
 model fit and consider alternatives (e.g., non-parametric hazards) as
 needed. See the [package
-vignettes](https://package.epinowcast.org/articles) for guidance.
+vignettes](https://package.epinowcast.org/articles/) for guidance.
 
 ## Installation
 
@@ -175,7 +175,7 @@ R Vignettes
 </summary>
 
 We have created [package
-vignettes](https://package.epinowcast.org/articles) to help you [get
+vignettes](https://package.epinowcast.org/articles/) to help you [get
 started
 nowcasting](https://package.epinowcast.org/articles/epinowcast.html),
 see a [quick reference to package
