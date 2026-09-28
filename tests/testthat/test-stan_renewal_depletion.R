@@ -282,7 +282,8 @@ test_that("epinowcast renewal models agree in log density and gradient with use_
     confirm = rpois(n_days, pmax(inc, 1e-3))
   )
   pobs <- suppressWarnings(enw_preprocess_data(
-    enw_complete_dates(obs, max_delay = 2), max_delay = 2
+    enw_complete_dates(obs, max_delay = 2),
+    max_delay = 2
   ))
   inputs <- suppressMessages(epinowcast(
     pobs,
