@@ -5,7 +5,7 @@ author: Epinowcast Team
 pkgdown:
   as_is: true
 bibliography: library.bib
-csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+csl: apa-numeric-superscript-brackets.csl
 link-citations: true
 vignette: >
   %\VignetteIndexEntry{Model definition and implementation}
@@ -90,6 +90,7 @@ where $r_0$ is the optional intercept, $X_{r}$ is the design matrix for fixed ef
 
 This model is specified via the `r` argument of `enw_expectation()` (see `?enw_expectation`).
 For example, `enw_expectation(r = ~ 1 + rw(week))` implements a weekly random walk for the log reproduction number as described above.
+ARIMA(p, d, q) latent residuals are also supported through the `arima()` formula helper; see the [latent processes vignette](latent-processes.html) for usage and the [ARIMA implementation notes](arima.html) for the maths and parameterisation choices.
 
 ## Latent infections/notifications
 
@@ -101,6 +102,12 @@ We model the expected number of infections/latent notifications ($\lambda^l$) us
 \end{align}
 
 Where $G_{g}\left(p, t - p \right)$ is the probability of an infection $p$ days after infection $t - p$ days ago for group $g$, and $P$ is the maximum generation time. To initialise the model we assume that the first $P$ latent notifications are log-normally distributed with mean $\mu^{l}_{g,t}$ and standard deviation $\sigma^{l}_{g,t}$. This is equivalent to assuming that the first $P$ latent notifications are independent and identically distributed. The mean of the log-normal distribution for each group is the log of the latest reported case count for the first reference date for that group scaled by the sum of the latent reporting delay. The standard deviation is assumed to be 1. Both of these assumptions can be altered by the user.
+
+Optionally, the renewal process can account for susceptible depletion given an initial susceptible population $N_g$ (`population` in `enw_expectation()`).
+Transmission is then scaled by the remaining susceptible fraction $S_{g,t} / N_g$, where $S_{g,t} = N_g - \sum_{p < t} \lambda^l_{g,p}$ is the susceptible pool depleted by cumulative latent cases, so the effective reproduction number bends down as the pool depletes.
+This adjustment is ported from `EpiNow2` [@EpiNow2; @Abbott2020] and follows the bounded-exponential susceptible-depletion form of the semi-mechanistic renewal process [@Bhatt2020].
+This assumes a single well-mixed population per group with no waning or vital dynamics.
+The [susceptible depletion vignette](susceptible-depletion.html) demonstrates the adjustment on simulated data.
 
 ## Latent reporting delay and ascertainment
 
@@ -158,7 +165,7 @@ Each component adds to the overall hazard through a regression with a logit link
 where the maximum delay hazard is $h_{g,t,D}=1$, in order to enforce the assumption that all observations are reported within the specified maximum delay. In the following, we describe the parameterisation of the different components.
 
 #### Parametric baseline hazard
-The parametric baseline hazard $\gamma_{g,t,d}$ for a case in group $g$ with reference date $t$ is modelled according to a certain discretised parametric probability distribution with parameters $\mu_{g,t}$ and $\upsilon_{g,t}$. Currently, `epinowcast` supports four different parametric distributions: (i) log-normal (default), (ii) exponential, (iii) gamma, and (iv) log-logistic. The distributions are discretised and adjusted for an assumed maximum delay, see `vignette("distributions")` for details. The delay probabilities $p^{\prime}_{g,t,d}$ obtained from the discretised delay distribution are converted into hazards on the logit scale using
+The parametric baseline hazard $\gamma_{g,t,d}$ for a case in group $g$ with reference date $t$ is modelled according to a certain discretised parametric probability distribution with parameters $\mu_{g,t}$ and $\upsilon_{g,t}$. Currently, `epinowcast` supports three different parametric distributions: (i) log-normal (default), (ii) exponential, and (iii) gamma. The distributions are discretised and adjusted for an assumed maximum delay using the double interval censoring discretisation from the [primarycensored](https://primarycensored.epinowcast.org) package [@primarycensored]; see `vignette("distributions")` for details. The delay probabilities $p^{\prime}_{g,t,d}$ obtained from the discretised delay distribution are converted into hazards on the logit scale using
 
 \begin{equation}
   \gamma_{g,t,d} = \text{logit} \left(\frac{p^{\prime}_{g,t,d}}{\left(1 -\sum^{d-1}_{d^{\prime}=0} p^{\prime}_{g,t,d^{\prime}} \right)} \right).
@@ -188,6 +195,30 @@ For example, `enw_reference(non_parametric = ~ 1 + day_of_week)` adds day-of-wee
 
 All fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations.
 See `?epinowcast` for details on inspecting and customising these priors.
+
+## Centring
+
+Each (log-)linear predictor above pairs an intercept ($r_0$, $\nu_0$, $\mu_0$, $\delta_0$) with a fixed-effect design matrix.
+Because the design columns are not generally centred at zero, the intercept and the fixed-effect coefficients trade off against each other, which correlates them in the posterior and slows sampling.
+For efficiency the fixed-effect design is therefore centred on its observation-weighted column means $\bar X$ before it enters the predictor, so the intercept represents the predictor at the mean of the covariates rather than at their origin, as `brms` does by default for population-level effects [@brms].
+Taking the growth rate as an example,
+
+\begin{equation}
+  \text{log}(R_{g,t}) = r_0^{c} + \beta_{f,r} (X_r - \bar X_r) + \beta_{r,r} Z_r,
+\end{equation}
+
+where $r_0^{c}$ is the sampled (centred) intercept.
+The original-scale intercept reported to the user is recovered as $r_0 = r_0^{c} - \bar X_r \beta_{f,r}$, and the user's prior is placed on $r_0$.
+The shift is additive, so the change of variables has unit Jacobian and the posterior is unchanged.
+`brms` centres its population-level design matrix in the same way [@brms], but places the prior on the centred intercept; here the prior is placed on the recovered original-scale $r_0$, so the user's stated prior is honoured exactly.
+A very tight intercept prior then reintroduces a little of the intercept/slope coupling, which is the price of keeping the prior on the original scale.
+
+The same idea applies to the integrated drift of an autoregressive or Gaussian process term.
+An integrated `arima()` residual or `gp(d >= 1)` term has a free overall level (the cumulative sum lets the early values shift the whole path) that trades off against the intercept, so its grand mean is removed and recovered into the intercept in the same way, following the reproduction-number centring used in `EpiNow2` [@EpiNow2].
+Only the shared grand mean — the single level direction that competes with the shared scalar intercept — is removed, so each group keeps its own level and drift and the reparameterisation is exact for any number of groups.
+It therefore breaks the intercept/drift ridge, but it does not centre per-group level correlations against group-level effects (such as a `(1 | group)` random intercept), which can remain for a grouped latent term; this is why a grouped latent benefits less than a single shared series.
+See the [ARIMA vignette](arima.html) and the [Gaussian process vignette](gaussian-process.html) for the term-specific forms.
+Modules without a free intercept are left uncentred.
 
 # Observation model and nowcast
 

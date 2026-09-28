@@ -16,7 +16,14 @@
 #'
 #' @param distribution A character vector describing the parametric delay
 #' distribution to use. Current options are: "none", "lognormal", "gamma",
-#' "exponential", and "loglogistic", with the default being "lognormal".
+#' and "exponential", with the default being "lognormal". These distributions
+#' are discretised using the double interval censoring approach from the
+#' [primarycensored](https://primarycensored.epinowcast.org) package, which
+#' accounts for primary event censoring, secondary interval censoring, and
+#' right truncation. The log-logistic distribution is not currently supported,
+#' pending log-logistic support in `primarycensored` (see
+#' <https://github.com/epinowcast/primarycensored/issues/321>). See
+#' `vignette("distributions")` for details.
 #'
 #' @param non_parametric A formula (as implemented in [enw_formula()])
 #' describing the non-parametric logit hazard model. This can use features
@@ -59,7 +66,7 @@
 #' )
 enw_reference <- function(
   parametric = ~1,
-  distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
+  distribution = c("lognormal", "none", "exponential", "gamma"),
   non_parametric = ~0, data
 ) {
   # When max_delay = 1 (no delays), reject non-trivial delay models
@@ -97,8 +104,7 @@ enw_reference <- function(
     distribution == "none", 0,
     distribution == "exponential", 1,
     distribution == "lognormal", 2,
-    distribution == "gamma", 3,
-    distribution == "loglogistic", 4
+    distribution == "gamma", 3
   )
   # Define parametric model
   pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
@@ -144,22 +150,45 @@ enw_reference <- function(
   out$priors <- data.table::data.table(
     variable = c(
       "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd",
-      "refnp_int", "refnp_beta_sd"
+      "refp_arima_sigma", "refp_arima_sd_sigma", "refp_arima_pacf",
+      "refp_gp_rho", "refp_gp_alpha", "refp_gp_sd_alpha",
+      "refnp_int", "refnp_beta_sd", "refnp_arima_sigma", "refnp_arima_pacf",
+      "refnp_gp_rho", "refnp_gp_alpha"
     ),
     description = c(
       "Log mean intercept for parametric reference date delay",
       "Log standard deviation for the parametric reference date delay",
       "Standard deviation of scaled pooled parametric mean effects",
       "Standard deviation of scaled pooled parametric sd effects",
+      "Scale of the ARIMA latent residual on the parametric reference mean",
+      "Scale of the ARIMA latent residual on the parametric reference sd",
+      .arima_pacf_prior_description("parametric reference"),
+      .gp_rho_prior_description("parametric reference"),
+      .gp_alpha_prior_description("parametric reference mean"),
+      .gp_alpha_prior_description("parametric reference sd"),
       "Intercept for non-parametric reference date delay",
-      "Standard deviation of scaled pooled non-parametric effects"
+      "Standard deviation of scaled pooled non-parametric effects",
+      paste(
+        "Standard deviation of the ARIMA latent residual on",
+        "non-parametric reference logit hazards"
+      ),
+      .arima_pacf_prior_description("non-parametric reference"),
+      .gp_rho_prior_description("non-parametric reference"),
+      .gp_alpha_prior_description("non-parametric reference")
     ),
     distribution = c(
       "Normal", rep("Zero truncated normal", 3),
-      "Normal", "Zero truncated normal"
+      "Zero truncated normal", "Zero truncated normal", "Uniform",
+      "Log normal", "Zero truncated normal", "Zero truncated normal",
+      "Normal", "Zero truncated normal", "Zero truncated normal", "Uniform",
+      "Log normal", "Zero truncated normal"
     ),
-    mean = c(1, 0.5, 0, 0, 0, 0),
-    sd = 1
+    mean = c(
+      1, 0.5, 0, 0, 0, 0, 0, log(3), 0, 0, 0, 0, 0, 0, log(3), 0
+    ),
+    sd = c(
+      1, 1, 1, 1, 0.2, 0.2, 0, 0.5, 0.05, 0.05, 1, 1, 0.2, 0, 0.5, 0.05
+    )
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -209,6 +238,17 @@ enw_reference <- function(
           )))
         }
       }
+      # refp always declares `refp_arima_sd_sigma` (size 0 unless the
+      # parametric sd is modelled), so always declare its init default;
+      # the fill is gated on `model_refp > 1` inside `.arima_inits()`.
+      init <- c(init, .arima_inits(
+        data, priors, "refp",
+        with_sd_sigma = TRUE
+      ))
+      init <- c(init, .gp_inits(
+        data, priors, "refp",
+        with_sd_alpha = TRUE
+      ))
       if (data$model_refnp > 0) {
         if (data$refnp_fintercept > 0) {
           init$refnp_int <- array(rnorm(
@@ -225,6 +265,9 @@ enw_reference <- function(
           )))
         }
       }
+      # ARIMA term parameters for non-parametric reference logit hazards
+      init <- c(init, .arima_inits(data, priors, "refnp"))
+      init <- c(init, .gp_inits(data, priors, "refnp"))
       init
     }
     fn
@@ -320,16 +363,14 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   }
 
   # map report date effects to groups and times
+  rep_t <- nrow(data$metareport[[1]]) %/% data$groups[[1]]
+  if (rep_t * data$groups[[1]] != nrow(data$metareport[[1]])) {
+    cli::cli_abort("Report metadata is not rectangular across groups.")
+  }
   data_list$rep_findex <- t(
-    matrix(
-      data_list$rep_findex,
-      ncol = data$groups[[1]],
-      nrow = data$time[[1]] +
-        data$max_delay - 1
-    )
+    matrix(data_list$rep_findex, ncol = data$groups[[1]], nrow = rep_t)
   )
-  data_list$rep_t <- data$time[[1]] +
-    data$max_delay - 1
+  data_list$rep_t <- rep_t
   data_list$model_rep <- as.numeric(
     as_string_formula(non_parametric) != "~1"
   )
@@ -338,11 +379,26 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   out$formula$non_parametric <- form$formula
   out$data <- data_list
   out$priors <- data.table::data.table(
-    variable = "rep_beta_sd",
-    description = "Standard deviation of scaled pooled report date effects",
-    distribution = "Zero truncated normal",
-    mean = 0,
-    sd = 1
+    variable = c(
+      "rep_beta_sd", "rep_arima_sigma", "rep_arima_pacf",
+      "rep_gp_rho", "rep_gp_alpha"
+    ),
+    description = c(
+      "Standard deviation of scaled pooled report date effects",
+      paste(
+        "Standard deviation of the ARIMA latent residual on",
+        "report-time logit hazards"
+      ),
+      .arima_pacf_prior_description("report-time logit hazards"),
+      .gp_rho_prior_description("report-time logit hazards"),
+      .gp_alpha_prior_description("report-time logit hazards")
+    ),
+    distribution = c(
+      "Zero truncated normal", "Zero truncated normal", "Uniform",
+      "Log normal", "Zero truncated normal"
+    ),
+    mean = c(0, 0, 0, log(3), 0),
+    sd = c(1, 0.2, 0, 0.5, 0.05)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -360,11 +416,161 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
           priors$rep_beta_sd_p[2] / 10
         )))
       }
+      init <- c(init, .arima_inits(data, priors, "rep"))
+      init <- c(init, .gp_inits(data, priors, "rep"))
       init
     }
     fn
   }
   out
+}
+
+#' Validate and assemble susceptible-depletion population settings
+#'
+#' Internal helper for [enw_expectation()] that validates the population
+#' arguments and returns the Stan data components controlling the
+#' susceptible-depletion adjustment.
+#'
+#' @return A list with the population Stan data components (`use`, `uncertain`,
+#' `fixed`, `floor`) and, when uncertain, the per-group LogNormal prior
+#' parameters (`prior_medianlog`, a length-`groups` vector, and `prior_sdlog`).
+#' `fixed` is always length `groups` (one initial susceptible population per
+#' group).
+#'
+#' @inheritParams enw_expectation
+#' @importFrom cli cli_abort cli_warn
+#' @noRd
+.check_expectation_population <- function(population, population_floor,
+                                          population_uncertain, population_cv,
+                                          generation_time, groups) {
+  if (!is.numeric(population_floor) || length(population_floor) != 1 ||
+    !is.finite(population_floor) || population_floor < 0) {
+    cli::cli_abort(
+      "`population_floor` must be a single non-negative finite number."
+    )
+  }
+  out <- list(
+    use = 0L, uncertain = 0L, fixed = rep(0, groups),
+    floor = as.numeric(population_floor)
+  )
+  if (is.null(population)) {
+    if (isTRUE(population_uncertain)) {
+      cli::cli_abort(
+        "`population` must be supplied when `population_uncertain` is TRUE."
+      )
+    }
+    return(out)
+  }
+  population <- .check_population_values(population, groups)
+  if (length(generation_time) == 1) {
+    extra <- if (isTRUE(population_uncertain)) {
+      paste(
+        "The uncertain (fitted) population request is also ignored in this",
+        "case."
+      )
+    } else {
+      ""
+    }
+    cli::cli_warn(
+      paste(
+        "`population` is ignored for the daily growth rate model",
+        "(`generation_time = 1`); a renewal process",
+        "(`length(generation_time) > 1`) is required for",
+        "susceptible-depletion adjustment.", extra
+      )
+    )
+    return(out)
+  }
+  out$use <- 1L
+  out$fixed <- population
+  if (isTRUE(population_uncertain)) {
+    out <- .expectation_population_prior(out, population, population_cv)
+  }
+  out
+}
+
+#' Validate and recycle per-group population values
+#'
+#' Internal helper for [.check_expectation_population()] that checks the
+#' supplied `population` is a positive numeric of length 1 or `groups`, and
+#' returns a length-`groups` vector. A length-1 value is recycled across groups
+#' with an explicit warning when more than one group is present.
+#'
+#' @param population The supplied population value(s).
+#' @param groups Number of groups.
+#'
+#' @return A length-`groups` numeric vector of initial susceptible populations.
+#'
+#' @importFrom cli cli_abort cli_warn
+#' @noRd
+.check_population_values <- function(population, groups) {
+  if (!is.numeric(population) || !all(is.finite(population)) ||
+    any(population <= 0) || !length(population) %in% c(1L, groups)) {
+    cli::cli_abort(paste(
+      "`population` must be `NULL`, a single positive finite number, or a",
+      "positive finite numeric vector with one value per group",
+      "(length {groups})."
+    ))
+  }
+  if (length(population) == 1L && groups > 1L) {
+    cli::cli_warn(paste(
+      "A single `population` value was supplied but there are {groups}",
+      "groups; recycling it as each group's initial susceptible population.",
+      "Supply a length-{groups} vector to set group-specific populations."
+    ))
+    population <- rep(population, groups)
+  }
+  as.numeric(population)
+}
+
+#' Add the LogNormal population prior to the population settings
+#'
+#' Internal helper for [.check_expectation_population()] that validates
+#' `population_cv` and adds the LogNormal prior parameters for an estimated
+#' initial susceptible population.
+#'
+#' @param out The population settings list under construction.
+#' @param population The supplied (positive) length-`groups` population vector.
+#' Each group is fitted independently from its own LogNormal prior whose median
+#' equals that group's supplied value, sharing the CV-derived log sd.
+#' @param population_cv The natural-scale coefficient of variation.
+#'
+#' @return `out` with `uncertain`, `prior_medianlog` (a length-`groups` vector)
+#' and `prior_sdlog` set.
+#'
+#' @importFrom cli cli_abort
+#' @noRd
+.expectation_population_prior <- function(out, population, population_cv) {
+  if (!is.numeric(population_cv) || length(population_cv) != 1 ||
+    !is.finite(population_cv) || population_cv <= 0) {
+    cli::cli_abort("`population_cv` must be a single positive finite number.")
+  }
+  out$uncertain <- 1L
+  # Per-group LogNormal: median = population, natural-scale CV = population_cv.
+  out$prior_sdlog <- sqrt(log1p(population_cv^2))
+  out$prior_medianlog <- log(population)
+  out
+}
+
+#' Assemble susceptible-depletion Stan data entries
+#'
+#' Internal helper for [enw_expectation()] that turns the validated population
+#' settings (from [.check_expectation_population()]) into the Stan data entries
+#' controlling the susceptible-depletion adjustment.
+#'
+#' @param pop A list returned by [.check_expectation_population()].
+#'
+#' @return A named list of Stan data entries (`pop_use`, `pop_uncertain`,
+#' `pop_fixed`, `pop_floor`).
+#'
+#' @noRd
+.expectation_population_data <- function(pop) {
+  list(
+    pop_use = pop$use,
+    pop_uncertain = pop$uncertain,
+    pop_fixed = pop$fixed,
+    pop_floor = pop$floor
+  )
 }
 
 #' Expectation model module
@@ -403,6 +609,28 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' PMFs. This should be the same length as the modelled time period plus the
 #' length of the generation time if supplied.
 #'
+#' @param population Optional initial susceptible population for the
+#' susceptible-depletion adjustment of the renewal process. Defaults to `NULL`
+#' (no adjustment). When supplied, transmission is scaled by the remaining
+#' susceptible fraction so \code{Rt} bends down as the pool depletes. A single
+#' value is recycled across groups (with a warning) or a length-`groups` vector
+#' sets per-group values; groups are independent well-mixed populations. Only
+#' used on the renewal path (\code{length(generation_time) > 1}). Adapted from
+#' \code{EpiNow2::rt_opts(pop = ...)}.
+#'
+#' @param population_floor Numeric, defaulting to 1. Minimum susceptible
+#' population used as a numerical-stability floor on the transmission-rate
+#' denominator. Ignored when `population` is `NULL`.
+#'
+#' @param population_uncertain Logical, defaulting to `FALSE`. If `TRUE`, the
+#' population is estimated, fitted independently per group from a per-group
+#' LogNormal prior with median equal to that group's `population` value and
+#' coefficient of variation `population_cv`. Ignored when `population` is
+#' `NULL`.
+#'
+#' @param population_cv Numeric, defaulting to 0.1. Coefficient of variation of
+#' the LogNormal population prior when `population_uncertain` is `TRUE`.
+#'
 #' @param ... Additional parameters passed to [enw_add_metaobs_features()]. The
 #' same arguments as passed to `enw_preprocess_data()` should be used here.
 #' @inherit enw_report return
@@ -415,6 +643,10 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' enw_expectation(data = enw_example("preprocessed"))
 enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
                             observation = ~1, latent_reporting_delay = 1,
+                            population = NULL,
+                            population_floor = 1,
+                            population_uncertain = FALSE,
+                            population_cv = 0.1,
                             data, ...) {
   if (as_string_formula(r) == "~0") {
     cli::cli_abort("An expectation model formula for r must be specified")
@@ -425,6 +657,10 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   if (abs(sum(generation_time) - 1) > 1e-3) {
     cli::cli_abort("The generation time must sum to 1")
   }
+  pop <- .check_expectation_population(
+    population, population_floor, population_uncertain,
+    population_cv, generation_time, data$groups[[1]]
+  )
 
   # Set up growth rate features
   r_features <- data$metareference[[1]]
@@ -452,6 +688,9 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
     rep(r_list$t, data$groups[[1]])
   ) - r_list$t
   r_list$ft <- r_list$t + r_list$r_seed
+
+  # Susceptible-depletion (population) adjustment data.
+  r_list <- c(r_list, .expectation_population_data(pop))
 
   # Initial prior for seeding observations
   latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
@@ -505,13 +744,32 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   names(obs_list) <- paste0("expl_", names(obs_list))
   out$data <- c(r_list, r_data, obs_list, obs_data)
 
+  # Per-group LogNormal prior (log scale) on the initial susceptible
+  # population. This is always supplied as data (so `expr_pop_p` exists in the
+  # Stan data, one column per group) but is only used when the population is
+  # estimated (`pop$uncertain == 1`). When the population is fixed or absent a
+  # placeholder prior is used for every group.
+  groups <- data$groups[[1]]
+  pop_medianlog <- rlang::`%||%`(pop$prior_medianlog, rep(0, groups))
+  if (length(pop_medianlog) == 1L) {
+    pop_medianlog <- rep(pop_medianlog, groups)
+  }
+  pop_sdlog <- rlang::`%||%`(pop$prior_sdlog, 1)
+
   out$priors <- data.table::data.table(
     variable = c(
       "expr_r_int", "expr_beta_sd",
       rep("expr_lelatent_int", length(seed_obs)),
-      "expl_beta_sd"
+      "expr_arima_sigma", "expr_arima_pacf",
+      "expr_gp_rho", "expr_gp_alpha",
+      rep("expr_pop", groups),
+      "expl_beta_sd",
+      "expl_arima_sigma", "expl_arima_pacf",
+      "expl_gp_rho", "expl_gp_alpha"
     ),
-    dimension = c(1, 1, seq_along(seed_obs), 1),
+    dimension = c(
+      1, 1, seq_along(seed_obs), 1, 1, 1, 1, seq_len(groups), 1, 1, 1, 1, 1
+    ),
     description = c(
       "Intercept of the log growth rate",
       "Standard deviation of scaled pooled log growth rate effects",
@@ -522,14 +780,43 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
         ),
         length(seed_obs)
       ),
-      "Standard deviation of scaled pooled log growth rate effects"
+      "Standard deviation of the ARIMA latent residual on log growth rate",
+      .arima_pacf_prior_description("log growth rate"),
+      .gp_rho_prior_description("log growth rate"),
+      .gp_alpha_prior_description("log growth rate"),
+      rep(
+        paste(
+          "Initial susceptible population (per group) for the",
+          "susceptible-depletion adjustment (LogNormal, log scale; only used",
+          "when estimated)"
+        ),
+        groups
+      ),
+      "Standard deviation of scaled pooled log growth rate effects",
+      paste(
+        "Standard deviation of the ARIMA latent residual on log",
+        "latent-to-obs proportion"
+      ),
+      .arima_pacf_prior_description("log latent-to-obs proportion"),
+      .gp_rho_prior_description("log latent-to-obs proportion"),
+      .gp_alpha_prior_description("log latent-to-obs proportion")
     ),
     distribution = c(
       "Normal", "Zero truncated normal", rep("Normal", length(seed_obs)),
-      "Zero truncated normal"
+      "Zero truncated normal", "Uniform",
+      "Log normal", "Zero truncated normal",
+      rep("Log normal", groups),
+      "Zero truncated normal",
+      "Zero truncated normal", "Uniform",
+      "Log normal", "Zero truncated normal"
     ),
-    mean = c(0, 0, seed_obs, 0),
-    sd = c(0.2, 1, rep(1, length(seed_obs)), 1)
+    mean = c(
+      0, 0, seed_obs, 0, 0, log(3), 0, pop_medianlog, 0, 0, 0, log(3), 0
+    ),
+    sd = c(
+      0.2, 1, rep(1, length(seed_obs)), 0.2, 0, 0.5, 0.05,
+      rep(pop_sdlog, groups), 1, 0.2, 0, 0.5, 0.05
+    )
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -565,9 +852,19 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
           1, priors$expr_r_int_p[1], priors$expr_r_int_p[2] * 0.1
         ))
       }
+      init <- c(init, .arima_inits(data, priors, "expr"))
+      init <- c(init, .gp_inits(data, priors, "expr"))
+      if (isTRUE(data$expr_pop_uncertain == 1)) {
+        init$expr_pop_est <- array(rlnorm(
+          data$g, as.vector(priors$expr_pop_p[1, ]),
+          as.vector(priors$expr_pop_p[2, ]) * 0.1
+        ))
+      }
       if (data$expl_fncol > 0) {
         init$expl_beta <- array(rnorm(data$expl_fncol, 0, 0.01))
       }
+      init <- c(init, .arima_inits(data, priors, "expl"))
+      init <- c(init, .gp_inits(data, priors, "expl"))
       if (data$expl_rncol > 0) {
         init$expl_beta_sd <- array(abs(rnorm(
           data$expl_rncol, priors$expl_beta_sd_p[1],
@@ -681,15 +978,33 @@ enw_missing <- function(formula = ~1, data) {
   out$data <- data_list
   # Define default priors
   out$priors <- data.table::data.table(
-    variable = c("miss_int", "miss_beta_sd"),
-    description = c(
-      "Intercept on the logit scale for the proportion missing reference dates",
-      "Standard deviation of scaled pooled logit missing reference date
-       effects"
+    variable = c(
+      "miss_int", "miss_beta_sd", "miss_arima_sigma", "miss_arima_pacf",
+      "miss_gp_rho", "miss_gp_alpha"
     ),
-    distribution = c("Normal", "Zero truncated normal"),
-    mean = c(0, 0),
-    sd = c(1, 1)
+    description = c(
+      paste(
+        "Intercept on the logit scale for the proportion missing",
+        "reference dates"
+      ),
+      paste(
+        "Standard deviation of scaled pooled logit missing reference",
+        "date effects"
+      ),
+      paste(
+        "Standard deviation of the ARIMA latent residual on",
+        "missing-reference logit proportion"
+      ),
+      .arima_pacf_prior_description("missing-reference logit proportion"),
+      .gp_rho_prior_description("missing-reference logit proportion"),
+      .gp_alpha_prior_description("missing-reference logit proportion")
+    ),
+    distribution = c(
+      "Normal", "Zero truncated normal", "Zero truncated normal", "Uniform",
+      "Log normal", "Zero truncated normal"
+    ),
+    mean = c(0, 0, 0, 0, log(3), 0),
+    sd = c(1, 1, 0.2, 0, 0.5, 0.05)
   )
   # Define a function for sampling from the priors and data
   out$inits <- function(data, priors) {
@@ -714,6 +1029,8 @@ enw_missing <- function(formula = ~1, data) {
           )))
         }
       }
+      init <- c(init, .arima_inits(data, priors, "miss"))
+      init <- c(init, .gp_inits(data, priors, "miss"))
       init
     }
     fn
@@ -728,7 +1045,9 @@ enw_missing <- function(formula = ~1, data) {
 #' negative binomial with a quadratic mean-variance
 #' relationship ("negbin"). Negative binomial with a linear
 #' mean-variance relationship ("negbin1d") and Poisson ("poisson") are
-#' also available.
+#' also available. This is ignored when `delay_only = TRUE`, in which case the
+#' delay-only multinomial likelihood is used regardless of `family`; supplying
+#' a `family` alongside `delay_only = TRUE` emits a warning.
 #'
 #' @param observation_indicator A character string, the name of the column in
 #' the data that indicates whether an observation is observed or not (using a
@@ -739,6 +1058,27 @@ enw_missing <- function(formula = ~1, data) {
 #' [enw_flag_observed_observations()]. If either of these approaches are used
 #' then the variable will be name `.observed`. Default is `NULL`.
 #'
+#' @param delay_only Logical, defaults to `FALSE`. If `TRUE`, fit only the
+#' reporting-delay distribution conditional on the known per-reference-date
+#' totals, treating those totals as fixed truth. The latent process and
+#' per-cell observation model are replaced by a (truncated) multinomial over
+#' the reported cells of each reference date, so `family` is ignored. With
+#' final retrospective totals
+#' this is the plain multinomial; with running totals observed up to some
+#' horizon the renormalisation over the observed delay range gives the
+#' truncated multinomial. An `observation_indicator` is supported and
+#' renormalises over all delays up to the observation cutoff. Because the
+#' known totals override the expected observations, the latent process is
+#' inert; [epinowcast()] therefore minimises the expectation automatically, so
+#' a delay-only fit is just `epinowcast(data, obs = enw_obs(delay_only = TRUE,
+#' data = data))` with no separate expectation module to configure. This mode
+#' estimates delays and does not nowcast (refit with the full model for a
+#' nowcast). Not compatible with the missing reference model. See the delay
+#' estimation vignette for a worked example.
+#' Based on the conditional delay likelihood of Kalbfleisch and Lawless
+#' (\doi{10.1080/01621459.1989.10478780}) and Höhle and an der Heiden
+#' (\doi{10.1111/biom.12194}).
+#'
 #' @param data Output from [enw_preprocess_data()].
 #'
 #' @return A list as required by stan.
@@ -746,9 +1086,32 @@ enw_missing <- function(formula = ~1, data) {
 #' @export
 #' @examples
 #' enw_obs(data = enw_example("preprocessed"))
+#' # Delay-only model conditional on known totals
+#' enw_obs(delay_only = TRUE, data = enw_example("preprocessed"))
 enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
-                    observation_indicator = NULL, data) {
+                    observation_indicator = NULL, delay_only = FALSE, data) {
+  family_supplied <- !missing(family)
   family <- match.arg(family)
+
+  # The delay-only likelihood is a (truncated) multinomial and does not use a
+  # per-cell observation family. Warn if a family was supplied alongside it and
+  # then ignore it.
+  if (delay_only) {
+    if (family_supplied) {
+      cli::cli_warn(
+        c(
+          paste(
+            "{.arg family} is ignored when {.code delay_only = TRUE}."
+          ),
+          i = paste(
+            "The delay-only model uses a multinomial likelihood, so the",
+            "observation family is not used."
+          )
+        )
+      )
+    }
+    family <- "poisson"
+  }
 
   # copy new confirm for processing
   new_confirm <- coerce_dt(
@@ -818,6 +1181,13 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
     family == "negbin", 1,
     family == "negbin1d", 2
   )
+
+  # Delay-only model: fit the delay distribution conditional on the known
+  # totals (supplied as log totals by reference date, and as integer totals
+  # by snapshot for the residual category) via a multinomial.
+  proc_data$model_delay_only <- as.integer(delay_only)
+  proc_data$dlo_ltotal <- delay_only_ltotal(data, delay_only)
+  proc_data$dlo_total <- delay_only_total(data, delay_only)
 
   out <- list()
   out$family <- family

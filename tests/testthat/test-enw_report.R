@@ -11,7 +11,14 @@ test_that("enw_report supports non-parametric models", {
     ~ 1 + day_of_week,
     data = pobs
   )
-  expect_named(rep$inits(rep$data, rep$priors)(), c("rep_beta", "rep_beta_sd"))
+  expect_named(
+    rep$inits(rep$data, rep$priors)(),
+    c(
+      "rep_beta", "rep_beta_sd",
+      "rep_arima_pacf", "rep_arima_theta", "rep_arima_sigma",
+      "rep_gp_rho", "rep_gp_alpha"
+    )
+  )
   expect_identical(
     enw_report(~0, data = pobs)$formula$non_parametric, "~1"
   )
@@ -43,4 +50,23 @@ test_that("enw_report errors on report model with max_delay = 1", {
   expect_no_error(
     enw_report(non_parametric = ~0, data = pobs_retro)
   )
+})
+
+test_that("enw_report uses the report axis length from the metadata", {
+  # completion_beyond_max_report extends the report axis past time + max_delay - 1
+  obs <- enw_example("observations")
+  max_delay <- 20L
+  inc <- enw_complete_dates(
+    obs,
+    max_delay = max_delay,
+    max_date = max(obs$report_date) + 14,
+    completion_beyond_max_report = TRUE
+  )
+  pobs_ext <- suppressWarnings(enw_preprocess_data(inc, max_delay = max_delay))
+
+  rep_per_group <- nrow(pobs_ext$metareport[[1]]) / pobs_ext$groups[[1]]
+  expect_gt(rep_per_group, pobs_ext$time[[1]] + max_delay - 1)
+
+  expect_no_warning(rep <- enw_report(~0, data = pobs_ext))
+  expect_equal(rep$data$rep_t, rep_per_group)
 })

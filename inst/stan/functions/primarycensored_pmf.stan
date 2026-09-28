@@ -1,0 +1,192 @@
+/**
+ * Primary event censored discretisation wrapper for epinowcast
+ *
+ * Wraps the vendored primarycensored Stan functions (see primarycensored.stan)
+ * to discretise a parametric reference date delay distribution. This accounts
+ * for double interval censoring: a uniform primary event window convolved with
+ * a secondary reporting interval, with right truncation at the maximum delay.
+ *
+ * @ingroup pmf_handlers
+ */
+
+/**
+ * Translate an epinowcast distribution id to a primarycensored dist_id
+ *
+ * epinowcast uses model_refp ids (1: exponential, 2: lognormal, 3: gamma)
+ * which differ from primarycensored's pcd_stan_dist_id() convention
+ * (1: lognormal, 2: gamma, 3: weibull, 4: exponential). This function maps the
+ * supported epinowcast ids onto the primarycensored ids.
+ *
+ * @param dist epinowcast model_refp distribution id.
+ *
+ * @return The corresponding primarycensored dist_id.
+ *
+ * @note The exponential (epinowcast id 1) is routed through the
+ * primarycensored gamma id (2) as a Gamma(shape = 1) special case, which uses
+ * the analytical gamma-uniform solution rather than the slower per-delay
+ * integration of primarycensored's standalone exponential id (4).
+ *
+ * @note The log-logistic distribution is unsupported pending primarycensored
+ * support (see https://github.com/epinowcast/primarycensored/issues/321); any
+ * other id is rejected.
+ */
+int enw_to_pcens_dist_id(int dist) {
+  if (dist == 1) return 2;  // exponential -> primarycensored gamma (shape 1)
+  if (dist == 2) return 1;  // lognormal   -> primarycensored lognormal
+  if (dist == 3) return 2;  // gamma       -> primarycensored gamma
+  reject(
+    "The primarycensored discretisation does not support distribution id ",
+    dist, ". Supported distributions are exponential, lognormal and gamma."
+  );
+}
+
+/**
+ * Translate epinowcast (mu, sigma) parameters to primarycensored parameters
+ *
+ * epinowcast parameterises its parametric reference delay distributions on a
+ * transformed scale (e.g. log rate for the exponential, log shape for the
+ * gamma). The vendored primarycensored functions expect the native Stan
+ * parameterisation. This function performs the translation.
+ *
+ * @param mu Location parameter on the epinowcast transformed scale.
+ *
+ * @param sigma Scale parameter on the epinowcast transformed scale.
+ *
+ * @param dist epinowcast model_refp distribution id.
+ *
+ * @return A length two array of native primarycensored distribution
+ * parameters.
+ */
+array[] real enw_to_pcens_params(real mu, real sigma, int dist) {
+  array[2] real params;
+  if (dist == 1) {
+    // Exponential: epinowcast uses exp(-mu) as the rate. Routed through the
+    // gamma path as Gamma(shape = 1, rate = exp(-mu)), which is identical to
+    // Exponential(rate = exp(-mu)) but hits the analytical gamma-uniform
+    // solution.
+    params[1] = 1;
+    params[2] = exp(-mu);
+  } else if (dist == 2) {
+    // Lognormal: shared (meanlog, sdlog) parameterisation.
+    params[1] = mu;
+    params[2] = sigma;
+  } else if (dist == 3) {
+    // Gamma: epinowcast uses exp(mu) as the shape with sigma as the rate;
+    // primarycensored gamma takes (shape, rate).
+    params[1] = exp(mu);
+    params[2] = sigma;
+  } else {
+    reject("Unsupported distribution id for primarycensored params: ", dist);
+  }
+  return params;
+}
+
+/**
+ * Convert log hazards to logit hazards
+ *
+ * Transforms log hazards to logit hazards without converting to the natural
+ * scale.
+ *
+ * @param lhaz Vector of log hazards.
+ *
+ * @return Vector of logit hazards.
+ *
+ * @note The final hazard is fixed to 1, so its logit hazard is +Inf and all
+ * remaining mass is reported at the maximum delay.
+ */
+vector log_hazard_to_logit_hazard(vector lhaz) {
+  int n = num_elements(lhaz);
+  // Logit transform all but last, then append Inf (last hazard h[n] = 1)
+  return append_row(
+    lhaz[1:(n-1)] - log1m_exp(lhaz[1:(n-1)]),
+    positive_infinity()
+  );
+}
+
+/**
+ * Convert a proper discretised log PMF to logit hazards
+ *
+ * Computes logit hazards from a non-overlapping discretised log PMF (such as
+ * the one returned by the primarycensored functions) using the standard
+ * discrete survival hazard h_d = p_d / S_{d-1}, where the survival function is
+ * S_{d-1} = 1 - sum_{i < d} p_i.
+ *
+ * @param lprob Vector of log probabilities, one per discrete delay 0:(u - 1).
+ *
+ * @param u Number of discrete delays (length of lprob).
+ *
+ * @return Vector of logit hazards matching the output contract of
+ * log_hazard_to_logit_hazard().
+ *
+ * @note The final hazard is fixed to 1 (logit hazard +inf) so that all
+ * remaining probability mass is reported at the maximum delay.
+ */
+vector lprob_to_log_hazard(vector lprob, int u) {
+  vector[u] lhaz;
+  // h_0 = p_0 (survival before delay 0 is 1).
+  lhaz[1] = lprob[1];
+  // Running log survival: log S_d = log(1 - sum_{i <= d} p_i).
+  real log_surv = log1m_exp(lprob[1]);
+  for (d in 2:u) {
+    // h_{d-1} = p_{d-1} / S_{d-2}; here lprob[d] is p_{d-1} and log_surv is
+    // log S_{d-2} (survival up to but excluding the current delay).
+    lhaz[d] = lprob[d] - log_surv;
+    // Update survival to exclude the current delay before the next iteration.
+    if (d < u) {
+      log_surv = log_diff_exp(log_surv, lprob[d]);
+    }
+  }
+  // Pin the terminal hazard to exactly 1 (log(1) = 0) so that
+  // log_hazard_to_logit_hazard() yields +inf and all remaining mass is
+  // reported at the maximum delay, rather than relying on floating-point
+  // cancellation in the final iteration above.
+  lhaz[u] = 0;
+  return log_hazard_to_logit_hazard(lhaz);
+}
+
+/**
+ * Discretise a parametric delay distribution using primary event censoring
+ *
+ * Computes the log probability mass function of a double interval censored
+ * delay distribution using the vendored primarycensored Stan functions and,
+ * optionally, converts it to logit hazards (the output contract of
+ * log_hazard_to_logit_hazard()).
+ *
+ * @param mu Location parameter of the parametric distribution (epinowcast
+ * transformed scale).
+ *
+ * @param sigma Scale parameter of the parametric distribution (epinowcast
+ * transformed scale).
+ *
+ * @param dmax Maximum possible delay. The distribution is discretised over
+ * delays 0 to (dmax - 1) and normalised over that range.
+ *
+ * @param dist epinowcast model_refp distribution id (1: exponential,
+ * 2: lognormal, 3: gamma).
+ *
+ * @param ref_as_p Flag indicating whether to return log probabilities directly
+ * (1) or to convert to logit hazards (0).
+ *
+ * @return A vector of logit hazards or log probabilities of the discretised
+ * distribution, representing discrete delays from 0 to (dmax - 1).
+ *
+ * @note Uses a uniform primary event window of width 1 and assumes an integer
+ * secondary censoring window of width 1, matching epinowcast's daily
+ * discretisation. Right truncation is applied at dmax via the primarycensored
+ * D argument.
+ */
+vector discretised_pcens_logit_hazard(real mu, real sigma, int dmax, int dist,
+                                      int ref_as_p) {
+  int pcens_dist = enw_to_pcens_dist_id(dist);
+  // All supported distributions (exponential routed via gamma, lognormal,
+  // gamma) take two parameters under the primarycensored convention.
+  array[2] real params = enw_to_pcens_params(mu, sigma, dist);
+  array[0] real primary_params;
+  vector[dmax] lprob = primarycensored_sone_lpmf_vectorized(
+    dmax - 1, 0.0, dmax * 1.0, pcens_dist, params, 1.0, 1, primary_params
+  );
+  if (ref_as_p == 1) {
+    return lprob;
+  }
+  return lprob_to_log_hazard(lprob, dmax);
+}

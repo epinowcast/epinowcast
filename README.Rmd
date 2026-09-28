@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
   message = FALSE, warning = FALSE
 )
 ```
-# A Bayesian Framework for Real-time Infectious Disease Surveillance <a href="https://package.epinowcast.org/"><img src="man/figures/logo.png" align="right" height="139" alt="epinowcast website" /></a>
+# A Bayesian Framework for Real-Time Infectious Disease Surveillance <a href="https://package.epinowcast.org/"><img src="man/figures/logo.png" align="right" height="139" alt="epinowcast website" /></a>
 
 <!-- badges: start -->
 [![Lifecycle:
@@ -39,7 +39,7 @@ cat(gsub("\n[ ]+", " ", packageDescription("epinowcast")$Description))
 **The default lognormal reporting delay distribution may not suit all data.**
 It can fail with multimodal or complex delay patterns.
 Evaluate model fit and consider alternatives (e.g., non-parametric hazards) as needed.
-See the [package vignettes](https://package.epinowcast.org/articles) for guidance.
+See the [package vignettes](https://package.epinowcast.org/articles/) for guidance.
 
 ## Installation
   
@@ -90,7 +90,7 @@ The [`epinowcast` website](https://package.epinowcast.org/) includes a function 
 
 <details><summary>R Vignettes</summary>
 
-We have created [package vignettes](https://package.epinowcast.org/articles)
+We have created [package vignettes](https://package.epinowcast.org/articles/)
 to help you
 [get started nowcasting](https://package.epinowcast.org/articles/epinowcast.html),
 see a
@@ -155,6 +155,8 @@ If making use of our methodology or the methodology on which ours is based, plea
 
 
 
+
+
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -169,7 +171,7 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <a href="https://github.com/epinowcast/epinowcast/commits?author=sbfnk">sbfnk</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=Bisaloo">Bisaloo</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=pearsonca">pearsonca</a>, 
-<a href="https://github.com/epinowcast/epinowcast/commits?author=choi-hannah">choi-hannah</a>, 
+<a href="https://github.com/epinowcast/epinowcast/commits?author=choi-hannah-old">choi-hannah-old</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=medewitt">medewitt</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=jamesmbaazam">jamesmbaazam</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=pitmonticone">pitmonticone</a>, 
@@ -181,7 +183,8 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <a href="https://github.com/epinowcast/epinowcast/commits?author=Lnrivas">Lnrivas</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=natemcintosh">natemcintosh</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=nikosbosse">nikosbosse</a>, 
-<a href="https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs">pratikunterwegs</a>
+<a href="https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs">pratikunterwegs</a>, 
+<a href="https://github.com/epinowcast/epinowcast/commits?author=nicholasdavies">nicholasdavies</a>
 
 
 
@@ -216,6 +219,8 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
+
 
 
 

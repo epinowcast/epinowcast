@@ -14,7 +14,8 @@ enw_reps_with_complete_refs <- function(
   new_confirm, max_delay, by = NULL, copy = TRUE
 ) {
   rep_with_complete_ref <- coerce_dt(
-    new_confirm, select = c(by, "report_date"), copy = copy
+    new_confirm,
+    select = c(by, "report_date"), copy = copy
   )
   rep_with_complete_ref <- rep_with_complete_ref[,
     .(n = .N),
@@ -46,7 +47,8 @@ enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
                                     metareference, max_delay) {
   # Make a complete data.table of all possible reference and report dates
   miss_lk <- coerce_dt(
-    metareference, select = "date", group = TRUE
+    metareference,
+    select = "date", group = TRUE
   )
   data.table::setnames(miss_lk, "date", "reference_date")
 
@@ -88,6 +90,64 @@ latest_obs_as_matrix <- function(latest) {
     value.var = "confirm"
   )
   latest_matrix <- as.matrix(latest_matrix[, -1])
+}
+
+#' Known per-reference-date totals for the delay-only model
+#'
+#' Builds the `dlo_ltotal` data entry for the delay-only model. The known
+#' totals are the latest available `confirm` per reference date and group,
+#' supplied to Stan on the log scale as a `g` by `t` matrix (cmdstanr's layout
+#' for `array[g] vector[t]`). The log total is only an offset on the expected
+#' cells and cancels in the multinomial likelihood, so reference dates with no
+#' observed cells (a non-positive or missing latest total, e.g. the most recent
+#' dates under an observation indicator) are floored to 1 (log 0); such dates
+#' contribute nothing to the likelihood.
+#'
+#' @param data Output from [enw_preprocess_data()].
+#'
+#' @param delay_only Logical; if `FALSE` an empty (`g` by `0`) matrix is
+#' returned so the model carries no delay-only totals.
+#'
+#' @return A `g` by `t` matrix of log totals (or `g` by `0` when not in
+#' delay-only mode).
+#' @family modelmodulehelpers
+delay_only_ltotal <- function(data, delay_only) {
+  g <- data$groups[[1]]
+  if (!delay_only) {
+    return(matrix(numeric(0), nrow = g, ncol = 0))
+  }
+  # latest_obs_as_matrix returns reference dates (t) by group (g); transpose
+  # to the array[g] vector[t] layout cmdstanr expects.
+  totals <- t(latest_obs_as_matrix(data$latest[[1]]))
+  # Floor non-positive / missing totals to 1 so the (cancelling) offset stays
+  # finite; these snapshots have no observations and drop out of the
+  # likelihood.
+  totals[!is.finite(totals) | totals <= 0] <- 1
+  log(totals)
+}
+
+#' Known integer totals per snapshot for the delay-only model
+#'
+#' Builds the `dlo_total` data entry: the known integer total per snapshot
+#' (the latest cumulative `confirm`, i.e. the cutoff running total), ordered
+#' by group then reference date to match the snapshot order. These totals
+#' size the residual category when an observation indicator leaves some
+#' before-cutoff cells unobserved.
+#'
+#' @inheritParams delay_only_ltotal
+#'
+#' @return An integer vector of length `snapshots` (or length 0 when not in
+#' delay-only mode).
+#' @family modelmodulehelpers
+delay_only_total <- function(data, delay_only) {
+  if (!delay_only) {
+    return(integer(0))
+  }
+  latest <- coerce_dt(data$latest[[1]], group = TRUE)
+  data.table::setkeyv(latest, c(".group", "reference_date"))
+  totals <- latest$confirm
+  totals[!is.finite(totals) | totals < 0] <- 0
+  as.integer(round(totals))
 }
 
 #' Construct a convolution matrix
@@ -244,15 +304,15 @@ extract_sparse_matrix <- function(mat, prefix = "") {
     # Identifying non-zero elements
     mat <- t(mat)
     non_zero_indices <- which(mat != 0, arr.ind = TRUE)
-    w <- mat[non_zero_indices]  # Non-zero elements of the matrix
+    w <- mat[non_zero_indices] # Non-zero elements of the matrix
 
     # Extracting column non-zero elements
     v <- non_zero_indices[, 1]
-    u_original <- non_zero_indices[, 2]  # Column indices (used to compute u)
+    u_original <- non_zero_indices[, 2] # Column indices (used to compute u)
 
     # Compute the 'u' vector in CSR format
     u <- rep(0, nrow(mat) + 1)
-    u[1] <- 1  # index starts from 1, so we adjust accordingly
+    u[1] <- 1 # index starts from 1, so we adjust accordingly
     for (i in seq_along(u_original)) {
       u[u_original[i] + 1] <- i + 1
     }
@@ -302,7 +362,8 @@ add_max_observed_delay <- function(new_confirm, observation_indicator = NULL) {
   if (!is.null(observation_indicator)) {
     new_confirm[!get(observation_indicator), max_obs_delay := -1]
     new_confirm <- new_confirm[,
-      max_obs_delay := max(max_obs_delay), by = c("reference_date", ".group")
+      max_obs_delay := max(max_obs_delay),
+      by = c("reference_date", ".group")
     ]
   }
   new_confirm[]
@@ -340,7 +401,7 @@ add_max_observed_delay <- function(new_confirm, observation_indicator = NULL) {
 #'     \item \code{sg}: group index of each snapshot (snapshot group).
 #'   }
 #' @family modelmodulehelpers
-extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
+extract_obs_metadata <- function(new_confirm, observation_indicator = NULL) {
   check_observation_indicator(new_confirm, observation_indicator)
   # format vector of snapshot lengths
   snap_length <- new_confirm
@@ -353,11 +414,13 @@ extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
   if (!is.null(observation_indicator)) {
     # Get the maximum consecutive length of observed data
     l_snap_length <- new_confirm[,
-     .(s = unique(max_obs_delay) + 1), by = c("reference_date", ".group")
+      .(s = unique(max_obs_delay) + 1),
+      by = c("reference_date", ".group")
     ]$s
     # Get the number of observed data points per snapshot
     nc_snap_length <- new_confirm[,
-      .(s = sum(get(observation_indicator))), by = .(reference_date, .group)
+      .(s = sum(get(observation_indicator))),
+      by = .(reference_date, .group)
     ]$s
   } else {
     l_snap_length <- snap_length
@@ -457,12 +520,14 @@ enw_structural_reporting_metadata <- function(pobs) {
 #'
 #' # Wednesday-only reporting
 #' enw_dayofweek_structural_reporting(
-#'   pobs, day_of_week = "Wednesday"
+#'   pobs,
+#'   day_of_week = "Wednesday"
 #' )
 #'
 #' # Multiple reporting days
 #' enw_dayofweek_structural_reporting(
-#'   pobs, day_of_week = c("Monday", "Wednesday", "Friday")
+#'   pobs,
+#'   day_of_week = c("Monday", "Wednesday", "Friday")
 #' )
 #' }
 enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
@@ -472,4 +537,153 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
   metadata[, day_of_week_col := NULL]
 
   metadata[, .(.group, date, report_date, report)]
+}
+
+# Build conditional ARIMA initial values for a module's prefix.
+#
+# Pulls the `<prefix>_arima_*` size and presence fields from `data`
+# (as shipped by `enw_formula_as_data_list()`) and the
+# `<prefix>_arima_sigma_p` (and optionally `<prefix>_arima_sd_sigma_p`)
+# rows from the prior list. Returns a named list of initial values
+# for any ARIMA parameters that are non-empty given the data; returns
+# an empty list when no ARIMA term is present for this prefix.
+#
+# Used by `enw_expectation()`, `enw_reference()`, `enw_report()`, and
+# `enw_missing()` to keep their `inits` functions short and to keep
+# the per-module ARIMA boilerplate in one place.
+# Standard description for an ARIMA partial-autocorrelation prior.
+#
+# The AR coefficients are parameterised through partial autocorrelations
+# constrained to (-1, 1), which are Uniform by default. Supplying a
+# positive standard deviation switches to a Normal(mean, sd) prior
+# truncated to (-1, 1), shared across the AR order and any groups.
+.arima_pacf_prior_description <- function(context) {
+  paste0(
+    "Partial autocorrelations of the ARIMA latent residual on the ",
+    context, "; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) ",
+    "truncated to (-1, 1)"
+  )
+}
+
+#' @importFrom stats runif
+.arima_inits <- function(data, priors, prefix, with_sd_sigma = FALSE) {
+  z_nm <- paste0(prefix, "_arima_z")
+  pacf_nm <- paste0(prefix, "_arima_pacf")
+  theta_nm <- paste0(prefix, "_arima_theta")
+  sigma_nm <- paste0(prefix, "_arima_sigma")
+  sd_sigma_nm <- paste0(prefix, "_arima_sd_sigma")
+
+  # Declare every vector-valued ARIMA parameter the module exposes with
+  # an empty default, then fill in real inits below when the term is
+  # present. This mirrors how the other module parameters are
+  # initialised (the `numeric(0)` defaults in the module `inits`
+  # functions) and stops cmdstanr warning about missing inits for them.
+  #
+  # `arima_z` is a matrix and is handled separately: an empty 0x0 matrix
+  # cannot be represented in cmdstanr's JSON (it serialises to `[]`,
+  # which Stan reads as dims (0) not (0, 0) and rejects at
+  # initialisation), so it is only supplied when genuinely sized.
+  init <- list()
+  init[[pacf_nm]] <- numeric(0)
+  init[[theta_nm]] <- numeric(0)
+  init[[sigma_nm]] <- numeric(0)
+  if (with_sd_sigma) {
+    init[[sd_sigma_nm]] <- numeric(0)
+  }
+
+  pT <- data[[paste0(prefix, "_arima_T")]]
+  pG <- data[[paste0(prefix, "_arima_G")]]
+  pp <- data[[paste0(prefix, "_arima_p")]]
+  pq <- data[[paste0(prefix, "_arima_q")]]
+  ppresent <- data[[paste0(prefix, "_arima_present")]]
+  if (isTRUE(pT > 0 && pG > 0)) {
+    init[[z_nm]] <- matrix(rnorm(pT * pG, 0, 0.01), pT, pG)
+  }
+  if (isTRUE(pp > 0)) {
+    init[[pacf_nm]] <- array(runif(pp, -0.1, 0.1))
+  }
+  if (isTRUE(pq > 0)) {
+    init[[theta_nm]] <- array(rnorm(pq, 0, 0.01))
+  }
+  if (isTRUE(ppresent > 0)) {
+    sp <- priors[[paste0(prefix, "_arima_sigma_p")]]
+    init[[sigma_nm]] <- array(abs(rnorm(1, sp[1], sp[2] / 10)))
+    # The sd-scale parameter is only sized 1 when the parametric sd is
+    # modelled (`model_refp > 1`); otherwise it stays the empty default.
+    if (with_sd_sigma && isTRUE(data$model_refp > 1)) {
+      sd_p <- priors[[paste0(prefix, "_arima_sd_sigma_p")]]
+      init[[sd_sigma_nm]] <- array(abs(rnorm(1, sd_p[1], sd_p[2] / 10)))
+    }
+  }
+  init
+}
+
+# Standard descriptions for the Gaussian process hyperprior data. The
+# length scale (rho) is modelled on the log scale (a log-normal prior)
+# and the magnitude (alpha) with a half-normal, mirroring the EpiNow2
+# GP defaults.
+.gp_rho_prior_description <- function(context) {
+  paste0(
+    "Length scale of the Gaussian process on the ", context,
+    "; log-normal prior on the (positive) length scale"
+  )
+}
+
+.gp_alpha_prior_description <- function(context) {
+  paste0(
+    "Magnitude (marginal standard deviation) of the Gaussian process on ",
+    "the ", context, "; half-normal prior"
+  )
+}
+
+# Build conditional Gaussian process initial values for a module's
+# prefix. Mirrors `.arima_inits()`: declares empty defaults for the
+# spectral coefficients (`<prefix>_gp_eta`), length scale
+# (`<prefix>_gp_rho`) and magnitude (`<prefix>_gp_alpha`), then fills
+# them when the term is present and genuinely sized. When `with_sd_alpha`
+# is `TRUE` (the parametric reference, which shares a GP between the mean
+# and sd) the second magnitude `<prefix>_gp_sd_alpha` is also declared
+# and filled when `model_refp > 1`, mirroring the ARIMA `sd_sigma`.
+#' @importFrom stats rlnorm
+.gp_inits <- function(data, priors, prefix, with_sd_alpha = FALSE) {
+  eta_nm <- paste0(prefix, "_gp_eta")
+  rho_nm <- paste0(prefix, "_gp_rho")
+  alpha_nm <- paste0(prefix, "_gp_alpha")
+  sd_alpha_nm <- paste0(prefix, "_gp_sd_alpha")
+
+  # rho/alpha are length-1 arrays sized 0 when the term is absent, so an
+  # empty default is safe. `gp_eta` is a matrix; like `arima_z` an empty
+  # 0x0 matrix cannot round-trip through cmdstanr's JSON, so it is only
+  # supplied when genuinely sized.
+  init <- list()
+  init[[rho_nm]] <- numeric(0)
+  init[[alpha_nm]] <- numeric(0)
+  if (with_sd_alpha) {
+    init[[sd_alpha_nm]] <- numeric(0)
+  }
+
+  present <- data[[paste0(prefix, "_gp_present")]]
+  if (!isTRUE(present > 0)) {
+    return(init)
+  }
+  # Periodic kernels use 2M spectral coefficients (cos/sin pairs), the
+  # others M. gp_type == 1 is the periodic kernel.
+  m <- data[[paste0(prefix, "_gp_M")]]
+  g <- data[[paste0(prefix, "_gp_G")]]
+  n_eta <- if (isTRUE(data[[paste0(prefix, "_gp_type")]] == 1L)) 2L * m else m
+  if (isTRUE(n_eta > 0 && g > 0)) {
+    init[[eta_nm]] <- matrix(rnorm(n_eta * g, 0, 0.01), n_eta, g)
+  }
+
+  rho_p <- priors[[paste0(prefix, "_gp_rho_p")]]
+  init[[rho_nm]] <- array(rlnorm(1, rho_p[1], rho_p[2] / 10))
+  alpha_p <- priors[[paste0(prefix, "_gp_alpha_p")]]
+  init[[alpha_nm]] <- array(abs(rnorm(1, alpha_p[1], alpha_p[2] / 10 + 1e-3)))
+  if (with_sd_alpha && isTRUE(data$model_refp > 1)) {
+    sd_alpha_p <- priors[[paste0(prefix, "_gp_sd_alpha_p")]]
+    init[[sd_alpha_nm]] <- array(abs(
+      rnorm(1, sd_alpha_p[1], sd_alpha_p[2] / 10 + 1e-3)
+    ))
+  }
+  init
 }

@@ -1,6 +1,6 @@
 Package: epinowcast
-Title: A Bayesian Framework for Real-time Infectious Disease Surveillance
-Version: 0.6.0.1000
+Title: A Bayesian Framework for Real-Time Infectious Disease Surveillance
+Version: 0.7.0
 Authors@R:
   c(person(given = "Sam Abbott",
            role = c("aut", "cre"),
@@ -111,11 +111,13 @@ Description: A modular Bayesian framework for real-time infectious disease
     designed with epidemiological applications in mind, the framework can be applied
     to any right-truncated time series count data.
 License: MIT + file LICENSE
+Copyright: The epinowcast authors, except for the third-party
+    components listed in inst/COPYRIGHTS.
 URL: https://package.epinowcast.org,
     https://github.com/epinowcast/epinowcast/
 BugReports: https://github.com/epinowcast/epinowcast/issues/
 Depends:
-    R (>= 4.4.0)
+    R (>= 4.3.0)
 Imports:
     cli,
     data.table,

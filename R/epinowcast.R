@@ -1,3 +1,19 @@
+#' Is an expectation module minimal (intercept-only, no convolution)?
+#'
+#' Used by [epinowcast()] to decide whether a delay-only fit can leave the
+#' supplied expectation untouched. A minimal expectation has no growth-rate
+#' covariates or random effects (`expr_fncol` and `expr_rncol` both zero), so
+#' replacing it with `enw_expectation(~1, ...)` would change nothing.
+#'
+#' @param expectation An expectation module as returned by [enw_expectation()].
+#'
+#' @return A logical scalar.
+#' @family modelmodules
+.expectation_is_minimal <- function(expectation) {
+  d <- expectation[["data"]]
+  isTRUE(d[["expr_fncol"]] == 0) && isTRUE(d[["expr_rncol"]] == 0)
+}
+
 #' @title Nowcast using partially observed data
 #'
 #' @description Provides a user friendly interface around package functionality
@@ -158,6 +174,16 @@ epinowcast <- function(data,
                        model = epinowcast::enw_model(),
                        priors,
                        ...) {
+  # Delay-only mode conditions on known totals and overrides the expected
+  # observations, so the latent process is inert. Minimise the expectation
+  # automatically (unless it is already intercept-only with no convolution) so
+  # a single `epinowcast(data, obs = enw_obs(delay_only = TRUE, data = data))`
+  # call works without a separately neutered expectation module.
+  if (isTRUE(obs$data$model_delay_only == 1) &&
+        !.expectation_is_minimal(expectation)) {
+    expectation <- enw_expectation(r = ~1, data = data)
+  }
+
   modules <- list(
     expectation, reference, report, missing, obs, fit, ...
   )

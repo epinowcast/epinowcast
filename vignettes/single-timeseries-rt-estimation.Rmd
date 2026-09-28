@@ -12,7 +12,7 @@ output:
 pkgdown:
   as_is: true
 bibliography: library.bib
-csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+csl: apa-numeric-superscript-brackets.csl
 link-citations: true
 vignette: >
   %\VignetteIndexEntry{Estimating the effective reproduction number in real-time for a single timeseries with reporting delays}
@@ -686,16 +686,16 @@ germany_nowcast
 #>   metadelay          :      30 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
-#>   priors : 28 x 6 
+#>   priors : 54 x 6 
 #>   fit : CmdStanMCMC 
-#>   data : list(115) 
+#>   data : list(264) 
 #>   fit_args : list(9) 
 #>   init_method_output : NULL 
 #> Model fit: 
 #>   Samples: 2,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 10 (12 at max, 0.6%) 
-#>   Run time: 159.3 secs
+#>   Max treedepth: 10 (25 at max, 1.2%) 
+#>   Run time: 76.9 secs
 ```
 
 ::: {.alert .alert-warning}
@@ -731,16 +731,16 @@ retro_germany_nowcast
 #>   metadelay          :      30 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
-#>   priors : 28 x 6 
+#>   priors : 54 x 6 
 #>   fit : CmdStanMCMC 
-#>   data : list(115) 
+#>   data : list(264) 
 #>   fit_args : list(9) 
 #>   init_method_output : NULL 
 #> Model fit: 
 #>   Samples: 2,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 10 (27 at max, 1.4%) 
-#>   Run time: 185.1 secs
+#>   Max treedepth: 10 (53 at max, 2.6%) 
+#>   Run time: 81.8 secs
 ```
 
 ::: {.alert .alert-warning}
@@ -782,16 +782,16 @@ retro_nodelay_nowcast
 #>   metadelay          :       1 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
-#>   priors : 28 x 6 
+#>   priors : 54 x 6 
 #>   fit : CmdStanMCMC 
-#>   data : list(115) 
+#>   data : list(264) 
 #>   fit_args : list(9) 
 #>   init_method_output : NULL 
 #> Model fit: 
 #>   Samples: 2,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 10 (51 at max, 2.5%) 
-#>   Run time: 24.1 secs
+#>   Max treedepth: 10 (5 at max, 0.2%) 
+#>   Run time: 13.5 secs
 ```
 
 ::: {.alert .alert-warning}

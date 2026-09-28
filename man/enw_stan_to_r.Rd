@@ -5,7 +5,7 @@
 \title{Expose \code{epinowcast} stan functions in R}
 \usage{
 enw_stan_to_r(
-  files = list.files(include),
+  files = list.files(include, pattern = "\\\\.stan$"),
   include = system.file("stan", "functions", package = "epinowcast"),
   global = TRUE,
   verbose = TRUE,

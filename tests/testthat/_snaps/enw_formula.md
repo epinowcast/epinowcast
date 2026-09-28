@@ -16,6 +16,12 @@
       $parsed_formula$rw
       character(0)
       
+      $parsed_formula$arima
+      character(0)
+      
+      $parsed_formula$gp
+      character(0)
+      
       
       $expanded_formula
       [1] "~1 + age_group"
@@ -47,6 +53,12 @@
       [1] 1
       
       
+      $arima
+      list()
+      
+      $gp
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -68,6 +80,12 @@
       
       
       $parsed_formula$rw
+      character(0)
+      
+      $parsed_formula$arima
+      character(0)
+      
+      $parsed_formula$gp
       character(0)
       
       
@@ -102,6 +120,12 @@
       [1] 1 2
       
       
+      $arima
+      list()
+      
+      $gp
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -123,6 +147,12 @@
       
       
       $parsed_formula$rw
+      character(0)
+      
+      $parsed_formula$arima
+      character(0)
+      
+      $parsed_formula$gp
       character(0)
       
       
@@ -214,6 +244,12 @@
       [1] 1 2 3 4 5 6 7 8
       
       
+      $arima
+      list()
+      
+      $gp
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -236,6 +272,12 @@
       
       
       $parsed_formula$rw
+      character(0)
+      
+      $parsed_formula$arima
+      character(0)
+      
+      $parsed_formula$gp
       character(0)
       
       
@@ -279,6 +321,12 @@
       [1] 1 2 3 4
       
       
+      $arima
+      list()
+      
+      $gp
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -302,20 +350,26 @@
       $parsed_formula$rw
       [1] "rw(week)"
       
+      $parsed_formula$arima
+      character(0)
+      
+      $parsed_formula$gp
+      character(0)
+      
       
       $expanded_formula
-      [1] "~1 + age_group + cweek1"
+      [1] "~1 + age_group"
       
       $fixed
       $fixed$formula
-      [1] "~1 + age_group + cweek1"
+      [1] "~1 + age_group"
       
       $fixed$design
-        (Intercept) age_group00+ age_group15-34 cweek1
-      1           1            1              0      0
-      3           1            1              0      1
-      5           1            0              1      0
-      7           1            0              1      1
+        (Intercept) age_group00+ age_group15-34
+      1           1            1              0
+      1           1            1              0
+      5           1            0              1
+      5           1            0              1
       
       $fixed$index
       [1] 1 1 2 2 3 3 4 4
@@ -323,19 +377,61 @@
       
       $random
       $random$formula
-      [1] "~0 + fixed + age_group + rw__week"
+      [1] "~0 + fixed + age_group"
       
       $random$design
-        fixed age_group rw__week
-      1     0         1        0
-      2     0         1        0
-      3     0         0        1
+        fixed age_group
+      1     0         1
+      2     0         1
       attr(,"assign")
-      [1] 1 2 3
+      [1] 1 2
       
       $random$index
-      [1] 1 2 3
+      [1] 1 2
       
+      
+      $arima
+      $arima[[1]]
+      $arima[[1]]$time
+      [1] "week"
+      
+      $arima[[1]]$by
+      NULL
+      
+      $arima[[1]]$p
+      [1] 0
+      
+      $arima[[1]]$d
+      [1] 1
+      
+      $arima[[1]]$q
+      [1] 0
+      
+      $arima[[1]]$T
+      [1] 2
+      
+      $arima[[1]]$G
+      [1] 1
+      
+      $arima[[1]]$time_idx
+      [1] 1 2 1 2
+      
+      $arima[[1]]$group_idx
+      [1] 1 1 1 1
+      
+      $arima[[1]]$time_vals
+      [1] 0 1
+      
+      $arima[[1]]$group_levels
+      [1] "1"
+      
+      $arima[[1]]$name
+      [1] "arima__week"
+      
+      
+      
+      $gp
+      list()
       
       attr(,"class")
       [1] "enw_formula" "list"       
@@ -360,25 +456,26 @@
       $parsed_formula$rw
       [1] "rw(week, age_group)"
       
+      $parsed_formula$arima
+      character(0)
+      
+      $parsed_formula$gp
+      character(0)
+      
       
       $expanded_formula
-      [1] "~1 + age_group + age_group:cweek1"
+      [1] "~1 + age_group"
       
       $fixed
       $fixed$formula
-      [1] "~1 + age_group + age_group:cweek1"
+      [1] "~1 + age_group"
       
       $fixed$design
-        (Intercept) age_group00+ age_group15-34 age_group00+:cweek1
-      1           1            1              0                   0
-      3           1            1              0                   1
-      5           1            0              1                   0
-      7           1            0              1                   0
-        age_group15-34:cweek1
-      1                     0
-      3                     0
-      5                     0
-      7                     1
+        (Intercept) age_group00+ age_group15-34
+      1           1            1              0
+      1           1            1              0
+      5           1            0              1
+      5           1            0              1
       
       $fixed$index
       [1] 1 1 2 2 3 3 4 4
@@ -386,20 +483,61 @@
       
       $random
       $random$formula
-      [1] "~0 + fixed + age_group + `rw__age_group00+__week` + `rw__age_group15-34__week`"
+      [1] "~0 + fixed + age_group"
       
       $random$design
-        fixed age_group `rw__age_group00+__week` `rw__age_group15-34__week`
-      1     0         1                        0                          0
-      2     0         1                        0                          0
-      3     0         0                        1                          0
-      4     0         0                        0                          1
+        fixed age_group
+      1     0         1
+      2     0         1
       attr(,"assign")
-      [1] 1 2 3 4
+      [1] 1 2
       
       $random$index
-      [1] 1 2 3 4
+      [1] 1 2
       
+      
+      $arima
+      $arima[[1]]
+      $arima[[1]]$time
+      [1] "week"
+      
+      $arima[[1]]$by
+      [1] "age_group"
+      
+      $arima[[1]]$p
+      [1] 0
+      
+      $arima[[1]]$d
+      [1] 1
+      
+      $arima[[1]]$q
+      [1] 0
+      
+      $arima[[1]]$T
+      [1] 2
+      
+      $arima[[1]]$G
+      [1] 2
+      
+      $arima[[1]]$time_idx
+      [1] 1 2 1 2
+      
+      $arima[[1]]$group_idx
+      [1] 1 1 2 2
+      
+      $arima[[1]]$time_vals
+      [1] 0 1
+      
+      $arima[[1]]$group_levels
+      [1] "00+"   "15-34"
+      
+      $arima[[1]]$name
+      [1] "arima__week__age_group"
+      
+      
+      
+      $gp
+      list()
       
       attr(,"class")
       [1] "enw_formula" "list"       
@@ -424,24 +562,30 @@
       $parsed_formula$rw
       [1] "rw(week)"
       
+      $parsed_formula$arima
+      character(0)
+      
+      $parsed_formula$gp
+      character(0)
+      
       
       $expanded_formula
-      [1] "~1 + day_of_week + age_group + cweek1"
+      [1] "~1 + day_of_week + age_group"
       
       $fixed
       $fixed$formula
-      [1] "~1 + day_of_week + age_group + cweek1"
+      [1] "~1 + day_of_week + age_group"
       
       $fixed$design
-        (Intercept) day_of_weekTuesday age_group00+ age_group15-34 cweek1
-      1           1                  0            1              0      0
-      2           1                  1            1              0      0
-      3           1                  0            1              0      1
-      4           1                  1            1              0      1
-      5           1                  0            0              1      0
-      6           1                  1            0              1      0
-      7           1                  0            0              1      1
-      8           1                  1            0              1      1
+        (Intercept) day_of_weekTuesday age_group00+ age_group15-34
+      1           1                  0            1              0
+      2           1                  1            1              0
+      1           1                  0            1              0
+      2           1                  1            1              0
+      5           1                  0            0              1
+      6           1                  1            0              1
+      5           1                  0            0              1
+      6           1                  1            0              1
       
       $fixed$index
       [1] 1 2 3 4 5 6 7 8
@@ -449,20 +593,62 @@
       
       $random
       $random$formula
-      [1] "~0 + fixed + age_group + rw__week"
+      [1] "~0 + fixed + age_group"
       
       $random$design
-        fixed age_group rw__week
-      1     1         0        0
-      2     0         1        0
-      3     0         1        0
-      4     0         0        1
+        fixed age_group
+      1     1         0
+      2     0         1
+      3     0         1
       attr(,"assign")
-      [1] 1 2 3
+      [1] 1 2
       
       $random$index
-      [1] 1 2 3 4
+      [1] 1 2 3
       
+      
+      $arima
+      $arima[[1]]
+      $arima[[1]]$time
+      [1] "week"
+      
+      $arima[[1]]$by
+      NULL
+      
+      $arima[[1]]$p
+      [1] 0
+      
+      $arima[[1]]$d
+      [1] 1
+      
+      $arima[[1]]$q
+      [1] 0
+      
+      $arima[[1]]$T
+      [1] 2
+      
+      $arima[[1]]$G
+      [1] 1
+      
+      $arima[[1]]$time_idx
+      [1] 1 1 2 2 1 1 2 2
+      
+      $arima[[1]]$group_idx
+      [1] 1 1 1 1 1 1 1 1
+      
+      $arima[[1]]$time_vals
+      [1] 0 1
+      
+      $arima[[1]]$group_levels
+      [1] "1"
+      
+      $arima[[1]]$name
+      [1] "arima__week"
+      
+      
+      
+      $gp
+      list()
       
       attr(,"class")
       [1] "enw_formula" "list"       
@@ -485,6 +671,12 @@
       
       
       $parsed_formula$rw
+      character(0)
+      
+      $parsed_formula$arima
+      character(0)
+      
+      $parsed_formula$gp
       character(0)
       
       
@@ -519,6 +711,12 @@
       [1] 1 2
       
       
+      $arima
+      list()
+      
+      $gp
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -538,6 +736,12 @@
       NULL
       
       $parsed_formula$rw
+      character(0)
+      
+      $parsed_formula$arima
+      character(0)
+      
+      $parsed_formula$gp
       character(0)
       
       
@@ -575,6 +779,12 @@
       integer(0)
       
       
+      $arima
+      list()
+      
+      $gp
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -599,6 +809,12 @@
       
       
       $parsed_formula$rw
+      character(0)
+      
+      $parsed_formula$arima
+      character(0)
+      
+      $parsed_formula$gp
       character(0)
       
       
@@ -670,6 +886,12 @@
       [1] 1 2 3 4 5 6 7 8 9
       
       
+      $arima
+      list()
+      
+      $gp
+      list()
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -693,18 +915,24 @@
       $parsed_formula$rw
       [1] "rw(week)"
       
+      $parsed_formula$arima
+      character(0)
+      
+      $parsed_formula$gp
+      character(0)
+      
       
       $expanded_formula
-      [1] "~1 + week + cweek1"
+      [1] "~1 + week"
       
       $fixed
       $fixed$formula
-      [1] "~1 + week + cweek1"
+      [1] "~1 + week"
       
       $fixed$design
-        (Intercept) week0 week1 cweek1
-      1           1     1     0      0
-      3           1     0     1      1
+        (Intercept) week0 week1
+      1           1     1     0
+      3           1     0     1
       
       $fixed$index
       [1] 1 1 2 2 1 1 2 2
@@ -712,19 +940,61 @@
       
       $random
       $random$formula
-      [1] "~0 + fixed + week + rw__week"
+      [1] "~0 + fixed + week"
       
       $random$design
-        fixed week rw__week
-      1     0    1        0
-      2     0    1        0
-      3     0    0        1
+        fixed week
+      1     0    1
+      2     0    1
       attr(,"assign")
-      [1] 1 2 3
+      [1] 1 2
       
       $random$index
-      [1] 1 2 3
+      [1] 1 2
       
+      
+      $arima
+      $arima[[1]]
+      $arima[[1]]$time
+      [1] "week"
+      
+      $arima[[1]]$by
+      NULL
+      
+      $arima[[1]]$p
+      [1] 0
+      
+      $arima[[1]]$d
+      [1] 1
+      
+      $arima[[1]]$q
+      [1] 0
+      
+      $arima[[1]]$T
+      [1] 2
+      
+      $arima[[1]]$G
+      [1] 1
+      
+      $arima[[1]]$time_idx
+      [1] 1 2
+      
+      $arima[[1]]$group_idx
+      [1] 1 1
+      
+      $arima[[1]]$time_vals
+      [1] 0 1
+      
+      $arima[[1]]$group_levels
+      [1] "1"
+      
+      $arima[[1]]$name
+      [1] "arima__week"
+      
+      
+      
+      $gp
+      list()
       
       attr(,"class")
       [1] "enw_formula" "list"       
