@@ -121,8 +121,8 @@
       $priors
          variable                                              description
       1: sqrt_phi One over the square root of the reporting overdispersion
-                  distribution       prior
-      1: Zero truncated normal <normal[2]>
+                  distribution       prior mean  sd
+      1: Zero truncated normal <normal[2]>    0 0.5
       
 
 ---
@@ -250,7 +250,7 @@
       $priors
          variable                                              description
       1: sqrt_phi One over the square root of the reporting overdispersion
-                  distribution       prior
-      1: Zero truncated normal <normal[2]>
+                  distribution       prior mean  sd
+      1: Zero truncated normal <normal[2]>    0 0.5
       
 
