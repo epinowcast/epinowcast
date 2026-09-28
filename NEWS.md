@@ -18,7 +18,7 @@
   The distribution parameters are estimated from priors and the PMF is discretised (and, for the latent reporting delay, convolved) within the model, reusing epinowcast's own parametric reference date discretisation machinery.
   This gives feature parity with the uncertain distribution support in `EpiNow2` (no `EpiNow2` code is used).
   Fixed PMFs remain the default so existing models are unaffected.
-  See #177 and #178.
+  See the distributions vignette and #177 and #178.
 - Added a delay-only model that fits the reporting-delay distribution conditional on known per-reference-date totals, treating those totals as fixed truth (the standard delay-estimation pattern of Kalbfleisch & Lawless, 1989; Höhle & an der Heiden, 2014).
   Enable it with `enw_obs(delay_only = TRUE)`: a delay-only fit is just `epinowcast(data, obs = enw_obs(delay_only = TRUE, data = data))`, as `epinowcast()` minimises the (now inert) expectation automatically.
   The latent process and per-cell observation model are replaced by a (truncated) multinomial likelihood over the reported cells of each reference date.
