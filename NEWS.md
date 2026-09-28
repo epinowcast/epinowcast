@@ -1,4 +1,4 @@
-# epinowcast 0.6.0.1000
+# epinowcast 0.7.0
 
 ## Model
 
@@ -55,6 +55,10 @@
 - Fixed a Stan dimension mismatch when the expectation, reference, report, or missing data formula has an intercept and a single numeric covariate (e.g., `r = ~ 1 + week`).
   The fixed-effects design matrix was collapsing to a vector after the intercept was dropped, causing Stan to error with `mismatch in number dimensions declared and found in context`.
   See #783 by @seabbs.
+
+- Fixed `enw_report()` recycling the report-date index (`rep_findex`) when the report axis is longer than `time + max_delay - 1`, for example after `enw_complete_dates(completion_beyond_max_report = TRUE)`.
+  Previously this emitted a "data length is not a sub-multiple or multiple" warning and mis-mapped report-date effects across groups and times; the number of report dates per group is now read from the report metadata.
+  See #868.
 
 # epinowcast 0.6.0
 

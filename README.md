@@ -313,7 +313,8 @@ specification. Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/epinowcast/commits?author=Lnrivas">Lnrivas</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=natemcintosh">natemcintosh</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=nikosbosse">nikosbosse</a>,
-<a href="https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs">pratikunterwegs</a>
+<a href="https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs">pratikunterwegs</a>,
+<a href="https://github.com/epinowcast/epinowcast/commits?author=nicholasdavies">nicholasdavies</a>
 
 ### Issue Authors
 
