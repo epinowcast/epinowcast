@@ -43,7 +43,7 @@ enw_example(type = "observations")
 readLines(enw_example(type = "script"))
 }
 \seealso{
-Package data sets
+Package data sets:
 \code{\link{germany_covid19_hosp}}
 }
 \concept{data}

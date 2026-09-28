@@ -55,17 +55,17 @@ prob_to_hazard(c(0.5, 0.1, 0.1))
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-Functions used to help convert models into the format required for stan
-\code{\link{enw_formula_as_data_list}()},
-\code{\link{enw_get_cache}()},
-\code{\link{enw_model}()},
-\code{\link{enw_pathfinder}()},
-\code{\link{enw_priors_as_data_list}()},
-\code{\link{enw_replace_priors}()},
-\code{\link{enw_sample}()},
-\code{\link{enw_set_cache}()},
-\code{\link{enw_unset_cache}()},
-\code{\link{remove_profiling}()},
-\code{\link{write_stan_files_no_profile}()}
+Functions used to help convert models into the format required for stan:
+\code{\link[=enw_formula_as_data_list]{enw_formula_as_data_list()}},
+\code{\link[=enw_get_cache]{enw_get_cache()}},
+\code{\link[=enw_model]{enw_model()}},
+\code{\link[=enw_pathfinder]{enw_pathfinder()}},
+\code{\link[=enw_priors_as_data_list]{enw_priors_as_data_list()}},
+\code{\link[=enw_replace_priors]{enw_replace_priors()}},
+\code{\link[=enw_sample]{enw_sample()}},
+\code{\link[=enw_set_cache]{enw_set_cache()}},
+\code{\link[=enw_unset_cache]{enw_unset_cache()}},
+\code{\link[=remove_profiling]{remove_profiling()}},
+\code{\link[=write_stan_files_no_profile]{write_stan_files_no_profile()}}
 }
 \concept{modeltools}

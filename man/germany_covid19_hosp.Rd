@@ -17,8 +17,8 @@ A \code{data.table}
 Hospitalisations in Germany by date of report and reference
 }
 \seealso{
-Package data sets
-\code{\link{enw_example}()}
+Package data sets:
+\code{\link[=enw_example]{enw_example()}}
 }
 \concept{data}
 \keyword{datasets}

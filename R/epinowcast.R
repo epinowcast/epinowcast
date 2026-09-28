@@ -59,6 +59,11 @@
 #' @param obs The observation model as defined by [enw_obs()].
 #' Observations are also processed within this function for use in modelling.
 #'
+#' @param secondary The secondary observation model as defined by
+#' [enw_secondary()]. By default this is disabled. Supply a configured
+#' [enw_secondary()] with secondary observations to jointly model a secondary
+#' outcome (e.g. deaths from cases, or bed occupancy from admissions).
+#'
 #' @param fit Model fit options as defined using [enw_fit_opts()]. This includes
 #' the sampler function to use (with the package default being [enw_sample()]),
 #' whether or now a nowcast should be used, etc. See [enw_fit_opts()] for
@@ -165,6 +170,9 @@ epinowcast <- function(data,
                        obs = epinowcast::enw_obs(
                          family = "negbin", data = data
                        ),
+                       secondary = epinowcast::enw_secondary(
+                         secondary = ~0, data = data
+                       ),
                        fit = epinowcast::enw_fit_opts(
                          sampler = epinowcast::enw_sample,
                          nowcast = TRUE, pp = FALSE,
@@ -185,16 +193,16 @@ epinowcast <- function(data,
   }
 
   modules <- list(
-    expectation, reference, report, missing, obs, fit, ...
+    expectation, reference, report, missing, obs, fit, secondary, ...
   )
   names(modules) <- as.character(seq_along(modules))
-  purrr::walk(modules, check_module)
+  walk(modules, check_module)
   check_modules_compatible(modules)
 
-  modules <- purrr::transpose(modules)
-  data_as_list <- purrr::flatten(modules$data)
+  modules <- transpose(modules)
+  data_as_list <- flatten(modules$data)
 
-  default_priors <- data.table::rbindlist(
+  default_priors <- rbindlist(
     modules$priors,
     fill = TRUE, use.names = TRUE
   )
@@ -211,7 +219,7 @@ epinowcast <- function(data,
   )
 
   if (missing$formula != "~0") {
-    cli::cli_warn(
+    cli_warn(
       paste0(
         "The missing data model is highly experimental. There is a ",
         "significant chance of bugs in its implementation."
@@ -220,12 +228,12 @@ epinowcast <- function(data,
   }
 
   inits <- purrr::compact(modules$inits)
-  init_fns <- purrr::map(names(inits), ~ inits[[.]](data_as_list, priors))
+  init_fns <- map(names(inits), ~ inits[[.]](data_as_list, priors))
 
   init_fn <- function(init_fns = init_fns) {
     init_inner_fn <- function() {
-      inits <- purrr::map(init_fns, do.call, args = list())
-      inits <- purrr::flatten(inits)
+      inits <- map(init_fns, do.call, args = list())
+      inits <- flatten(inits)
       inits
     }
     init_inner_fn

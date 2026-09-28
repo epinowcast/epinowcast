@@ -20,7 +20,7 @@ enw_fit_opts(
 \arguments{
 \item{sampler}{A function that creates an object that be used to extract
 posterior samples from the specified model. By default this is \code{\link[=enw_sample]{enw_sample()}}
-which makes use of \code{\link[cmdstanr:model-method-sample]{cmdstanr::sample()}}.}
+which makes use of \code{\link[cmdstanr:sample]{cmdstanr::sample()}}.}
 
 \item{nowcast}{Logical, defaults to \code{TRUE}. Should a nowcast be made using
 posterior predictions of the unobserved future reported notifications.}
@@ -78,12 +78,14 @@ Format model fitting options for use with stan
 enw_fit_opts(iter_sampling = 1000, iter_warmup = 1000)
 }
 \seealso{
-Model modules
-\code{\link{.expectation_is_minimal}()},
-\code{\link{enw_expectation}()},
-\code{\link{enw_missing}()},
-\code{\link{enw_obs}()},
-\code{\link{enw_reference}()},
-\code{\link{enw_report}()}
+Model modules:
+\code{\link[=.expectation_is_minimal]{.expectation_is_minimal()}},
+\code{\link[=enw_expectation]{enw_expectation()}},
+\code{\link[=enw_missing]{enw_missing()}},
+\code{\link[=enw_obs]{enw_obs()}},
+\code{\link[=enw_reference]{enw_reference()}},
+\code{\link[=enw_report]{enw_report()}},
+\code{\link[=enw_secondary]{enw_secondary()}},
+\code{\link[=enw_secondary_opts]{enw_secondary_opts()}}
 }
 \concept{modelmodules}

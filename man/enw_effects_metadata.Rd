@@ -35,10 +35,10 @@ design <- enw_design(a ~ b + c, data)$design
 enw_effects_metadata(design)
 }
 \seealso{
-Functions used to formulate models
-\code{\link{enw_add_cumulative_membership}()},
-\code{\link{enw_add_pooling_effect}()},
-\code{\link{enw_design}()},
-\code{\link{enw_one_hot_encode_feature}()}
+Functions used to formulate models:
+\code{\link[=enw_add_cumulative_membership]{enw_add_cumulative_membership()}},
+\code{\link[=enw_add_pooling_effect]{enw_add_pooling_effect()}},
+\code{\link[=enw_design]{enw_design()}},
+\code{\link[=enw_one_hot_encode_feature]{enw_one_hot_encode_feature()}}
 }
 \concept{modeldesign}

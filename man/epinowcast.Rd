@@ -13,6 +13,7 @@ epinowcast(
     1, observation = ~1, latent_reporting_delay = 1, data = data),
   missing = epinowcast::enw_missing(formula = ~0, data = data),
   obs = epinowcast::enw_obs(family = "negbin", data = data),
+  secondary = epinowcast::enw_secondary(secondary = ~0, data = data),
   fit = epinowcast::enw_fit_opts(sampler = epinowcast::enw_sample, nowcast = TRUE, pp =
     FALSE, likelihood = TRUE, debug = FALSE, output_loglik = FALSE),
   model = epinowcast::enw_model(),
@@ -41,6 +42,11 @@ using \code{\link[=enw_missing]{enw_missing()}}. By default this is set to not b
 
 \item{obs}{The observation model as defined by \code{\link[=enw_obs]{enw_obs()}}.
 Observations are also processed within this function for use in modelling.}
+
+\item{secondary}{The secondary observation model as defined by
+\code{\link[=enw_secondary]{enw_secondary()}}. By default this is disabled. Supply a configured
+\code{\link[=enw_secondary]{enw_secondary()}} with secondary observations to jointly model a secondary
+outcome (e.g. deaths from cases, or bed occupancy from admissions).}
 
 \item{fit}{Model fit options as defined using \code{\link[=enw_fit_opts]{enw_fit_opts()}}. This includes
 the sampler function to use (with the package default being \code{\link[=enw_sample]{enw_sample()}}),
@@ -149,13 +155,13 @@ plot(nowcast, type = "posterior") +
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-Other epinowcast: 
-\code{\link{plot.enw_preprocess_data}()},
-\code{\link{plot.epinowcast}()},
-\code{\link{print.enw_preprocess_data}()},
-\code{\link{print.epinowcast}()},
-\code{\link{print.summary.enw_preprocess_data}()},
-\code{\link{summary.enw_preprocess_data}()},
-\code{\link{summary.epinowcast}()}
+Other epinowcast:
+\code{\link[=plot.enw_preprocess_data]{plot.enw_preprocess_data()}},
+\code{\link[=plot.epinowcast]{plot.epinowcast()}},
+\code{\link[=print.enw_preprocess_data]{print.enw_preprocess_data()}},
+\code{\link[=print.epinowcast]{print.epinowcast()}},
+\code{\link[=print.summary.enw_preprocess_data]{print.summary.enw_preprocess_data()}},
+\code{\link[=summary.enw_preprocess_data]{summary.enw_preprocess_data()}},
+\code{\link[=summary.epinowcast]{summary.epinowcast()}}
 }
 \concept{epinowcast}
