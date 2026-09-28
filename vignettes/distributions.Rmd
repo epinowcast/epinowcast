@@ -24,6 +24,7 @@ knitr::opts_chunk$set(
 ```{r libraries}
 library(data.table)
 library(ggplot2)
+library(epinowcast)
 ```
 
 ## Available distributions
@@ -90,4 +91,34 @@ ggplot(pmf, aes(x = delay, y = probability)) +
 The same `primarycensored` machinery underpins delay handling elsewhere in the ecosystem.
 [`epidist`](https://epidist.epinowcast.org) estimates delay distributions from individual line-list data, and [`EpiNow2::estimate_dist()`](https://epiforecasts.io/EpiNow2/) fits them from aggregated count data; both are powered by `primarycensored`, with the main difference being the data structure they expect.
 Estimating a delay with one of those tools and then passing it to `enw_reference()` keeps the censoring assumptions consistent across the workflow.
+
+## Uncertain distributions
+
+The generation time and the latent reporting delay used by `enw_expectation()` are ordinarily supplied as fixed numeric PMFs, so their shape does not vary between posterior draws.
+`enw_uncertain()` instead specifies a parametric family with priors on its location and scale, letting `epinowcast` estimate the distribution's parameters and rebuild its discretised PMF within the model for every posterior sample.
+This gives feature parity with the uncertain distribution support in `EpiNow2` [@EpiNow2], which draws delay parameters from priors and marginalises them within the model; no `EpiNow2` code is used.
+
+```{r enw_uncertain}
+enw_uncertain(
+  distribution = "lognormal",
+  mean = c(1.6, 0.05), sd = c(0.4, 0.05), max = 15
+)
+```
+
+`mean` and `sd` each give a `c(mean, sd)` pair for the `Normal` prior on the distribution's location and scale parameters (for the lognormal family, `meanlog` and `sdlog`); the `sd` prior is truncated to be positive and is ignored for the single-parameter exponential family.
+`max` sets the truncation and discretisation length, as for a fixed PMF.
+
+Pass the result to `generation_time` or `latent_reporting_delay` in place of a fixed PMF:
+
+```r
+enw_expectation(
+  r = ~ 1 + rw(week),
+  generation_time = enw_uncertain(
+    distribution = "gamma", mean = c(4, 0.5), sd = c(2, 0.5), max = 15
+  ),
+  data = pobs
+)
+```
+
+Fixed PMFs remain the default, so existing models that pass a numeric vector or list of vectors are unaffected.
 
