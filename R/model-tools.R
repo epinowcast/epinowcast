@@ -635,9 +635,12 @@ enw_pathfinder <- function(data, model = epinowcast::enw_model(),
 #' [cmdstanr::cmdstan_model()]'s `user_header`, with the matching Stan
 #' functions declared without a body and `allow-undefined` passed to
 #' `stanc_options`? If `FALSE`, every such function is instead compiled
-#' from a pure-Stan fallback body (see [stan_cpp_fallback_body()]), and no
-#' C++ header or compiler support for it is required. Set
-#' `options(epinowcast.use_cpp = FALSE)` to change the default package-wide.
+#' from a pure-Stan fallback body (see [stan_cpp_fallback_body()]). Both
+#' settings need the same C++ toolchain as any other Stan model. Models
+#' compiled with `use_cpp = FALSE` are cached in a `no-cpp` subdirectory of
+#' `target_dir`, so switching this setting never reuses the wrong binary.
+#' Set `options(epinowcast.use_cpp = FALSE)` to change the default
+#' package-wide.
 #'
 #' @param ... Additional arguments passed to [cmdstanr::cmdstan_model()].
 #'
@@ -672,6 +675,13 @@ enw_model <- function(model = system.file(
   }
 
   if (!profile || !use_cpp) {
+    # cmdstanr only checks the main .stan file when deciding whether to
+    # recompile, and that file is the same whatever the profile and use_cpp
+    # settings, so each non-default combination gets its own directory.
+    variant <- c(if (profile) "profile", if (!use_cpp) "no-cpp")
+    if (length(variant) > 0) {
+      target_dir <- file.path(target_dir, paste(variant, collapse = "-"))
+    }
     stan_rewritten <- write_stan_files_no_profile(
       model, include,
       target_dir = target_dir, profile = profile, use_cpp = use_cpp
@@ -689,10 +699,13 @@ enw_model <- function(model = system.file(
     }
     cpp_options$stan_threads <- threads
     dots <- list(...)
-    if (use_cpp && !"user_header" %in% names(dots)) {
-      # cmdstanr's cmdstan_model()/$compile() adds `allow-undefined` to
-      # stanc_options automatically whenever user_header is set.
-      dots$user_header <- epinowcast_stan_header()
+    if (use_cpp) {
+      if (!"user_header" %in% names(dots)) {
+        dots$user_header <- stage_stan_header(target_dir)
+      }
+      # cmdstanr adds this itself when compiling with a user_header, but
+      # $check_syntax() only sees options passed here.
+      stanc_options[["allow-undefined"]] <- TRUE
     }
     model_args <- c(
       list(
@@ -727,6 +740,34 @@ epinowcast_stan_header <- function() {
   )
 }
 
+#' Copy the C++ header into a model directory for compilation
+#'
+#' @description CmdStan's makefiles cannot use a `user_header` path that
+#' contains a space or a `%`, as the path to an installed package can (for
+#' example a Windows library under `Program Files`). [enw_model()] therefore
+#' compiles against a copy of the header in `target_dir`. Files are only
+#' copied when their contents change, and keep their modification time, so
+#' cmdstanr only recompiles when the installed header changes.
+#'
+#' @inheritParams write_stan_files_no_profile
+#'
+#' @return The path to the copied `epinowcast.hpp`.
+#' @family modeltools
+stage_stan_header <- function(target_dir) {
+  src <- dirname(epinowcast_stan_header())
+  dest <- file.path(target_dir, "include")
+  for (f in list.files(src, recursive = TRUE)) {
+    from <- file.path(src, f)
+    to <- file.path(dest, f)
+    if (!file.exists(to) ||
+          unname(tools::md5sum(to)) != unname(tools::md5sum(from))) {
+      dir.create(dirname(to), recursive = TRUE, showWarnings = FALSE)
+      file.copy(from, to, overwrite = TRUE, copy.date = TRUE)
+    }
+  }
+  file.path(dest, "epinowcast.hpp")
+}
+
 #' Expose `epinowcast` stan functions in R
 #'
 #' @description This function facilitates the exposure of Stan functions from
@@ -744,9 +785,8 @@ epinowcast_stan_header <- function() {
 #' Functions implemented in C++ (currently "logit_hazard_to_log_prob.stan",
 #' see [enw_model()]'s `use_cpp` argument) are exposed via their retained
 #' pure-Stan fallback instead, since `expose_functions()` cannot link the
-#' package's C++ header; the exposed function's values match the C++
-#' implementation exactly (see `tests/testthat/test-stan_logit_hazard_to_log_prob.R`), # nolint
-#' but not its performance.
+#' package's C++ header. The two agree to floating-point precision except
+#' where a hazard rounds to 0 or 1, where the C++ version stays finite.
 #'
 #' @param include A character string specifying the directory containing Stan
 #' files. Defaults to the 'stan/functions' directory of the [epinowcast()]

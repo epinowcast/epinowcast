@@ -32,6 +32,7 @@ Functions used to help convert models into the format required for stan
 \code{\link{enw_unset_cache}()},
 \code{\link{epinowcast_stan_header}()},
 \code{\link{remove_profiling}()},
+\code{\link{stage_stan_header}()},
 \code{\link{stan_cpp_fallback_body}()},
 \code{\link{write_stan_files_no_profile}()}
 }

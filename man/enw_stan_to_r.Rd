@@ -21,9 +21,8 @@ overloaded functions and cannot be exposed: "delay_lpmf.stan",
 Functions implemented in C++ (currently "logit_hazard_to_log_prob.stan",
 see \code{\link[=enw_model]{enw_model()}}'s \code{use_cpp} argument) are exposed via their retained
 pure-Stan fallback instead, since \code{expose_functions()} cannot link the
-package's C++ header; the exposed function's values match the C++
-implementation exactly (see \code{tests/testthat/test-stan_logit_hazard_to_log_prob.R}), # nolint
-but not its performance.}
+package's C++ header. The two agree to floating-point precision except
+where a hazard rounds to 0 or 1, where the C++ version stays finite.}
 
 \item{include}{A character string specifying the directory containing Stan
 files. Defaults to the 'stan/functions' directory of the \code{\link[=epinowcast]{epinowcast()}}
@@ -73,6 +72,7 @@ Functions used to help convert models into the format required for stan
 \code{\link{enw_unset_cache}()},
 \code{\link{epinowcast_stan_header}()},
 \code{\link{remove_profiling}()},
+\code{\link{stage_stan_header}()},
 \code{\link{stan_cpp_adjoint_files}()},
 \code{\link{stan_cpp_fallback_body}()},
 \code{\link{write_stan_files_no_profile}()}
