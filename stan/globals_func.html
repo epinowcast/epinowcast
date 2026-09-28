@@ -120,6 +120,8 @@ $(function(){initNavTree('globals_func.html',''); initResizable(true); });
 
 <h3><a id="index_c" name="index_c"></a>- c -</h3><ul>
 <li>check_for_analytical()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#afbcb39f95f9afcd6128039ece98c070a">primarycensored.stan</a></li>
+<li>check_for_analytical_vectorized()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a8849f96b10a4044e1e2dfbc40d2e5174">primarycensored.stan</a></li>
+<li>check_for_uniform_terms()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a63328e760e16acbc3020f24fd5bc50de">primarycensored.stan</a></li>
 <li>combine_effects()&#160;:&#160;<a class="el" href="combine__effects_8stan.html#ae491cd73e41a833998f8e7ff981281d9">combine_effects.stan</a></li>
 <li>combine_logit_hazards()&#160;:&#160;<a class="el" href="combine__logit__hazards_8stan.html#a9a6061dd1cadd700fa8ec3d38adcb2cf">combine_logit_hazards.stan</a></li>
 <li>cumulative_converse_log_hazard()&#160;:&#160;<a class="el" href="hazard_8stan.html#a9a601aef6dbbacb82146a2e23689712c">hazard.stan</a></li>
@@ -221,17 +223,25 @@ $(function(){initNavTree('globals_func.html',''); initResizable(true); });
 <li>primarycensored_analytical_cdf()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#aedf79a16588b8a36e0304a01e7c060a7">primarycensored.stan</a></li>
 <li>primarycensored_analytical_lcdf()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#ab34e087915f10297d0afc22245f7fee1">primarycensored.stan</a></li>
 <li>primarycensored_analytical_lcdf_raw()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a9a23e4c237b331bc4de24caf05aa160c">primarycensored.stan</a></li>
+<li>primarycensored_analytical_lcdf_vectorized()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a89c93a594bc5bb75016001ea712f30bb">primarycensored.stan</a></li>
 <li>primarycensored_apply_truncation()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a1bd5e1e0fb7c8162729c535d4e1175d1">primarycensored.stan</a></li>
 <li>primarycensored_cdf()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a1c048ace7a520e3d45670e4e4c14f585">primarycensored.stan</a></li>
 <li>primarycensored_gamma_uniform_lcdf()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#acaf23c49145360658543b617ef155560">primarycensored.stan</a></li>
+<li>primarycensored_gamma_uniform_terms()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a8385a71cb687fe480144a513d9ae992d">primarycensored.stan</a></li>
 <li>primarycensored_gengamma_uniform_lcdf()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#ac32e3bd0460d97e0eac5d948425540d7">primarycensored.stan</a></li>
+<li>primarycensored_gengamma_uniform_terms()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a5af8ccbc8febfee0c0b354f7689361db">primarycensored.stan</a></li>
 <li>primarycensored_lcdf()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a9e88f6f30a8f32d8e4771826bf72e463">primarycensored.stan</a></li>
+<li>primarycensored_lcdf_vectorized()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a35f0d2b3f2330f648be4242118669cd9">primarycensored.stan</a></li>
 <li>primarycensored_log_normalizer()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a265a7a4cb9d9f28774aa815d74570f47">primarycensored.stan</a></li>
 <li>primarycensored_lognormal_uniform_lcdf()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#aa144386bb3c2a04524e4fe2e216c368d">primarycensored.stan</a></li>
+<li>primarycensored_lognormal_uniform_terms()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a5310126254a7c012537676bfe2bbe6c5">primarycensored.stan</a></li>
 <li>primarycensored_ode()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a36bcf9457dc8dca5bb617405733b2d0f">primarycensored.stan</a></li>
 <li>primarycensored_sone_lpmf_vectorized()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a11d79d0886e7c1828c78e68aa74e67dc">primarycensored.stan</a></li>
 <li>primarycensored_truncation_bounds()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#ae87aca017577bc03680c5f0bca4637e6">primarycensored.stan</a></li>
+<li>primarycensored_uniform_lcdf_from_terms()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#accd010f51a29cc10b7f603b8fe9fd6ee">primarycensored.stan</a></li>
+<li>primarycensored_uniform_terms()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#ac9d640b5a0f8a90df6442a87ccb7270c">primarycensored.stan</a></li>
 <li>primarycensored_weibull_uniform_lcdf()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a435887da77ef71daacacddbaf3f1113f">primarycensored.stan</a></li>
+<li>primarycensored_weibull_uniform_terms()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a520238790007ce2d3c5dc5e658144bbe">primarycensored.stan</a></li>
 <li>prob_to_hazard()&#160;:&#160;<a class="el" href="hazard_8stan.html#a5ed5adf2b346feec0505225a6fc73cd6">hazard.stan</a></li>
 <li>pstep_lcdf()&#160;:&#160;<a class="el" href="primarycensored_8stan.html#a2b6a89a9f545005b8ab818cfa32dd086">primarycensored.stan</a></li>
 </ul>

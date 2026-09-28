@@ -1,6 +1,8 @@
 var primarycensored_8stan =
 [
     [ "check_for_analytical", "primarycensored_8stan.html#afbcb39f95f9afcd6128039ece98c070a", null ],
+    [ "check_for_analytical_vectorized", "primarycensored_8stan.html#a8849f96b10a4044e1e2dfbc40d2e5174", null ],
+    [ "check_for_uniform_terms", "primarycensored_8stan.html#a63328e760e16acbc3020f24fd5bc50de", null ],
     [ "discretehazard_lcdf", "primarycensored_8stan.html#aaa4a0e181293de9c80c3af8f03b852db", null ],
     [ "discretestep_lcdf", "primarycensored_8stan.html#a7478bc2ddbf41081e9b519e720d06bc7", null ],
     [ "dist_has_positive_support", "primarycensored_8stan.html#ac677200fa47a95f644537be481450960", null ],
@@ -19,16 +21,24 @@ var primarycensored_8stan =
     [ "primarycensored_analytical_cdf", "primarycensored_8stan.html#aedf79a16588b8a36e0304a01e7c060a7", null ],
     [ "primarycensored_analytical_lcdf", "primarycensored_8stan.html#ab34e087915f10297d0afc22245f7fee1", null ],
     [ "primarycensored_analytical_lcdf_raw", "primarycensored_8stan.html#a9a23e4c237b331bc4de24caf05aa160c", null ],
+    [ "primarycensored_analytical_lcdf_vectorized", "primarycensored_8stan.html#a89c93a594bc5bb75016001ea712f30bb", null ],
     [ "primarycensored_apply_truncation", "primarycensored_8stan.html#a1bd5e1e0fb7c8162729c535d4e1175d1", null ],
     [ "primarycensored_cdf", "primarycensored_8stan.html#a1c048ace7a520e3d45670e4e4c14f585", null ],
     [ "primarycensored_gamma_uniform_lcdf", "primarycensored_8stan.html#acaf23c49145360658543b617ef155560", null ],
+    [ "primarycensored_gamma_uniform_terms", "primarycensored_8stan.html#a8385a71cb687fe480144a513d9ae992d", null ],
     [ "primarycensored_gengamma_uniform_lcdf", "primarycensored_8stan.html#ac32e3bd0460d97e0eac5d948425540d7", null ],
+    [ "primarycensored_gengamma_uniform_terms", "primarycensored_8stan.html#a5af8ccbc8febfee0c0b354f7689361db", null ],
     [ "primarycensored_lcdf", "primarycensored_8stan.html#a9e88f6f30a8f32d8e4771826bf72e463", null ],
+    [ "primarycensored_lcdf_vectorized", "primarycensored_8stan.html#a35f0d2b3f2330f648be4242118669cd9", null ],
     [ "primarycensored_log_normalizer", "primarycensored_8stan.html#a265a7a4cb9d9f28774aa815d74570f47", null ],
     [ "primarycensored_lognormal_uniform_lcdf", "primarycensored_8stan.html#aa144386bb3c2a04524e4fe2e216c368d", null ],
+    [ "primarycensored_lognormal_uniform_terms", "primarycensored_8stan.html#a5310126254a7c012537676bfe2bbe6c5", null ],
     [ "primarycensored_ode", "primarycensored_8stan.html#a36bcf9457dc8dca5bb617405733b2d0f", null ],
     [ "primarycensored_sone_lpmf_vectorized", "primarycensored_8stan.html#a11d79d0886e7c1828c78e68aa74e67dc", null ],
     [ "primarycensored_truncation_bounds", "primarycensored_8stan.html#ae87aca017577bc03680c5f0bca4637e6", null ],
+    [ "primarycensored_uniform_lcdf_from_terms", "primarycensored_8stan.html#accd010f51a29cc10b7f603b8fe9fd6ee", null ],
+    [ "primarycensored_uniform_terms", "primarycensored_8stan.html#ac9d640b5a0f8a90df6442a87ccb7270c", null ],
     [ "primarycensored_weibull_uniform_lcdf", "primarycensored_8stan.html#a435887da77ef71daacacddbaf3f1113f", null ],
+    [ "primarycensored_weibull_uniform_terms", "primarycensored_8stan.html#a520238790007ce2d3c5dc5e658144bbe", null ],
     [ "pstep_lcdf", "primarycensored_8stan.html#a2b6a89a9f545005b8ab818cfa32dd086", null ]
 ];
