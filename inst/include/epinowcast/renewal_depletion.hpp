@@ -9,24 +9,20 @@
  * pop_floor)` declared in inst/stan/functions/renewal_depletion.stan,
  * which replaces the `gt_n > 1` loop in log_expected_latent_from_r()
  * (inst/stan/functions/log_expected_latent_from_r.stan) for a single
- * group. See renewal-adjoint-log.md (branch feat/renewal-adjoint) for
- * the full derivation and how this differs from EpiNow2's
- * renewal_infections() (epiforecasts/EpiNow2 PR #1545); the summary:
- * epinowcast's seeding period always equals the generation-time length
- * (no window-growth case, unlike EpiNow2), and epinowcast has three
- * independent fmax()/branch points per step rather than EpiNow2's two,
- * because the susceptible floor (pop_floor) protects only the rate
- * denominator, never the output multiplier (a deliberate fix, not
- * present in EpiNow2's S_t used for both).
+ * group. The pure-Stan reference is renewal_depletion_stan() in
+ * inst/stan/functions/renewal_depletion_stan.stan. It follows EpiNow2's
+ * renewal_infections() adjoint (epiforecasts/EpiNow2 PR #1545) with two
+ * differences. The seeding period always equals the generation-time
+ * length, so the window never grows. The floor pop_floor protects only
+ * the rate denominator, not the output multiplier, so there are three
+ * branch points per step rather than two.
  *
  * Notation (1-based, as in the Stan code): seed is the seeded latent
  * series, length n0 (equal to the generation-time length everywhere
  * this is called). R is the post-seed reproduction number / growth
  * multiplier series, length r_t. rgt is the generation-time weight
- * vector, length n0, in the order log_expected_latent_from_r() already
- * uses it (see renewal-adjoint-log.md — it is not necessarily "forward"
- * order at the R/data level, but that does not matter here since this
- * function only needs to be self-consistent with its own dot product).
+ * vector, length n0, in the order log_expected_latent_from_r() uses it
+ * in its dot product (reversed relative to the generation time).
  *
  * Forward, for i = 1, ..., r_t with u = n0 + i:
  *   lambda_i = sum_{j=1}^{n0} rgt_j * I_{i - 1 + j}.
@@ -39,9 +35,10 @@
  *   I_u         = fmax(1e-8, remaining_i * (1 - exp(-a_i))),
  *   C_i         = C_{i-1} + I_u.
  * The 1 - exp(-a_i) term is not separately clipped at 0 (unlike
- * EpiNow2's fmax(0, 1 - exp(-a_t))): a_i >= 0 structurally whenever
- * R, lambda >= 0 and denom_i > 0, which always holds here, so it is
- * redundant and was not carried over.
+ * EpiNow2's fmax(0, 1 - exp(-a_t))), as the Stan code does not clip it:
+ * a_i >= 0 whenever R, lambda >= 0 and denom_i > 0. With pop_floor = 0
+ * and an exhausted pool denom_i is 0. The value is then the 1e-8 floor
+ * but the gradients are NaN, as they are in the Stan reference.
  *
  * Reverse. Write xbar for the adjoint of x. Walk i = r_t, ..., 1. When
  * step i is reached, Ibar_u already holds every contribution from
