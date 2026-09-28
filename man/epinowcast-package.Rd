@@ -3,7 +3,7 @@
 \docType{package}
 \name{epinowcast-package}
 \alias{epinowcast-package}
-\title{epinowcast: A Bayesian Framework for Real-time Infectious Disease Surveillance}
+\title{epinowcast: A Bayesian Framework for Real-Time Infectious Disease Surveillance}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 

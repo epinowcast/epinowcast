@@ -5,7 +5,7 @@ author: Epinowcast Team
 pkgdown:
   as_is: true
 bibliography: library.bib
-csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+csl: apa-numeric-superscript-brackets.csl
 vignette: >
   %\VignetteIndexEntry{Resources to help with model fitting using Stan}
   %\VignetteEngine{knitr::rmarkdown}
@@ -31,7 +31,7 @@ Before we start, it is important to know that Bayesian modelling can be complex 
 The statistical models used in `{epinowcast}` are primarily written in the [Stan programming language](https://mc-stan.org/docs/reference-manual/index.html), a statically typed programming language with syntax similar to C/C++.
 `{epinowcast}` utilises the [`{cmdstanr}`](https://mc-stan.org/cmdstanr/) package to interface with CmdStan, the program which executes the models written in the Stan programming language.
 It is important to understand that CmdStan is a program that is **distinct** from but interfaced through R.
-R calling a separate program to execute calculations is similar to [`{rjags}`](https://CRAN.R-project.org/package=rjags) which relies on the [JAGS library](https://mcmc-jags.sourceforge.io/) and [R-INLA](https://www.r-inla.org/what-is-inla).
+R calling a separate program to execute calculations is similar to [`{rjags}`](https://CRAN.R-project.org/package=rjags) which relies on the [JAGS library](https://mcmc-jags.sourceforge.io/) and [R-INLA](https://www.r-inla.org/whatisinla/index.html).
 As described in the `{epinowcast}` project [README](./index.html), if you wish to do model fitting and nowcasting you will need to install [`{cmdstanr}`](https://mc-stan.org/cmdstanr/), an optional dependency not installed automatically with `epinowcast`, which also has the ability to install CmdStan using an R interface.
 Additionally, you will need to make sure that the software required by CmdStan is installed and configured on your machine.
 
@@ -117,7 +117,7 @@ Additionally, `{epinowcast}` provides supplemental information to complement the
 The solutions to these issues typically require you to investigate your [sampler settings](#samplerParams), [model settings](#modelParams), or [interrogate your data](#modelData) further.
 It is also important to examine your posterior predictive 
 
-## Sampler settings {.samplerParams}
+## Sampler settings {#samplerParams}
 
 `{epinowcast}` provides users the ability to pass arguments directly to CmdStan which can improve model run time and produce better inferences.
 These parameters can be passed the `enw_fit_opts` function.
@@ -138,7 +138,7 @@ Please note that the `theads_per_chain` has no impact on model convergence or fi
 **The product of the `thread_per_chain` and `chains`** arguments should be equal to or less than the number of cores on your machine! 
 :::
 
-### iter_warmup and iter_sampling {.iters}
+### iter_warmup and iter_sampling {#iters}
 
 The number of samples used for the warmup phase of Stan and the number of sampling iterations are controlled by the `iter_warmup` and `iter_sampling` arguments, respectively.
 Stan requires a sufficient number of warmup iterations to dynamically estimate the step change sizes during model fitting. 
@@ -150,7 +150,7 @@ During the initial model fitting process, you may want to start with a lower num
 Starting with slightly short warm-ups can speed up model development timelines.
 Typically we have found that 1000-2000 samples per chain for `iter_sampling` are good starting values for initial model fitting.
 
-### max_treedepth {.maxTree}
+### max_treedepth {#maxTree}
 
 This value controls the maximum size of the trajectory taken by the sample (in power of 2) for each step.
 If this value is too low, the sampler may terminate too early causing excess runtimes.
@@ -158,7 +158,7 @@ While this does not necessarily indicate model fit issues, it does represent a r
 You can increase the `max_treedepth` to an integer value greater than `10` up to `15` (or lower).
 For the models used in `{epinowcast}` it is common to have the `max_treedepth` set between 12 and 15.
 
-### adapt_delta {.adaptDelta}
+### adapt_delta {#adaptDelta}
 
 This parameter sets the target average proposal acceptance probability during NUTS sampling (and is a real number value between 0 and 1).
 Higher values of `adapt_delta` will result in smaller step sizes during sampling which will slow the model fitting time but can help to address *divergent transitions.*
@@ -186,9 +186,9 @@ enw_fit_opts(
 For very simple models `threads_per_chain = 1` may lead to models fitting faster even if more cores are available due to the overhead from within chain multi-threading. This may also be the case for models with very complex generative processes (i.e. models that use complex $R_t$ formulas). We suggest you explore what works best for your data and models.
 :::
 
-## Model settings {.modelParams}
+## Model settings {#modelParams}
 
-### Setting priors {.settingPriors}
+### Setting priors {#settingPriors}
 
 Setting sensible priors is important for Bayesian inference.
 See `?epinowcast` for an overview of how to inspect and customise priors across all model modules.
@@ -220,7 +220,7 @@ epinowcast(pobs,
 Similarly, you could take an empirical Bayes approach and use the posteriors of a [fitted model as described in another vignette](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html#using-the-inflated-posterior-as-a-prior).
 
 
-## Exploring your data {.modelData}
+## Exploring your data {#modelData}
 
 It is important to understand the data being passed to `epinowcast` and have some ideas regarding the data-generating process for your data.
 For instance, if there are significant changes in your reporting triangle, this could manifest as multi-modality in the posterior distribution (i.e., Stan is trying to fit two different reporting delays with the same parameters).
@@ -229,12 +229,12 @@ Given the nuances of your data, you may need to identify and fit different regim
 These problems can also manifest over longer timescales, so while more data are generally better, too much data can result in ill-fitting models.
 Sometimes it is easier to examine these features before you fit your model due to domain knowledge; however, a key component of the Bayesian Workflow is to examine your [posterior predictions](#posteriorPreds).
 
-## Posterior predictions {.posteriorPreds}
+## Posterior predictions {#posteriorPreds}
 
 [Posterior predictions](https://mc-stan.org/docs/stan-users-guide/ppcs.html), in addition to model fitting diagnostics, provides a way to examine how well [your model captured your data](https://betanalpha.github.io/assets/case_studies/principled_bayesian_workflow.html#Step_Fourteen:_Posterior_Retrodictive_Checks65).
 If your model poorly captured your data (e.g., your data points were consistently outside of the posterior credible intervals), your model will likely lead to poor inferences.
 However, by examining the posterior predictions with your data, you may be able to both qualitatively and quantitatively discern if your posteriors captured your data and if there are patterns which hint at issues.
-Issues in your posterior predictions without any warnings from the diagnostics could indicate that you need to examine your [priors](.settingPriors) and your underlying data.
+Issues in your posterior predictions without any warnings from the diagnostics could indicate that you need to examine your [priors](#settingPriors) and your underlying data.
 Utilise the `enw_plot_pp_quantiles` to examine the posterior predictive quantiles from the nowcast fits.
 
 ## Approaches to solve common problems
@@ -246,8 +246,8 @@ This can occur because the sampler is having difficulty exploring the posterior 
 In other words, you may have a mismatch between your data and the model you are trying to fit.
 There a few simple steps to assist with this:
 
-1. Increase the [`max_treedepth`](.maxTree) argument to 15 which will allow longer trajectories to be used for steps when sampling. This is especially important if the `per_at_max_treedepth` value is high in the returned CmdStan diagnostics.
-2. Use more [informative priors](.settingPriors). 
+1. Increase the [`max_treedepth`](#maxTree) argument to 15 which will allow longer trajectories to be used for steps when sampling. This is especially important if the `per_at_max_treedepth` value is high in the returned CmdStan diagnostics.
+2. Use more [informative priors](#settingPriors).
 3. Try to simplify the model to understand potential degeneracies.
 4. Reduce the amount of data you are trying to fit. This might include reducing the duration of time points over which you are trying to fit. Once you can confirm that the model will fit your data, it may just be a question of computational power when fitting larger data. 
 5. Head to the [community forum](https://community.epinowcast.org/) and ask for some assistance.
@@ -278,7 +278,7 @@ Ideally, you want these values to be near your total number of samples passed in
 If `r_hat` is large and `ess_bulk`/ `ess_tail` are low, consider:
 
 1. Increasing your [adapt_delta](#adaptDelta) argument to a numeric value near 1 (e.g., 0.99). This will reduce the step size and could help with sampling at the risk of possible increases in runtime.
-2. Use more [informative priors](.settingPriors). 
+2. Use more [informative priors](#settingPriors).
 
 ### The posterior estimates are very wide
 

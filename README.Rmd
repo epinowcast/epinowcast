@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
   message = FALSE, warning = FALSE
 )
 ```
-# A Bayesian Framework for Real-time Infectious Disease Surveillance <a href="https://package.epinowcast.org/"><img src="man/figures/logo.png" align="right" height="139" alt="epinowcast website" /></a>
+# A Bayesian Framework for Real-Time Infectious Disease Surveillance <a href="https://package.epinowcast.org/"><img src="man/figures/logo.png" align="right" height="139" alt="epinowcast website" /></a>
 
 <!-- badges: start -->
 [![Lifecycle:
@@ -39,7 +39,7 @@ cat(gsub("\n[ ]+", " ", packageDescription("epinowcast")$Description))
 **The default lognormal reporting delay distribution may not suit all data.**
 It can fail with multimodal or complex delay patterns.
 Evaluate model fit and consider alternatives (e.g., non-parametric hazards) as needed.
-See the [package vignettes](https://package.epinowcast.org/articles) for guidance.
+See the [package vignettes](https://package.epinowcast.org/articles/) for guidance.
 
 ## Installation
   
@@ -90,7 +90,7 @@ The [`epinowcast` website](https://package.epinowcast.org/) includes a function 
 
 <details><summary>R Vignettes</summary>
 
-We have created [package vignettes](https://package.epinowcast.org/articles)
+We have created [package vignettes](https://package.epinowcast.org/articles/)
 to help you
 [get started nowcasting](https://package.epinowcast.org/articles/epinowcast.html),
 see a

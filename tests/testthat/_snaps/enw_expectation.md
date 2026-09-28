@@ -128,6 +128,18 @@
       $data$expr_ft
       [1] 40
       
+      $data$expr_pop_use
+      [1] 0
+      
+      $data$expr_pop_uncertain
+      [1] 0
+      
+      $data$expr_pop_fixed
+      [1] 0
+      
+      $data$expr_pop_floor
+      [1] 1
+      
       $data$expr_fintercept
       [1] 0
       
@@ -814,11 +826,12 @@
        5:   expr_arima_pacf         1
        6:       expr_gp_rho         1
        7:     expr_gp_alpha         1
-       8:      expl_beta_sd         1
-       9:  expl_arima_sigma         1
-      10:   expl_arima_pacf         1
-      11:       expl_gp_rho         1
-      12:     expl_gp_alpha         1
+       8:          expr_pop         1
+       9:      expl_beta_sd         1
+      10:  expl_arima_sigma         1
+      11:   expl_arima_pacf         1
+      12:       expl_gp_rho         1
+      13:     expl_gp_alpha         1
                                                                                                                                                                      description
        1:                                                                                                                                       Intercept of the log growth rate
        2:                                                                                                            Standard deviation of scaled pooled log growth rate effects
@@ -972,6 +985,18 @@
       
       $data$expr_ft
       [1] 40
+      
+      $data$expr_pop_use
+      [1] 0
+      
+      $data$expr_pop_uncertain
+      [1] 0
+      
+      $data$expr_pop_fixed
+      [1] 0
+      
+      $data$expr_pop_floor
+      [1] 1
       
       $data$expr_fintercept
       [1] 1
@@ -1455,11 +1480,12 @@
        5:   expr_arima_pacf         1
        6:       expr_gp_rho         1
        7:     expr_gp_alpha         1
-       8:      expl_beta_sd         1
-       9:  expl_arima_sigma         1
-      10:   expl_arima_pacf         1
-      11:       expl_gp_rho         1
-      12:     expl_gp_alpha         1
+       8:          expr_pop         1
+       9:      expl_beta_sd         1
+      10:  expl_arima_sigma         1
+      11:   expl_arima_pacf         1
+      12:       expl_gp_rho         1
+      13:     expl_gp_alpha         1
                                                                                                                                                                      description
        1:                                                                                                                                       Intercept of the log growth rate
        2:                                                                                                            Standard deviation of scaled pooled log growth rate effects
@@ -1618,6 +1644,18 @@
       
       $data$expr_ft
       [1] 11
+      
+      $data$expr_pop_use
+      [1] 0
+      
+      $data$expr_pop_uncertain
+      [1] 0
+      
+      $data$expr_pop_fixed
+      [1] 0 0 0
+      
+      $data$expr_pop_floor
+      [1] 1
       
       $data$expr_fintercept
       [1] 1
@@ -1925,11 +1963,14 @@
       10:   expr_arima_pacf         1
       11:       expr_gp_rho         1
       12:     expr_gp_alpha         1
-      13:      expl_beta_sd         1
-      14:  expl_arima_sigma         1
-      15:   expl_arima_pacf         1
-      16:       expl_gp_rho         1
-      17:     expl_gp_alpha         1
+      13:          expr_pop         1
+      14:          expr_pop         2
+      15:          expr_pop         3
+      16:      expl_beta_sd         1
+      17:  expl_arima_sigma         1
+      18:   expl_arima_pacf         1
+      19:       expl_gp_rho         1
+      20:     expl_gp_alpha         1
                                                                                                                                                                      description
        1:                                                                                                                                       Intercept of the log growth rate
        2:                                                                                                            Standard deviation of scaled pooled log growth rate effects
