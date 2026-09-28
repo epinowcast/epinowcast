@@ -459,7 +459,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     )
   }
   out <- coerce_dt(x, required_cols = c("variable", "mean", "sd"))
-  base <- gsub("\\[.*\\]$", "", out$variable)
+  base <- .enw_prior_base_name(out$variable)
   if (!is.null(template) && "distribution" %in% colnames(template)) {
     distribution <- template$distribution[match(base, template$variable)]
   } else if ("distribution" %in% colnames(out)) {
@@ -473,6 +473,12 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
   out[, c("mean", "sd") := NULL]
   data.table::set(out, j = "prior", value = list(prior))
   out[]
+}
+
+# Strip a trailing `[n]` index from prior variable names, so that
+# `variable[n]` matches the prior variable `variable`.
+.enw_prior_base_name <- function(x) {
+  gsub("\\[.*\\]$", "", x)
 }
 
 #' Find the rows of a prior table matched by a prior variable name
@@ -492,7 +498,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
 #' @keywords internal
 #' @importFrom cli cli_abort
 .enw_match_prior_rows <- function(priors, name, strict = TRUE) {
-  base <- gsub("\\[.*\\]$", "", name)
+  base <- .enw_prior_base_name(name)
   rows <- priors$variable == base
   if (!any(rows)) {
     if (!strict) {
