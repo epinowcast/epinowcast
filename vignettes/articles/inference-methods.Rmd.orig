@@ -247,7 +247,8 @@ knitr::kable(
 )
 ```
 
-Note that the runtime for pathfinder-initialised NUTS reported here only includes the NUTS sampling step. The pathfinder initialisation itself is an additional overhead (though often small compared to sampling).
+Note that the runtime for pathfinder-initialised NUTS reported here only includes the NUTS sampling step.
+The pathfinder initialisation itself is an additional overhead (though often small compared to sampling).
 
 ```{r runtime-plot, fig.width = 7, fig.height = 4}
 ggplot(runtime_dt, aes(x = method, y = runtime, fill = spec)) +
