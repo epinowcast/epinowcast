@@ -4,18 +4,30 @@
 \alias{stan_fns_as_string}
 \title{Read in a stan function file as a character string}
 \usage{
-stan_fns_as_string(files, include)
+stan_fns_as_string(files, include, overrides = NULL)
 }
 \arguments{
 \item{files}{A character vector specifying the names of Stan files to be
 exposed. These must be in the \code{include} directory. Defaults to all Stan
 files in the \code{include} directory. Note that the following files contain
 overloaded functions and cannot be exposed: "delay_lpmf.stan",
-"allocate_observed_obs.stan", "obs_lpmf.stan", and "effects_priors_lp.stan".}
+"allocate_observed_obs.stan", "obs_lpmf.stan", and "effects_priors_lp.stan".
+Functions implemented in C++ (currently "logit_hazard_to_log_prob.stan",
+see \code{\link[=enw_model]{enw_model()}}'s \code{use_cpp} argument) are exposed via their retained
+pure-Stan fallback instead, since \code{expose_functions()} cannot link the
+package's C++ header; the exposed function's values match the C++
+implementation exactly (see \code{tests/testthat/test-stan_logit_hazard_to_log_prob.R}), # nolint
+but not its performance.}
 
 \item{include}{A character string specifying the directory containing Stan
 files. Defaults to the 'stan/functions' directory of the \code{\link[=epinowcast]{epinowcast()}}
 package.}
+
+\item{overrides}{An optional named \code{character} vector. For any entry of
+\code{files} matching a name, the file is not read from \code{include}; the
+matching value is used as its Stan code instead. Used to substitute a
+pure-Stan fallback body for a C++-backed function that cannot be
+compiled without the package header (see \code{\link[=stan_cpp_fallback_body]{stan_cpp_fallback_body()}}).}
 }
 \value{
 A character string in the of stan functions.

@@ -273,8 +273,58 @@ remove_profiling <- function(s) {
   s
 }
 
-#' Write copies of the .stan files of a Stan model and its #include files
-#' with all profiling statements removed.
+#' Pure-Stan fallback body for a C++-backed Stan function
+#'
+#' @description Used by [write_stan_files_no_profile()] to replace a
+#' bodyless, C++-backed Stan function declaration with a pure-Stan body
+#' when the C++ adjoint path is disabled (`use_cpp = FALSE`, see
+#' [enw_model()]). The fallback calls straight through to the retained
+#' `<fn>_stan()` pure-Stan reference, so the two are always in sync.
+#'
+#' @param fn Character string, the name of the C++-backed function to
+#' provide a fallback body for.
+#'
+#' @return A character string of Stan code defining `fn`.
+#' @family modeltools
+stan_cpp_fallback_body <- function(fn) {
+  fallbacks <- list(
+    logit_hazard_to_log_prob = paste(
+      "vector logit_hazard_to_log_prob(vector lh, int l) {",
+      "  return logit_hazard_to_log_prob_stan(lh, l);",
+      "}",
+      sep = "\n"
+    )
+  )
+  if (!fn %in% names(fallbacks)) {
+    cli::cli_abort("No pure-Stan fallback is defined for {.val {fn}}.")
+  }
+  fallbacks[[fn]]
+}
+
+#' Relative include path (`functions/<fn>.stan`) for a C++-backed function
+#'
+#' @description The lookup used by [write_stan_files_no_profile()] to
+#' recognise, in the copied `include_paths`, the file that declares a
+#' given C++-backed function and so needs swapping for its pure-Stan
+#' fallback body when `use_cpp = FALSE`.
+#'
+#' @return A named `character` vector mapping the relative path of each
+#' bodyless declaration file to the function name [stan_cpp_fallback_body()]
+#' should be called with. Paths use `/` (matching `list.files(...,
+#' recursive = TRUE)`, which is always `/`-separated, unlike a Windows
+#' filesystem path).
+#' @family modeltools
+stan_cpp_adjoint_files <- function() {
+  # Stan #include-style relative path, matched against
+  # list.files(..., recursive = TRUE)'s always-"/" output; not a
+  # filesystem path, so file.path() would be wrong here.
+  path <- "functions/logit_hazard_to_log_prob.stan" # nolint
+  stats::setNames("logit_hazard_to_log_prob", path)
+}
+
+#' Write copies of the .stan files of a Stan model and its #include files,
+#' optionally with profiling statements removed and/or the C++ adjoint
+#' path swapped for its pure-Stan fallback.
 #'
 #' @param stan_file The path to a .stan file containing a Stan program.
 #'
@@ -282,36 +332,47 @@ remove_profiling <- function(s) {
 #' specified in #include directives in the Stan program.
 #'
 #' @param target_dir The path to a directory in which the manipulated .stan
-#' files without profiling statements should be stored. To avoid overriding of
-#' the original .stan files, this should be different from the directory of the
-#' original model and the `include_paths`.
+#' files should be stored. To avoid overriding of the original .stan files,
+#' this should be different from the directory of the original model and the
+#' `include_paths`.
 #'
-#' @return A `list` containing the path to the .stan file without profiling
-#' statements and the include_paths for the included .stan files without
-#' profiling statements
+#' @param profile Logical, defaults to `FALSE`. If `FALSE`, profiling
+#' statements are removed from the copied .stan files.
+#'
+#' @param use_cpp Logical, defaults to `TRUE`. If `FALSE`, every function
+#' file listed in [stan_cpp_adjoint_files()] is rewritten to its pure-Stan
+#' fallback body ([stan_cpp_fallback_body()]) rather than copied as-is, so
+#' the resulting model compiles without the package's C++ header.
+#'
+#' @return A `list` containing the path to the rewritten .stan file and the
+#' include_paths for the rewritten included .stan files.
 #'
 #' @family modeltools
 write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
-                                        target_dir = epinowcast::enw_get_cache()
-                                        ) {
+                                        target_dir = epinowcast::enw_get_cache(), # nolint
+                                        profile = FALSE, use_cpp = TRUE) {
   check_cmdstanr()
-  # remove profiling from main .stan file
+  # optionally remove profiling from the main .stan file
   code_main_model <- paste(readLines(stan_file, warn = FALSE), collapse = "\n")
-  code_main_model_no_profile <- remove_profiling(code_main_model)
+  if (!profile) {
+    code_main_model <- remove_profiling(code_main_model)
+  }
   if (!dir.exists(target_dir)) {
     dir.create(target_dir, recursive = TRUE)
   }
   main_model <- cmdstanr::write_stan_file(
-    code_main_model_no_profile,
+    code_main_model,
     dir = target_dir,
     basename = basename(stan_file),
     force_overwrite = FALSE
   )
 
-  # remove profiling from included .stan files
-  include_paths_no_profile <- rep(NA, length(include_paths))
+  cpp_adjoint_files <- stan_cpp_adjoint_files()
+
+  # rewrite included .stan files
+  include_paths_rewritten <- rep(NA, length(include_paths))
   for (i in length(include_paths)) {
-    include_paths_no_profile[i] <- file.path(
+    include_paths_rewritten[i] <- file.path(
       target_dir, paste0("include_", i), basename(include_paths[i])
     )
     include_files <- list.files(
@@ -319,26 +380,32 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
       pattern = "*.stan", recursive = TRUE
     )
     for (f in include_files) {
-      include_paths_no_profile_fdir <- file.path(
-        include_paths_no_profile[i], dirname(f)
+      include_paths_rewritten_fdir <- file.path(
+        include_paths_rewritten[i], dirname(f)
       )
-      code_include <- paste(
-        readLines(file.path(include_paths[i], f), warn = FALSE),
-        collapse = "\n"
-      )
-      code_include_paths_no_profile <- remove_profiling(code_include)
-      if (!dir.exists(include_paths_no_profile_fdir)) {
-        dir_create_with_parents(include_paths_no_profile_fdir)
+      if (!use_cpp && f %in% names(cpp_adjoint_files)) {
+        code_include <- stan_cpp_fallback_body(cpp_adjoint_files[[f]])
+      } else {
+        code_include <- paste(
+          readLines(file.path(include_paths[i], f), warn = FALSE),
+          collapse = "\n"
+        )
+        if (!profile) {
+          code_include <- remove_profiling(code_include)
+        }
+      }
+      if (!dir.exists(include_paths_rewritten_fdir)) {
+        dir_create_with_parents(include_paths_rewritten_fdir)
       }
       cmdstanr::write_stan_file(
-        code_include_paths_no_profile,
-        dir = include_paths_no_profile_fdir,
+        code_include,
+        dir = include_paths_rewritten_fdir,
         basename = basename(f),
         force_overwrite = FALSE
       )
     }
   }
-  list(model = main_model, include_paths = include_paths_no_profile)
+  list(model = main_model, include_paths = include_paths_rewritten)
 }
 
 #' Fit a CmdStan model using NUTS
@@ -561,6 +628,17 @@ enw_pathfinder <- function(data, model = epinowcast::enw_model(),
 #' for [cmdstanr::cmdstan_model()] for further details. Note that the `threads`
 #' argument replaces `stan_threads`.
 #'
+#' @param use_cpp Logical, defaults to `getOption("epinowcast.use_cpp", TRUE)`.
+#' Should the package's custom reverse-mode adjoints (currently:
+#' `logit_hazard_to_log_prob()`, see [epinowcast_stan_header()] and
+#' `inst/include/epinowcast/`) be compiled in via
+#' [cmdstanr::cmdstan_model()]'s `user_header`, with the matching Stan
+#' functions declared without a body and `allow-undefined` passed to
+#' `stanc_options`? If `FALSE`, every such function is instead compiled
+#' from a pure-Stan fallback body (see [stan_cpp_fallback_body()]), and no
+#' C++ header or compiler support for it is required. Set
+#' `options(epinowcast.use_cpp = FALSE)` to change the default package-wide.
+#'
 #' @param ... Additional arguments passed to [cmdstanr::cmdstan_model()].
 #'
 #' @return A `cmdstanr` model.
@@ -571,6 +649,9 @@ enw_pathfinder <- function(data, model = epinowcast::enw_model(),
 #' @inheritParams write_stan_files_no_profile
 #' @examplesIf interactive()
 #' mod <- enw_model()
+#'
+#' # Compile without the C++ adjoint path (pure Stan fallback)
+#' mod_pure_stan <- enw_model(use_cpp = FALSE)
 enw_model <- function(model = system.file(
                         "stan", "epinowcast.stan",
                         package = "epinowcast"
@@ -579,20 +660,24 @@ enw_model <- function(model = system.file(
                       compile = TRUE, threads = TRUE, profile = FALSE,
                       target_dir = epinowcast::enw_get_cache(),
                       stanc_options = list(),
-                      cpp_options = list(), verbose = TRUE, ...) {
+                      cpp_options = list(), verbose = TRUE,
+                      use_cpp = getOption("epinowcast.use_cpp", TRUE), ...) {
   check_cmdstanr()
   if (verbose) {
     cli::cli_alert_info("Using model {model}.")
     cli::cli_alert_info("Include is {toString(include)}.")
+    cli::cli_alert_info(
+      "C++ adjoints are {if (use_cpp) 'enabled' else 'disabled'}."
+    )
   }
 
-  if (!profile) {
-    stan_no_profile <- write_stan_files_no_profile(
+  if (!profile || !use_cpp) {
+    stan_rewritten <- write_stan_files_no_profile(
       model, include,
-      target_dir = target_dir
+      target_dir = target_dir, profile = profile, use_cpp = use_cpp
     )
-    model <- stan_no_profile$model
-    include <- stan_no_profile$include_paths
+    model <- stan_rewritten$model
+    include <- stan_rewritten$include_paths
   }
 
   if (compile) {
@@ -603,15 +688,43 @@ enw_model <- function(model = system.file(
       }
     }
     cpp_options$stan_threads <- threads
-    model <- monitor(cmdstanr::cmdstan_model(
-      model,
-      include_paths = include,
-      stanc_options = stanc_options,
-      cpp_options = cpp_options,
-      ...
-    ))
+    dots <- list(...)
+    if (use_cpp && !"user_header" %in% names(dots)) {
+      # cmdstanr's cmdstan_model()/$compile() adds `allow-undefined` to
+      # stanc_options automatically whenever user_header is set.
+      dots$user_header <- epinowcast_stan_header()
+    }
+    model_args <- c(
+      list(
+        model,
+        include_paths = include,
+        stanc_options = stanc_options,
+        cpp_options = cpp_options
+      ),
+      dots
+    )
+    model <- monitor(do.call(cmdstanr::cmdstan_model, model_args))
   }
   model
+}
+
+#' Path to the C++ header used by the compiled `epinowcast` Stan models
+#'
+#' @description Stan functions declared without a body in
+#' `inst/stan/functions` (the package's custom reverse-mode adjoints, see
+#' [enw_model()]'s `use_cpp` argument) are implemented in this header,
+#' which must be included when compiling any model that calls them.
+#'
+#' @return A character string with the path to the header.
+#' @family modeltools
+#' @export
+#' @examples
+#' epinowcast_stan_header()
+epinowcast_stan_header <- function() {
+  system.file(
+    "include", "epinowcast.hpp",
+    package = "epinowcast", mustWork = TRUE
+  )
 }
 
 #' Expose `epinowcast` stan functions in R
@@ -628,6 +741,12 @@ enw_model <- function(model = system.file(
 #' files in the `include` directory. Note that the following files contain
 #' overloaded functions and cannot be exposed: "delay_lpmf.stan",
 #' "allocate_observed_obs.stan", "obs_lpmf.stan", and "effects_priors_lp.stan".
+#' Functions implemented in C++ (currently "logit_hazard_to_log_prob.stan",
+#' see [enw_model()]'s `use_cpp` argument) are exposed via their retained
+#' pure-Stan fallback instead, since `expose_functions()` cannot link the
+#' package's C++ header; the exposed function's values match the C++
+#' implementation exactly (see `tests/testthat/test-stan_logit_hazard_to_log_prob.R`), # nolint
+#' but not its performance.
 #'
 #' @param include A character string specifying the directory containing Stan
 #' files. Defaults to the 'stan/functions' directory of the [epinowcast()]
@@ -675,6 +794,19 @@ enw_stan_to_r <- function(
     ))
     files <- files[!files %in% overloaded_fns]
   }
+  cpp_adjoint_fns <- stan_cpp_adjoint_files()
+  names(cpp_adjoint_fns) <- basename(names(cpp_adjoint_fns))
+  cpp_only_fns <- names(cpp_adjoint_fns)
+  if (any(files %in% cpp_only_fns)) {
+    cli::cli_warn(c(
+      paste0(
+        "The following functions are implemented in C++ and are exposed ",
+        "here via their pure-Stan fallback instead, since ",
+        "expose_functions() cannot link the package's C++ header: "
+      ),
+      toString(cpp_only_fns)
+    ))
+  }
   if (length(files) == 0 || is.null(files)) {
     cli::cli_abort(paste0(
       "No non-overloaded files specified. Please specify files to expose ",
@@ -692,7 +824,12 @@ enw_stan_to_r <- function(
       toString(include_files)
     ))
   }
-  functions <- stan_fns_as_string(files, include)
+  cpp_fallback_overrides <- vapply(
+    cpp_adjoint_fns[names(cpp_adjoint_fns) %in% files],
+    stan_cpp_fallback_body,
+    character(1)
+  )
+  functions <- stan_fns_as_string(files, include, cpp_fallback_overrides)
   function_file <- cmdstanr::write_stan_file(functions)
   mod <- enw_model(
     model = function_file,
