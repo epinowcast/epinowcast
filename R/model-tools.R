@@ -485,7 +485,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
         fit$summary(
           variables = NULL, rhat,
           .args = list(na.rm = TRUE)
-        )$`posterior::rhat`,
+        )$rhat,
         na.rm = TRUE
       ), 2),
       divergent_transitions = sum(diag$divergent__),
