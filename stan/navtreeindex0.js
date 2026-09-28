@@ -75,7 +75,7 @@ var NAVTREEINDEX0 =
 "log__expected__by__report_8stan_source.html":[1,0,0,14],
 "log__expected__latent__from__r_8stan.html":[1,0,0,15],
 "log__expected__latent__from__r_8stan.html#a012e6547e1e583e24b73b6611076dda4":[1,0,0,15,0],
-"log__expected__latent__from__r_8stan.html#a94b5723677737336dce68db1d4500d43":[1,0,0,15,1],
+"log__expected__latent__from__r_8stan.html#a6b97be016dfd22c4a8ed2585abcfaa0c":[1,0,0,15,1],
 "log__expected__latent__from__r_8stan_source.html":[1,0,0,15],
 "log__expected__obs__from__latent_8stan.html":[1,0,0,16],
 "log__expected__obs__from__latent_8stan.html#a371632efee35396bab7afc7fb05c6cab":[1,0,0,16,0],

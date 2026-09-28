@@ -116,8 +116,8 @@ $(function(){initNavTree('log__expected__latent__from__r_8stan.html',''); initRe
 Functions</h2></td></tr>
 <tr class="memitem:a012e6547e1e583e24b73b6611076dda4" id="r_a012e6547e1e583e24b73b6611076dda4"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a012e6547e1e583e24b73b6611076dda4">extract_group_rates</a> (vector r, array[] int r_g, int k, int r_t)</td></tr>
 <tr class="separator:a012e6547e1e583e24b73b6611076dda4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a94b5723677737336dce68db1d4500d43" id="r_a94b5723677737336dce68db1d4500d43"><td class="memItemLeft" align="right" valign="top">array[] vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a94b5723677737336dce68db1d4500d43">log_expected_latent_from_r</a> (matrix lexp_latent_int, vector r, array[] int r_g, int r_t, int r_seed, int gt_n, vector lrgt, int t, int g)</td></tr>
-<tr class="separator:a94b5723677737336dce68db1d4500d43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b97be016dfd22c4a8ed2585abcfaa0c" id="r_a6b97be016dfd22c4a8ed2585abcfaa0c"><td class="memItemLeft" align="right" valign="top">array[] vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6b97be016dfd22c4a8ed2585abcfaa0c">log_expected_latent_from_r</a> (matrix lexp_latent_int, vector r, array[] int r_g, int r_t, int r_seed, int gt_n, vector lrgt, int t, int g, vector pop, int use_pop, real pop_floor)</td></tr>
+<tr class="separator:a6b97be016dfd22c4a8ed2585abcfaa0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a012e6547e1e583e24b73b6611076dda4" name="a012e6547e1e583e24b73b6611076dda4"></a>
@@ -164,8 +164,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a94b5723677737336dce68db1d4500d43" name="a94b5723677737336dce68db1d4500d43"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a94b5723677737336dce68db1d4500d43">&#9670;&#160;</a></span>log_expected_latent_from_r()</h2>
+<a id="a6b97be016dfd22c4a8ed2585abcfaa0c" name="a6b97be016dfd22c4a8ed2585abcfaa0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b97be016dfd22c4a8ed2585abcfaa0c">&#9670;&#160;</a></span>log_expected_latent_from_r()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -213,7 +213,22 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>g</em></span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>g</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector</td>          <td class="paramname"><span class="paramname"><em>pop</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>use_pop</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real</td>          <td class="paramname"><span class="paramname"><em>pop_floor</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -230,16 +245,17 @@ Functions</h2></td></tr>
     <tr><td class="paramname">lrgt</td><td>Log of the generation time vector or scalar.</td></tr>
     <tr><td class="paramname">t</td><td>Total number of time periods.</td></tr>
     <tr><td class="paramname">g</td><td>Number of groups.</td></tr>
+    <tr><td class="paramname">pop</td><td>Initial susceptible population per group. Ignored when <code>use_pop == 0</code>.</td></tr>
+    <tr><td class="paramname">use_pop</td><td>Susceptible-depletion switch (0 = off, 1 = on). When on, transmission is scaled by the remaining susceptible fraction over the whole post-seed series.</td></tr>
+    <tr><td class="paramname">pop_floor</td><td>Minimum susceptible population, floored on the transmission-rate denominator only. Matches EpiNow2's <code>rt_opts(pop_floor)</code>. Only used when <code>use_pop &gt; 0</code>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>An array of vectors containing log-transformed expected latent values for each group and time period.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>The function performs the following operations:<ol type="1">
-<li>For each group: a. Extracts a segment of rates specific to the current group. b. If 'gt_n' is 1 (constant generation time), directly applies a cumulative sum on the log scale to model exponential growth. c. If 'gt_n' &gt; 1 (vector generation time): i. Converts the log rate and log initial latent values to the natural scale. ii. Uses a dot product with the generation time vector for each time point, following the renewal equation. iii. Converts the resulting expected values back to the log scale, as this approach is expected to be more numerically stable than performing the renewal equation directly in log space. </li>
-</ol>
-</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>An array of vectors of log-transformed expected latent values by group and time.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>For each group: when <code>gt_n == 1</code> exponential growth is computed as a cumulative sum on the log scale; when <code>gt_n &gt; 1</code> the renewal equation is applied on the natural scale (more stable) and logged afterwards.</dd></dl>
+<p>When <code>use_pop &gt; 0</code>, new cases are capped by the remaining susceptibles (<code>fmax(0, pop - cum_cases)</code>) so depletion cannot exceed the pool, and a small <code>1e-8</code> floor keeps the subsequent <code>log()</code> finite near exhaustion. Groups are independent well-mixed populations with no waning or vital dynamics. Adapted from EpiNow2's <code>generate_infections()</code> (epiforecasts/EpiNow2, MIT licence). </p>
 
-<p class="definition">Definition at line <a class="el" href="log__expected__latent__from__r_8stan_source.html#l00063">63</a> of file <a class="el" href="log__expected__latent__from__r_8stan_source.html">log_expected_latent_from_r.stan</a>.</p>
+<p class="definition">Definition at line <a class="el" href="log__expected__latent__from__r_8stan_source.html#l00070">70</a> of file <a class="el" href="log__expected__latent__from__r_8stan_source.html">log_expected_latent_from_r.stan</a>.</p>
 
 </div>
 </div>

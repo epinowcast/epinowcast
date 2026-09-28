@@ -5,7 +5,7 @@ var searchData=
   ['log_5fdot_5fproduct_2',['log_dot_product',['../utils_8stan.html#aac866cb3059e25d757aa5f74b139f74c',1,'utils.stan']]],
   ['log_5fexpected_5fby_5freport_3',['log_expected_by_report',['../log__expected__by__report_8stan.html#a05cb2f43f66c183d5dacbbc1031bfdfe',1,'log_expected_by_report.stan']]],
   ['log_5fexpected_5fby_5freport_2estan_4',['log_expected_by_report.stan',['../log__expected__by__report_8stan.html',1,'']]],
-  ['log_5fexpected_5flatent_5ffrom_5fr_5',['log_expected_latent_from_r',['../log__expected__latent__from__r_8stan.html#a94b5723677737336dce68db1d4500d43',1,'log_expected_latent_from_r.stan']]],
+  ['log_5fexpected_5flatent_5ffrom_5fr_5',['log_expected_latent_from_r',['../log__expected__latent__from__r_8stan.html#a6b97be016dfd22c4a8ed2585abcfaa0c',1,'log_expected_latent_from_r.stan']]],
   ['log_5fexpected_5flatent_5ffrom_5fr_2estan_6',['log_expected_latent_from_r.stan',['../log__expected__latent__from__r_8stan.html',1,'']]],
   ['log_5fexpected_5fobs_5ffrom_5flatent_7',['log_expected_obs_from_latent',['../log__expected__obs__from__latent_8stan.html#a371632efee35396bab7afc7fb05c6cab',1,'log_expected_obs_from_latent.stan']]],
   ['log_5fexpected_5fobs_5ffrom_5flatent_2estan_8',['log_expected_obs_from_latent.stan',['../log__expected__obs__from__latent_8stan.html',1,'']]],
