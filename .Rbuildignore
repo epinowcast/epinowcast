@@ -11,8 +11,6 @@
 ^docs$
 ^pkgdown$
 ^vignettes/cache$
-^vignettes/germany-age-stratified-nowcasting.Rmd.orig\.Rmd\.orig$
-^vignettes/precompile.R$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^codemeta\.json$
@@ -27,3 +25,7 @@
 ^touchstone$
 ^\.vscode$
 ^CITATION\.cff$
+^worktrees$
+^Rplots\.pdf$
+^\.git$
+^cran-comments\.md$

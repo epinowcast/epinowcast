@@ -5,7 +5,7 @@ author: Epinowcast Team
 pkgdown:
   as_is: true
 bibliography: library.bib
-csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+csl: apa-numeric-superscript-brackets.csl
 link-citations: true
 vignette: >
   %\VignetteIndexEntry{Gaussian process latent terms: maths, priors, and usage}
@@ -180,10 +180,13 @@ The `EpiNow2` defaults were chosen on the scale of the log reproduction number; 
 For example, to put a tighter length scale on the growth-rate process:
 
 ```{r}
-library(epinowcast)
-rho_prior <- data.frame(variable = "expr_gp_rho", mean = log(3), sd = 0.25)
-# epinowcast(..., priors = rho_prior)
+rho_prior <- data.frame(
+  variable = "expr_gp_rho", mean = log(3), sd = 0.25,
+  stringsAsFactors = FALSE
+)
 ```
+
+Pass this to `epinowcast()` through its `priors` argument.
 
 The magnitude prior on $\alpha$ is the most consequential in practice; tighten it if the latent process is competing with the rest of the linear predictor for variance.
 The length-scale prior on $\rho$ is the lever for how wiggly the function is allowed to be: a smaller $\rho$ permits faster changes, a larger $\rho$ forces a smoother trajectory.
