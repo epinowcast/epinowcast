@@ -190,6 +190,22 @@ scaled by the sum of the latent reporting delay. The standard deviation
 is assumed to be 1. Both of these assumptions can be altered by the
 user.
 
+Optionally, the renewal process can account for susceptible depletion
+given an initial susceptible population \\N_g\\ (`population` in
+[`enw_expectation()`](https://package.epinowcast.org/reference/enw_expectation.md)).
+Transmission is then scaled by the remaining susceptible fraction
+\\S\_{g,t} / N_g\\, where \\S\_{g,t} = N_g - \sum\_{p \< t}
+\lambda^l\_{g,p}\\ is the susceptible pool depleted by cumulative latent
+cases, so the effective reproduction number bends down as the pool
+depletes. This adjustment is ported from
+`EpiNow2`^(\[[1](#ref-EpiNow2),[5](#ref-Abbott2020)\]) and follows the
+bounded-exponential susceptible-depletion form of the semi-mechanistic
+renewal process^(\[[6](#ref-Bhatt2020)\]). This assumes a single
+well-mixed population per group with no waning or vital dynamics. The
+[susceptible depletion
+vignette](https://package.epinowcast.org/articles/susceptible-depletion.md)
+demonstrates the adjustment on simulated data.
+
 ### Latent reporting delay and ascertainment
 
 In some settings there may be additional reporting delays on top of

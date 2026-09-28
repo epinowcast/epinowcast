@@ -10,6 +10,10 @@ enw_expectation(
   generation_time = 1,
   observation = ~1,
   latent_reporting_delay = 1,
+  population = NULL,
+  population_floor = 1,
+  population_uncertain = FALSE,
+  population_cv = 0.1,
   data,
   ...
 )
@@ -68,6 +72,36 @@ enw_expectation(
   etc. A list of PMFs can be provided to allow for time-varying PMFs.
   This should be the same length as the modelled time period plus the
   length of the generation time if supplied.
+
+- population:
+
+  Optional initial susceptible population for the susceptible-depletion
+  adjustment of the renewal process. Defaults to `NULL` (no adjustment).
+  When supplied, transmission is scaled by the remaining susceptible
+  fraction so `Rt` bends down as the pool depletes. A single value is
+  recycled across groups (with a warning) or a length-`groups` vector
+  sets per-group values; groups are independent well-mixed populations.
+  Only used on the renewal path (`length(generation_time) > 1`). Adapted
+  from `EpiNow2::rt_opts(pop = ...)`.
+
+- population_floor:
+
+  Numeric, defaulting to 1. Minimum susceptible population used as a
+  numerical-stability floor on the transmission-rate denominator.
+  Ignored when `population` is `NULL`.
+
+- population_uncertain:
+
+  Logical, defaulting to `FALSE`. If `TRUE`, the population is
+  estimated, fitted independently per group from a per-group LogNormal
+  prior with median equal to that group's `population` value and
+  coefficient of variation `population_cv`. Ignored when `population` is
+  `NULL`.
+
+- population_cv:
+
+  Numeric, defaulting to 0.1. Coefficient of variation of the LogNormal
+  population prior when `population_uncertain` is `TRUE`.
 
 - data:
 
@@ -231,6 +265,18 @@ enw_expectation(data = enw_example("preprocessed"))
 #> 
 #> $data$expr_ft
 #> [1] 40
+#> 
+#> $data$expr_pop_use
+#> [1] 0
+#> 
+#> $data$expr_pop_uncertain
+#> [1] 0
+#> 
+#> $data$expr_pop_fixed
+#> [1] 0
+#> 
+#> $data$expr_pop_floor
+#> [1] 1
 #> 
 #> $data$expr_fintercept
 #> [1] 0
@@ -919,11 +965,12 @@ enw_expectation(data = enw_example("preprocessed"))
 #>  5:   expr_arima_pacf         1
 #>  6:       expr_gp_rho         1
 #>  7:     expr_gp_alpha         1
-#>  8:      expl_beta_sd         1
-#>  9:  expl_arima_sigma         1
-#> 10:   expl_arima_pacf         1
-#> 11:       expl_gp_rho         1
-#> 12:     expl_gp_alpha         1
+#>  8:          expr_pop         1
+#>  9:      expl_beta_sd         1
+#> 10:  expl_arima_sigma         1
+#> 11:   expl_arima_pacf         1
+#> 12:       expl_gp_rho         1
+#> 13:     expl_gp_alpha         1
 #>                                                                                                                                                                description
 #>                                                                                                                                                                     <char>
 #>  1:                                                                                                                                       Intercept of the log growth rate
@@ -933,11 +980,12 @@ enw_expectation(data = enw_example("preprocessed"))
 #>  5:              Partial autocorrelations of the ARIMA latent residual on the log growth rate; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
 #>  6:                                                           Length scale of the Gaussian process on the log growth rate; log-normal prior on the (positive) length scale
 #>  7:                                                              Magnitude (marginal standard deviation) of the Gaussian process on the log growth rate; half-normal prior
-#>  8:                                                                                                            Standard deviation of scaled pooled log growth rate effects
-#>  9:                                                                                        Standard deviation of the ARIMA latent residual on log latent-to-obs proportion
-#> 10: Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
-#> 11:                                              Length scale of the Gaussian process on the log latent-to-obs proportion; log-normal prior on the (positive) length scale
-#> 12:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the log latent-to-obs proportion; half-normal prior
+#>  8:                                   Initial susceptible population (per group) for the susceptible-depletion adjustment (LogNormal, log scale; only used when estimated)
+#>  9:                                                                                                            Standard deviation of scaled pooled log growth rate effects
+#> 10:                                                                                        Standard deviation of the ARIMA latent residual on log latent-to-obs proportion
+#> 11: Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+#> 12:                                              Length scale of the Gaussian process on the log latent-to-obs proportion; log-normal prior on the (positive) length scale
+#> 13:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the log latent-to-obs proportion; half-normal prior
 #>              distribution     mean    sd
 #>                    <char>    <num> <num>
 #>  1:                Normal 0.000000  0.20
@@ -947,11 +995,12 @@ enw_expectation(data = enw_example("preprocessed"))
 #>  5:               Uniform 0.000000  0.00
 #>  6:            Log normal 1.098612  0.50
 #>  7: Zero truncated normal 0.000000  0.05
-#>  8: Zero truncated normal 0.000000  1.00
-#>  9: Zero truncated normal 0.000000  0.20
-#> 10:               Uniform 0.000000  0.00
-#> 11:            Log normal 1.098612  0.50
-#> 12: Zero truncated normal 0.000000  0.05
+#>  8:            Log normal 0.000000  1.00
+#>  9: Zero truncated normal 0.000000  1.00
+#> 10: Zero truncated normal 0.000000  0.20
+#> 11:               Uniform 0.000000  0.00
+#> 12:            Log normal 1.098612  0.50
+#> 13: Zero truncated normal 0.000000  0.05
 #> 
 #> $inits
 #> function (data, priors) 
@@ -979,6 +1028,10 @@ enw_expectation(data = enw_example("preprocessed"))
 #>         }
 #>         init <- c(init, .arima_inits(data, priors, "expr"))
 #>         init <- c(init, .gp_inits(data, priors, "expr"))
+#>         if (isTRUE(data$expr_pop_uncertain == 1)) {
+#>             init$expr_pop_est <- array(rlnorm(data$g, as.vector(priors$expr_pop_p[1, 
+#>                 ]), as.vector(priors$expr_pop_p[2, ]) * 0.1))
+#>         }
 #>         if (data$expl_fncol > 0) {
 #>             init$expl_beta <- array(rnorm(data$expl_fncol, 0, 
 #>                 0.01))
@@ -993,7 +1046,7 @@ enw_expectation(data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x564859789b80>
-#> <environment: 0x56485977ea30>
+#> <bytecode: 0x562d99820fc8>
+#> <environment: 0x562d99815e38>
 #> 
 ```

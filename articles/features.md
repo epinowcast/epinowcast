@@ -156,6 +156,7 @@ infections, hospitalisations).
 | ARIMA residual | Trend and autocorrelation; `d` sets the integration order | `~1 + arima(week, by = .group, p = 1, d = 1)` | `d` \>= 1 gives non-stationary drift |
 | Growth rate | Exponential growth/decline | `generation_time = 1` (default) | Simple trend |
 | Renewal process | Epidemic dynamics | `generation_time = c(0.2, 0.5, 0.3)` | [Rt estimation vignette](https://package.epinowcast.org/articles/single-timeseries-rt-estimation.md) |
+| Susceptible depletion | Rt bends down as the susceptible pool depletes | `generation_time = c(...)`, `population = N` | [Susceptible depletion vignette](https://package.epinowcast.org/articles/susceptible-depletion.md) |
 | Fixed effects | Covariates (e.g., interventions) | `~1 + intervention + ...` | Include predictors |
 | Observation modifiers | Ascertainment variation (e.g., day of week) | `observation = ~1 + day_of_week` | Adjust for reporting patterns |
 
@@ -174,7 +175,10 @@ periodic terms on the growth rate, with the [ARIMA
 reference](https://package.epinowcast.org/articles/arima.md) covering
 the maths, priors, and usage. The [Rt estimation
 vignette](https://package.epinowcast.org/articles/single-timeseries-rt-estimation.md)
-demonstrates renewal process models with generation times.
+demonstrates renewal process models with generation times, and the
+[susceptible depletion
+vignette](https://package.epinowcast.org/articles/susceptible-depletion.md)
+shows the population adjustment on simulated data.
 
 ## Hierarchical Structure
 

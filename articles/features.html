@@ -69,6 +69,7 @@
     <li><a class="dropdown-item" href="../articles/package-use-cases.html">Case studies</a></li>
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
+    <li><a class="dropdown-item" href="../articles/susceptible-depletion.html">Susceptible depletion in the renewal model</a></li>
     <li><a class="dropdown-item" href="../articles/delay-estimation.html">Estimating reporting delays with the full and delay-only models</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
@@ -528,12 +529,22 @@ order</td>
 vignette</a></td>
 </tr>
 <tr class="odd">
+<td>Susceptible depletion</td>
+<td>Rt bends down as the susceptible pool depletes</td>
+<td>
+<code>generation_time = c(...)</code>,
+<code>population = N</code>
+</td>
+<td><a href="susceptible-depletion.html">Susceptible depletion
+vignette</a></td>
+</tr>
+<tr class="even">
 <td>Fixed effects</td>
 <td>Covariates (e.g., interventions)</td>
 <td><code>~1 + intervention + ...</code></td>
 <td>Include predictors</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Observation modifiers</td>
 <td>Ascertainment variation (e.g., day of week)</td>
 <td><code>observation = ~1 + day_of_week</code></td>
@@ -552,7 +563,8 @@ observation modifiers</li>
 random walks, ARIMA(p, d, q) residuals, stationary AR, and periodic
 terms on the growth rate, with the <a href="arima.html">ARIMA
 reference</a> covering the maths, priors, and usage. The <a href="single-timeseries-rt-estimation.html">Rt estimation vignette</a>
-demonstrates renewal process models with generation times.</p>
+demonstrates renewal process models with generation times, and the <a href="susceptible-depletion.html">susceptible depletion vignette</a>
+shows the population adjustment on simulated data.</p>
 </div>
 <div class="section level2">
 <h2 id="hierarchical">Hierarchical Structure<a class="anchor" aria-label="anchor" href="#hierarchical"></a>

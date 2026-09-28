@@ -69,6 +69,7 @@
     <li><a class="dropdown-item" href="../articles/package-use-cases.html">Case studies</a></li>
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
+    <li><a class="dropdown-item" href="../articles/susceptible-depletion.html">Susceptible depletion in the renewal model</a></li>
     <li><a class="dropdown-item" href="../articles/delay-estimation.html">Estimating reporting delays with the full and delay-only models</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
@@ -175,6 +176,11 @@ ARIMA(p, d, q) latent residuals are also supported through the <code><a href="..
   \lambda^l_{g,t} &amp;= R_{g,t} \sum_{p = 1}^{P} G_{g}\left(p, t - p \right)  \lambda^l_{g, t-p},\ t \gt P  
 \end{align}\]</span></p>
 <p>Where <span class="math inline">\(G_{g}\left(p, t - p \right)\)</span> is the probability of an infection <span class="math inline">\(p\)</span> days after infection <span class="math inline">\(t - p\)</span> days ago for group <span class="math inline">\(g\)</span>, and <span class="math inline">\(P\)</span> is the maximum generation time. To initialise the model we assume that the first <span class="math inline">\(P\)</span> latent notifications are log-normally distributed with mean <span class="math inline">\(\mu^{l}_{g,t}\)</span> and standard deviation <span class="math inline">\(\sigma^{l}_{g,t}\)</span>. This is equivalent to assuming that the first <span class="math inline">\(P\)</span> latent notifications are independent and identically distributed. The mean of the log-normal distribution for each group is the log of the latest reported case count for the first reference date for that group scaled by the sum of the latent reporting delay. The standard deviation is assumed to be 1. Both of these assumptions can be altered by the user.</p>
+<p>Optionally, the renewal process can account for susceptible depletion given an initial susceptible population <span class="math inline">\(N_g\)</span> (<code>population</code> in <code><a href="../reference/enw_expectation.html">enw_expectation()</a></code>).
+Transmission is then scaled by the remaining susceptible fraction <span class="math inline">\(S_{g,t} / N_g\)</span>, where <span class="math inline">\(S_{g,t} = N_g - \sum_{p &lt; t} \lambda^l_{g,p}\)</span> is the susceptible pool depleted by cumulative latent cases, so the effective reproduction number bends down as the pool depletes.
+This adjustment is ported from <code>EpiNow2</code><span class="citation"><sup>[<a href="#ref-EpiNow2">1</a>,<a href="#ref-Abbott2020">5</a>]</sup></span> and follows the bounded-exponential susceptible-depletion form of the semi-mechanistic renewal process<span class="citation"><sup>[<a href="#ref-Bhatt2020">6</a>]</sup></span>.
+This assumes a single well-mixed population per group with no waning or vital dynamics.
+The <a href="susceptible-depletion.html">susceptible depletion vignette</a> demonstrates the adjustment on simulated data.</p>
 </div>
 <div class="section level3">
 <h3 id="latent-reporting-delay-and-ascertainment">Latent reporting delay and ascertainment<a class="anchor" aria-label="anchor" href="#latent-reporting-delay-and-ascertainment"></a>

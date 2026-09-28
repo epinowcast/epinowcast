@@ -86,6 +86,13 @@
 
   How to address issues you may encounter with Stan
 
+- [Susceptible depletion in the renewal
+  model](https://package.epinowcast.org/articles/susceptible-depletion.md):
+
+  Demonstrating the optional susceptible-depletion adjustment of the
+  renewal expectation model on simulated data where depletion plays a
+  clear role.
+
 - [Temporal aggregation
   guide](https://package.epinowcast.org/articles/temporal-aggregation.md):
 

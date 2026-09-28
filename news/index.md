@@ -49,6 +49,21 @@
   implementation is adapted from `EpiNow2`
   (<https://github.com/epiforecasts/EpiNow2>, MIT licensed). See
   [\#824](https://github.com/epinowcast/epinowcast/issues/824).
+- Added an optional susceptible-depletion (population) adjustment to the
+  renewal expectation model via the new `population`,
+  `population_floor`, `population_uncertain`, and `population_cv`
+  arguments to
+  [`enw_expectation()`](https://package.epinowcast.org/reference/enw_expectation.md).
+  When a population size is supplied the effective reproduction number
+  bends down as the susceptible pool is depleted by modelled latent
+  cases, scaling transmission by the remaining susceptible fraction. The
+  population can be fixed or fitted via a LogNormal prior, and is
+  per-group: groups are treated as independent well-mixed populations (a
+  single value is recycled across groups with a warning, or a
+  length-`groups` vector sets group-specific values). The adjustment is
+  opt-in and applies to the renewal path only; the renewal logic is
+  adapted from `EpiNow2` (`rt_opts(pop = ...)`, MIT licence). See
+  [\#826](https://github.com/epinowcast/epinowcast/issues/826).
 - Added a delay-only model that fits the reporting-delay distribution
   conditional on known per-reference-date totals, treating those totals
   as fixed truth (the standard delay-estimation pattern of Kalbfleisch &
