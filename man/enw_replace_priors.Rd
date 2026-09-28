@@ -7,10 +7,11 @@
 enw_replace_priors(priors, custom_priors)
 }
 \arguments{
-\item{priors}{The default priors to update: a \code{data.frame} with a
-\code{variable} column and a \code{prior} list column of \verb{<dist_spec>} objects,
-as returned by the \verb{$priors} element of \code{\link[=enw_reference]{enw_reference()}} and other
-model module functions.}
+\item{priors}{The default priors to update, usually the \code{data.frame}
+with a \code{variable} column and a \code{prior} list column of \verb{<dist_spec>}
+objects returned by the \verb{$priors} element of \code{\link[=enw_reference]{enw_reference()}} and
+other model module functions. The same formats as \code{custom_priors} are
+accepted.}
 
 \item{custom_priors}{The replacement priors as a named list of
 \verb{<dist_spec>} objects (e.g.

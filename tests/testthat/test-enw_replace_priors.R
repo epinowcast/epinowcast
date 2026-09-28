@@ -140,14 +140,8 @@ test_that("enw_replace_priors checks the prior family and parameters", {
   )
 })
 
-test_that("enw_replace_priors allows a Fixed prior when the target prior's
-           distribution family is unknown (regression test: a zero-scale
-           Fixed prior must not be rejected by the positive-scale check
-           just because the target distribution isn't literally
-           \"Uniform\")", {
-  # A priors table with no `distribution` column (e.g. a bare named list)
-  # leaves `distribution` as NA, under which `.enw_prior_families()`
-  # permits a \"fixed\" prior family.
+test_that("enw_replace_priors allows a Fixed prior when the target
+           distribution is unknown", {
   priors <- list(x = distspec::Normal(mean = 0, sd = 1))
   updated <- enw_replace_priors(priors, list(x = distspec::Fixed(5)))
   expect_identical(updated$prior[[1]], distspec::Fixed(5))

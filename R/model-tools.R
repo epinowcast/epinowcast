@@ -231,15 +231,15 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
 #' the prior.
 #' @keywords internal
 .enw_prior_families <- function(distribution) {
-  if (is.na(distribution)) {
-    c("normal", "lognormal", "fixed")
-  } else if (distribution %in% c("Normal", "Zero truncated normal")) {
+  if (isTRUE(distribution %in% c("Normal", "Zero truncated normal"))) {
     "normal"
-  } else if (distribution == "Log normal") {
+  } else if (isTRUE(distribution == "Log normal")) {
     "lognormal"
-  } else if (distribution == "Uniform") {
+  } else if (isTRUE(distribution == "Uniform")) {
     c("normal", "fixed")
   } else {
+    # An unknown distribution (e.g. a prior table without a `distribution`
+    # column) accepts any supported family.
     c("normal", "lognormal", "fixed")
   }
 }
@@ -407,7 +407,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
 #' column. Other columns of a `data.frame` input are retained.
 #' @keywords internal
 #' @importFrom cli cli_abort
-#' @importFrom purrr map map2 pmap
+#' @importFrom purrr map pmap
 .enw_as_prior_table <- function(x, template = NULL, arg = "priors") {
   if (inherits(x, "dist_spec")) {
     cli::cli_abort(
@@ -599,10 +599,11 @@ enw_priors_as_data_list <- function(priors) {
 #' Use [distspec::LogNormal()] with `mean` and `sd` to specify a log-normal
 #' prior by its natural-scale mean and standard deviation.
 #'
-#' @param priors The default priors to update: a `data.frame` with a
-#' `variable` column and a `prior` list column of `<dist_spec>` objects,
-#' as returned by the `$priors` element of [enw_reference()] and other
-#' model module functions.
+#' @param priors The default priors to update, usually the `data.frame`
+#' with a `variable` column and a `prior` list column of `<dist_spec>`
+#' objects returned by the `$priors` element of [enw_reference()] and
+#' other model module functions. The same formats as `custom_priors` are
+#' accepted.
 #'
 #' @param custom_priors The replacement priors as a named list of
 #' `<dist_spec>` objects (e.g.
