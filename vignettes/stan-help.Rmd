@@ -22,7 +22,9 @@ library(epinowcast)
 ```
 
 ::: {.alert .alert-warning}
-Before we start, it is important to know that Bayesian modelling can be complex and most, if not all, practitioners (including the authors of `{epinowcast}`) are still learning on the job. Having problems that you may need to work through is part of the process. Part of the aim of the `{epinowcast}` community is to lower the barriers to entry for this type of modelling in real-time infectious disease analysis so we really appreciate any input into how to make our documentation easier to use.
+Before we start, it is important to know that Bayesian modelling can be complex and most, if not all, practitioners (including the authors of `{epinowcast}`) are still learning on the job.
+Having problems that you may need to work through is part of the process.
+Part of the aim of the `{epinowcast}` community is to lower the barriers to entry for this type of modelling in real-time infectious disease analysis so we really appreciate any input into how to make our documentation easier to use.
 :::
 
 # Epinowcast and Stan
@@ -111,11 +113,11 @@ All of the parameters are passed to the `sampling` function available from [`{cm
 # Investigating the quality of the model fit
 
 In this section we will discuss the most common approaches when working with `{epinowcast}` specifically and CmdStan/ Bayesian inference more generally.
-A major component of Bayesian inference and a key component of the Bayesian workflow is validating the quality of the model fit. 
+A major component of Bayesian inference and a key component of the Bayesian workflow is validating the quality of the model fit.
 As a consequence, the Bayesian workflow utilises tools that make issues of fit very apparent.[@gelmanBayesianWorkflow2020]
 Additionally, `{epinowcast}` provides supplemental information to complement the existing Stan messages to help you spot and diagnose potential model fitting issues.
 The solutions to these issues typically require you to investigate your [sampler settings](#samplerParams), [model settings](#modelParams), or [interrogate your data](#modelData) further.
-It is also important to examine your posterior predictive 
+It is also important to examine your posterior predictive
 
 ## Sampler settings {#samplerParams}
 
@@ -135,13 +137,13 @@ If possible, a good default is `2`, however, if you have available compute on yo
 Please note that the `theads_per_chain` has no impact on model convergence or fittings and is purely a means of speeding up the model fitting time.
 
 ::: {.alert .alert-warning}
-**The product of the `thread_per_chain` and `chains`** arguments should be equal to or less than the number of cores on your machine! 
+**The product of the `thread_per_chain` and `chains`** arguments should be equal to or less than the number of cores on your machine!
 :::
 
 ### iter_warmup and iter_sampling {#iters}
 
 The number of samples used for the warmup phase of Stan and the number of sampling iterations are controlled by the `iter_warmup` and `iter_sampling` arguments, respectively.
-Stan requires a sufficient number of warmup iterations to dynamically estimate the step change sizes during model fitting. 
+Stan requires a sufficient number of warmup iterations to dynamically estimate the step change sizes during model fitting.
 Unlike with Gibbs sampling (such as the method used in JAGS), you generally do not need to set large values for `iter_warmup` or `iter_sampling`, but this can vary based on the [match between your data and your model](https://discourse.mc-stan.org/t/number-of-iterations/1674/3).
 Conversely, setting large values for iterations could be a sign of poor model fit and indicates that other approaches need to be employed (e.g., `priors`, `adapt_delta`, `max_treedepth`).
 A [general heuristic](https://mc-stan.org/rstan/reference/Rhat.html#:~:text=Both%20bulk%2DESS%20and%20tail,respective%20posterior%20quantiles%20are%20reliable) is to have your bulk and tail effective sample sizes (ESS) greater than 100.
@@ -183,7 +185,9 @@ enw_fit_opts(
 ```
 
 ::: {.alert .alert-warning}
-For very simple models `threads_per_chain = 1` may lead to models fitting faster even if more cores are available due to the overhead from within chain multi-threading. This may also be the case for models with very complex generative processes (i.e. models that use complex $R_t$ formulas). We suggest you explore what works best for your data and models.
+For very simple models `threads_per_chain = 1` may lead to models fitting faster even if more cores are available due to the overhead from within chain multi-threading.
+This may also be the case for models with very complex generative processes (i.e. models that use complex $R_t$ formulas).
+We suggest you explore what works best for your data and models.
 :::
 
 ## Model settings {#modelParams}
@@ -284,9 +288,9 @@ If `r_hat` is large and `ess_bulk`/ `ess_tail` are low, consider:
 ### The posterior estimates are very wide
 
 Wide posterior values indicate that there is a high degree of uncertainty given the data and model.
-If no other warnings are shown (e.g., divergent transitions, low ESS), then this result is simply the inference given the available data and prior likelihood. 
+If no other warnings are shown (e.g., divergent transitions, low ESS), then this result is simply the inference given the available data and prior likelihood.
 
-However, Bayesian model building is often an iterative process [@gelmanBayesianWorkflow2020] and, in practice, it's common to realize that that the model's prior likelihood doesn't accurately reflect your prior beliefs. 
+However, Bayesian model building is often an iterative process [@gelmanBayesianWorkflow2020] and, in practice, it's common to realize that that the model's prior likelihood doesn't accurately reflect your prior beliefs.
 Priors that were thought to be non-informative can turn out to [strongly influence the posterior](https://sites.stat.columbia.edu/gelman/research/published/entropy-19-00555-v2.pdf), often in unexpected and undesirable ways.
 If you suspect that this might be the case, it can make sense to revisit your priors, iteratively inspecting the joint prior model through prior predictive simulation and tweaking marginal distributions over individual parameters.
 The [Stan Prior Choice wiki](https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations) is often a useful guide to this process.
