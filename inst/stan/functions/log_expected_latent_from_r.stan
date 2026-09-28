@@ -58,7 +58,8 @@ vector extract_group_rates(vector r, array[] int r_g, int k, int r_t) {
  *
  * @note For each group: when `gt_n == 1` exponential growth is computed as a
  * cumulative sum on the log scale; when `gt_n > 1` the renewal equation is
- * applied on the natural scale (more stable) and logged afterwards.
+ * applied on the natural scale (more stable, via `renewal_depletion()`,
+ * see renewal_depletion.stan) and logged afterwards.
  *
  * When `use_pop > 0`, new cases are capped by the remaining susceptibles
  * (`fmax(0, pop - cum_cases)`) so depletion cannot exceed the pool, and a
@@ -70,7 +71,7 @@ vector extract_group_rates(vector r, array[] int r_g, int k, int r_t) {
 array[] vector log_expected_latent_from_r(
   matrix lexp_latent_int, vector r, array[] int r_g, int r_t,
   int r_seed, int gt_n, vector lrgt, int t, int g,
-  vector pop, int use_pop, real pop_floor
+  vector pop, int use_pop, data real pop_floor
 ) {
   array[g] vector[t] exp_lobs;
 
@@ -83,37 +84,20 @@ array[] vector log_expected_latent_from_r(
       exp_lobs[k][(r_seed + 1):t] = exp_lobs[k][1] + cumulative_sum(local_r);
     }
   } else {
-    // Renewal equation: work on natural scale for numerical stability
+    // Renewal equation: work on natural scale for numerical stability.
+    // The seeding period is always sized to match the generation time
+    // (r_seed == gt_n), so renewal_depletion()'s fixed-length window
+    // covers every step from i = 1 with no separate boundary case.
     vector[gt_n] rgt = exp(lrgt);
-    vector[t] exp_obs;
     vector[r_t] local_R;
+    vector[gt_n] seed;
     for (k in 1:g) {
       // Extract and exponentiate growth rates in one step
       local_R = exp(extract_group_rates(r, r_g, k, r_t));
-      exp_obs[1:r_seed] = exp(lexp_latent_int[1:r_seed, k]);
-      if (use_pop) {
-        // Cumulative cases consumed from the pool (incl. seeds).
-        real cum_cases = sum(exp_obs[1:r_seed]);
-        for (i in 1:r_t) {
-          real infectiousness = dot_product(
-            segment(exp_obs, r_seed + i - gt_n, gt_n), rgt
-          );
-          // Scale by remaining susceptible fraction; cap new cases by the pool.
-          real remaining_susceptible = fmax(0, pop[k] - cum_cases);
-          real denom = fmax(pop_floor, remaining_susceptible);
-          real adj = 1 - exp(-local_R[i] * infectiousness / denom);
-          exp_obs[r_seed + i] = fmax(1e-8, remaining_susceptible * adj);
-          cum_cases += exp_obs[r_seed + i];
-        }
-      } else {
-        // Convolve recent cases with generation time to get new cases
-        for (i in 1:r_t) {
-          exp_obs[r_seed + i] = local_R[i] * dot_product(
-            segment(exp_obs, r_seed + i - gt_n, gt_n), rgt
-          );
-        }
-      }
-      exp_lobs[k] = log(exp_obs);
+      seed = exp(lexp_latent_int[1:r_seed, k]);
+      exp_lobs[k] = log(
+        renewal_depletion(seed, local_R, rgt, pop[k], use_pop, pop_floor)
+      );
     }
   }
   return(exp_lobs);

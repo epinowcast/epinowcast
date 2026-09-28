@@ -9,25 +9,19 @@
 #
 # Purpose: touchstone's `benchmark_run()` cells measure whole-fit wall
 # time, which conflates compilation, I/O, warm-up and sampler-path
-# length (number of leapfrog steps) with the actual per-gradient cost of
-# a change. A custom-adjoint PR (see the speed-up review, candidate 2.1)
-# changes the cost of a single `grad_log_prob()` call, not the number of
-# times it is called, so the number that actually demonstrates its
-# payoff is per-gradient-evaluation time at a *fixed* set of parameter
-# draws -- comparing before/after touchstone wall times is confounded by
-# NUTS trajectory-length variance (see the PR #804 review note in the
-# scratchpad: "full wall-clock fit time on this small test fixture is
-# noisy and seed-dependent").
+# length (number of leapfrog steps) with the per-gradient cost of a
+# change. A custom-adjoint PR changes the cost of one gradient
+# evaluation, not the number of them, so this script reports time per
+# gradient evaluation, for the C++ adjoints on (`use_cpp = TRUE`) and off
+# (`use_cpp = FALSE`, the pure-Stan fallback), on the same data.
 #
-# Method: for each benchmark case, fit a short chain to get realistic
-# posterior-region draws, fix those draws, then repeatedly call
-# cmdstanr's `log_prob()` (forward pass only) and `grad_log_prob()`
-# (forward + reverse) at each fixed draw and report the mean per-call
-# time. This is the same `log_prob`/`grad_log_prob` mechanism, and the
-# same forward-vs-total framing, used in the PR #804 review
-# (`scratchpad/pr-804-csr.md`), adapted from Stan-profile-block timing
-# to cmdstanr's direct model-method interface so it works for any case,
-# not just ones with `profile(...)` blocks around the target code.
+# Method: for each case, a short adapted chain gives a realistic starting
+# point, step size and metric. Each arm then runs NUTS from that point
+# with adaptation off and the same seed, step size and metric, and the
+# time per gradient is the sampling time divided by the total number of
+# leapfrog steps (one gradient each). This runs the compiled executables
+# themselves: cmdstanr's `log_prob()`/`grad_log_prob()` model methods are
+# compiled separately and cannot link the C++ header (`user_header`).
 
 suppressMessages(library(data.table))
 # Always load the local package source (not an installed copy): the
@@ -41,19 +35,13 @@ options(mc.cores = 2)
 
 # ---- Configuration ---------------------------------------------------
 
-n_draws <- 20 # fixed number of parameter draws timed per case
-n_reps <- 50 # repeat calls per draw, for stable per-call timing
+iter_timed <- 200 # NUTS iterations timed per arm and repeat
+n_reps <- 3 # repeats per arm, alternating arms
 seed <- 123
 
-# `compile_model_methods` builds the Rcpp bindings `log_prob()` /
-# `grad_log_prob()` need; `force_recompile` is required because
-# `target_dir = "touchstone"` may already hold a cached executable built
-# without those bindings (e.g. from `touchstone/script.R`'s own
-# `enw_model(target_dir = "touchstone")` calls).
-model <- enw_model(
-  target_dir = "touchstone",
-  compile_model_methods = TRUE,
-  force_recompile = TRUE
+models <- list(
+  cpp = enw_model(target_dir = "touchstone", verbose = FALSE),
+  stan = enw_model(target_dir = "touchstone", use_cpp = FALSE, verbose = FALSE)
 )
 
 # One `build()` function per case: returns the preprocessed data (`pobs`)
@@ -63,7 +51,7 @@ model <- enw_model(
 # them.
 cases <- list(
   default = function() {
-    source("touchstone/preprocessing.R", local = TRUE)
+    source(file.path("touchstone", "preprocessing.R"), local = TRUE)
     list(
       pobs = pobs,
       expectation = enw_expectation(~1, data = pobs),
@@ -71,7 +59,7 @@ cases <- list(
     )
   },
   renewal_gt4 = function() {
-    source("touchstone/preprocessing.R", local = TRUE)
+    source(file.path("touchstone", "preprocessing.R"), local = TRUE)
     list(
       pobs = pobs,
       expectation = enw_expectation(
@@ -87,7 +75,7 @@ cases <- list(
     )
   },
   many_snapshots_dow = function() {
-    source("touchstone/many-snapshots-setup.R", local = TRUE)
+    source(file.path("touchstone", "many-snapshots-setup.R"), local = TRUE)
     list(
       pobs = pobs,
       report = enw_report(~ (1 | day_of_week), data = pobs),
@@ -123,48 +111,48 @@ cases <- list(
 
 # ---- Timing helpers ----------------------------------------------------
 
-#' Fit a case briefly and return a fixed set of unconstrained draws
+#' Stan data and a short adapted chain for a case
 #'
-#' A short chain (not a converged fit) is enough: we only need parameter
-#' values in a realistic posterior region, not inference, since we are
-#' timing the cost of one gradient evaluation, not the sampler.
-.fixed_draws <- function(case_args, n_draws, seed) {
+#' The chain is not a converged fit: it only supplies a realistic starting
+#' point, step size and metric for the timed runs.
+.setup_case <- function(case_args) {
   extra <- case_args[setdiff(names(case_args), "pobs")]
-  fit <- suppressMessages(do.call(epinowcast, c(
+  inputs <- suppressMessages(do.call(epinowcast, c(
     list(
       data = case_args$pobs,
       fit = enw_fit_opts(
-        sampler = enw_sample,
-        save_warmup = FALSE, pp = FALSE,
-        chains = 1, parallel_chains = 1,
-        iter_warmup = 200, iter_sampling = n_draws,
-        refresh = 0, show_messages = FALSE, seed = seed
+        sampler = function(init, data, ...) {
+          data.table::data.table(init = list(init), data = list(data))
+        }
       ),
-      model = model
+      model = NULL
     ),
     extra
   )))
-  fit_obj <- fit$fit[[1]]
-  fit_obj$init_model_methods(seed = seed, verbose = FALSE)
-  # `format = "draws_matrix"` gives an iterations x unconstrained-
-  # parameters matrix; each row is one draw's unconstrained-parameter
-  # vector, exactly what `log_prob()`/`grad_log_prob()` expect.
-  unconstrained <- fit_obj$unconstrain_draws(format = "draws_matrix")
-  n <- min(n_draws, nrow(unconstrained))
-  draws <- lapply(seq_len(n), function(i) as.numeric(unconstrained[i, ]))
-  list(fit_obj = fit_obj, draws = draws)
+  stan_data <- inputs$data[[1]]
+  adapted <- models$cpp$sample(
+    data = stan_data, init = inputs$init[[1]], chains = 1,
+    threads_per_chain = 1, iter_warmup = 200, iter_sampling = 1, seed = seed, refresh = 0,
+    show_messages = FALSE
+  )
+  list(stan_data = stan_data, adapted = adapted)
 }
 
-#' Mean per-call time (microseconds) of `f` applied to each element of
-#' `draws`, each repeated `n_reps` times.
-.time_calls <- function(f, draws, n_reps) {
-  per_draw_us <- vapply(draws, function(draw) {
-    t0 <- proc.time()[["elapsed"]]
-    for (i in seq_len(n_reps)) f(draw)
-    elapsed <- proc.time()[["elapsed"]] - t0
-    (elapsed / n_reps) * 1e6
-  }, numeric(1))
-  c(mean = mean(per_draw_us), sd = stats::sd(per_draw_us))
+#' Seconds per gradient evaluation for one arm
+.time_per_gradient <- function(model, setup) {
+  adapted <- setup$adapted
+  fit <- model$sample(
+    data = setup$stan_data, init = adapted, chains = 1,
+    threads_per_chain = 1, iter_warmup = 0, iter_sampling = iter_timed, adapt_engaged = FALSE,
+    step_size = adapted$metadata()$step_size_adaptation,
+    inv_metric = adapted$inv_metric(matrix = FALSE)[[1]],
+    seed = seed, refresh = 0, show_messages = FALSE
+  )
+  n_leapfrog <- sum(fit$sampler_diagnostics(format = "df")$n_leapfrog__)
+  c(
+    seconds = fit$time()$chains$sampling / n_leapfrog,
+    n_leapfrog = n_leapfrog
+  )
 }
 
 # ---- Run ---------------------------------------------------------------
@@ -172,37 +160,33 @@ cases <- list(
 results <- data.table::rbindlist(lapply(names(cases), function(case_name) {
   cat(sprintf("Timing case: %s\n", case_name))
   case_args <- cases[[case_name]]()
-  fd <- .fixed_draws(case_args, n_draws = n_draws, seed = seed)
-  fit_obj <- fd$fit_obj
-  draws <- fd$draws
-
-  # Untimed warm-up call: the first `log_prob()`/`grad_log_prob()` call
-  # after `init_model_methods()` pays a one-off cache/JIT cost that can
-  # otherwise dominate the mean of a small `n_reps`.
-  invisible(fit_obj$grad_log_prob(draws[[1]], jacobian = TRUE))
-
-  logprob_us <- .time_calls(
-    function(d) fit_obj$log_prob(d, jacobian = TRUE), draws, n_reps
-  )
-  grad_us <- .time_calls(
-    function(d) fit_obj$grad_log_prob(d, jacobian = TRUE), draws, n_reps
-  )
-
+  setup <- .setup_case(case_args)
+  timings <- data.table::rbindlist(lapply(seq_len(n_reps), function(rep) {
+    data.table::rbindlist(lapply(names(models), function(arm) {
+      t <- .time_per_gradient(models[[arm]], setup)
+      data.table::data.table(
+        arm = arm, rep = rep,
+        us_per_gradient = t[["seconds"]] * 1e6,
+        n_leapfrog = t[["n_leapfrog"]]
+      )
+    }))
+  }))
   pobs <- case_args$pobs
-  data.table::data.table(
+  timings[, .(
+    us_per_gradient = mean(us_per_gradient),
+    us_per_gradient_sd = stats::sd(us_per_gradient),
+    n_leapfrog = mean(n_leapfrog)
+  ), by = arm][, `:=`(
     case = case_name,
-    n_draws = length(draws),
-    n_reps = n_reps,
     t = pobs$time[[1]],
     g = pobs$groups[[1]],
     s = pobs$snapshots[[1]],
-    dmax = pobs$max_delay[[1]],
-    log_prob_us_mean = logprob_us[["mean"]],
-    log_prob_us_sd = logprob_us[["sd"]],
-    grad_log_prob_us_mean = grad_us[["mean"]],
-    grad_log_prob_us_sd = grad_us[["sd"]]
-  )
+    dmax = pobs$max_delay[[1]]
+  )][]
 }))
+
+speedup <- data.table::dcast(results, case ~ arm, value.var = "us_per_gradient")
+speedup[, speedup := stan / cpp]
 
 cat("\n--- Machine ---\n")
 cat("R version:", R.version.string, "\n")
@@ -211,6 +195,7 @@ cat("CmdStan version:", cmdstanr::cmdstan_version(), "\n")
 cat("OS:", Sys.info()[["sysname"]], Sys.info()[["release"]], "\n")
 cat("machine:", Sys.info()[["machine"]], "\n")
 
-cat("\n--- Per-gradient-evaluation timing ---\n")
-cat("(fixed draws, n_draws x n_reps calls each)\n")
+cat("\n--- Per-gradient-evaluation timing (microseconds) ---\n")
 print(results)
+cat("\n--- Speed-up of use_cpp = TRUE over use_cpp = FALSE ---\n")
+print(speedup)

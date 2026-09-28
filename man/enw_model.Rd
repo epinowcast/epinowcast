@@ -14,6 +14,7 @@ enw_model(
   stanc_options = list(),
   cpp_options = list(),
   verbose = TRUE,
+  use_cpp = getOption("epinowcast.use_cpp", TRUE),
   ...
 )
 }
@@ -37,9 +38,9 @@ not using multithreading and thus not recommended.}
 For more on profiling see the \href{https://mc-stan.org/cmdstanr/articles/profiling.html}{\code{cmdstanr} documentation}. # nolint}
 
 \item{target_dir}{The path to a directory in which the manipulated .stan
-files without profiling statements should be stored. To avoid overriding of
-the original .stan files, this should be different from the directory of the
-original model and the \code{include_paths}.}
+files should be stored. To avoid overriding of the original .stan files,
+this should be different from the directory of the original model and the
+\code{include_paths}.}
 
 \item{stanc_options}{A list of options to pass to the \code{stanc_options} of
 \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}. By default nothing is passed but potentially
@@ -55,6 +56,20 @@ argument replaces \code{stan_threads}.}
 \item{verbose}{Logical, defaults to \code{TRUE}. Should verbose
 messages be shown.}
 
+\item{use_cpp}{Logical, defaults to \code{getOption("epinowcast.use_cpp", TRUE)}.
+Should the package's custom reverse-mode adjoints (currently:
+\code{logit_hazard_to_log_prob()} and \code{renewal_depletion()}, see
+\code{\link[=epinowcast_stan_header]{epinowcast_stan_header()}} and \verb{inst/include/epinowcast/}) be compiled in via
+\code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}'s \code{user_header}, with the matching Stan
+functions declared without a body and \code{allow-undefined} passed to
+\code{stanc_options}? If \code{FALSE}, every such function is instead compiled
+from a pure-Stan fallback body (see \code{\link[=stan_cpp_fallback_body]{stan_cpp_fallback_body()}}). Both
+settings need the same C++ toolchain as any other Stan model. Models
+compiled with \code{use_cpp = FALSE} are cached in a \code{no-cpp} subdirectory of
+\code{target_dir}, so switching this setting never reuses the wrong binary.
+Set \code{options(epinowcast.use_cpp = FALSE)} to change the default
+package-wide.}
+
 \item{...}{Additional arguments passed to \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}.}
 }
 \value{
@@ -66,6 +81,9 @@ Load and compile the nowcasting model
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 mod <- enw_model()
+
+# Compile without the C++ adjoint path (pure Stan fallback)
+mod_pure_stan <- enw_model(use_cpp = FALSE)
 \dontshow{\}) # examplesIf}
 }
 \seealso{
@@ -79,7 +97,11 @@ Functions used to help convert models into the format required for stan
 \code{\link{enw_set_cache}()},
 \code{\link{enw_stan_to_r}()},
 \code{\link{enw_unset_cache}()},
+\code{\link{epinowcast_stan_header}()},
 \code{\link{remove_profiling}()},
+\code{\link{stage_stan_header}()},
+\code{\link{stan_cpp_adjoint_files}()},
+\code{\link{stan_cpp_fallback_body}()},
 \code{\link{write_stan_files_no_profile}()}
 }
 \concept{modeltools}
