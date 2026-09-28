@@ -445,7 +445,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
                                           generation_time, groups) {
   if (!is.numeric(population_floor) || length(population_floor) != 1 ||
     !is.finite(population_floor) || population_floor < 0) {
-    cli::cli_abort(
+    cli_abort(
       "`population_floor` must be a single non-negative finite number."
     )
   }
@@ -455,7 +455,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   )
   if (is.null(population)) {
     if (isTRUE(population_uncertain)) {
-      cli::cli_abort(
+      cli_abort(
         "`population` must be supplied when `population_uncertain` is TRUE."
       )
     }
@@ -471,7 +471,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
     } else {
       ""
     }
-    cli::cli_warn(
+    cli_warn(
       paste(
         "`population` is ignored for the daily growth rate model",
         "(`generation_time = 1`); a renewal process",
@@ -506,14 +506,14 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 .check_population_values <- function(population, groups) {
   if (!is.numeric(population) || !all(is.finite(population)) ||
     any(population <= 0) || !length(population) %in% c(1L, groups)) {
-    cli::cli_abort(paste(
+    cli_abort(paste(
       "`population` must be `NULL`, a single positive finite number, or a",
       "positive finite numeric vector with one value per group",
       "(length {groups})."
     ))
   }
   if (length(population) == 1L && groups > 1L) {
-    cli::cli_warn(paste(
+    cli_warn(paste(
       "A single `population` value was supplied but there are {groups}",
       "groups; recycling it as each group's initial susceptible population.",
       "Supply a length-{groups} vector to set group-specific populations."
@@ -543,7 +543,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 .expectation_population_prior <- function(out, population, population_cv) {
   if (!is.numeric(population_cv) || length(population_cv) != 1 ||
     !is.finite(population_cv) || population_cv <= 0) {
-    cli::cli_abort("`population_cv` must be a single positive finite number.")
+    cli_abort("`population_cv` must be a single positive finite number.")
   }
   out$uncertain <- 1L
   # Per-group LogNormal: median = population, natural-scale CV = population_cv.
