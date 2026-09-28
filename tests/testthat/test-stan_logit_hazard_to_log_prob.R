@@ -1,101 +1,124 @@
-# Tests for the logit_hazard_to_log_prob() C++ adjoint: value and gradient
-# parity between the C++ implementation and the retained pure-Stan
-# reference logit_hazard_to_log_prob_stan(), the epinowcast.use_cpp
-# toggle's wiring, and full-model parity between the two compile paths.
+# Tests for the logit_hazard_to_log_prob() C++ adjoint: values and
+# gradients against the retained pure-Stan reference
+# logit_hazard_to_log_prob_stan(), an R closed form and central finite
+# differences; the use_cpp toggle's wiring; and full-model parity between
+# the two compile paths. Values and gradients come from the compiled
+# executables via cmdstan_log_prob() (helper-functions.R), because
+# cmdstanr's $grad_log_prob() cannot link a user_header.
 
-# Boundary/edge-case grid: l = 1, small and moderate l, all-zero-hazard and
-# near-saturated-hazard extremes (h -> 0 and h -> 1, where 1 / h and
-# 1 / (1 - h) blow up), and a mix of extremes within one vector.
-logit_hazard_cases <- local({
-  set.seed(20260928)
-  list(
-    list(l = 1L, lh = c(0.3)),
-    list(l = 1L, lh = c(-8)),
-    # h saturates to exactly 1 in double precision (a regression case: an
-    # earlier version of the C++ forward pass called log1m() on this
-    # element unconditionally, even though its result is never used for
-    # l == 1, and Stan Math's log1m() throws a domain_error once its
-    # argument reaches exactly 1).
-    list(l = 1L, lh = c(50)),
-    list(l = 3L, lh = c(0, 0, 0)),
-    list(l = 5L, lh = rnorm(5)),
-    list(l = 20L, lh = rnorm(20, sd = 2)),
-    list(l = 30L, lh = rnorm(30, sd = 5)),
-    list(l = 8L, lh = rep(-20, 8)),
-    list(l = 8L, lh = rep(20, 8)),
-    list(l = 6L, lh = c(-20, 20, -20, 20, 0, 5))
+# log p_d = log(h_d) + sum_{j < d} log(1 - h_j), h = inv_logit(lh), on the
+# log scale so it stays accurate where h rounds to 0 or 1.
+logit_hazard_log_prob_r <- function(lh) {
+  log_h <- stats::plogis(lh, log.p = TRUE)
+  log1m_h <- stats::plogis(lh, lower.tail = FALSE, log.p = TRUE)
+  log_h + c(0, cumsum(log1m_h)[-length(lh)])
+}
+
+# Gradient of the test model's target, sum(r * logp) - sum(logp^2) / 2,
+# with respect to lh: pbar = r - logp, then
+# lhbar_j = pbar_j * (1 - h_j) - h_j * sum_{d > j} pbar_d.
+logit_hazard_target_grad_r <- function(lh, r) {
+  h <- stats::plogis(lh)
+  pbar <- r - logit_hazard_log_prob_r(lh)
+  suffix <- rev(cumsum(rev(pbar))) - pbar
+  pbar * (1 - h) - h * suffix
+}
+
+skip_if_no_cmdstan_log_prob <- function() {
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_on_os("mac")
+  skip_on_local()
+  skip_if_not_installed("cmdstanr")
+  skip_if(is.null(cmdstanr::cmdstan_path()), "CmdStan is not installed")
+  skip_if(
+    cmdstanr::cmdstan_version() < "2.31.0",
+    "CmdStan's log_prob method needs CmdStan >= 2.31"
   )
-})
+}
+
+compile_logit_hazard_model <- function() {
+  cmdstanr::cmdstan_model(
+    test_path("stan", "logit_hazard_gradient.stan"),
+    include_paths = system.file("stan", package = "epinowcast"),
+    user_header = epinowcast_stan_header(),
+    dir = withr::local_tempdir(.local_envir = parent.frame()),
+    quiet = TRUE
+  )
+}
 
 test_that(
-  "logit_hazard_to_log_prob() C++ matches the pure-Stan reference in value and gradient", # nolint
+  "logit_hazard_to_log_prob() matches the Stan reference, closed form and finite differences", # nolint
   {
-    skip_on_cran()
-    skip_on_os("windows")
-    skip_on_os("mac")
-    skip_on_local()
-    skip_if_not_installed("cmdstanr")
+    skip_if_no_cmdstan_log_prob()
+    model <- compile_logit_hazard_model()
+    set.seed(20260928)
 
-    model <- cmdstanr::cmdstan_model(
-      test_path("stan", "logit_hazard_gradient.stan"),
-      include_paths = system.file("stan", package = "epinowcast"),
-      user_header = epinowcast_stan_header(),
-      stanc_options = list("allow-undefined"),
-      quiet = TRUE,
-      # cmdstanr's rebuild-detection only tracks the .stan file; changes
-      # to the C++ header alone would otherwise not trigger a rebuild.
-      force_recompile = TRUE
-    )
-
-    for (case in logit_hazard_cases) {
-      l <- case$l
-      lh <- case$lh
-      r <- rnorm(l)
-
-      # Value parity: both implementations computed in one fixed_param draw.
-      fit_gq <- model$sample(
-        data = list(l = l, r = r, use_cpp = 1L), fixed_param = TRUE,
-        iter_sampling = 1, chains = 1, seed = 1,
-        init = list(list(lh = lh)), refresh = 0, show_messages = FALSE
+    # Randomised cases, with |lh| small enough that the Stan reference is
+    # accurate to double precision, so the two can be compared tightly.
+    for (i in 1:50) {
+      l <- sample(c(1:6, 10, 20, 40), 1)
+      r <- signif(rnorm(l), 12)
+      lh <- matrix(
+        signif(rnorm(4 * l, sd = sample(c(0.5, 2, 4), 1)), 12),
+        ncol = l
       )
-      logp_cpp <- as.numeric(
-        fit_gq$draws("logp_cpp", format = "matrix")[1, ]
-      )
-      logp_stan <- as.numeric(
-        fit_gq$draws("logp_stan", format = "matrix")[1, ]
-      )
-      expect_equal(logp_cpp, logp_stan, tolerance = 1e-12)
+      data <- list(l = l, r = as.array(r))
+      cpp <- cmdstan_log_prob(model, c(data, use_cpp = 1L), lh)
+      stan <- cmdstan_log_prob(model, c(data, use_cpp = 0L), lh)
 
-      # Gradient parity: log_prob()/grad_log_prob(), via CmdStan's own
-      # gradient-test diagnostic, compared between the use_cpp branches of
-      # the same compiled model. epsilon is widened for the near-saturated
-      # cases (h -> 0/1), where the default 1e-6 step is dominated by
-      # roundoff; error is widened so CmdStan's own pass/fail check (which
-      # is more conservative than the comparisons below) does not abort
-      # the run.
-      diag_cpp <- suppressMessages(model$diagnose(
-        data = list(l = l, r = r, use_cpp = 1L),
-        init = list(list(lh = lh)), seed = 1, epsilon = 1e-4, error = 100
+      expect_equal(cpp$lp, stan$lp, tolerance = 1e-12)
+      expect_equal(cpp$grad, stan$grad, tolerance = 1e-10)
+      closed_form <- do.call(rbind, lapply(
+        seq_len(nrow(lh)), function(k) logit_hazard_target_grad_r(lh[k, ], r)
       ))
-      diag_stan <- suppressMessages(model$diagnose(
-        data = list(l = l, r = r, use_cpp = 0L),
-        init = list(list(lh = lh)), seed = 1, epsilon = 1e-4, error = 100
-      ))
+      expect_equal(cpp$grad, closed_form, tolerance = 1e-10)
 
-      expect_equal(diag_cpp$lp(), diag_stan$lp(), tolerance = 1e-10)
-      expect_equal(
-        diag_cpp$gradients()$model, diag_stan$gradients()$model,
-        tolerance = 1e-8
-      )
-      # Independent check against central finite differences (CmdStan's
-      # own, computed during the same diagnostic run).
-      expect_equal(
-        diag_cpp$gradients()$model, diag_cpp$gradients()$finite_diff,
-        tolerance = 1e-2
-      )
+      # Central finite differences of the C++ log density itself.
+      step <- 1e-5
+      shifts <- diag(step, l)
+      for (k in seq_len(nrow(lh))) {
+        up <- sweep(shifts, 2, lh[k, ], `+`)
+        down <- sweep(-shifts, 2, lh[k, ], `+`)
+        fd <- cmdstan_log_prob(model, c(data, use_cpp = 1L), rbind(up, down))
+        expect_equal(
+          cpp$grad[k, ], (fd$lp[1:l] - fd$lp[-(1:l)]) / (2 * step),
+          tolerance = 1e-6
+        )
+      }
     }
   }
 )
+
+test_that("logit_hazard_to_log_prob() is finite where hazards saturate", {
+  skip_if_no_cmdstan_log_prob()
+  model <- compile_logit_hazard_model()
+  # l = 1; h rounding to exactly 0 or 1 in double precision (|lh| > ~37);
+  # saturation in a non-final slot, where the Stan reference's
+  # log1m(inv_logit(lh)) is -inf; and a mix of extremes in one vector.
+  cases <- list(
+    0.3, -8, 50, -50, 800, -800,
+    rep(40, 4), rep(-40, 4), rep(20, 8), rep(-20, 8),
+    c(1, 2, 740, 3), c(1, 2, -740, 3), c(-20, 20, -20, 20, 0, 5)
+  )
+  for (lh in cases) {
+    l <- length(lh)
+    r <- signif(seq(-1, 1, length.out = l), 12)
+    cpp <- cmdstan_log_prob(
+      model, list(l = l, r = as.array(r), use_cpp = 1L), lh
+    )
+    expect_true(is.finite(cpp$lp))
+    expect_true(all(is.finite(cpp$grad)))
+    logp <- logit_hazard_log_prob_r(lh)
+    expect_equal(
+      cpp$lp, sum(r * logp) - 0.5 * sum(logp^2), tolerance = 1e-12
+    )
+    expect_equal(
+      as.numeric(cpp$grad), logit_hazard_target_grad_r(lh, r),
+      tolerance = 1e-10
+    )
+  }
+})
 
 test_that("enw_model() wires the C++ header only when use_cpp = TRUE", {
   skip_if_not_installed("cmdstanr")
@@ -110,104 +133,98 @@ test_that("enw_model() wires the C++ header only when use_cpp = TRUE", {
     .package = "cmdstanr"
   )
 
-  suppressMessages(enw_model(
-    compile = TRUE, verbose = FALSE, use_cpp = TRUE, profile = TRUE
-  ))
-  expect_identical(captured$user_header, epinowcast_stan_header())
+  enw_model(verbose = FALSE, use_cpp = TRUE, target_dir = target_dir)
+  # A copy of the installed header, kept next to the model, since CmdStan
+  # cannot use a header path containing spaces or `%`.
+  expect_identical(
+    captured$user_header, file.path(target_dir, "include", "epinowcast.hpp")
+  )
+  expect_identical(
+    unname(tools::md5sum(captured$user_header)),
+    unname(tools::md5sum(epinowcast_stan_header()))
+  )
+  expect_true(captured$stanc_options[["allow-undefined"]])
+  cpp_model_file <- captured[[1]]
 
-  captured <- NULL
-  suppressMessages(enw_model(
-    compile = TRUE, verbose = FALSE, use_cpp = FALSE, profile = TRUE,
-    target_dir = target_dir
-  ))
+  enw_model(verbose = FALSE, use_cpp = FALSE, target_dir = target_dir)
   expect_null(captured$user_header)
+  expect_null(captured$stanc_options[["allow-undefined"]])
+  # The pure-Stan build is cached separately, so switching use_cpp in one
+  # cache never reuses the other build's binary.
+  expect_false(identical(captured[[1]], cpp_model_file))
+  fallback <- readLines(file.path(
+    captured$include_paths, "functions", "logit_hazard_to_log_prob.stan"
+  ))
+  expect_true(any(grepl("logit_hazard_to_log_prob_stan(lh, l)",
+    fallback,
+    fixed = TRUE
+  )))
 
   # An explicitly supplied user_header is never overridden.
-  captured <- NULL
-  suppressMessages(enw_model(
-    compile = TRUE, verbose = FALSE, use_cpp = TRUE, profile = TRUE,
+  enw_model(
+    verbose = FALSE, use_cpp = TRUE, target_dir = target_dir,
     user_header = "custom.hpp"
-  ))
+  )
   expect_identical(captured$user_header, "custom.hpp")
 })
 
-test_that("enw_model() compiles with the C++ adjoint path on and off", {
-  skip_on_cran()
-  skip_on_os("windows")
-  skip_on_os("mac")
-  skip_on_local()
-  skip_if_not_installed("cmdstanr")
-  skip_if(is.null(cmdstanr::cmdstan_path()), "CmdStan is not installed")
-
-  mod_cpp <- enw_model(
-    verbose = FALSE, use_cpp = TRUE, target_dir = withr::local_tempdir()
+test_that("stage_stan_header() copies the header once, keeping its mtime", {
+  target_dir <- withr::local_tempdir()
+  header <- stage_stan_header(target_dir)
+  installed <- dirname(epinowcast_stan_header())
+  files <- list.files(installed, recursive = TRUE)
+  expect_identical(
+    unname(tools::md5sum(file.path(dirname(header), files))),
+    unname(tools::md5sum(file.path(installed, files)))
   )
-  expect_s3_class(mod_cpp, "CmdStanModel")
-  expect_true(file.exists(mod_cpp$exe_file()))
-
-  mod_stan <- enw_model(
-    verbose = FALSE, use_cpp = FALSE, target_dir = withr::local_tempdir()
+  expect_identical(
+    file.mtime(header), file.mtime(epinowcast_stan_header())
   )
-  expect_s3_class(mod_stan, "CmdStanModel")
-  expect_true(file.exists(mod_stan$exe_file()))
+  staged_mtime <- file.mtime(header)
+  Sys.sleep(1)
+  stage_stan_header(target_dir)
+  expect_identical(file.mtime(header), staged_mtime)
 })
 
-test_that(
-  "epinowcast() gives matching posterior summaries with the C++ adjoint path on and off", # nolint
-  {
-    skip_on_cran()
-    skip_on_os("windows")
-    skip_on_os("mac")
-    skip_on_local()
-    skip_if_not_installed("cmdstanr")
-    skip_if(is.null(cmdstanr::cmdstan_path()), "CmdStan is not installed")
+test_that("epinowcast models agree in log density and gradient with use_cpp on and off", { # nolint
+  skip_if_no_cmdstan_log_prob()
+  target_dir <- withr::local_tempdir()
+  # Same target_dir for both, to check they do not share a binary.
+  mod_cpp <- enw_model(verbose = FALSE, use_cpp = TRUE, target_dir = target_dir)
+  mod_stan <- enw_model(
+    verbose = FALSE, use_cpp = FALSE, target_dir = target_dir
+  )
+  expect_false(identical(mod_cpp$exe_file(), mod_stan$exe_file()))
 
-    pobs <- enw_example("preprocessed")
-    fit <- enw_fit_opts(
-      sampler = enw_sample,
-      save_warmup = FALSE, pp = FALSE, chains = 1, parallel_chains = 1,
-      iter_warmup = 50, iter_sampling = 50, seed = 101,
-      show_messages = FALSE, show_exceptions = FALSE, refresh = 0
-    )
-    expectation <- enw_expectation(data = pobs)
-    reference <- enw_reference(data = pobs)
-    report <- enw_report(~ 1 + day_of_week, data = pobs)
+  pobs <- enw_example("preprocessed")
+  # A report-date model makes expected_obs() call logit_hazard_to_log_prob().
+  inputs <- suppressMessages(epinowcast(
+    pobs,
+    reference = enw_reference(~1, data = pobs),
+    report = enw_report(~ (1 | day_of_week), data = pobs),
+    fit = enw_fit_opts(
+      sampler = function(init, data, ...) {
+        data.table::data.table(init = list(init), data = list(data))
+      }
+    ),
+    model = NULL
+  ))
+  stan_data <- inputs$data[[1]]
+  expect_identical(stan_data$model_rep, 1)
 
-    nowcast_cpp <- suppressWarnings(suppressMessages(epinowcast(
-      pobs,
-      expectation = expectation, reference = reference, report = report,
-      fit = fit,
-      model = enw_model(
-        verbose = FALSE, use_cpp = TRUE, target_dir = withr::local_tempdir()
-      )
-    )))
-    nowcast_stan <- suppressWarnings(suppressMessages(epinowcast(
-      pobs,
-      expectation = expectation, reference = reference, report = report,
-      fit = fit,
-      model = enw_model(
-        verbose = FALSE, use_cpp = FALSE, target_dir = withr::local_tempdir()
-      )
-    )))
-
-    summary_cpp <- summary(nowcast_cpp, type = "fit")
-    summary_stan <- summary(nowcast_stan, type = "fit")
-    expect_identical(summary_cpp$variable, summary_stan$variable)
-
-    # log_prob()/grad_log_prob() parity is already checked exactly (to
-    # 1e-10/1e-8) above, function-by-function and on the boundary-case
-    # grid; a full model fit adds a different, complementary check: that
-    # the C++ path is wired correctly into the whole model, not just the
-    # one function. Matching *draws* is not the right bar for that,
-    # though: HMC is a chaotic dynamical system, so two separately
-    # compiled (if mathematically identical) binaries, even sampled with
-    # the same seed, diverge in trajectory once floating-point rounding
-    # differs by even one ULP at some leapfrog step -- this is expected,
-    # not a sign of a wiring bug. Instead check the two posteriors agree
-    # up to sampling noise: most parameters' cpp-vs-stan posterior mean
-    # difference should be small relative to their posterior sd.
-    standardised_diff <- abs(summary_cpp$mean - summary_stan$mean) /
-      pmax(summary_cpp$sd, summary_stan$sd, 1e-8)
-    expect_lt(stats::median(standardised_diff, na.rm = TRUE), 1)
-  }
-)
+  # Draws from a short chain give realistic parameter values to evaluate
+  # both builds at.
+  fit <- suppressMessages(mod_cpp$sample(
+    data = stan_data, init = inputs$init[[1]], chains = 1,
+    threads_per_chain = 1, iter_warmup = 100, iter_sampling = 10, seed = 1, refresh = 0,
+    show_messages = FALSE, sig_figs = 18
+  ))
+  draws <- fit$output_files()
+  cpp <- cmdstan_log_prob(mod_cpp, fit$data_file(), constrained_csv = draws)
+  stan <- cmdstan_log_prob(
+    mod_stan, fit$data_file(), constrained_csv = draws
+  )
+  expect_length(cpp$lp, 10)
+  expect_equal(cpp$lp, stan$lp, tolerance = 1e-12)
+  expect_equal(cpp$grad, stan$grad, tolerance = 1e-10)
+})

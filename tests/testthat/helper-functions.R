@@ -118,3 +118,49 @@ make_test_pobs <- function(
   class(pobs) <- c("enw_preprocess_data", class(pobs))
   pobs
 }
+
+# Log density and gradient from a compiled model's own executable, via
+# CmdStan's `log_prob` method (CmdStan >= 2.31). Unlike cmdstanr's
+# `$grad_log_prob()`, this runs the real binary, so it links any
+# `user_header`, and it reports full double precision (`sig_figs=18`),
+# unlike `$diagnose()`, which prints six significant figures.
+# Pass either `upars`, a matrix with one set of unconstrained parameters
+# per row (written with 15 significant digits, so round inputs to fewer
+# digits than that to keep R and CmdStan on identical values), or
+# `constrained_csv`, a CmdStan output CSV of draws. `data` is a list or
+# the path to a JSON data file (e.g. `fit$data_file()`, which keeps
+# length-one arrays as arrays).
+cmdstan_log_prob <- function(model, data, upars = NULL,
+                             constrained_csv = NULL) {
+  if (is.character(data)) {
+    data_file <- data
+  } else {
+    data_file <- withr::local_tempfile(fileext = ".json")
+    cmdstanr::write_stan_json(data, data_file)
+  }
+  if (is.null(constrained_csv)) {
+    params_file <- withr::local_tempfile(fileext = ".json")
+    cmdstanr::write_stan_json(
+      list(params_r = unname(rbind(upars))), params_file
+    )
+    params_arg <- paste0("unconstrained_params=", params_file)
+  } else {
+    params_arg <- paste0("constrained_params=", constrained_csv)
+  }
+  output_file <- withr::local_tempfile(fileext = ".csv")
+  log <- suppressWarnings(system2(
+    model$exe_file(),
+    c(
+      "log_prob", params_arg, "jacobian=1",
+      "data", paste0("file=", data_file),
+      "output", paste0("file=", output_file), "sig_figs=18",
+      paste0("profile_file=", withr::local_tempfile(fileext = ".csv"))
+    ),
+    stdout = TRUE, stderr = TRUE
+  ))
+  if (!is.null(attr(log, "status"))) {
+    stop(paste(log, collapse = "\n"))
+  }
+  out <- utils::read.csv(output_file, comment.char = "#")
+  list(lp = out$lp__, grad = unname(as.matrix(out[, -1, drop = FALSE])))
+}
