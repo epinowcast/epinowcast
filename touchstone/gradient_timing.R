@@ -178,6 +178,26 @@ cases <- list(
       report = enw_report(~ (1 | day_of_week), data = pobs),
       obs = enw_obs(family = "negbin", data = pobs)
     )
+  },
+  # A long latent-to-observation reporting delay (rd_n = 15) on the
+  # six-group, 60-reference-date dataset: log_expected_obs_from_latent()'s
+  # rd_n > 1 branch calls convolve_with_rev_pmf() once per group on a
+  # length ft = t + rd_n - 1 series, so this is the case the delay
+  # convolution adjoint should show up in (no case above sets
+  # latent_reporting_delay to more than a handful of elements).
+  latent_delay_conv = function() {
+    source(file.path("touchstone", "many-snapshots-setup.R"), local = TRUE)
+    delay_pmf <- stats::dgamma(1:15, shape = 3, rate = 0.5)
+    delay_pmf <- delay_pmf / sum(delay_pmf)
+    list(
+      pobs = pobs,
+      expectation = enw_expectation(
+        r = ~1, generation_time = 1,
+        latent_reporting_delay = delay_pmf,
+        data = pobs
+      ),
+      obs = enw_obs(family = "poisson", data = pobs)
+    )
   }
 )
 

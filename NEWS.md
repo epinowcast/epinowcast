@@ -6,6 +6,10 @@ Development version.
 
 - Added infrastructure for custom reverse-mode adjoints implemented in C++, following the approach used by `EpiNow2` (https://github.com/epiforecasts/EpiNow2), and the first such adjoint: `logit_hazard_to_log_prob()`, which fuses the `inv_logit()` and `hazard_to_log_prob()` calls in `expected_obs()` into a single autodiff node on the hot path of every model with a report-date model.
   `enw_model()` compiles the C++ in via `cmdstanr`'s `user_header` by default; set `enw_model(use_cpp = FALSE)` or `options(epinowcast.use_cpp = FALSE)` to compile the retained pure-Stan version (`logit_hazard_to_log_prob_stan()`) instead.
+- Added a second C++ adjoint, `convolve_with_rev_pmf()`, for the latent-to-observation delay convolution in `log_expected_obs_from_latent()`, replacing a `csr_matrix_times_vector()` call over a dense convolution matrix with a windowed-sum loop and a hand-derived reverse-mode adjoint (ported from `EpiNow2`'s `convolve_with_rev_pmf()`).
+  Covered by the same `use_cpp` toggle as `logit_hazard_to_log_prob()`.
+  `enw_expectation()` now errors if `latent_reporting_delay` is a list of PMFs.
+  Time-varying delays were documented but never worked, and are not supported.
 
 # epinowcast 0.8.0
 
