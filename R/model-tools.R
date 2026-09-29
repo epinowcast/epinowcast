@@ -160,35 +160,517 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
   data
 }
 
-#' Convert prior `data.frame` to list
+#' Build a module prior table
 #'
-#' Converts priors defined in a `data.frame` into a list
-#' format for use by stan. In addition it adds "_p" to all
-#' variable names in order too allow them to be distinguished from
-#' their standard usage within modelling code.
+#' Internal constructor for the `data.table` of priors returned in the
+#' `$priors` element of each model module (see [enw_reference()],
+#' [enw_report()], [enw_expectation()], [enw_missing()], and [enw_obs()]).
+#' Each prior is a `<dist_spec>` object from the `distspec` package (for
+#' example [distspec::Normal()] or [distspec::LogNormal()]) holding the
+#' location and scale that the Stan model applies.
 #'
-#' @return A named list with each entry specifying a prior as a length
-#' two vector (specifying the mean and standard deviation of the prior).
+#' @param variable Character vector of prior variable names (without the
+#' `_p` suffix used in the Stan model).
+#'
+#' @param description Character vector describing each prior.
+#'
+#' @param distribution Character vector naming the prior family the Stan
+#' model applies to each variable. One of `"Normal"`,
+#' `"Zero truncated normal"`, `"Log normal"`, or `"Uniform"`.
+#'
+#' @param prior A list of `<dist_spec>` objects with the same length as
+#' `variable`, giving the parameters of each prior. Use `NULL` for a flat
+#' prior (only supported for `"Uniform"` entries).
+#'
+#' @param dimension Optional integer vector giving the index of each entry
+#' of a vectorised prior. Defaults to `NULL` (no `dimension` column).
+#'
+#' @return A `data.table` with columns `variable`, `dimension` (when
+#' supplied), `description`, `distribution`, `prior`, `mean`, and `sd`.
+#' `mean` and `sd` are derived from `prior` (the location and scale the
+#' Stan model applies, e.g. `meanlog`/`sdlog` for a `"Log normal"` prior;
+#' see [.enw_prior_params()]) and kept for backwards compatibility with
+#' code that reads the numeric prior location and scale directly.
+#' @keywords internal
+#' @importFrom cli cli_abort
+.enw_prior_table <- function(variable, description, distribution, prior,
+                             dimension = NULL) {
+  n <- length(variable)
+  if (length(description) != n || length(distribution) != n ||
+        length(prior) != n) {
+    cli::cli_abort(
+      paste0(
+        "{.arg description}, {.arg distribution}, and {.arg prior} must ",
+        "have the same length as {.arg variable} ({n})"
+      )
+    )
+  }
+  out <- data.table::data.table(variable = variable)
+  if (!is.null(dimension)) {
+    data.table::set(out, j = "dimension", value = dimension)
+  }
+  data.table::set(out, j = "description", value = description)
+  data.table::set(out, j = "distribution", value = distribution)
+  data.table::set(out, j = "prior", value = list(unname(prior)))
+  purrr::pwalk(
+    list(out$prior, out$distribution, out$variable), .enw_check_prior
+  )
+  params <- purrr::map(out$prior, .enw_prior_params)
+  data.table::set(out, j = "mean", value = vapply(params, `[`, numeric(1), 1))
+  data.table::set(out, j = "sd", value = vapply(params, `[`, numeric(1), 2))
+  out[]
+}
+
+#' Prior families supported for each model prior distribution
+#'
+#' The default `distribution` of a prior (see [.enw_prior_table()])
+#' identifies the support of the parameter it is placed on: `"Normal"`
+#' priors are on unbounded parameters, `"Zero truncated normal"` and
+#' `"Log normal"` priors on positive parameters, and `"Uniform"` priors on
+#' the ARIMA partial autocorrelations in (-1, 1). The prior family passed
+#' to the Stan model must be supported on that parameter.
+#'
+#' @param distribution A character string naming the default prior family
+#' the Stan model applies (see [.enw_prior_table()]), or `NA`.
+#'
+#' @return A character vector of the `<dist_spec>` distribution types (as
+#' returned by [distspec::get_distribution()]) that can be used to specify
+#' the prior.
+#' @keywords internal
+.enw_prior_families <- function(distribution) {
+  positive <- c("normal", "lognormal", "gamma", "exp")
+  if (isTRUE(distribution == "Normal")) {
+    "normal"
+  } else if (
+    isTRUE(distribution %in% c("Zero truncated normal", "Log normal"))
+  ) {
+    positive
+  } else if (isTRUE(distribution == "Uniform")) {
+    c("normal", "fixed")
+  } else {
+    # An unknown distribution (e.g. a prior table without a `distribution`
+    # column) accepts any supported family.
+    c(positive, "fixed")
+  }
+}
+
+#' Distribution id of a prior for the Stan model
+#'
+#' @param prior A `<dist_spec>` with fixed parameters, or `NULL` for a flat
+#' prior.
+#'
+#' @return An integer: `0` for a flat prior (`NULL` or a fixed value, which
+#' leaves the parameter bounds as the only constraint), `1` for a normal,
+#' `2` for a log-normal, `3` for a gamma, and `4` for an exponential prior.
+#' @keywords internal
+.enw_prior_dist_id <- function(prior) {
+  if (is.null(prior)) {
+    return(0L)
+  }
+  ids <- c(fixed = 0L, normal = 1L, lognormal = 2L, gamma = 3L, exp = 4L)
+  family <- distspec::get_distribution(prior)
+  if (!family %in% names(ids)) {
+    cli::cli_abort(
+      paste0(
+        "Priors must be specified using {.fn distspec::Normal}, ",
+        "{.fn distspec::LogNormal}, {.fn distspec::Gamma}, ",
+        "{.fn distspec::Exponential}, or {.fn distspec::Fixed}, not a ",
+        "{.val {family}} distribution"
+      )
+    )
+  }
+  ids[[family]]
+}
+
+#' Extract the location and scale a prior passes to Stan
+#'
+#' @param prior A `<dist_spec>` with fixed parameters, or `NULL` for a flat
+#' prior.
+#'
+#' @return A numeric vector of length two giving the location and scale used
+#' by the Stan model: the `mean` and `sd` of a normal prior, the `meanlog`
+#' and `sdlog` of a log-normal prior, the `shape` and `rate` of a gamma
+#' prior, the `rate` and `0` of an exponential prior, the value and `0` for
+#' a fixed value, and `0` and `0` for a flat prior.
+#' @keywords internal
+.enw_prior_params <- function(prior) {
+  if (is.null(prior)) {
+    return(c(0, 0))
+  }
+  .enw_prior_dist_id(prior)
+  params <- distspec::get_parameters(prior)
+  switch(distspec::get_distribution(prior),
+    normal = c(params$mean, params$sd),
+    lognormal = c(params$meanlog, params$sdlog),
+    gamma = c(params$shape, params$rate),
+    exp = c(params$rate, 0),
+    fixed = c(params$value, 0)
+  )
+}
+
+#' Mean and standard deviation of a prior for initial values
+#'
+#' @inheritParams .enw_prior_dist_id
+#'
+#' @return A numeric vector of length two giving the mean and standard
+#' deviation of the prior on the natural scale (`0` and `0` for a flat
+#' prior), used to draw initial values near the centre of the prior.
+#' @keywords internal
+.enw_prior_moments <- function(prior) {
+  if (is.null(prior)) {
+    return(c(0, 0))
+  }
+  c(mean(prior), distspec::sd(prior))
+}
+
+#' Check that a prior can be used by the Stan model
+#'
+#' @param prior A `<dist_spec>` or `NULL`.
+#'
+#' @param distribution A character string naming the prior family the Stan
+#' model applies to `variable` (see [.enw_prior_table()]), or `NA` if
+#' unknown.
+#'
+#' @param variable A character string naming the prior variable (used in
+#' error messages).
+#'
+#' @return `NULL` invisibly. Called for its side effect of raising an
+#' informative error when `prior` is not usable.
+#' @keywords internal
+#' @importFrom cli cli_abort
+.enw_check_prior <- function(prior, distribution = NA_character_,
+                             variable = "prior") {
+  if (is.null(distribution) || length(distribution) != 1) {
+    distribution <- NA_character_
+  }
+  if (is.null(prior)) {
+    if (!identical(distribution, "Uniform")) {
+      cli::cli_abort(
+        paste0(
+          "The prior for {.var {variable}} must be a {.cls dist_spec} ",
+          "(e.g. {.code distspec::Normal(mean = 0, sd = 1)}); a flat ",
+          "({.code NULL}) prior is only supported where the model uses a ",
+          "Uniform prior"
+        )
+      )
+    }
+    return(invisible(NULL))
+  }
+  if (!inherits(prior, "dist_spec")) {
+    cli::cli_abort(
+      paste0(
+        "The prior for {.var {variable}} must be a {.cls dist_spec} from ",
+        "the {.pkg distspec} package (e.g. ",
+        "{.code distspec::Normal(mean = 0, sd = 1)}), not an object of ",
+        "class {.cls {class(prior)}}"
+      )
+    )
+  }
+  if (distspec::ndist(prior) != 1) {
+    cli::cli_abort(
+      paste0(
+        "The prior for {.var {variable}} must be a single distribution, ",
+        "not a sum of distributions"
+      )
+    )
+  }
+  if (distspec::has_uncertainty(prior)) {
+    cli::cli_abort(
+      paste0(
+        "The prior for {.var {variable}} must have fixed (numeric) ",
+        "parameters; parameters that are themselves uncertain are not ",
+        "supported"
+      )
+    )
+  }
+  families <- .enw_prior_families(distribution)
+  family <- distspec::get_distribution(prior)
+  if (!family %in% families) {
+    constructors <- c(
+      normal = "distspec::Normal()", lognormal = "distspec::LogNormal()",
+      gamma = "distspec::Gamma()", exp = "distspec::Exponential()",
+      fixed = "distspec::Fixed()"
+    )
+    allowed <- constructors[families] # nolint: object_usage_linter
+    cli::cli_abort(
+      paste0(
+        "The prior for {.var {variable}} must be a {.or {.code {allowed}}} ",
+        "distribution as the model applies a {distribution} prior, not a ",
+        "{.val {family}} distribution"
+      )
+    )
+  }
+  params <- .enw_prior_params(prior)
+  if (length(params) != 2 || !all(is.finite(params))) {
+    cli::cli_abort(
+      "The prior for {.var {variable}} must have finite scalar parameters"
+    )
+  }
+  # The scale (sd, sdlog or rate) must be positive, as must the shape of a
+  # gamma and the rate of an exponential; a fixed value has no scale.
+  positive <- switch(family,
+    normal = params[2], lognormal = params[2], gamma = params,
+    exp = params[1], numeric(0)
+  )
+  if (any(positive <= 0)) {
+    cli::cli_abort(
+      "The prior for {.var {variable}} must have positive parameters"
+    )
+  }
+  invisible(NULL)
+}
+
+#' Construct a prior from a location and scale
+#'
+#' Used to convert priors given as a mean and standard deviation (for
+#' example from `summary(nowcast, type = "fit")`) into a `<dist_spec>`.
+#' The values are used as the location and scale of the prior on the scale
+#' the Stan model applies it, so for a `"Log normal"` prior they are the
+#' `meanlog` and `sdlog`.
+#'
+#' @param location Numeric, the location (mean) of the prior.
+#'
+#' @param scale Numeric, the scale (standard deviation) of the prior.
+#'
+#' @inheritParams .enw_check_prior
+#' @return A `<dist_spec>`.
+#' @keywords internal
+.enw_prior_from_location_scale <- function(location, scale,
+                                           distribution = NA_character_) {
+  location <- as.numeric(location)
+  scale <- as.numeric(scale)
+  if (identical(distribution, "Log normal")) {
+    distspec::LogNormal(meanlog = location, sdlog = scale)
+  } else {
+    distspec::Normal(mean = location, sd = scale)
+  }
+}
+
+#' Coerce prior specifications to a prior table
+#'
+#' Converts the supported ways of specifying priors into a `data.table`
+#' with a `variable` column and a `prior` list column of `<dist_spec>`
+#' objects. See [enw_replace_priors()] for the supported formats.
+#'
+#' @param x A named list of `<dist_spec>` objects, a `data.frame` with a
+#' `variable` column and a `prior` list column, or a `data.frame` with
+#' `variable`, `mean`, and `sd` columns.
+#'
+#' @param template An optional prior table (with `variable` and
+#' `distribution` columns) used to look up the prior family for entries of
+#' `x` given as a mean and standard deviation.
+#'
+#' @param arg A character string naming the argument being coerced (used in
+#' error messages).
+#'
+#' @return A `data.table` with a `variable` column and a `prior` list
+#' column. Other columns of a `data.frame` input are retained.
+#' @keywords internal
+#' @importFrom cli cli_abort
+#' @importFrom purrr map pmap
+.enw_as_prior_table <- function(x, template = NULL, arg = "priors") {
+  if (inherits(x, "dist_spec")) {
+    cli::cli_abort(
+      paste0(
+        "{.arg {arg}} must be a named list of {.cls dist_spec} objects ",
+        "(e.g. {.code list(refp_mean_int = distspec::Normal(1, 1))}), ",
+        "not a single {.cls dist_spec}"
+      )
+    )
+  }
+  if (is.list(x) && !is.data.frame(x)) {
+    nms <- names(x)
+    if (length(x) > 0 && (is.null(nms) || !all(nzchar(nms, keepNA = FALSE)))) {
+      cli::cli_abort(
+        paste0(
+          "{.arg {arg}} must be a named list of {.cls dist_spec} objects ",
+          "with a prior variable name for each element"
+        )
+      )
+    }
+    out <- data.table::data.table(variable = as.character(nms))
+    data.table::set(out, j = "prior", value = list(unname(x)))
+    return(out[])
+  }
+  if (!is.data.frame(x)) {
+    cli::cli_abort(
+      paste0(
+        "{.arg {arg}} must be a named list of {.cls dist_spec} objects or ",
+        "a {.cls data.frame} with a {.var variable} column and either a ",
+        "{.var prior} column or {.var mean} and {.var sd} columns"
+      )
+    )
+  }
+  if ("prior" %in% colnames(x)) {
+    out <- coerce_dt(x, required_cols = c("variable", "prior"))
+    if (!is.list(out$prior)) {
+      cli::cli_abort(
+        "The {.var prior} column of {.arg {arg}} must be a list column"
+      )
+    }
+    return(out[])
+  }
+  if (!all(c("mean", "sd") %in% colnames(x))) {
+    cli::cli_abort(
+      paste0(
+        "{.arg {arg}} must have a {.var prior} column of {.cls dist_spec} ",
+        "objects or {.var mean} and {.var sd} columns"
+      )
+    )
+  }
+  out <- coerce_dt(x, required_cols = c("variable", "mean", "sd"))
+  base <- .enw_prior_base_name(out$variable)
+  if (!is.null(template) && "distribution" %in% colnames(template)) {
+    distribution <- template$distribution[match(base, template$variable)]
+  } else if ("distribution" %in% colnames(out)) {
+    distribution <- out$distribution
+  } else {
+    distribution <- rep(NA_character_, nrow(out))
+  }
+  prior <- purrr::pmap(
+    list(out$mean, out$sd, distribution), .enw_prior_from_location_scale
+  )
+  out[, c("mean", "sd") := NULL]
+  data.table::set(out, j = "prior", value = list(prior))
+  out[]
+}
+
+# Strip a trailing `[n]` index from prior variable names, so that
+# `variable[n]` matches the prior variable `variable`.
+.enw_prior_base_name <- function(x) {
+  gsub("\\[.*\\]$", "", x)
+}
+
+#' Find the rows of a prior table matched by a prior variable name
+#'
+#' @param priors A prior table with a `variable` column and optionally a
+#' `dimension` column.
+#'
+#' @param name A character string naming the prior to match. An index of the
+#' form `variable[n]` matches the entry with `dimension == n` when
+#' `variable` is vectorised and is otherwise ignored.
+#'
+#' @param strict Logical, defaults to `TRUE`. If `TRUE`, an error is raised
+#' when `name` does not match any prior variable. If `FALSE`, no rows are
+#' matched instead.
+#'
+#' @return A logical vector indicating the matched rows of `priors`.
+#' @keywords internal
+#' @importFrom cli cli_abort
+.enw_match_prior_rows <- function(priors, name, strict = TRUE) {
+  base <- .enw_prior_base_name(name)
+  rows <- priors$variable == base
+  if (!any(rows)) {
+    if (!strict) {
+      return(rows)
+    }
+    cli::cli_abort(
+      paste0(
+        "{.var {name}} is not a prior variable in {.arg priors}. Available ",
+        "prior variables are: {.val {unique(priors$variable)}}"
+      )
+    )
+  }
+  index <- suppressWarnings(
+    as.integer(sub("^[^[]+[[]([0-9]+)[]]$", "\\1", name))
+  )
+  if (!is.na(index) && "dimension" %in% colnames(priors) &&
+        !all(is.na(priors$dimension[rows]))) {
+    rows <- rows & !is.na(priors$dimension) & priors$dimension == index
+    if (!any(rows)) {
+      cli::cli_abort(
+        "{.var {base}} has no entry with dimension {index}"
+      )
+    }
+  }
+  rows
+}
+
+#' Convert priors to a list for Stan
+#'
+#' Converts priors specified as `<dist_spec>` objects into the list
+#' format used by the Stan model. Each prior becomes a `2 x n` array with
+#' the location in the first row and the scale in the second (with `n > 1`
+#' for vectorised priors) together with an integer distribution id, and
+#' `_p` (or `_p_dist`) is added to each variable name so that priors can be
+#' distinguished from the corresponding parameters.
+#'
+#' @param priors Priors in any of the formats supported by
+#' [enw_replace_priors()]: the `$priors` table of a model module, a named
+#' list of `<dist_spec>` objects, a `data.frame` with `variable` and `prior`
+#' list columns, or a `data.frame` with `variable`, `mean`, and `sd`
+#' columns.
+#'
+#' @return A named list with, for each prior variable, a `<variable>_p`
+#' entry giving the prior as a `2 x n` array of its location and scale
+#' (the `mean` and `sd` of a normal prior, the `meanlog` and `sdlog` of a
+#' log-normal prior, the `shape` and `rate` of a gamma prior, and the `rate`
+#' of an exponential prior) and a `<variable>_p_dist` entry giving the
+#' integer distribution id used by the Stan model (`0` flat, `1` normal,
+#' `2` log-normal, `3` gamma, `4` exponential). The entries of a vectorised
+#' prior must share a distribution family.
 #' @family modeltools
-#' @inheritParams enw_replace_priors
-#' @importFrom purrr map
+#' @importFrom purrr map map_int
 #' @export
 #' @examples
-#' priors <- data.frame(variable = "x", mean = 1, sd = 2)
+#' priors <- list(
+#'   x = distspec::Normal(mean = 1, sd = 2),
+#'   y = distspec::LogNormal(meanlog = 0, sdlog = 0.5)
+#' )
 #' enw_priors_as_data_list(priors)
+#'
+#' # From the default priors of a model module
+#' enw_priors_as_data_list(enw_obs(data = enw_example("preprocessed"))$priors)
 enw_priors_as_data_list <- function(priors) {
-  priors <- coerce_dt(priors, select = c("variable", "mean", "sd"))
-  priors[, variable := paste0(variable, "_p")]
-  priors <- split(priors, by = "variable", keep.by = FALSE)
-  priors <- purrr::map(priors, ~ as.array(t(.)))
-  priors
+  priors <- .enw_as_prior_table(priors)
+  variable <- factor(priors$variable, levels = unique(priors$variable))
+  params <- split(purrr::map(priors$prior, .enw_prior_params), variable)
+  dist <- split(purrr::map_int(priors$prior, .enw_prior_dist_id), variable)
+  mixed <- names(dist)[purrr::map_int(dist, ~ length(unique(.))) > 1]
+  if (length(mixed) > 0) {
+    cli::cli_abort(
+      paste0(
+        "The entries of a vectorised prior must share a distribution ",
+        "family, but {.var {mixed}} mixes families"
+      )
+    )
+  }
+  out <- purrr::map(params, ~ as.array(matrix(unlist(.), nrow = 2)))
+  names(out) <- paste0(names(out), "_p")
+  dist <- purrr::map(dist, 1L)
+  names(dist) <- paste0(names(dist), "_p_dist")
+  c(out, dist)[
+    as.vector(rbind(names(out), names(dist)))
+  ]
+}
+
+#' Convert priors to a list of means and standard deviations
+#'
+#' Internal companion to [enw_priors_as_data_list()] used by the model
+#' modules' initial value functions. Each prior becomes a `2 x n` array
+#' with the prior mean in the first row and standard deviation in the
+#' second, on the natural scale of the parameter, so that initial values
+#' can be drawn near the centre of any supported prior family.
+#'
+#' @inheritParams enw_priors_as_data_list
+#'
+#' @return A named list with each `<variable>_p` entry a `2 x n` array of
+#' prior means and standard deviations.
+#' @keywords internal
+.enw_priors_as_init_list <- function(priors) {
+  priors <- .enw_as_prior_table(priors)
+  variable <- factor(priors$variable, levels = unique(priors$variable))
+  moments <- split(purrr::map(priors$prior, .enw_prior_moments), variable)
+  out <- purrr::map(moments, ~ as.array(matrix(unlist(.), nrow = 2)))
+  names(out) <- paste0(names(out), "_p")
+  out
 }
 
 #' Replace default priors with user specified priors
 #'
-#' Replaces default model priors with user specified ones
-#' (restricted to normal priors with specified mean and standard
-#' deviations).
+#' Replaces default model priors with user specified ones.
+#' Priors are specified using the `<dist_spec>` objects of the `distspec`
+#' package (for example [distspec::Normal()] and [distspec::LogNormal()]).
 #' A common use is extracting the posterior from a previous
 #' [epinowcast()] run (using `summary(nowcast, type = "fit")`)
 #' and using it as a prior for subsequent fits.
@@ -198,29 +680,62 @@ enw_priors_as_data_list <- function(priors) {
 #' See the `priors` argument of [epinowcast()] for a list of
 #' available prior variable names by module.
 #'
-#' @param priors A `data.frame` with columns `variable`,
-#'  `mean`, and `sd` describing normal priors.
-#' Default priors in the appropriate format are returned by
-#' the `$priors` element of [enw_reference()] and other model
-#' module functions.
+#' @details
+#' Each default prior has a `distribution` describing the default prior
+#' family, which also identifies the support of the parameter it is placed
+#' on.
+#' The prior family is passed to the Stan model, so a replacement can use
+#' any family supported on that parameter: [distspec::Normal()] for
+#' `"Normal"` priors (on unbounded parameters such as intercepts);
+#' [distspec::Normal()] (truncated at zero by the parameter bounds),
+#' [distspec::LogNormal()], [distspec::Gamma()], or
+#' [distspec::Exponential()] for `"Zero truncated normal"` and
+#' `"Log normal"` priors (on positive parameters such as standard
+#' deviations and length scales); and [distspec::Normal()] (truncated to
+#' (-1, 1)) for `"Uniform"` priors on the ARIMA partial autocorrelations,
+#' where `NULL` or a standard deviation of zero restores the flat default.
+#' Parameters must be fixed numbers rather than distributions.
 #'
-#' @param custom_priors A `data.frame` with columns `variable`,
-#'  `mean`, and `sd` describing normal priors to use as
-#' replacements.
-#' Rows in `custom_priors` replace matching rows in `priors`
-#' by the `variable` column.
-#' Vectorised prior names (i.e. those of the form
-#' `variable[n]`) are matched after stripping the index
-#' (treated as `variable`).
+#' Priors given as a mean and standard deviation (for example from
+#' `summary(nowcast, type = "fit")`) are converted to the family of the
+#' default they replace.
+#' The values are used as the location and scale on the scale the model
+#' applies the prior, so for a `"Log normal"` prior they are the `meanlog`
+#' and `sdlog`.
+#' Use [distspec::LogNormal()] with `mean` and `sd` to specify a log-normal
+#' prior by its natural-scale mean and standard deviation.
 #'
-#' @return A data.table of prior definitions (variable, mean and sd).
+#' @param priors The default priors to update, usually the `data.frame`
+#' with a `variable` column and a `prior` list column of `<dist_spec>`
+#' objects returned by the `$priors` element of [enw_reference()] and
+#' other model module functions. The same formats as `custom_priors` are
+#' accepted.
+#'
+#' @param custom_priors The replacement priors as a named list of
+#' `<dist_spec>` objects (e.g.
+#' `list(refp_mean_int = distspec::Normal(mean = 1, sd = 0.5))`), a
+#' `data.frame` with `variable` and `prior` columns, or a `data.frame` with
+#' `variable`, `mean`, and `sd` columns.
+#' Entries replace the matching rows of `priors` by the `variable` column.
+#' Vectorised prior names of the form `variable[n]` replace the entry with
+#' `dimension == n` when `variable` is vectorised (i.e. has a `dimension`
+#' index) and otherwise match `variable` after stripping the index.
+#' Every element of a named list must name a prior variable in `priors`
+#' (an error is raised otherwise), whereas rows of a `data.frame` that do
+#' not match a prior variable (such as the non-prior parameters in a
+#' posterior summary) are ignored.
+#'
+#' @return A `data.table` of prior definitions with the same columns and
+#' rows as `priors` and the matched entries of the `prior` column replaced.
 #' @family modeltools
+#' @importFrom purrr map
 #' @export
 #' @examples
-#' # Update priors from a data.frame
-#' priors <- data.frame(variable = c("x", "y"), mean = c(1, 2), sd = c(1, 2))
-#' custom_priors <- data.frame(variable = "x[1]", mean = 10, sd = 2)
-#' enw_replace_priors(priors, custom_priors)
+#' # Update priors from a named list of distributions
+#' priors <- enw_obs(data = enw_example("preprocessed"))$priors
+#' enw_replace_priors(
+#'   priors, list(sqrt_phi = distspec::Normal(mean = 0, sd = 1))
+#' )
 #'
 #' # Update priors from a previous model fit
 #' default_priors <- enw_reference(
@@ -238,22 +753,39 @@ enw_priors_as_data_list <- function(priors) {
 #'
 #' enw_replace_priors(default_priors, fit_priors)
 enw_replace_priors <- function(priors, custom_priors) {
-  custom_priors <- coerce_dt(
+  priors <- .enw_as_prior_table(priors, arg = "priors")
+  custom <- .enw_as_prior_table(
     custom_priors,
-    select = c("variable", "mean", "sd")
-  )[
-    ,
-    .(
-      variable = gsub("\\[([^]]*)\\]", "", variable),
-      mean = as.numeric(mean), sd = as.numeric(sd)
+    template = priors, arg = "custom_priors"
+  )
+  strict <- !is.data.frame(custom_priors)
+  new_prior <- priors$prior
+  for (i in seq_len(nrow(custom))) {
+    variable <- custom$variable[i]
+    rows <- .enw_match_prior_rows(priors, variable, strict = strict)
+    if (!any(rows)) {
+      next
+    }
+    distribution <- NA_character_
+    if ("distribution" %in% colnames(priors)) {
+      distribution <- priors$distribution[rows][1]
+    }
+    prior <- custom$prior[[i]]
+    .enw_check_prior(prior, distribution, variable)
+    new_prior[rows] <- rep(list(prior), sum(rows))
+  }
+  data.table::set(priors, j = "prior", value = list(new_prior))
+  # Keep the derived `mean`/`sd` columns (see `.enw_prior_table()`) in sync
+  # with any replaced priors, when the input table has them.
+  if (all(c("mean", "sd") %in% colnames(priors))) {
+    params <- purrr::map(new_prior, .enw_prior_params)
+    data.table::set(
+      priors, j = "mean", value = vapply(params, `[`, numeric(1), 1)
     )
-  ]
-  variables <- custom_priors$variable
-  priors <- coerce_dt(
-    priors,
-    required_cols = "variable"
-  )[!(variable %in% variables)]
-  priors <- rbind(priors, custom_priors, fill = TRUE)
+    data.table::set(
+      priors, j = "sd", value = vapply(params, `[`, numeric(1), 2)
+    )
+  }
   priors[]
 }
 
@@ -663,7 +1195,7 @@ enw_stan_to_r <- function(
   check_cmdstanr()
   overloaded_fns <- c(
     "delay_lpmf.stan", "allocate_observed_obs.stan", "obs_lpmf.stan",
-    "effects_priors_lp.stan",
+    "prior_lpdf.stan", "effects_priors_lp.stan",
     # regression.stan calls the overloaded effect_priors_lp() so it
     # cannot be standalone-compiled when that file is excluded.
     "regression.stan"

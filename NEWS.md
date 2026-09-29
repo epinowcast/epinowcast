@@ -1,3 +1,40 @@
+# epinowcast 0.8.0.1000
+
+## Model
+
+- Priors can now be specified using the `<dist_spec>` objects of the [distspec](https://epiforecasts.io/distspec/) package (for example `distspec::Normal()` and `distspec::LogNormal()`).
+  The `priors` argument of `epinowcast()` and the `custom_priors` argument of `enw_replace_priors()` now also accept a named list of `<dist_spec>` objects, e.g. `priors = list(refp_mean_int = distspec::Normal(mean = 2, sd = 0.5))`.
+  The `$priors` table of each model module adds a `prior` list column of `<dist_spec>` objects alongside the existing `mean` and `sd` columns (now derived from `prior`), and `enw_priors_as_data_list()` converts these to the location and scale used by the Stan model.
+  A `data.frame` with `variable`, `mean`, and `sd` columns (such as `summary(nowcast, type = "fit")`) is still fully supported for both the `priors` argument of `epinowcast()` and the `custom_priors` argument of `enw_replace_priors()`, with the values used as the location and scale of the default prior family for each variable, so posterior summaries can still be used as priors; this form is unchanged and not deprecated.
+  Replacement priors given as a named list of `<dist_spec>` objects are checked against the family the model applies (a normal for `"Normal"` and `"Zero truncated normal"` priors, and a log-normal for `"Log normal"` priors) and must have fixed parameters; the `data.frame` (`mean`/`sd`) form is unaffected by this check.
+  Priors given as a named list must name an existing prior variable, and vectorised priors (such as `expr_lelatent_int`) can be replaced by dimension using names of the form `variable[n]`; previously an indexed name replaced every entry with a single row (this only affects the new list form).
+  The flat (Uniform) default of the ARIMA partial-autocorrelation priors is now represented internally by a `NULL` `prior`, with the derived `sd` column continuing to read `0` as before.
+  See #893 by @seabbs.
+- The prior family is now passed to the Stan model rather than fixed by it, so priors on positive parameters (pooled effect standard deviations, ARIMA scales, Gaussian process length scales and magnitudes, and the overdispersion) can be given as a `distspec::Normal()` (half-normal), `distspec::LogNormal()`, `distspec::Gamma()`, or `distspec::Exponential()` distribution, e.g. `priors = list(sqrt_phi = distspec::Gamma(shape = 2, rate = 4))`.
+  Priors on unbounded parameters (intercepts and initial latent observations) remain normal, and the ARIMA partial autocorrelations accept a flat or normal prior.
+  `enw_priors_as_data_list()` passes each prior to Stan as its location and scale together with an integer distribution id (`<variable>_p_dist`), and the model applies it through a new `prior_lpdf()` Stan function.
+  See #893 by @seabbs.
+- `enw_expectation()` now accepts a bounded `<dist_spec>` (e.g. `distspec::Gamma(mean = 4, sd = 3, max = 15)`) for the `generation_time` and `latent_reporting_delay` arguments, which is discretised to a daily probability mass function using `distspec::discretise()` (and so the double interval censoring approach of `primarycensored`).
+  As the renewal equation has no weight for the current day, the probability of a generation time of zero days is dropped and the probability mass function renormalised.
+  See #893 by @seabbs.
+
+## Package
+
+- Added `distspec` as a dependency.
+  See #893 by @seabbs.
+
+## Bug fixes
+
+- `enw_expectation()` now accepts a list of time-varying `latent_reporting_delay` PMFs as documented. Previously a list failed with an error, as the seeding observations summed the list and the modelled period was extended by the number of PMFs rather than their length.
+  See #893 by @seabbs.
+
+## Documentation
+
+- Updated the prior specification section of the features vignette to use `distspec` distributions.
+  See #893 by @seabbs.
+- The single time series Rt estimation vignette now defines the generation time and latent reporting delay distributions with `distspec` rather than converting their parameters and discretising them by hand.
+  See #893 by @seabbs.
+
 # epinowcast 0.8.0
 
 This is the first release of `epinowcast` to CRAN.

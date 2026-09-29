@@ -150,6 +150,70 @@ delay_only_total <- function(data, delay_only) {
   as.integer(round(totals))
 }
 
+#' Convert a distribution to a probability mass function
+#'
+#' Numeric vectors are returned unchanged. A `<dist_spec>` from the
+#' `distspec` package (for example `distspec::Gamma(mean = 4, sd = 3,
+#' max = 15)`) is discretised to a daily probability mass function (PMF)
+#' with [distspec::discretise()], with the first entry the probability of a
+#' delay of zero days. The distribution must be bounded (using `max` or
+#' `cdf_max`) and have fixed (numeric) parameters. Sums of distributions
+#' are convolved with [distspec::collapse()].
+#'
+#' @param x A numeric vector describing a PMF or a `<dist_spec>`.
+#'
+#' @param arg A character string naming the argument being converted (used
+#' in error messages).
+#'
+#' @param drop_zero Logical, defaults to `FALSE`. If `TRUE`, the probability
+#' of a delay of zero days is dropped from a discretised `<dist_spec>` and
+#' the PMF renormalised so that the first entry is the probability of a
+#' delay of one day (as required for a generation time).
+#'
+#' @return A numeric vector describing a PMF.
+#' @keywords internal
+#' @importFrom cli cli_abort
+.enw_as_pmf <- function(x, arg = "x", drop_zero = FALSE) {
+  if (!inherits(x, "dist_spec")) {
+    return(x)
+  }
+  uncertain <- vapply(
+    seq_len(distspec::ndist(x)),
+    function(i) distspec::has_uncertainty(x, i),
+    logical(1)
+  )
+  if (any(uncertain)) {
+    cli::cli_abort(
+      paste0(
+        "{.arg {arg}} must be a {.cls dist_spec} with fixed (numeric) ",
+        "parameters to be discretised to a probability mass function"
+      )
+    )
+  }
+  if (!distspec::is_constrained(x)) {
+    cli::cli_abort(
+      paste0(
+        "{.arg {arg}} must be a bounded {.cls dist_spec} (e.g. with ",
+        "{.code max = 15} or {.code cdf_max = 0.99}) to be discretised to ",
+        "a probability mass function"
+      )
+    )
+  }
+  pmf <- distspec::get_pmf(distspec::collapse(distspec::discretise(x)))
+  if (drop_zero) {
+    if (length(pmf) < 2 || sum(pmf[-1]) <= 0) {
+      cli::cli_abort(
+        paste0(
+          "{.arg {arg}} has no probability mass beyond a delay of zero ",
+          "days once discretised"
+        )
+      )
+    }
+    pmf <- pmf[-1] / sum(pmf[-1])
+  }
+  pmf
+}
+
 #' Construct a convolution matrix
 #'
 #' This function allows the construction of convolution matrices which can be
@@ -565,6 +629,17 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
   )
 }
 
+# Default priors shared by the ARIMA latent residual terms of every module:
+# a half-normal on the residual scale and a flat prior (`NULL`, shipped to
+# Stan as a zero standard deviation) on the partial autocorrelations.
+.arima_sigma_prior <- function() {
+  distspec::Normal(mean = 0, sd = 0.2)
+}
+
+.arima_pacf_prior <- function() {
+  NULL
+}
+
 #' @importFrom stats runif
 .arima_inits <- function(data, priors, prefix, with_sd_sigma = FALSE) {
   z_nm <- paste0(prefix, "_arima_z")
@@ -636,6 +711,47 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
   )
 }
 
+# Default priors shared by the Gaussian process terms of every module: a
+# log-normal on the length scale and a half-normal on the magnitude.
+.gp_rho_prior <- function() {
+  distspec::LogNormal(meanlog = log(3), sdlog = 0.5)
+}
+
+.gp_alpha_prior <- function() {
+  distspec::Normal(mean = 0, sd = 0.05)
+}
+
+# Default half-normal prior on the standard deviation of pooled (random)
+# effects, shared by every module.
+.beta_sd_prior <- function() {
+  distspec::Normal(mean = 0, sd = 1)
+}
+
+#' Draw initial values for a positive parameter on the log scale
+#'
+#' Draws `n` initial values from the log-normal distribution with the given
+#' natural-scale mean and standard deviation, with the log-scale standard
+#' deviation shrunk by `scale` so that draws sit close to the prior median.
+#' For a log-normal prior this recovers its `meanlog` and `sdlog` exactly, so
+#' the draws are centred on the prior median rather than its mean.
+#'
+#' @param n Number of draws.
+#'
+#' @param mean Natural-scale prior means (recycled to length `n`).
+#'
+#' @param sd Natural-scale prior standard deviations (recycled to length
+#' `n`).
+#'
+#' @param scale Factor applied to the log-scale standard deviation.
+#'
+#' @return A numeric vector of length `n`.
+#' @keywords internal
+.enw_rlnorm_init <- function(n, mean, sd, scale = 0.1) {
+  sdlog <- sqrt(log1p((sd / mean)^2))
+  meanlog <- log(mean) - sdlog^2 / 2
+  rlnorm(n, meanlog, sdlog * scale)
+}
+
 # Build conditional Gaussian process initial values for a module's
 # prefix. Mirrors `.arima_inits()`: declares empty defaults for the
 # spectral coefficients (`<prefix>_gp_eta`), length scale
@@ -644,7 +760,6 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
 # is `TRUE` (the parametric reference, which shares a GP between the mean
 # and sd) the second magnitude `<prefix>_gp_sd_alpha` is also declared
 # and filled when `model_refp > 1`, mirroring the ARIMA `sd_sigma`.
-#' @importFrom stats rlnorm
 .gp_inits <- function(data, priors, prefix, with_sd_alpha = FALSE) {
   eta_nm <- paste0(prefix, "_gp_eta")
   rho_nm <- paste0(prefix, "_gp_rho")
@@ -676,7 +791,7 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
   }
 
   rho_p <- priors[[paste0(prefix, "_gp_rho_p")]]
-  init[[rho_nm]] <- array(rlnorm(1, rho_p[1], rho_p[2] / 10))
+  init[[rho_nm]] <- array(.enw_rlnorm_init(1, rho_p[1], rho_p[2]))
   alpha_p <- priors[[paste0(prefix, "_gp_alpha_p")]]
   init[[alpha_nm]] <- array(abs(rnorm(1, alpha_p[1], alpha_p[2] / 10 + 1e-3)))
   if (with_sd_alpha && isTRUE(data$model_refp > 1)) {
