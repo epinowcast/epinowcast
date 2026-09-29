@@ -14,6 +14,7 @@ enw_fit_opts(
   debug = FALSE,
   output_loglik = FALSE,
   sparse_design = FALSE,
+  use_batched_likelihood = FALSE,
   ...
 )
 }
@@ -60,6 +61,17 @@ if evaluating the model fit is not required.}
 matrices be used for all design matrices. This reduces memory requirements
 and may reduce computation time when fitting models with very sparse
 design matrices (90\% or more zeros).}
+
+\item{use_batched_likelihood}{Logical, defaults to \code{FALSE}. Should the
+per-snapshot observation likelihood be computed with a single batched
+pass over all snapshots in a work item, rather than one
+\code{inv_logit()}/\code{log1m()}/\code{cumulative_sum()} call per snapshot. This is a
+pure Stan, mathematically identical reformulation (see
+\code{expected_obs_from_snaps_batched()} in \code{inst/stan/functions}) that
+reduces per-snapshot call overhead; it does not change the model or the
+likelihood aggregation scheme. It speeds up models fitted without
+within-chain threading (\code{threads_per_chain = 1}) and gives little or no
+gain with threading.}
 
 \item{...}{Additional arguments to pass to the fitting function being used
 by \code{\link[=epinowcast]{epinowcast()}}. By default this will be \code{\link[=enw_sample]{enw_sample()}} and so \code{cmdstanr}
