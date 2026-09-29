@@ -199,7 +199,7 @@ The within-scenario spread comes from the retained delay, report, and observatio
 
 # Status of forward extension
 
-[`enw_forecast()`](../reference/enw_forecast.html) currently re-drives the fitted window.
-Projecting genuinely beyond the last fitted date (a forecast horizon driven by a new growth rate) extends the modelled reference dates and is exposed through the `horizon` argument.
-Full support is in development.
-Until then, extend the data with future reference dates before fitting to obtain predictions past the latest observation.
+[`enw_forecast()`](../reference/enw_forecast.html) re-drives the fitted window; it does not currently project genuinely beyond the last fitted date.
+The `horizon` argument exists, but any call with `horizon > 0` errors clearly rather than returning a forecast.
+Extending forward needs new reference-date, report-date, and missingness design rows for dates that were never in the fitted data, which is a larger change than the current override mechanism supports; it is tracked in [#838](https://github.com/epinowcast/epinowcast/issues/838).
+Until that lands, extend the data with future reference dates before fitting to obtain predictions past the latest observation.

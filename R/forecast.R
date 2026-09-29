@@ -1,13 +1,15 @@
 #' Forecast from a fitted nowcast under overridden model components
 #'
 #' @description `r lifecycle::badge("experimental")`
-#' Project a fitted [epinowcast()] object forward by re-running the model's
-#' generated quantities with the posterior draws, optionally overriding one or
-#' more latent model components and optionally extending the modelled window
-#' into the future. The components that are not overridden are taken from the
-#' posterior per draw, so their uncertainty is propagated. This reuses the same
-#' Stan generated-quantities machinery as [epinowcast()] so forecast and fitted
-#' outputs are directly comparable.
+#' Re-drive a fitted [epinowcast()] object by re-running the model's
+#' generated quantities with the posterior draws, optionally overriding one
+#' or more latent model components. The components that are not overridden
+#' are taken from the posterior per draw, so their uncertainty is
+#' propagated. This reuses the same Stan generated-quantities machinery as
+#' [epinowcast()] so forecast and fitted outputs are directly comparable.
+#'
+#' This function does not currently extend the model beyond the dates it was
+#' fitted on; see the "Forward extension" section below.
 #'
 #' This is distinct from the horizon-based forecasting performed as part of a
 #' fit. Here a fit already exists and is re-driven, optionally under new
@@ -43,12 +45,15 @@
 #'
 #' ## Forward extension
 #'
-#' With `horizon > 0` the modelled reference dates are extended forward by
-#' `horizon` time steps and the generated quantities produce predictions for the
-#' future window. The latent process over the future window must be supplied via
-#' `overrides$r` (length `(expr_t + horizon) * g`); the fitted portion may be
-#' left as `NA` to re-use the posterior. Forward extension is applied per draw
-#' so each draw keeps its own fitted history.
+#' `horizon` is not yet functional: any call with `horizon > 0` errors
+#' clearly rather than returning a forecast. Re-driving the fitted window
+#' (the `horizon = 0` default) does not add new reference dates, because the
+#' reference-date, report-date and missingness design matrices are all sized
+#' to the dates the model was fitted on. Extending forward needs new design
+#' rows for dates that were never in the fitted data, which is a larger
+#' change than this override mechanism supports; it is tracked in #838. This
+#' function errors rather than silently returning a forecast that looks
+#' plausible but is not actually driven by a future-dated design.
 #'
 #' @param fit A fitted [epinowcast()] object.
 #'
@@ -56,8 +61,9 @@
 #' The empty list (the default) re-drives the fit using the per-draw posterior.
 #'
 #' @param horizon Integer number of future time steps to forecast beyond the
-#' fitted window. Default `0` (re-drive only). When greater than `0`,
-#' `overrides$r` must cover the extended window.
+#' fitted window. Default `0` (re-drive only, the only currently supported
+#' value). Any value greater than `0` errors; see the "Forward extension"
+#' section and #838.
 #'
 #' @param model The compiled model to use, as returned by [enw_model()].
 #'
@@ -131,10 +137,13 @@ enw_forecast <- function(fit, overrides = list(), horizon = 0L,
 
 #' Forecast a fitted nowcast beyond the fitted window
 #'
-#' Internal worker for [enw_forecast()] when `horizon > 0`. Extends the
-#' modelled reference dates forward, then re-runs the generated quantities per
-#' posterior draw so each draw keeps its own fitted history while the future
-#' window is driven by the supplied growth rate.
+#' Internal worker for [enw_forecast()] when `horizon > 0`. Not yet
+#' implemented: always errors, either because `overrides$r` is missing or,
+#' when it is supplied, because forward extension itself is not yet
+#' supported (tracked in #838). Kept as a separate function so the
+#' `horizon > 0` path has a single, clearly named place to fail from, and so
+#' a future implementation slots in here without changing [enw_forecast()]'s
+#' interface.
 #'
 #' @inheritParams enw_forecast
 #' @param horizon Integer number of future time steps (already validated).

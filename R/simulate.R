@@ -54,8 +54,8 @@
 #' @return An object of class `epinowcast` containing the simulated generated
 #' quantities, compatible with [summary.epinowcast()] and [plot.epinowcast()].
 #'
-#' @seealso [enw_forecast()] which projects a fitted model forward under new
-#' inputs.
+#' @seealso [enw_forecast()] which re-drives a fitted model under new
+#' component overrides.
 #' @family simulate
 #' @family modeltools
 #' @export

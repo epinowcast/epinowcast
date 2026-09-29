@@ -19,8 +19,9 @@ enw_forecast(
 The empty list (the default) re-drives the fit using the per-draw posterior.}
 
 \item{horizon}{Integer number of future time steps to forecast beyond the
-fitted window. Default \code{0} (re-drive only). When greater than \code{0},
-\code{overrides$r} must cover the extended window.}
+fitted window. Default \code{0} (re-drive only, the only currently supported
+value). Any value greater than \code{0} errors; see the "Forward extension"
+section and #838.}
 
 \item{model}{The compiled model to use, as returned by \code{\link[=enw_model]{enw_model()}}.}
 
@@ -33,13 +34,15 @@ quantities, compatible with \code{\link[=summary.epinowcast]{summary.epinowcast(
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-Project a fitted \code{\link[=epinowcast]{epinowcast()}} object forward by re-running the model's
-generated quantities with the posterior draws, optionally overriding one or
-more latent model components and optionally extending the modelled window
-into the future. The components that are not overridden are taken from the
-posterior per draw, so their uncertainty is propagated. This reuses the same
-Stan generated-quantities machinery as \code{\link[=epinowcast]{epinowcast()}} so forecast and fitted
-outputs are directly comparable.
+Re-drive a fitted \code{\link[=epinowcast]{epinowcast()}} object by re-running the model's
+generated quantities with the posterior draws, optionally overriding one
+or more latent model components. The components that are not overridden
+are taken from the posterior per draw, so their uncertainty is
+propagated. This reuses the same Stan generated-quantities machinery as
+\code{\link[=epinowcast]{epinowcast()}} so forecast and fitted outputs are directly comparable.
+
+This function does not currently extend the model beyond the dates it was
+fitted on; see the "Forward extension" section below.
 
 This is distinct from the horizon-based forecasting performed as part of a
 fit. Here a fit already exists and is re-driven, optionally under new
@@ -77,12 +80,15 @@ observation-model redraw.
 
 \subsection{Forward extension}{
 
-With \code{horizon > 0} the modelled reference dates are extended forward by
-\code{horizon} time steps and the generated quantities produce predictions for the
-future window. The latent process over the future window must be supplied via
-\code{overrides$r} (length \code{(expr_t + horizon) * g}); the fitted portion may be
-left as \code{NA} to re-use the posterior. Forward extension is applied per draw
-so each draw keeps its own fitted history.
+\code{horizon} is not yet functional: any call with \code{horizon > 0} errors
+clearly rather than returning a forecast. Re-driving the fitted window
+(the \code{horizon = 0} default) does not add new reference dates, because the
+reference-date, report-date and missingness design matrices are all sized
+to the dates the model was fitted on. Extending forward needs new design
+rows for dates that were never in the fitted data, which is a larger
+change than this override mechanism supports; it is tracked in #838. This
+function errors rather than silently returning a forecast that looks
+plausible but is not actually driven by a future-dated design.
 }
 }
 \examples{

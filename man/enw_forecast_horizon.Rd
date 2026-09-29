@@ -23,9 +23,12 @@ of the \code{cmdstanr} model.}
 An object of class \code{epinowcast}.
 }
 \description{
-Internal worker for \code{\link[=enw_forecast]{enw_forecast()}} when \code{horizon > 0}. Extends the
-modelled reference dates forward, then re-runs the generated quantities per
-posterior draw so each draw keeps its own fitted history while the future
-window is driven by the supplied growth rate.
+Internal worker for \code{\link[=enw_forecast]{enw_forecast()}} when \code{horizon > 0}. Not yet
+implemented: always errors, either because \code{overrides$r} is missing or,
+when it is supplied, because forward extension itself is not yet
+supported (tracked in #838). Kept as a separate function so the
+\code{horizon > 0} path has a single, clearly named place to fail from, and so
+a future implementation slots in here without changing \code{\link[=enw_forecast]{enw_forecast()}}'s
+interface.
 }
 \keyword{internal}

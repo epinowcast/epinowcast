@@ -124,8 +124,8 @@ summary(sims)
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[=enw_forecast]{enw_forecast()}} which projects a fitted model forward under new
-inputs.
+\code{\link[=enw_forecast]{enw_forecast()}} which re-drives a fitted model under new
+component overrides.
 
 Tools for data simulation
 \code{\link{enw_simulate_missing_reference}()}
