@@ -128,6 +128,15 @@ This adjustment is ported from `EpiNow2` [@EpiNow2; @Abbott2020] and follows the
 This assumes a single well-mixed population per group with no waning or vital dynamics.
 The [susceptible depletion vignette](susceptible-depletion.html) demonstrates the adjustment on simulated data.
 
+Optionally, the renewal process can also couple groups through a fixed `groups` $\times$ `groups` mixing matrix $K$ (`mixing` in `enw_expectation()`), redistributing each group's generation-time-weighted incidence pressure across groups before $R_t$ (and before susceptible depletion, which still tracks each group's own pool),
+
+\begin{align}
+  \Lambda_{g,t} &= \sum_{h} K_{g,h} \sum_{p = 1}^{P} G_{h}\left(p, t - p \right)  \lambda^l_{h, t-p} \\
+  \lambda^l_{g,t} &= R_{g,t} \, \Lambda_{g,t},\ t \gt P
+\end{align}
+
+where $K_{g,h}$ is the weight group $g$ places on group $h$'s incidence. Groups default to independent ($K = I$, the identity matrix); the adjustment applies only to the renewal path. `mixing` is always fixed data, not (yet) estimated; it mirrors the coupling operator in the Julia package `ComposableTuringIDModels.jl`'s `Renewal`, which does support an inferred coupling operator (e.g. a gravity model).
+
 ## Latent reporting delay and ascertainment
 
 In some settings there may be additional reporting delays on top of those that are directly observed in the data, and therefore "nowcastable", a common example is the delay from exposure to symptom onset.
@@ -316,6 +325,7 @@ The following table summarises how module function arguments map to parameters i
 | `enw_report()` | `non_parametric` | $\epsilon_{g,t,d}$ (report date hazard component) |
 | `enw_expectation()` | `r` | $R_{g,t}$ (reproduction number/growth rate) |
 | `enw_expectation()` | `observation` | $\nu_{g,t}$ (ascertainment) |
+| `enw_expectation()` | `mixing` | $K_{g,h}$ (cross-group mixing matrix) |
 
 For additional implementation details and examples, see the documentation for each module function (`?enw_reference`, `?enw_report`, `?enw_expectation`) and the age-stratified nowcasting vignette (`vignette("germany-age-stratified-nowcasting")`).
 

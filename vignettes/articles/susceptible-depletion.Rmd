@@ -208,9 +208,63 @@ ggplot(pop_draws, aes(x = pop_est)) +
 
 ![Posterior of the estimated initial susceptible population against the true value (dashed line).](figures/susceptible-depletion-plot-population-1.png)
 
+## Cross-group mixing
+
+`enw_expectation()` also takes an optional `mixing` argument, a
+`groups x groups` matrix that redistributes each group's generation-time-
+weighted incidence pressure across groups before `R_t` is applied (and before
+any susceptible-depletion adjustment, so depletion still tracks each group's
+own pool). Entry `[k, h]` is the weight group `k` places on group `h`'s
+incidence. Groups default to independent (`mixing = NULL`); supplying the
+identity matrix reproduces the independent-groups model exactly.
+
+A second, smaller "location" is added alongside the simulated one above so the
+example has two groups to couple.
+
+
+``` r
+obs_multi <- rbind(
+  copy(obs)[, location := "A"],
+  copy(obs)[, `:=`(location = "B", confirm = round(confirm / 2))]
+)
+pobs_multi <- enw_preprocess_data(
+  enw_complete_dates(obs_multi, by = "location", max_delay = 2),
+  by = "location", max_delay = 2
+)
+
+mixing_matrix <- matrix(
+  c(0.9, 0.1,
+    0.2, 0.8),
+  nrow = 2, byrow = TRUE
+)
+mixing_matrix
+#>      [,1] [,2]
+#> [1,]  0.9  0.1
+#> [2,]  0.2  0.8
+
+expectation_mixed <- enw_expectation(
+  r = ~ 1 + (1 | .group), generation_time = gt,
+  population = c(population, population / 2), mixing = mixing_matrix,
+  data = pobs_multi
+)
+expectation_mixed$data$expr_mixing_use
+#> [1] 1
+expectation_mixed$data$expr_mixing
+#>      [,1] [,2]
+#> [1,]  0.9  0.1
+#> [2,]  0.2  0.8
+```
+
+`mixing` is always fixed data in `epinowcast`; it is not (yet) estimated.
+For an inferred coupling operator (for example a gravity model fitted from
+population and distance data), see the `mixing` keyword of `Renewal` in the
+Julia package
+[`ComposableTuringIDModels.jl`](https://github.com/CDCgov/ComposableTuringIDModels.jl),
+whose coupling formulation this argument mirrors.
+
 ## Assumptions
 
 The adjustment assumes a single well-mixed population per group with no waning of immunity and no births or deaths, so the susceptible pool is only ever depleted by modelled latent cases.
 It applies only to the renewal path (`length(generation_time) > 1`).
 The [model vignette](model.html) describes the adjustment and gives the references for the susceptible-depletion form it follows.
-See `?enw_expectation` for the `population`, `population_floor`, `population_uncertain`, and `population_cv` arguments.
+See `?enw_expectation` for the `population`, `population_floor`, `population_uncertain`, `population_cv`, and `mixing` arguments.
