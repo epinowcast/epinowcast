@@ -39,12 +39,12 @@
 #' enw_topo_sort_strata(spec)
 enw_topo_sort_strata <- function(strata_spec) {
   if (!is.list(strata_spec) || length(strata_spec) == 0L) {
-    cli::cli_abort("`strata_spec` must be a non-empty named list.")
+    cli_abort("`strata_spec` must be a non-empty named list.")
   }
   strata_names <- names(strata_spec)
   if (is.null(strata_names) || !all(nzchar(strata_names)) ||
     anyDuplicated(strata_names)) {
-    cli::cli_abort(
+    cli_abort(
       "`strata_spec` must be named with unique, non-empty stratum names."
     )
   }
@@ -62,12 +62,12 @@ enw_topo_sort_strata <- function(strata_spec) {
       next
     }
     if (identical(p, s)) {
-      cli::cli_abort(
+      cli_abort(
         "Stratum {.val {s}} depends on itself; self-dependencies are not allowed." # nolint: line_length_linter.
       )
     }
     if (!p %in% strata_names) {
-      cli::cli_abort(
+      cli_abort(
         "Stratum {.val {s}} depends on unknown parent {.val {p}}."
       )
     }
@@ -89,7 +89,7 @@ enw_topo_sort_strata <- function(strata_spec) {
   }
   if (isTRUE(spec$dependent)) {
     if (is.null(spec$parent)) {
-      cli::cli_abort(
+      cli_abort(
         "A dependent stratum must supply a `parent`."
       )
     }
@@ -132,7 +132,7 @@ enw_topo_sort_strata <- function(strata_spec) {
   }
 
   if (length(order) != length(strata_names)) {
-    cli::cli_abort(
+    cli_abort(
       paste0(
         "Stratum dependency graph contains a cycle involving ",
         "{.val {setdiff(strata_names, order)}}."
@@ -155,7 +155,7 @@ enw_topo_sort_strata <- function(strata_spec) {
 .build_strata_spec <- function(r, data) {
   if (is.null(names(r)) || !all(nzchar(names(r))) ||
     anyDuplicated(names(r))) {
-    cli::cli_abort(
+    cli_abort(
       "A per-stratum `r` must be a named list with unique stratum names."
     )
   }
@@ -165,7 +165,7 @@ enw_topo_sort_strata <- function(strata_spec) {
   if (!is.null(valid)) {
     unknown <- setdiff(strata_names, valid)
     if (length(unknown) > 0L) {
-      cli::cli_abort(
+      cli_abort(
         paste0(
           "Stratum names {.val {unknown}} are not present in the `by` ",
           "variable of the preprocessed data ({.val {valid}})."
@@ -184,7 +184,7 @@ enw_topo_sort_strata <- function(strata_spec) {
   for (s in strata_names) {
     p <- strata[[s]]$parent
     if (!is.na(p) && !p %in% strata_names) {
-      cli::cli_abort(
+      cli_abort(
         "Stratum {.val {s}} depends on undeclared stratum {.val {p}}."
       )
     }
@@ -194,7 +194,7 @@ enw_topo_sort_strata <- function(strata_spec) {
 
   independent <- strata_names[!topo$dependent[strata_names]]
   if (length(independent) == 0L) {
-    cli::cli_abort(
+    cli_abort(
       "At least one stratum must have its own process (no `secondary()`)."
     )
   }
@@ -213,12 +213,12 @@ enw_topo_sort_strata <- function(strata_spec) {
 # Internal: parse and validate a single per-stratum expectation formula.
 .parse_stratum_formula <- function(formula, stratum, r_features) {
   if (!inherits(formula, "formula")) {
-    cli::cli_abort(
+    cli_abort(
       "The formula for stratum {.val {stratum}} must be a formula."
     )
   }
   if (as_string_formula(formula) == "~0") {
-    cli::cli_abort(
+    cli_abort(
       "The formula for stratum {.val {stratum}} must not be `~0`."
     )
   }
@@ -251,7 +251,7 @@ enw_topo_sort_strata <- function(strata_spec) {
     return(NULL)
   }
   if (length(by) > 1L) {
-    cli::cli_abort(
+    cli_abort(
       paste0(
         "Per-stratum expectation formulas currently require a single ",
         "`by` variable; got {.val {by}}."

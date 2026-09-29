@@ -73,7 +73,7 @@ enw_reference <- function(
   if (data$max_delay[[1]] == 1 &&
     (as_string_formula(parametric) != "~0" ||
       as_string_formula(non_parametric) != "~0")) {
-    cli::cli_abort(paste0(
+    cli_abort(paste0(
       "Reference date models cannot be used with ",
       "{.arg max_delay} = 1 (no reporting delays to model)"
     ))
@@ -86,7 +86,7 @@ enw_reference <- function(
   distribution <- match.arg(distribution)
   if ((as_string_formula(non_parametric) == "~0") &&
     distribution == "none" && data$max_delay[[1]] > 1) {
-    cli::cli_abort(
+    cli_abort(
       paste0(
         "A non-parametric model must be specified if no parametric model ",
         "is specified"
@@ -100,7 +100,7 @@ enw_reference <- function(
     model_refnp <- 1
   }
 
-  distribution <- data.table::fcase(
+  distribution <- fcase(
     distribution == "none", 0,
     distribution == "exponential", 1,
     distribution == "lognormal", 2,
@@ -121,8 +121,8 @@ enw_reference <- function(
 
   # Define non-parametric model
   metanp <- merge(
-    data.table::copy(data$metareference[[1]])[, delay := NULL][, id := 1],
-    data.table::copy(data$metadelay[[1]])[, id := 1],
+    copy(data$metareference[[1]])[, delay := NULL][, id := 1],
+    copy(data$metadelay[[1]])[, id := 1],
     by = "id",
     allow.cartesian = TRUE
   )[, id := NULL]
@@ -147,7 +147,7 @@ enw_reference <- function(
   out$formula$parametric <- pform$formula
   out$formula$non_parametric <- npform$formula
   out$data <- c(pdata, npdata)
-  out$priors <- data.table::data.table(
+  out$priors <- data.table(
     variable = c(
       "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd",
       "refp_arima_sigma", "refp_arima_sd_sigma", "refp_arima_pacf",
@@ -320,7 +320,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   if (data$max_delay[[1]] == 1 &&
     (as_string_formula(non_parametric) != "~0" ||
       !is.null(structural))) {
-    cli::cli_abort(paste0(
+    cli_abort(paste0(
       "Report date models, including structural reporting, ",
       "cannot be used with ",
       "{.arg max_delay} = 1 (no reporting delays to model)"
@@ -365,7 +365,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   # map report date effects to groups and times
   rep_t <- nrow(data$metareport[[1]]) %/% data$groups[[1]]
   if (rep_t * data$groups[[1]] != nrow(data$metareport[[1]])) {
-    cli::cli_abort("Report metadata is not rectangular across groups.")
+    cli_abort("Report metadata is not rectangular across groups.")
   }
   data_list$rep_findex <- t(
     matrix(data_list$rep_findex, ncol = data$groups[[1]], nrow = rep_t)
@@ -378,7 +378,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   out <- list()
   out$formula$non_parametric <- form$formula
   out$data <- data_list
-  out$priors <- data.table::data.table(
+  out$priors <- data.table(
     variable = c(
       "rep_beta_sd", "rep_arima_sigma", "rep_arima_pacf",
       "rep_gp_rho", "rep_gp_alpha"
@@ -445,7 +445,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
                                           generation_time, groups) {
   if (!is.numeric(population_floor) || length(population_floor) != 1 ||
     !is.finite(population_floor) || population_floor < 0) {
-    cli::cli_abort(
+    cli_abort(
       "`population_floor` must be a single non-negative finite number."
     )
   }
@@ -455,7 +455,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   )
   if (is.null(population)) {
     if (isTRUE(population_uncertain)) {
-      cli::cli_abort(
+      cli_abort(
         "`population` must be supplied when `population_uncertain` is TRUE."
       )
     }
@@ -471,7 +471,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
     } else {
       ""
     }
-    cli::cli_warn(
+    cli_warn(
       paste(
         "`population` is ignored for the daily growth rate model",
         "(`generation_time = 1`); a renewal process",
@@ -506,14 +506,14 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 .check_population_values <- function(population, groups) {
   if (!is.numeric(population) || !all(is.finite(population)) ||
     any(population <= 0) || !length(population) %in% c(1L, groups)) {
-    cli::cli_abort(paste(
+    cli_abort(paste(
       "`population` must be `NULL`, a single positive finite number, or a",
       "positive finite numeric vector with one value per group",
       "(length {groups})."
     ))
   }
   if (length(population) == 1L && groups > 1L) {
-    cli::cli_warn(paste(
+    cli_warn(paste(
       "A single `population` value was supplied but there are {groups}",
       "groups; recycling it as each group's initial susceptible population.",
       "Supply a length-{groups} vector to set group-specific populations."
@@ -543,7 +543,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 .expectation_population_prior <- function(out, population, population_cv) {
   if (!is.numeric(population_cv) || length(population_cv) != 1 ||
     !is.finite(population_cv) || population_cv <= 0) {
-    cli::cli_abort("`population_cv` must be a single positive finite number.")
+    cli_abort("`population_cv` must be a single positive finite number.")
   }
   out$uncertain <- 1L
   # Per-group LogNormal: median = population, natural-scale CV = population_cv.
@@ -661,13 +661,13 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
     r <- strata_spec$primary_formula
   }
   if (as_string_formula(r) == "~0") {
-    cli::cli_abort("An expectation model formula for r must be specified")
+    cli_abort("An expectation model formula for r must be specified")
   }
   if (as_string_formula(observation) == "~0") {
     observation <- ~1
   }
   if (abs(sum(generation_time) - 1) > 1e-3) {
-    cli::cli_abort("The generation time must sum to 1")
+    cli_abort("The generation time must sum to 1")
   }
   pop <- .check_expectation_population(
     population, population_floor, population_uncertain,
@@ -707,7 +707,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   # Initial prior for seeding observations
   latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
   seed_obs <- (latest_matrix[1, ] + 1) * sum(latent_reporting_delay)
-  seed_obs <- purrr::map(seed_obs, ~ rep(log(.), r_list$gt_n))
+  seed_obs <- map(seed_obs, ~ rep(log(.), r_list$gt_n))
   seed_obs <- round(unlist(seed_obs), 1)
 
   # Growth rate model formula
@@ -774,7 +774,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   out$strata <- strata_spec
 
 
-  out$priors <- data.table::data.table(
+  out$priors <- data.table(
     variable = c(
       "expr_r_int", "expr_beta_sd",
       rep("expr_lelatent_int", length(seed_obs)),
@@ -843,7 +843,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
         expr_beta = numeric(0),
         expr_beta_sd = numeric(0),
         expr_lelatent_int = matrix(
-          purrr::map2_dbl(
+          map2_dbl(
             as.vector(priors$expr_lelatent_int_p[1]),
             as.vector(priors$expr_lelatent_int_p[2]),
             function(x, y) {
@@ -923,7 +923,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 enw_missing <- function(formula = ~1, data) {
   if (nrow(data$missing_reference[[1]]) == 0 &&
     as_string_formula(formula) != "~0") {
-    cli::cli_abort(
+    cli_abort(
       paste0(
         "A missingness model has been specified, but no observations ",
         "with missing reference date are in the preprocessed data."
@@ -971,7 +971,7 @@ enw_missing <- function(formula = ~1, data) {
 
     # Get (and order) reported cases with a missing reference date
     missing_reference <- coerce_dt(data$missing_reference[[1]])
-    data.table::setkeyv(missing_reference, c(".group", "report_date"))
+    setkeyv(missing_reference, c(".group", "report_date"))
     data_list$missing_reference <- coerce_dt(missing_reference)[
       rep_w_complete_ref,
       on = c("report_date", ".group")
@@ -995,7 +995,7 @@ enw_missing <- function(formula = ~1, data) {
   out$formula <- as_string_formula(formula)
   out$data <- data_list
   # Define default priors
-  out$priors <- data.table::data.table(
+  out$priors <- data.table(
     variable = c(
       "miss_int", "miss_beta_sd", "miss_arima_sigma", "miss_arima_pacf",
       "miss_gp_rho", "miss_gp_alpha"
@@ -1116,7 +1116,7 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
   # then ignore it.
   if (delay_only) {
     if (family_supplied) {
-      cli::cli_warn(
+      cli_warn(
         c(
           paste(
             "{.arg family} is ignored when {.code delay_only = TRUE}."
@@ -1138,7 +1138,7 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
       "reference_date", "delay", "confirm", observation_indicator
     )
   )
-  data.table::setkeyv(new_confirm, c(".group", "reference_date", "delay"))
+  setkeyv(new_confirm, c(".group", "reference_date", "delay"))
   check_observation_indicator(new_confirm, observation_indicator)
 
   # filter out observations beyond the maximum observation
@@ -1194,7 +1194,7 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
   proc_data$latest_obs <- latest_obs_as_matrix(data$latest[[1]])
 
   # Add a switch for the observation model
-  proc_data$model_obs <- data.table::fcase(
+  proc_data$model_obs <- fcase(
     family == "poisson", 0,
     family == "negbin", 1,
     family == "negbin1d", 2
@@ -1210,7 +1210,7 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
   out <- list()
   out$family <- family
   out$data <- proc_data
-  out$priors <- data.table::data.table(
+  out$priors <- data.table(
     variable = "sqrt_phi",
     description = "One over the square root of the reporting overdispersion",
     distribution = "Zero truncated normal",

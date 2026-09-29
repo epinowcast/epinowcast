@@ -45,7 +45,7 @@ enw_manual_formula <- function(data, fixed = NULL, random = NULL,
     form <- NULL
   }
 
-  cr_in_dt <- purrr::map(
+  cr_in_dt <- map(
     custom_random, ~ colnames(data)[startsWith(colnames(data), .)]
   )
   cr_in_dt <- unlist(cr_in_dt)
@@ -88,7 +88,7 @@ enw_manual_formula <- function(data, fixed = NULL, random = NULL,
 #' @examples
 #' epinowcast:::as_string_formula(~ 1 + age_group)
 as_string_formula <- function(formula) {
-  form <- paste(deparse(formula), collapse = " ")
+  form <- deparse1(formula)
   form <- gsub("\\s+", " ", form, perl = FALSE)
   form
 }
@@ -327,7 +327,7 @@ secondary_terms <- function(formula) {
   vapply(starts, function(start) {
     open <- start + nchar("secondary(") - 1L
     chars <- strsplit(substring(form, open), "", fixed = TRUE)[[1]]
-    step <- data.table::fcase(
+    step <- fcase(
       chars == "(", 1L,
       chars == ")", -1L,
       default = 0L
@@ -406,7 +406,7 @@ remove_secondary_terms <- function(formula) {
 #' epinowcast:::parse_formula(~ secondary(cases))
 parse_formula <- function(formula) {
   if (!inherits(formula, "formula")) {
-    cli::cli_abort("`formula` must be a formula object.")
+    cli_abort("`formula` must be a formula object.")
   }
   # secondary() terms carry nested formulas (e.g. `delay = ~ 1`) that
   # would confuse `terms()`-based detection of the other special terms,
@@ -419,8 +419,8 @@ parse_formula <- function(formula) {
   formula <- remove_arima_terms(formula)
   gp <- gp_terms(formula)
   formula <- remove_gp_terms(formula)
-  fixed <- reformulas::nobars(formula)
-  random <- reformulas::findbars(formula)
+  fixed <- nobars(formula)
+  random <- findbars(formula)
 
   model_terms <- list(
     fixed = split_formula_to_terms(fixed),
@@ -467,7 +467,7 @@ parse_formula <- function(formula) {
 #' rw(time, location)
 rw <- function(time, by) {
   if (missing(time)) {
-    cli::cli_abort("`time` must be present")
+    cli_abort("`time` must be present")
   } else {
     time <- deparse(substitute(time))
   }
@@ -525,7 +525,7 @@ rw <- function(time, by) {
 #' arima(time, location, p = 2, d = 1, q = 1)
 arima <- function(time, by, p = 1, d = 0, q = 0) {
   if (missing(time)) {
-    cli::cli_abort("`time` must be present")
+    cli_abort("`time` must be present")
   }
   time <- deparse(substitute(time))
   by <- if (missing(by)) NULL else deparse(substitute(by))
@@ -551,7 +551,7 @@ arima <- function(time, by, p = 1, d = 0, q = 0) {
 #' ar(time)
 #' ar(time, location, p = 2)
 ar <- function(time, by, p = 1) {
-  if (missing(time)) cli::cli_abort("`time` must be present")
+  if (missing(time)) cli_abort("`time` must be present")
   time <- deparse(substitute(time))
   by <- if (missing(by)) NULL else deparse(substitute(by))
   .arima_term(time, by, p = p, d = 0L, q = 0L)
@@ -572,7 +572,7 @@ ar <- function(time, by, p = 1) {
 #' ma(time)
 #' ma(time, location, q = 2)
 ma <- function(time, by, q = 1) {
-  if (missing(time)) cli::cli_abort("`time` must be present")
+  if (missing(time)) cli_abort("`time` must be present")
   time <- deparse(substitute(time))
   by <- if (missing(by)) NULL else deparse(substitute(by))
   .arima_term(time, by, p = 0L, d = 0L, q = q)
@@ -596,7 +596,7 @@ ma <- function(time, by, q = 1) {
 #' arma(time)
 #' arma(time, location, p = 1, q = 1)
 arma <- function(time, by, p = 1, q = 1) {
-  if (missing(time)) cli::cli_abort("`time` must be present")
+  if (missing(time)) cli_abort("`time` must be present")
   time <- deparse(substitute(time))
   by <- if (missing(by)) NULL else deparse(substitute(by))
   .arima_term(time, by, p = p, d = 0L, q = q)
@@ -611,7 +611,7 @@ arma <- function(time, by, p = 1, q = 1) {
   .check_arima_order(d, "d")
   .check_arima_order(q, "q")
   if (p == 0 && d == 0 && q == 0) {
-    cli::cli_abort(
+    cli_abort(
       "`arima(p = 0, d = 0, q = 0)` is degenerate; use a fixed effect."
     )
   }
@@ -629,7 +629,7 @@ arma <- function(time, by, p = 1, q = 1) {
 .check_arima_order <- function(value, name) {
   if (!is.numeric(value) || length(value) != 1L || is.na(value) ||
     !is.finite(value) || value < 0 || value != as.integer(value)) {
-    cli::cli_abort("`{name}` must be a non-negative integer scalar.")
+    cli_abort("`{name}` must be a non-negative integer scalar.")
   }
   invisible(NULL)
 }
@@ -721,17 +721,17 @@ gp <- function(time, by, d = 0, kernel = c(
                  "matern32", "matern52", "ou", "se", "periodic"
                ), basis_prop = 0.2, boundary_scale = 1.5) {
   if (missing(time)) {
-    cli::cli_abort("`time` must be present")
+    cli_abort("`time` must be present")
   }
   time <- deparse(substitute(time))
   by <- if (missing(by)) NULL else deparse(substitute(by))
-  kernel <- rlang::arg_match(kernel)
+  kernel <- arg_match(kernel)
   # `d` shares the non-negative-integer validation with arima()'s orders.
   .check_arima_order(d, "d")
   .check_gp_basis_prop(basis_prop)
   if (!is.numeric(boundary_scale) || length(boundary_scale) != 1L ||
     !is.finite(boundary_scale) || boundary_scale <= 0) {
-    cli::cli_abort("`boundary_scale` must be a positive numeric scalar.")
+    cli_abort("`boundary_scale` must be a positive numeric scalar.")
   }
   # Map the user-facing kernel name to the Stan-side gp_type / nu that
   # the EpiNow2-derived `update_gp()` switch expects. gp_type: 0 = SE,
@@ -761,7 +761,7 @@ gp <- function(time, by, d = 0, kernel = c(
 .check_gp_basis_prop <- function(value) {
   if (!is.numeric(value) || length(value) != 1L || is.na(value) ||
     !is.finite(value) || value <= 0 || value > 1) {
-    cli::cli_abort("`basis_prop` must be a numeric scalar in (0, 1].")
+    cli_abort("`basis_prop` must be a numeric scalar in (0, 1].")
   }
   invisible(NULL)
 }
@@ -825,7 +825,7 @@ secondary <- function(parent, delay = ~1, distribution = "lognormal",
                       report = ~0, ascertainment = ~1,
                       type = c("incidence", "prevalence")) {
   if (missing(parent)) {
-    cli::cli_abort("`parent` must be present")
+    cli_abort("`parent` must be present")
   }
   # Accept an unquoted name or a string, storing the parent as a string.
   # Inspect the unevaluated expression first so an unquoted symbol (e.g.
@@ -839,17 +839,17 @@ secondary <- function(parent, delay = ~1, distribution = "lognormal",
     parent <- as.character(parent)
   }
   if (length(parent) != 1L || is.na(parent) || !nzchar(parent)) {
-    cli::cli_abort("`parent` must be a single non-empty stratum name.")
+    cli_abort("`parent` must be a single non-empty stratum name.")
   }
 
   .check_secondary_formula(delay, "delay")
   .check_secondary_formula(report, "report")
   .check_secondary_formula(ascertainment, "ascertainment")
 
-  distribution <- rlang::arg_match(
+  distribution <- arg_match(
     distribution, c("lognormal", "gamma", "exponential")
   )
-  type <- rlang::arg_match(type, c("incidence", "prevalence"))
+  type <- arg_match(type, c("incidence", "prevalence"))
 
   out <- list(
     parent = parent,
@@ -867,7 +867,7 @@ secondary <- function(parent, delay = ~1, distribution = "lognormal",
 # one-sided formula.
 .check_secondary_formula <- function(value, name) {
   if (!inherits(value, "formula")) {
-    cli::cli_abort("`{name}` must be a formula (e.g. `~ 1`).")
+    cli_abort("`{name}` must be a formula (e.g. `~ 1`).")
   }
   invisible(NULL)
 }
@@ -893,7 +893,7 @@ secondary <- function(parent, delay = ~1, distribution = "lognormal",
 #' epinowcast:::construct_secondary(secondary(cases))
 construct_secondary <- function(secondary) {
   if (!inherits(secondary, "enw_secondary_term")) {
-    cli::cli_abort(
+    cli_abort(
       "Argument `secondary` must be constructed by `epinowcast::secondary()`."
     )
   }
@@ -950,7 +950,7 @@ construct_rw <- function(rw, data) {
     class(rw) <- "enw_arima_term"
   }
   if (!inherits(rw, "enw_arima_term")) {
-    cli::cli_abort(
+    cli_abort(
       "`rw` must be a term constructed by `rw()` or `arima()`."
     )
   }
@@ -993,23 +993,23 @@ construct_rw <- function(rw, data) {
 #' )
 construct_arima <- function(arima, data) {
   if (!inherits(arima, "enw_arima_term")) {
-    cli::cli_abort(
+    cli_abort(
       "Argument `arima` must be constructed by `epinowcast::arima()`."
     )
   }
   data <- coerce_dt(data)
   if (is.null(data[[arima$time]])) {
-    cli::cli_abort(
+    cli_abort(
       "Time variable `{arima$time}` is not present in the supplied data."
     )
   }
   if (!is.numeric(data[[arima$time]])) {
-    cli::cli_abort(
+    cli_abort(
       "Time variable `{arima$time}` must be numeric for an ARIMA term."
     )
   }
   if (anyNA(data[[arima$time]])) {
-    cli::cli_abort(
+    cli_abort(
       "Time variable `{arima$time}` contains missing values."
     )
   }
@@ -1024,13 +1024,13 @@ construct_arima <- function(arima, data) {
     group_levels <- "1"
   } else {
     if (is.null(data[[arima$by]])) {
-      cli::cli_abort(
+      cli_abort(
         "Grouping variable `{arima$by}` is not present in the data."
       )
     }
     by_vals <- data[[arima$by]]
     if (anyNA(by_vals)) {
-      cli::cli_abort(
+      cli_abort(
         "Grouping variable `{arima$by}` contains missing values."
       )
     }
@@ -1041,7 +1041,7 @@ construct_arima <- function(arima, data) {
     }
     G <- length(group_levels)
     if (G < 2) {
-      cli::cli_inform(paste0(
+      cli_inform(paste0(
         "Grouping variable `{arima$by}` has fewer than 2 levels; ",
         "ignoring `by`."
       ))
@@ -1054,7 +1054,7 @@ construct_arima <- function(arima, data) {
   }
 
   if (T_len < arima$p + arima$d + arima$q + 1) {
-    cli::cli_abort(paste0(
+    cli_abort(paste0(
       "ARIMA series has only {T_len} time points; need at least ",
       "{arima$p + arima$d + arima$q + 1} for ARIMA(",
       "{arima$p}, {arima$d}, {arima$q})."
@@ -1141,7 +1141,7 @@ construct_arima <- function(arima, data) {
 #' epinowcast:::construct_gp(gp(week, day_of_week, kernel = "se"), data)
 construct_gp <- function(gp, data) {
   if (!inherits(gp, "enw_gp_term")) {
-    cli::cli_abort(
+    cli_abort(
       "Argument `gp` must be constructed by `epinowcast::gp()`."
     )
   }
@@ -1152,7 +1152,7 @@ construct_gp <- function(gp, data) {
   # zero), so the basis is built on T - d points.
   n_free <- idx$T - d
   if (n_free < 2L) {
-    cli::cli_abort(paste0(
+    cli_abort(paste0(
       "Gaussian process series has only {idx$T} time points; need at ",
       "least {d + 2} for a `gp()` term with `d = {d}`."
     ))
@@ -1186,17 +1186,17 @@ construct_gp <- function(gp, data) {
 .time_group_index <- function(data, time, by, what = "term") {
   data <- coerce_dt(data)
   if (is.null(data[[time]])) {
-    cli::cli_abort(
+    cli_abort(
       "Time variable `{time}` is not present in the supplied data."
     )
   }
   if (!is.numeric(data[[time]])) {
-    cli::cli_abort(
+    cli_abort(
       "Time variable `{time}` must be numeric for a {what} term."
     )
   }
   if (anyNA(data[[time]])) {
-    cli::cli_abort("Time variable `{time}` contains missing values.")
+    cli_abort("Time variable `{time}` contains missing values.")
   }
 
   time_vals <- sort(unique(data[[time]]))
@@ -1211,11 +1211,11 @@ construct_gp <- function(gp, data) {
     ))
   }
   if (is.null(data[[by]])) {
-    cli::cli_abort("Grouping variable `{by}` is not present in the data.")
+    cli_abort("Grouping variable `{by}` is not present in the data.")
   }
   by_vals <- data[[by]]
   if (anyNA(by_vals)) {
-    cli::cli_abort("Grouping variable `{by}` contains missing values.")
+    cli_abort("Grouping variable `{by}` contains missing values.")
   }
   group_levels <- if (is.factor(by_vals)) {
     levels(droplevels(by_vals))
@@ -1224,7 +1224,7 @@ construct_gp <- function(gp, data) {
   }
   G <- length(group_levels)
   if (G < 2) {
-    cli::cli_inform(
+    cli_inform(
       "Grouping variable `{by}` has fewer than 2 levels; ignoring `by`."
     )
     return(list(
@@ -1281,7 +1281,7 @@ re <- function(formula) {
 
     if (length(current_random) > 1) {
       if (length(current_random) > 2) {
-        cli::cli_abort(
+        cli_abort(
           paste0(
             "Interactions between more than 2 variables are not currently ",
             "supported on the right hand side of random effects"
@@ -1289,7 +1289,7 @@ re <- function(formula) {
         )
       }
       if (!current_random[2] %in% colnames(data)) {
-        cli::cli_abort(
+        cli_abort(
           paste0(
             "Random effect variable {current_random[2]} is not present ",
             "in the data."
@@ -1297,7 +1297,7 @@ re <- function(formula) {
         )
       }
       if (length(unique(data[[current_random[2]]])) < 2) {
-        cli::cli_inform(
+        cli_inform(
           paste0(
             "A random effect using {current_random[2]} is not possible as ",
             "this variable has fewer than 2 unique values."
@@ -1460,7 +1460,7 @@ re <- function(formula) {
     if (terms_int[i]) {
       expanded_int <- unique(data[[loc_terms[length(loc_terms)]]])
       expanded_int <- paste0(loc_terms[length(loc_terms)], expanded_int)
-      j <- purrr::map(expanded_int, function(x) {
+      j <- map(expanded_int, function(x) {
         j <- NULL
         if (length(loc_terms) > 2) {
           j <- loc_terms[1:(length(loc_terms) - 2)]
@@ -1516,7 +1516,7 @@ re <- function(formula) {
 #' epinowcast:::construct_re(random_effect2, mtcars)
 construct_re <- function(re, data) {
   if (!inherits(re, "enw_re_term")) {
-    cli::cli_abort(
+    cli_abort(
       paste0(
         "Argument `re` must be a random effect term as constructed by ",
         "`epinowcast:::re`"
@@ -1747,11 +1747,11 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # parameter-dependent kernel to unit-normal shocks.
   arima_calls <- c(parsed_formula$rw, parsed_formula$arima)
   if (length(arima_calls) > 0) {
-    arima_specs <- purrr::map(
+    arima_specs <- map(
       arima_calls,
       ~ eval(parse(text = paste0("epinowcast::", .)))
     )
-    arima_specs <- purrr::map(arima_specs, construct_arima, data = data)
+    arima_specs <- map(arima_specs, construct_arima, data = data)
   } else {
     arima_specs <- list()
   }
@@ -1760,11 +1760,11 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # Hilbert-space reduced-rank approximation. Like arima() terms they
   # carry per-observation lookup metadata rather than design columns.
   if (length(parsed_formula$gp) > 0) {
-    gp_specs <- purrr::map(
+    gp_specs <- map(
       parsed_formula$gp,
       ~ eval(parse(text = paste0("epinowcast::", .)))
     )
-    gp_specs <- purrr::map(gp_specs, construct_gp, data = data)
+    gp_specs <- map(gp_specs, construct_gp, data = data)
   } else {
     gp_specs <- list()
   }
@@ -1773,23 +1773,23 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # Happens last as converts all RHS variables to factors (which can interact)
   # with other formula terms (i.e. random walks)
   if (length(parsed_formula$random) > 0) {
-    random <- purrr::map(parsed_formula$random, re)
+    random <- map(parsed_formula$random, re)
     for (i in seq_along(random)) {
       random[[i]] <- construct_re(random[[i]], data)
       data <- random[[i]]$data
       random[[i]]$data <- NULL
     }
-    random <- purrr::transpose(random)
+    random <- transpose(random)
 
     random_terms <- unlist(random$terms)
     # Check that the user hasn't specified the same fixed and random effect
     if (any(random_terms %in% parsed_formula$fixed)) {
-      cli::cli_abort(
+      cli_abort(
         "Random effect terms must not be included in the fixed effects formula",
         call. = FALSE
       )
     }
-    random_metadata <- data.table::rbindlist(
+    random_metadata <- rbindlist(
       random$effects,
       use.names = TRUE, fill = TRUE
     )
@@ -1825,7 +1825,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # stays aligned for ARIMA and GP simultaneously, then remap each term's
   # `time_idx`/`group_idx` onto the deduplicated rows.
   if (sparse && (length(arima_specs) > 0 || length(gp_specs) > 0)) {
-    joint <- data.table::data.table(cov = fixed$index)
+    joint <- data.table(cov = fixed$index)
     key_cols <- "cov"
     if (length(arima_specs) > 0) {
       joint[, "at" := arima_specs[[1]]$time_idx]
@@ -1840,7 +1840,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     joint[, "uniq" := .GRP, by = key_cols]
     new_index <- joint[["uniq"]]
     uniq <- unique(joint, by = key_cols)
-    data.table::setorderv(uniq, "uniq")
+    setorderv(uniq, "uniq")
     fixed$design <- fixed$design[uniq[["cov"]], , drop = FALSE]
     fixed$index <- new_index
     if (length(arima_specs) > 0) {
@@ -1868,7 +1868,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
 
   metadata <- cbind(
     metadata[, "effects"],
-    data.table::setnafill(metadata[, -"effects"], fill = 0)
+    setnafill(metadata[, -"effects"], fill = 0)
   )
 
   # Make the random effects design matrix
@@ -1914,7 +1914,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # reject any genuine fixed effect alongside the secondary() term.
   fixed_extra <- setdiff(parsed_formula$fixed, "1")
   if (other_terms > 0L || length(fixed_extra) > 0L) {
-    cli::cli_abort(
+    cli_abort(
       paste0(
         "`secondary()` must be the only term in a stratum formula; it ",
         "cannot be combined with fixed effects, random effects, or ",
@@ -1923,7 +1923,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     )
   }
   if (length(parsed_formula$secondary) > 1L) {
-    cli::cli_abort(
+    cli_abort(
       "Only one `secondary()` term is supported per stratum formula."
     )
   }
