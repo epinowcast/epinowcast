@@ -17,7 +17,12 @@ enw_stan_to_r(
 exposed. These must be in the \code{include} directory. Defaults to all Stan
 files in the \code{include} directory. Note that the following files contain
 overloaded functions and cannot be exposed: "delay_lpmf.stan",
-"allocate_observed_obs.stan", "obs_lpmf.stan", and "effects_priors_lp.stan".}
+"allocate_observed_obs.stan", "obs_lpmf.stan", and "effects_priors_lp.stan".
+Functions implemented in C++ (currently \code{logit_hazard_to_log_prob.stan},
+see \code{\link[=enw_model]{enw_model()}}'s \code{use_cpp} argument) are exposed via their retained
+pure-Stan fallback instead, since \code{expose_functions()} cannot link the
+package's C++ header. The two agree to floating-point precision except
+where a hazard rounds to 0 or 1, where the C++ version stays finite.}
 
 \item{include}{A character string specifying the directory containing Stan
 files. Defaults to the 'stan/functions' directory of the \code{\link[=epinowcast]{epinowcast()}}
@@ -65,7 +70,11 @@ Functions used to help convert models into the format required for stan
 \code{\link{enw_sample}()},
 \code{\link{enw_set_cache}()},
 \code{\link{enw_unset_cache}()},
+\code{\link{epinowcast_stan_header}()},
 \code{\link{remove_profiling}()},
+\code{\link{stage_stan_header}()},
+\code{\link{stan_cpp_adjoint_files}()},
+\code{\link{stan_cpp_fallback_body}()},
 \code{\link{write_stan_files_no_profile}()}
 }
 \concept{modeltools}
