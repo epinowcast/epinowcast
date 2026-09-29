@@ -50,14 +50,14 @@ enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
     metareference,
     select = "date", group = TRUE
   )
-  data.table::setnames(miss_lk, "date", "reference_date")
+  setnames(miss_lk, "date", "reference_date")
 
   miss_lk <- miss_lk[,
     .(delay = 0:(max_delay - 1)),
     by = c("reference_date", ".group")
   ]
   miss_lk[, report_date := reference_date + delay]
-  data.table::setkeyv(miss_lk, c(".group", "reference_date", "report_date"))
+  setkeyv(miss_lk, c(".group", "reference_date", "report_date"))
 
   # Assign an index (this should link with the in model index)
   miss_lk[, .id := seq_len(.N)]
@@ -67,12 +67,12 @@ enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
     reps_with_complete_refs,
     on = c("report_date", ".group")
   ]
-  data.table::setkeyv(
+  setkeyv(
     complete_miss_lk, c(".group", "report_date", "reference_date")
   )
 
   # Make wide format
-  refs_by_report <- data.table::dcast(
+  refs_by_report <- dcast(
     complete_miss_lk[, .(report_date, .id, delay)], report_date ~ delay,
     value.var = ".id"
   )
@@ -85,7 +85,7 @@ enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
 #' @return A matrix with each column being a group and each row a reference date
 #' @family modelmodulehelpers
 latest_obs_as_matrix <- function(latest) {
-  latest_matrix <- data.table::dcast(
+  latest_matrix <- dcast(
     latest, reference_date ~ .group,
     value.var = "confirm"
   )
@@ -144,7 +144,7 @@ delay_only_total <- function(data, delay_only) {
     return(integer(0))
   }
   latest <- coerce_dt(data$latest[[1]], group = TRUE)
-  data.table::setkeyv(latest, c(".group", "reference_date"))
+  setkeyv(latest, c(".group", "reference_date"))
   totals <- latest$confirm
   totals[!is.finite(totals) | totals < 0] <- 0
   as.integer(round(totals))
@@ -185,13 +185,13 @@ delay_only_total <- function(data, delay_only) {
 convolution_matrix <- function(dist, t, include_partial = FALSE) {
   if (is.list(dist)) {
     if (length(dist) != t) {
-      cli::cli_abort(
+      cli_abort(
         "`length(dist)` must equal `t` or be the same for all t (i.e. length 1)"
       )
     }
     ldist <- lengths(dist)
     if (!all(ldist == ldist[1])) {
-      cli::cli_abort("dist must be the same length for all t")
+      cli_abort("dist must be the same length for all t")
     }
   } else {
     ldist <- rep(length(dist), t)
@@ -430,7 +430,7 @@ extract_obs_metadata <- function(new_confirm, observation_indicator = NULL) {
   # snap lookup
   snap_lookup <- unique(new_confirm[, .(reference_date, .group)])
   snap_lookup[, s := seq_len(.N)]
-  snap_lookup <- data.table::dcast(
+  snap_lookup <- dcast(
     snap_lookup, reference_date ~ .group,
     value.var = "s"
   )
@@ -481,16 +481,16 @@ extract_obs_metadata <- function(new_confirm, observation_indicator = NULL) {
 #' metadata[, report := as.integer(format(report_date, "%d") == "01")]
 #' }
 enw_structural_reporting_metadata <- function(pobs) {
-  metadata <- data.table::copy(pobs$metareference[[1]])
+  metadata <- copy(pobs$metareference[[1]])
   metadata[, key := 1]
   metadata <- metadata[, .(key, .group, date)]
 
-  delay_data <- data.table::copy(pobs$metadelay[[1]])
+  delay_data <- copy(pobs$metadelay[[1]])
   delay_data[, key := 1]
 
   metadata <- metadata[delay_data, on = "key", allow.cartesian = TRUE]
   metadata <- metadata[, .(.group, date, report_date = date + delay)]
-  data.table::setorder(metadata, .group, date, report_date)
+  setorder(metadata, .group, date, report_date)
 
   metadata[]
 }
@@ -670,9 +670,26 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
   # others M. gp_type == 1 is the periodic kernel.
   m <- data[[paste0(prefix, "_gp_M")]]
   g <- data[[paste0(prefix, "_gp_G")]]
-  n_eta <- if (isTRUE(data[[paste0(prefix, "_gp_type")]] == 1L)) 2L * m else m
+  is_periodic <- isTRUE(data[[paste0(prefix, "_gp_type")]] == 1L)
+  n_eta <- if (is_periodic) 2L * m else m
   if (isTRUE(n_eta > 0 && g > 0)) {
-    init[[eta_nm]] <- matrix(rnorm(n_eta * g, 0, 0.01), n_eta, g)
+    eta <- matrix(rnorm(n_eta * g, 0, 0.01), n_eta, g)
+    # For a stationary process (gp_d == 0) eta[1, ] is centred directly
+    # on the spectral-density scale rather than scaled by it (see
+    # gaussian_process.stan), so it is seeded at its prior mean (0)
+    # instead of with the same spread as the other, non-centred rows.
+    # For the periodic kernel eta[M + 1, ] shares the fundamental
+    # frequency with eta[1, ] and is centred the same way. For an
+    # integrated process (gp_d >= 1) eta stays fully non-centred and
+    # keeps its usual std_normal() prior, for which an exact-zero start
+    # is just as valid an initial value as the small random spread used
+    # for the other rows, so the same unconditional zeroing is kept here
+    # rather than branching on gp_d.
+    eta[1, ] <- 0
+    if (is_periodic) {
+      eta[m + 1, ] <- 0
+    }
+    init[[eta_nm]] <- eta
   }
 
   rho_p <- priors[[paste0(prefix, "_gp_rho_p")]]
