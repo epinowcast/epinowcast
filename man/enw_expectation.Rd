@@ -48,9 +48,7 @@ Describes the weighting to apply to past and current latent expected
 observations (from most recent to least). This can be used both to convolve
 based on some assumed reporting delay and to rescale observations (by
 multiplying a probability mass function by some fraction) to account
-ascertainment etc. A list of PMFs can be provided to allow for time-varying
-PMFs. This should be the same length as the modelled time period plus the
-length of the generation time if supplied.}
+ascertainment etc. Time-varying delays (a list of PMFs) are not supported.}
 
 \item{population}{Optional initial susceptible population for the
 susceptible-depletion adjustment of the renewal process. Defaults to \code{NULL}
