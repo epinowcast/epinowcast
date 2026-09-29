@@ -66,7 +66,6 @@ Vehtari
 Vscode
 WardBrian
 Wolffram
-adaptDelta
 adrian
 ae
 allcontributors
@@ -118,7 +117,6 @@ hannah
 infty
 int
 iter
-iters
 jamesmbaazam
 jbracher
 jessalynnsebastian
@@ -145,13 +143,11 @@ mathbb
 mathbf
 mathcal
 mathrm
-maxTree
+meanlog
 medewitt
 micahwiesner
 mis
 miscalibration
-modelData
-modelParams
 modeldesign
 modeled
 modeling
@@ -160,6 +156,7 @@ modelmodules
 modeltools
 modelvalidation
 natemcintosh
+ne
 negbin
 ness
 nicholasdavies
@@ -180,6 +177,7 @@ oversmooth
 pacf
 parameterisations
 parameterise
+parameterised
 parksw
 pearsonca
 pitmonticone
@@ -187,7 +185,6 @@ pkgdown
 pkgdown's
 pmatrix
 poisson
-posteriorPreds
 postprocess
 postprocessing
 pratikunterwegs
@@ -203,16 +200,16 @@ readibility
 refp
 renormalisation
 reparameterisation
+reparameterised
 rhat
 rumackaaron
 runtimes
 rw
-samplerParams
 sbfnk
 sd
+sdlog
 se
 seabbs
-settingPriors
 sim
 sl
 sobolova
@@ -235,6 +232,7 @@ uncentred
 underbrace
 underpredicting
 underprediction
+unmerged
 unmodelled
 unpooled
 unsets

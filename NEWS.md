@@ -37,6 +37,14 @@ This is the first release of `epinowcast` to CRAN.
   See #848 (addressing #438 and #297) by @seabbs.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
+- For a stationary (`d = 0`) `gp()` term, the lowest-frequency (smoothest) spectral coefficient of the Hilbert-space approximation is now parameterised directly on the spectral-density scale, rather than as the magnitude parameter times a standard-normal deviate.
+  This coefficient is the most strongly data-identified, so the previous fully non-centred form could produce a funnel between it and the magnitude parameter `<prefix>_gp_alpha` when the magnitude is weakly identified (an uninformative-data regime).
+  For the periodic kernel, the sine coefficient at the same fundamental frequency is centred the same way.
+  Every other spectral coefficient is unchanged, and an integrated (`d >= 1`) `gp()` term is unaffected.
+  Ported from an open, unmerged proposal against `EpiNow2` (epiforecasts/EpiNow2#1549).
+- `gp()` gains opt-in automatic sizing of the Hilbert-space approximation: passing `basis_prop = NULL` and/or `boundary_scale = NULL` chooses them from a reference length-scale prior (new `ls_meanlog`/`ls_sdlog` arguments, defaulting to the log-normal prior every module already ships for its length scale) using the relationships of Riutort-Mayol et al. (2023).
+  `basis_prop`/`boundary_scale` still default to the previous fixed `0.2`/`1.5`, so this is opt-in and existing `gp()` terms are unaffected unless they explicitly pass `NULL`.
+  Ported from an open, unmerged proposal against `EpiNow2` (epiforecasts/EpiNow2#1562); unlike that proposal, this does not yet include a post-fit warning when the posterior length scale falls outside the range the chosen settings represent accurately.
 
 ## Package
 
