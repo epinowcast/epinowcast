@@ -37,6 +37,10 @@ This is the first release of `epinowcast` to CRAN.
   See #848 (addressing #438 and #297) by @seabbs.
 - The autoregressive part of an `arima()` latent residual now takes an optional prior on its partial autocorrelations, set through each module's `<prefix>_arima_pacf` entry (e.g. `expr_arima_pacf`).
   The default keeps the implicit Uniform(-1, 1) from the parameter bounds; a positive standard deviation switches to a Normal prior truncated to (-1, 1) for gentle shrinkage toward weaker autocorrelation.
+- Added an opt-in batched form of the per-snapshot observation likelihood, `enw_fit_opts(use_batched_likelihood = TRUE)`.
+  It converts the logit hazards of every snapshot in a likelihood slice to log probabilities in one pass rather than one short pass per snapshot.
+  The result is the same as the default path to floating-point precision.
+  Without within-chain threading, whole-model gradients are about 1.1 times faster on the benchmark cases; with `threads_per_chain = 4` there is no gain.
 
 ## Package
 

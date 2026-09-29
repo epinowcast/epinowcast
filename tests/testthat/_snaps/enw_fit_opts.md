@@ -31,6 +31,9 @@
       $data$sparse_design
       [1] 0
       
+      $data$use_batched_likelihood
+      [1] 0
+      
       
       $args
       $args$threads_per_chain
