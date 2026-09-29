@@ -1,9 +1,6 @@
 # load example preprocessed data (already regression tested)
+# the `model` object is compiled once in setup-model.R
 pobs <- enw_example("preprocessed")
-if (not_on_cran() && on_ci()) {
-  model <- enw_model()
-  options(mc.cores = 2)
-}
 
 test_that("epinowcast() preprocesses data and model modules as expected", {
   nowcast <- suppressMessages(epinowcast(pobs,

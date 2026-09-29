@@ -16,6 +16,13 @@ This is the first release of `epinowcast` to CRAN.
   An integer `d` argument (matching `arima()`'s `d`) integrates the process `d` times: `d = 0` is stationary (the default, like EpiNow2's `gp_on = "R0"`), `d = 1` gives a smoothly drifting trend (like EpiNow2's default `gp_on = "R_t-1"`), and `d >= 2` integrates further, anchoring the first `d` values to zero so the level and slope are carried by the fixed effects.
   The Stan implementation is adapted from `EpiNow2` (https://github.com/epiforecasts/EpiNow2, MIT licensed).
   See #824.
+- Added `enw_simulate()` and `enw_forecast()` for forward simulation and forecasting separate from fitting.
+  `enw_simulate()` forward-generates synthetic observations from known/fixed parameters and a supplied growth rate; any model parameter can be fixed through `parameters`.
+  `enw_forecast()` re-drives a fitted nowcast, taking each component from the per-draw posterior unless it is overridden through a named `overrides` list (currently the growth rate `r`), propagating posterior uncertainty in the components that are not overridden.
+  Both reuse the existing Stan generated-quantities machinery via a component-override data hook so simulated, forecast, and fitted outputs are directly comparable.
+  A `horizon` argument scopes forward extension beyond the fitted window; full support is in development and tracked in #838.
+  Added a "Simulating, fitting, and forecasting" vignette and a features-table entry.
+  See #829 by @seabbs.
 - Added an optional susceptible-depletion (population) adjustment to the renewal expectation model via the new `population`, `population_floor`, `population_uncertain`, and `population_cv` arguments to `enw_expectation()`.
   When a population size is supplied the effective reproduction number bends down as the susceptible pool is depleted by modelled latent cases, scaling transmission by the remaining susceptible fraction.
   The population can be fixed or fitted via a LogNormal prior, and is per-group: groups are treated as independent well-mixed populations (a single value is recycled across groups with a warning, or a length-`groups` vector sets group-specific values).
