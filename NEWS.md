@@ -2,7 +2,7 @@
 
 ## Model
 
-- Priors can now be specified using the `<dist_spec>` objects of the [distspec](https://epiforecasts.io/distspec/) package (for example `distspec::Normal()` and `distspec::LogNormal()`), the same interface used by `EpiNow2`.
+- Priors can now be specified using the `<dist_spec>` objects of the [distspec](https://epiforecasts.io/distspec/) package (for example `distspec::Normal()` and `distspec::LogNormal()`).
   The `priors` argument of `epinowcast()` and the `custom_priors` argument of `enw_replace_priors()` now also accept a named list of `<dist_spec>` objects, e.g. `priors = list(refp_mean_int = distspec::Normal(mean = 2, sd = 0.5))`.
   The `$priors` table of each model module adds a `prior` list column of `<dist_spec>` objects alongside the existing `mean` and `sd` columns (now derived from `prior`), and `enw_priors_as_data_list()` converts these to the location and scale used by the Stan model.
   A `data.frame` with `variable`, `mean`, and `sd` columns (such as `summary(nowcast, type = "fit")`) is still fully supported for both the `priors` argument of `epinowcast()` and the `custom_priors` argument of `enw_replace_priors()`, with the values used as the location and scale of the default prior family for each variable, so posterior summaries can still be used as priors; this form is unchanged and not deprecated.

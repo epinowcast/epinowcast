@@ -35,7 +35,7 @@
 #'
 #' Priors are specified using the `<dist_spec>` objects of the
 #' `distspec` package (for example [distspec::Normal()] and
-#' [distspec::LogNormal()]), as in `EpiNow2`.
+#' [distspec::LogNormal()]).
 #' To replace specific defaults, pass a named list of `<dist_spec>`
 #' objects to the `priors` argument, e.g.
 #' `priors = list(refp_mean_int = distspec::Normal(mean = 2, sd = 0.5))`.

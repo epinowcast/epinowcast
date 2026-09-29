@@ -34,8 +34,7 @@ rows as \code{priors} and the matched entries of the \code{prior} column replace
 \description{
 Replaces default model priors with user specified ones.
 Priors are specified using the \verb{<dist_spec>} objects of the \code{distspec}
-package (for example \code{\link[distspec:Normal]{distspec::Normal()}} and \code{\link[distspec:LogNormal]{distspec::LogNormal()}}),
-as in \code{EpiNow2}.
+package (for example \code{\link[distspec:Normal]{distspec::Normal()}} and \code{\link[distspec:LogNormal]{distspec::LogNormal()}}).
 A common use is extracting the posterior from a previous
 \code{\link[=epinowcast]{epinowcast()}} run (using \code{summary(nowcast, type = "fit")})
 and using it as a prior for subsequent fits.

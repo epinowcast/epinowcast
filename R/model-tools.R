@@ -670,8 +670,7 @@ enw_priors_as_data_list <- function(priors) {
 #'
 #' Replaces default model priors with user specified ones.
 #' Priors are specified using the `<dist_spec>` objects of the `distspec`
-#' package (for example [distspec::Normal()] and [distspec::LogNormal()]),
-#' as in `EpiNow2`.
+#' package (for example [distspec::Normal()] and [distspec::LogNormal()]).
 #' A common use is extracting the posterior from a previous
 #' [epinowcast()] run (using `summary(nowcast, type = "fit")`)
 #' and using it as a prior for subsequent fits.

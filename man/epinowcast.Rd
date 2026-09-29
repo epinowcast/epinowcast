@@ -87,7 +87,7 @@ the prior variables available in each module.
 
 Priors are specified using the \verb{<dist_spec>} objects of the
 \code{distspec} package (for example \code{\link[distspec:Normal]{distspec::Normal()}} and
-\code{\link[distspec:LogNormal]{distspec::LogNormal()}}), as in \code{EpiNow2}.
+\code{\link[distspec:LogNormal]{distspec::LogNormal()}}).
 To replace specific defaults, pass a named list of \verb{<dist_spec>}
 objects to the \code{priors} argument, e.g.
 \code{priors = list(refp_mean_int = distspec::Normal(mean = 2, sd = 0.5))}.

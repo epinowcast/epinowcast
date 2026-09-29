@@ -170,7 +170,7 @@ All model modules support the same formula interface.
 # Prior Specification {#priors}
 
 Each model module defines default priors which can be inspected and customised.
-Priors are specified with the distributions of the [`distspec`](https://epiforecasts.io/distspec/) package (for example `distspec::Normal()` and `distspec::LogNormal()`), as in `EpiNow2`.
+Priors are specified with the distributions of the [`distspec`](https://epiforecasts.io/distspec/) package (for example `distspec::Normal()` and `distspec::LogNormal()`).
 To set custom priors, pass a named list of `distspec` distributions to the `priors` argument of `epinowcast()`.
 
 | Task | How to do it | Details |
