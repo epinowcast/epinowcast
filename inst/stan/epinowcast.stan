@@ -103,6 +103,10 @@ data {
   real<lower=0> expr_pop_floor; // rate-denominator floor
   // Per-group LogNormal prior (row 1 = log median per group, row 2 = log sd)
   array[2, g] real expr_pop_p;
+  // ---- Cross-group mixing ----
+  int<lower=0, upper=1> expr_mixing_use; // 0 = off (independent groups), 1 = on
+  // mixing[k, h]: weight group k places on group h's incidence
+  matrix[g, g] expr_mixing;
   // ---- Latent case submodule ----
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
   // Partial PMF of the latent delay distribution as a convolution matrix
@@ -534,7 +538,8 @@ transformed parameters{
       expr_pop_uncertain ? expr_pop_est : expr_pop_fixed;
     exp_llatent = log_expected_latent_from_r(
       expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
-      expr_ft, g, expr_pop, expr_pop_use, expr_pop_floor
+      expr_ft, g, expr_pop, expr_pop_use, expr_pop_floor,
+      expr_mixing, expr_mixing_use
     );
   }
   // Get latent-to-obs proportions and map expected latent cases to expected observations
