@@ -1,3 +1,12 @@
+# epinowcast 0.8.0.1000
+
+Development version.
+
+## Model
+
+- Added infrastructure for custom reverse-mode adjoints implemented in C++, following the approach used by `EpiNow2` (https://github.com/epiforecasts/EpiNow2), and the first such adjoint: `logit_hazard_to_log_prob()`, which fuses the `inv_logit()` and `hazard_to_log_prob()` calls in `expected_obs()` into a single autodiff node on the hot path of every model with a report-date model.
+  `enw_model()` compiles the C++ in via `cmdstanr`'s `user_header` by default; set `enw_model(use_cpp = FALSE)` or `options(epinowcast.use_cpp = FALSE)` to compile the retained pure-Stan version (`logit_hazard_to_log_prob_stan()`) instead.
+
 # epinowcast 0.8.0
 
 This is the first release of `epinowcast` to CRAN.
