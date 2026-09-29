@@ -1,15 +1,21 @@
-# epinowcast 0.8.0
+# epinowcast 0.8.0.1000
 
-This is the first release of `epinowcast` to CRAN.
+Development version.
 
 ## Model
 
 - Started the multi-stratum / secondary observation overlay (Phase 0, R skeleton only).
   Added a `secondary()` formula helper, parsed and validated like `gp()` and `arima()`, that declares one stratum as a delayed, ascertained function of another inside a per-stratum expectation formula.
   `enw_expectation()` now accepts a named list `r` keyed by stratum, detecting independent strata (own process) and dependent strata (a `secondary()` term), and stores a validated, topologically ordered structure on the returned module.
-  Added `enw_topo_sort_strata()` (DAG validation and topological ordering, with cycle, self-dependency, and unknown-parent detection) and an internal `.resolve_stratum_spec()` for shared-or-per-stratum module specifications.
+  Added `enw_topo_sort_strata()` (DAG validation and topological ordering, with cycle, self-dependency, and unknown-parent detection).
   No Stan wiring yet, so the scalar-formula path and all existing fits are unchanged.
   See #862.
+
+# epinowcast 0.8.0
+
+This is the first release of `epinowcast` to CRAN.
+
+## Model
 
 - The fixed-effects design and integrated (`d >= 1`) `arima()` and `gp()` residuals are now centred against the module intercept, decorrelating the intercept from the slopes and from the latent drift to improve sampling geometry.
   For modules with a free intercept (`expr`, `refp` mean, `refnp`, `miss`) the design is centred on its observation-weighted column means, as `brms` does by default, and the grand mean (over time and groups) of the integrated residual is removed.
