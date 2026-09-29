@@ -13,7 +13,7 @@ NULL
 #' @keywords internal
 check_cmdstanr <- function() {
   if (!requireNamespace("cmdstanr", quietly = TRUE)) {
-    cli::cli_abort(c(
+    cli_abort(c(
       "{.pkg cmdstanr} is required but not installed.",
       i = paste0(
         '{.code install.packages("cmdstanr", ',
@@ -35,20 +35,27 @@ is.Date <- function(x) {
 
 #' Read in a stan function file as a character string
 #'
+#' @param overrides An optional named `character` vector. For any entry of
+#' `files` matching a name, the file is not read from `include`; the
+#' matching value is used as its Stan code instead. Used to substitute a
+#' pure-Stan fallback body for a C++-backed function that cannot be
+#' compiled without the package header (see [stan_cpp_fallback_body()]).
+#'
 #' @inheritParams enw_stan_to_r
 #' @return A character string in the of stan functions.
 #' @family utils
 #' @importFrom purrr map_chr
-stan_fns_as_string <- function(files, include) {
+stan_fns_as_string <- function(files, include, overrides = NULL) {
+  read_fn <- function(f) {
+    if (f %in% names(overrides)) {
+      overrides[[f]]
+    } else {
+      paste(readLines(file.path(include, f)), collapse = "\n")
+    }
+  }
   functions <- paste0(
     "\n functions{ \n",
-    paste(
-      purrr::map_chr(
-        files,
-        ~ paste(readLines(file.path(include, .)), collapse = "\n")
-      ),
-      collapse = "\n"
-    ),
+    paste(map_chr(files, read_fn), collapse = "\n"),
     "\n }"
   )
   functions
@@ -125,7 +132,7 @@ enw_example <- function(type = c(
 #' enw_get_data(pobs, "max_delay")
 enw_get_data <- function(x, name) {
   if (!name %in% names(x)) {
-    cli::cli_abort(
+    cli_abort(
       c(
         "{.arg name} {.val {name}} not found in object.",
         i = "Available names: {.val {names(x)}}"
@@ -173,23 +180,23 @@ enw_get_data <- function(x, name) {
 #' )
 coerce_date <- function(dates = NULL) {
   if (is.null(dates)) {
-    return(data.table::as.IDate(numeric()))
+    return(as.IDate(numeric()))
   }
   if (length(dates) == 0) {
-    return(data.table::as.IDate(dates))
+    return(as.IDate(dates))
   }
 
-  res <- data.table::as.IDate(vapply(dates, function(d) {
+  res <- as.IDate(vapply(dates, function(d) {
     tryCatch(
-      data.table::as.IDate(d, optional = TRUE),
+      as.IDate(d, optional = TRUE),
       error = function(e) {
-        data.table::as.IDate(NA)
+        as.IDate(NA)
       }
     )
-  }, FUN.VALUE = data.table::as.IDate(0)))
+  }, FUN.VALUE = as.IDate(0)))
 
   if (anyNA(res)) {
-    cli::cli_abort(paste0(
+    cli_abort(paste0(
       "Failed to parse with `as.IDate`: {toString(dates[is.na(res)])} ",
       "(indices {toString(which(is.na(res)))})."
     ))
@@ -220,14 +227,14 @@ get_internal_timestep <- function(timestep) {
     switch(timestep,
       day = 1,
       week = 7,
-      month = cli::cli_abort(
+      month = cli_abort(
         paste0(
           "Calendar months are not currently supported. Consider using an ",
           "approximate number of days (i.e. 28), a different timestep ",
           "(i.e.'week'), or commenting on issue #309. "
         )
       ),
-      cli::cli_abort(
+      cli_abort(
         "Invalid timestep. Acceptable string inputs are 'day', 'week'."
       )
     )
@@ -235,7 +242,7 @@ get_internal_timestep <- function(timestep) {
     # check if the input is a whole number
     timestep
   } else {
-    cli::cli_abort(
+    cli_abort(
       paste0(
         "Invalid timestep. If timestep is a numeric, it should be a whole ",
         "number representing the number of days."
@@ -530,13 +537,13 @@ unset_cache_from_environ <- function(alert_on_not_set = TRUE) {
     new_environ[["env_contents"]] <-
       environ[["env_contents"]][!cache_loc_environ]
     writeLines(new_environ$env_contents, new_environ$env_path)
-    cli::cli_alert_success(
+    cli_alert_success(
       "Removed `enw_cache_location` setting from `.Renviron`."
     )
     return(invisible(NULL))
   }
   if (isTRUE(alert_on_not_set)) {
-    cli::cli_alert_danger(
+    cli_alert_danger(
       "`enw_cache_location` not set in `.Renviron`. Nothing to remove."
     )
   }
@@ -572,12 +579,12 @@ create_cache_dir <- function(path) {
   }
   dir.create(path, recursive = TRUE, showWarnings = FALSE)
   if (dir.exists(path)) {
-    cli::cli_alert_success(
+    cli_alert_success(
       "Created cache directory at {path}"
     )
     return(invisible(NULL))
   }
-  cli::cli_abort(
+  cli_abort(
     "Failed to create cache directory at {path}"
   )
 }
