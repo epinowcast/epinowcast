@@ -420,10 +420,10 @@ test_that("epinowcast() fits a non-identity mixing matrix in compiled Stan", {
 
   # A real off-diagonal K changes the fitted latent trajectories relative to
   # the (default) uncoupled model.
-  mixed_latent <- summary(nowcast_mixed, type = "fit")[
+  mixed_latent <- suppressWarnings(summary(nowcast_mixed, type = "fit"))[
     grepl("^exp_llatent", variable)
   ]$mean
-  unmixed_latent <- summary(nowcast_unmixed, type = "fit")[
+  unmixed_latent <- suppressWarnings(summary(nowcast_unmixed, type = "fit"))[
     grepl("^exp_llatent", variable)
   ]$mean
   expect_false(isTRUE(all.equal(mixed_latent, unmixed_latent)))
