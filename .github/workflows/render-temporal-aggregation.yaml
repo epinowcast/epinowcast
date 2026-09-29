@@ -3,7 +3,7 @@
 on:
   push:
     paths:
-      - 'vignettes/temporal-aggregation.Rmd.orig'
+      - 'vignettes/articles/temporal-aggregation.Rmd.orig'
     branches: [main]
   schedule:
     - cron: '0 0 1 * *'
@@ -42,7 +42,7 @@ jobs:
 
       - name: Render vignette
         run: |
-            setwd("vignettes")
+            setwd("vignettes/articles")
             knitr::knit(
               "temporal-aggregation.Rmd.orig",
               "temporal-aggregation.Rmd"
@@ -66,5 +66,5 @@ jobs:
           labels: "documentation"
           reviewers: seabbs
           add-paths: |
-            vignettes
+            vignettes/articles
           token: ${{ secrets.GITHUB_TOKEN }}
