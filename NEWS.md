@@ -1,3 +1,16 @@
+# epinowcast 0.8.0.1000
+
+Development version.
+
+## Model
+
+- Started the multi-stratum / secondary observation overlay (Phase 0, R skeleton only).
+  Added a `secondary()` formula helper, parsed and validated like `gp()` and `arima()`, that declares one stratum as a delayed, ascertained function of another inside a per-stratum expectation formula.
+  `enw_expectation()` now accepts a named list `r` keyed by stratum, detecting independent strata (own process) and dependent strata (a `secondary()` term), and stores a validated, topologically ordered structure on the returned module.
+  Added `enw_topo_sort_strata()` (DAG validation and topological ordering, with cycle, self-dependency, and unknown-parent detection).
+  No Stan wiring yet, so the scalar-formula path and all existing fits are unchanged.
+  See #862.
+
 # epinowcast 0.8.0
 
 This is the first release of `epinowcast` to CRAN.

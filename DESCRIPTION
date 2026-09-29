@@ -1,6 +1,6 @@
 Package: epinowcast
 Title: A Bayesian Framework for Real-Time Infectious Disease Surveillance
-Version: 0.8.0
+Version: 0.8.0.1000
 Authors@R:
   c(person(given = "Sam Abbott",
            role = c("aut", "cre"),
@@ -160,4 +160,4 @@ Encoding: UTF-8
 Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.1.0
