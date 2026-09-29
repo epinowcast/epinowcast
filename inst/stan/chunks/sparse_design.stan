@@ -3,8 +3,6 @@
   tuple(vector[expr_nonzero], array[expr_nonzero] int, array[expr_fnindex + 1] int) expr_sparse;
   int expl_nonzero = num_nonzero(expl_fdesign);
   tuple(vector[expl_nonzero], array[expl_nonzero] int, array[expl_fnindex + 1] int) expl_sparse;
-  int expl_lrd_nonzero = num_nonzero(expl_lrd);
-  tuple(vector[expl_lrd_nonzero], array[expl_lrd_nonzero] int, array[expr_ft + 1] int) expl_lrd_sparse;
   int refp_nonzero = num_nonzero(refp_fdesign);
   tuple(vector[refp_nonzero], array[refp_nonzero] int, array[refp_fnrow + 1] int) refp_sparse;
   int rep_nonzero = num_nonzero(rep_fdesign);
@@ -29,11 +27,6 @@
     (sparse_design || refnp_nonzero * 2 < refnp_fdense_size)
   ) ? 1 : 0;
 
-  // ---- Latent case submodule ----
-  // We already know that the latent case submodule is sparse
-  if (expl_lrd_nonzero > 0) {
-    expl_lrd_sparse = csr_extract(expl_lrd);
-  }
   // ---- Non-parametric reference module ----
   // Always extract the CSR view when we will use the sparse path, so the
   // auto-routed case does not depend on the global flag.

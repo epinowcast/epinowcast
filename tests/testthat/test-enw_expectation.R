@@ -302,3 +302,19 @@ test_that("enw_expectation warns when population is set without a renewal", {
     "uncertain"
   )
 })
+
+test_that("enw_expectation rejects a list of latent reporting delays", {
+  expect_error(
+    enw_expectation(
+      latent_reporting_delay = list(c(0.5, 0.5)), data = pobs
+    ),
+    "must be a numeric vector"
+  )
+})
+
+test_that("enw_expectation passes the reversed latent reporting delay", {
+  delay <- c(0.2, 0.5, 0.3)
+  expectation <- enw_expectation(latent_reporting_delay = delay, data = pobs)
+  expect_identical(expectation$data$expl_lrd_n, 3L)
+  expect_identical(expectation$data$expl_lrd_rev, rev(delay))
+})

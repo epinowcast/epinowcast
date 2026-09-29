@@ -605,9 +605,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' observations (from most recent to least). This can be used both to convolve
 #' based on some assumed reporting delay and to rescale observations (by
 #' multiplying a probability mass function by some fraction) to account
-#' ascertainment etc. A list of PMFs can be provided to allow for time-varying
-#' PMFs. This should be the same length as the modelled time period plus the
-#' length of the generation time if supplied.
+#' ascertainment etc. Time-varying delays (a list of PMFs) are not supported.
 #'
 #' @param population Optional initial susceptible population for the
 #' susceptible-depletion adjustment of the renewal process. Defaults to `NULL`
@@ -656,6 +654,12 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   }
   if (abs(sum(generation_time) - 1) > 1e-3) {
     cli::cli_abort("The generation time must sum to 1")
+  }
+  if (!is.numeric(latent_reporting_delay)) {
+    cli::cli_abort(c(
+      "{.arg latent_reporting_delay} must be a numeric vector.",
+      i = "Time-varying delays (a list of PMFs) are not supported."
+    ))
   }
   pop <- .check_expectation_population(
     population, population_floor, population_uncertain,
@@ -709,13 +713,9 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 
   # Observation indicator variables
   obs_list <- list(
-    lrd_n = ifelse(is.list(latent_reporting_delay),
-      length(latent_reporting_delay[[1]]), length(latent_reporting_delay)
-    ),
-    lrd = convolution_matrix(
-      latent_reporting_delay, r_list$ft,
-      include_partial = FALSE
-    )
+    lrd_n = length(latent_reporting_delay),
+    # Reversed delay PMF, for convolve_with_rev_pmf().
+    lrd_rev = rev(latent_reporting_delay)
   )
 
   obs_list$obs <- as.numeric(
