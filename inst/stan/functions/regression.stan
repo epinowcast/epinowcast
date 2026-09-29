@@ -171,18 +171,55 @@ void regression_priors_lp(
 /**
  * Priors for an approximate Gaussian process latent term.
  *
- * The spectral coefficients `eta` get a unit-normal (non-centred)
- * prior. The length scale `rho` gets a log-normal prior and the
- * magnitude `alpha` a half-normal prior, with each prior (mean, sd)
- * supplied as data. Inert when `gp_present == 0`.
+ * For a stationary process (`gp_d == 0`), most spectral coefficients
+ * `eta` get a unit-normal (non-centred) prior, but the lowest-frequency
+ * (smoothest) coefficient `eta[1, ]` is the most strongly data-identified
+ * and trades off against `gp_alpha` under the non-centred form, so it is
+ * centred instead: a `normal(0, diagSPD[1])` prior on the spectral-density
+ * scale, matching the centred coefficient `update_gp()` uses when
+ * `low_freq_centred` is set (see gaussian_process.stan). For the periodic
+ * kernel, `eta[M + 1, ]` (the sine coefficient at the same fundamental
+ * frequency) is equally strongly identified and is centred the same way.
+ * Centring is shared across every group column, since all groups share
+ * `gp_rho` and `gp_alpha`.
+ *
+ * For an integrated process (`gp_d >= 1`) every coefficient keeps the
+ * original unit-normal prior, matching `update_gp()`'s
+ * `low_freq_centred = 0` there; see `gp_latent_matrix()` in
+ * gaussian_process.stan for why.
+ *
+ * The length scale `rho` gets a log-normal prior and the magnitude
+ * `alpha` a half-normal prior, with each prior (mean, sd) supplied as
+ * data. Inert when `gp_present == 0`.
  */
 void gp_priors_lp(
   int gp_present, matrix gp_eta,
   array[] real gp_rho, array[] real gp_alpha,
-  array[,] real gp_rho_p, array[,] real gp_alpha_p
+  array[,] real gp_rho_p, array[,] real gp_alpha_p,
+  int gp_M, real gp_L, int gp_type, real gp_nu, int gp_d
 ) {
   if (gp_present) {
-    to_vector(gp_eta) ~ std_normal();
+    if (gp_d == 0) {
+      vector[gp_type == 1 ? 2 * gp_M : gp_M] diagSPD = gp_diag_spd(
+        gp_alpha[1], gp_rho[1], gp_L, gp_M, gp_type, gp_nu
+      );
+      to_vector(gp_eta[1, ]) ~ normal(0, diagSPD[1]);
+      if (gp_type == 1) {
+        to_vector(gp_eta[gp_M + 1, ]) ~ normal(0, diagSPD[gp_M + 1]);
+        // With a single basis function (gp_M == 1) both non-centred
+        // slices below are empty (2:1 and 3:2); Stan rejects a
+        // descending range at runtime, so guard them (mirrors the
+        // `if (K > 1)` guard in primarycensored.stan).
+        if (gp_M > 1) {
+          to_vector(gp_eta[2:gp_M, ]) ~ std_normal();
+          to_vector(gp_eta[(gp_M + 2):rows(gp_eta), ]) ~ std_normal();
+        }
+      } else if (gp_M > 1) {
+        to_vector(gp_eta[2:rows(gp_eta), ]) ~ std_normal();
+      }
+    } else {
+      to_vector(gp_eta) ~ std_normal();
+    }
     gp_rho[1] ~ lognormal(gp_rho_p[1, 1], gp_rho_p[2, 1]);
     gp_alpha[1] ~ normal(gp_alpha_p[1, 1], gp_alpha_p[2, 1]) T[0, ];
   }
