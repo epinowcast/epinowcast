@@ -6,6 +6,8 @@ functions {
 #include functions/gaussian_process.stan
 #include functions/regression.stan
 #include functions/log_expected_latent_from_r.stan
+#include functions/convolve_with_rev_pmf_stan.stan
+#include functions/convolve_with_rev_pmf.stan
 #include functions/log_expected_obs_from_latent.stan
 #include functions/primarycensored.stan
 #include functions/primarycensored_pmf.stan
@@ -107,8 +109,9 @@ data {
   array[2, g] real expr_pop_p;
   // ---- Latent case submodule ----
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
-  // Partial PMF of the latent delay distribution as a convolution matrix
-  matrix[expr_ft,  expr_ft] expl_lrd;
+  // Reversed PMF of the latent-to-obs delay distribution, for
+  // convolve_with_rev_pmf(); length expl_lrd_n.
+  vector[expl_lrd_n] expl_lrd_rev;
   // Model for latent-to-obs proportion. Currently, 0 = none
   // --> proportion of latent cases that will become observations
   // --> e.g.: infection fatality rate for death data
@@ -553,8 +556,7 @@ transformed parameters{
       expl_gp_rho, expl_gp_alpha, expl_gp_flat_idx
     );
     exp_lobs = log_expected_obs_from_latent(
-      exp_llatent, expl_lrd_n, expl_lrd_sparse.1, expl_lrd_sparse.2,
-      expl_lrd_sparse.3, t, g, expl_prop
+      exp_llatent, expl_lrd_n, expl_lrd_rev, t, g, expl_prop
     );
   } else {
     exp_lobs = exp_llatent; // assume latent cases and obs are identical

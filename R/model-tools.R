@@ -293,6 +293,12 @@ stan_cpp_fallback_body <- function(fn) {
       "  return logit_hazard_to_log_prob_stan(lh, l);",
       "}",
       sep = "\n"
+    ),
+    convolve_with_rev_pmf = paste(
+      "vector convolve_with_rev_pmf(vector x, vector y, int len) {",
+      "  return convolve_with_rev_pmf_stan(x, y, len);",
+      "}",
+      sep = "\n"
     )
   )
   if (!fn %in% names(fallbacks)) {
@@ -316,8 +322,13 @@ stan_cpp_fallback_body <- function(fn) {
 #' @family modeltools
 stan_cpp_adjoint_files <- function() {
   # Not a filesystem path (see @return above); file.path() would be wrong.
-  path <- "functions/logit_hazard_to_log_prob.stan" # nolint
-  stats::setNames("logit_hazard_to_log_prob", path)
+  paths <- c(
+    "functions/logit_hazard_to_log_prob.stan", # nolint
+    "functions/convolve_with_rev_pmf.stan" # nolint
+  )
+  stats::setNames(
+    c("logit_hazard_to_log_prob", "convolve_with_rev_pmf"), paths
+  )
 }
 
 #' Write copies of the .stan files of a Stan model and its #include files,

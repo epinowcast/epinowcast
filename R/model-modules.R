@@ -709,13 +709,9 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 
   # Observation indicator variables
   obs_list <- list(
-    lrd_n = ifelse(is.list(latent_reporting_delay),
-      length(latent_reporting_delay[[1]]), length(latent_reporting_delay)
-    ),
-    lrd = convolution_matrix(
-      latent_reporting_delay, r_list$ft,
-      include_partial = FALSE
-    )
+    lrd_n = length(latent_reporting_delay),
+    # Reversed delay PMF, for convolve_with_rev_pmf().
+    lrd_rev = rev(latent_reporting_delay)
   )
 
   obs_list$obs <- as.numeric(
