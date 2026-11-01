@@ -358,12 +358,12 @@ kable(scored_weekly)
 
 
 
-|model                                        |  bias|  dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean| interval_coverage_50| interval_coverage_90|
-|:--------------------------------------------|-----:|----:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|--------------------:|--------------------:|
-|Weekly timestep                              | 0.370| 10.0|   79|             39|             0.0|       40.0|       5.8| 160|       120|   50000|                 0.67|                 1.00|
-|Daily process, weekly reporting (fitted)     | 0.051|  8.4|   32|             21|             2.8|        7.4|       5.2|  32|        42|    4200|                 0.33|                 0.67|
-|Daily process, weekly reporting (structural) | 0.610|  8.3|   21|             10|             0.0|       11.0|       5.0|  44|        30|    1100|                 0.33|                 1.00|
-|Daily benchmark                              | 0.940| 12.0|   43|             36|             0.0|        7.4|       6.7|  32|        59|    4000|                 0.00|                 0.33|
+|model                                        |  bias|  dss|  crps| overprediction| underprediction| dispersion| log_score|    mad| ae_median| se_mean| interval_coverage_50| interval_coverage_90|
+|:--------------------------------------------|-----:|----:|-----:|--------------:|---------------:|----------:|---------:|------:|---------:|-------:|--------------------:|--------------------:|
+|Weekly timestep                              |  0.40| 10.0|    95|             51|               0|       44.0|       5.9|    180|       140| 6.8e+04|                 0.67|                 1.00|
+|Daily process, weekly reporting (fitted)     | -0.14| 16.0| 55000|             37|               8|    55000.0|       7.8| 160000|    110000| 3.7e+10|                 0.33|                 0.33|
+|Daily process, weekly reporting (structural) |  0.63|  8.4|    22|             11|               0|       11.0|       5.0|     45|        31| 1.2e+03|                 0.33|                 1.00|
+|Daily benchmark                              |  0.94| 11.0|    41|             34|               0|        7.7|       6.7|     33|        57| 3.6e+03|                 0.00|                 0.33|
 
 
 
@@ -458,11 +458,11 @@ kable(scored_daily)
 
 
 
-|model                                        |   bias| dss| crps| overprediction| underprediction| dispersion| log_score|  mad| ae_median| se_mean| interval_coverage_50| interval_coverage_90|
-|:--------------------------------------------|------:|---:|----:|--------------:|---------------:|----------:|---------:|----:|---------:|-------:|--------------------:|--------------------:|
-|Daily process, weekly reporting (fitted)     | -0.260| 6.8|  7.5|           2.10|             3.1|        2.3|       4.1|  9.9|      10.0|     210|                 0.43|                 0.76|
-|Daily process, weekly reporting (structural) | -0.065| NaN|  6.0|           0.89|             2.0|        3.1|       Inf| 13.0|       7.8|      90|                 0.57|                 0.90|
-|Daily benchmark                              |  0.200| 5.3|  5.6|           2.30|             1.0|        2.2|       3.6|  9.6|       8.3|     110|                 0.33|                 0.90|
+|model                                        |   bias|  dss|   crps| overprediction| underprediction| dispersion| log_score|     mad| ae_median| se_mean| interval_coverage_50| interval_coverage_90|
+|:--------------------------------------------|------:|----:|------:|--------------:|---------------:|----------:|---------:|-------:|---------:|-------:|--------------------:|--------------------:|
+|Daily process, weekly reporting (fitted)     | -0.440| 10.0| 7900.0|           2.10|             5.6|     7800.0|       5.7| 23000.0|   15000.0| 4.4e+09|                 0.33|                 0.71|
+|Daily process, weekly reporting (structural) | -0.053|  NaN|    6.1|           0.97|             2.0|        3.1|       Inf|    13.0|       7.7| 9.2e+01|                 0.57|                 0.90|
+|Daily benchmark                              |  0.180|  5.3|    5.5|           2.20|             1.1|        2.2|       3.6|     9.4|       8.1| 1.1e+02|                 0.33|                 0.95|
 
 
 
@@ -542,10 +542,10 @@ kable(runtimes)
 
 |Model                                        | Run time (s)|
 |:--------------------------------------------|------------:|
-|Weekly timestep                              |          1.1|
-|Daily process, weekly reporting (fitted)     |         41.0|
-|Daily process, weekly reporting (structural) |         21.0|
-|Daily benchmark                              |         58.0|
+|Weekly timestep                              |          0.7|
+|Daily process, weekly reporting (fitted)     |        480.0|
+|Daily process, weekly reporting (structural) |         13.0|
+|Daily benchmark                              |         37.0|
 
 
 
