@@ -28,8 +28,9 @@
  * 
  * @note
  * Dependencies:
- * - `inv_logit`: Used to convert logit hazards to probabilities.
- * - `hazard_to_log_prob`: Used for converting hazards to log probabilities.
+ * - `logit_hazard_to_log_prob`: Converts logit hazards to log
+ * probabilities (fused `inv_logit()` + `hazard_to_log_prob()`; C++ by
+ * default, see logit_hazard_to_log_prob.stan).
  *
  * @code
  * # compile function for use in R
@@ -106,11 +107,8 @@ vector expected_obs(
   if (ref_as_p == 1) {
     p = lh;
   }else{
-    profile("model_likelihood_expected_obs_inv_logit") {
-    p = inv_logit(lh);
-    }
-    profile("model_likelihood_expected_obs_hazard_to_prob") {
-    p = hazard_to_log_prob(p, l);
+    profile("model_likelihood_expected_obs_logit_hazard_to_log_prob") {
+    p = logit_hazard_to_log_prob(lh, l);
     }
   }
   if (rep_agg_p == 1) {

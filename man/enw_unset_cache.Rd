@@ -38,7 +38,11 @@ Functions used to help convert models into the format required for stan
 \code{\link{enw_sample}()},
 \code{\link{enw_set_cache}()},
 \code{\link{enw_stan_to_r}()},
+\code{\link{epinowcast_stan_header}()},
 \code{\link{remove_profiling}()},
+\code{\link{stage_stan_header}()},
+\code{\link{stan_cpp_adjoint_files}()},
+\code{\link{stan_cpp_fallback_body}()},
 \code{\link{write_stan_files_no_profile}()}
 }
 \concept{modeltools}

@@ -90,7 +90,9 @@ test_that("expected_obs() aggregates probabilities with precomputed indices", {
   # Specify include paths to find Stan functions in installed package
   model <- cmdstanr::cmdstan_model(
     file.path("stan", "test_expected_obs.stan"),
-    include_paths = system.file("stan", package = "epinowcast")
+    include_paths = system.file("stan", package = "epinowcast"),
+    user_header = epinowcast_stan_header(),
+    stanc_options = list("allow-undefined")
   )
 
   stan_data <- list(
@@ -144,7 +146,9 @@ test_that("expected_obs() handles structural zeros with precomputed indices", {
   # Specify include paths to find Stan functions in installed package
   model <- cmdstanr::cmdstan_model(
     file.path("stan", "test_expected_obs.stan"),
-    include_paths = system.file("stan", package = "epinowcast")
+    include_paths = system.file("stan", package = "epinowcast"),
+    user_header = epinowcast_stan_header(),
+    stanc_options = list("allow-undefined")
   )
 
   stan_data <- list(

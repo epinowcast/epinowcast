@@ -2,13 +2,16 @@
 % Please edit documentation in R/model-tools.R
 \name{write_stan_files_no_profile}
 \alias{write_stan_files_no_profile}
-\title{Write copies of the .stan files of a Stan model and its #include files
-with all profiling statements removed.}
+\title{Write copies of the .stan files of a Stan model and its #include files,
+optionally with profiling statements removed and/or the C++ adjoint
+path swapped for its pure-Stan fallback.}
 \usage{
 write_stan_files_no_profile(
   stan_file,
   include_paths = NULL,
-  target_dir = epinowcast::enw_get_cache()
+  target_dir = epinowcast::enw_get_cache(),
+  profile = FALSE,
+  use_cpp = TRUE
 )
 }
 \arguments{
@@ -18,18 +21,26 @@ write_stan_files_no_profile(
 specified in #include directives in the Stan program.}
 
 \item{target_dir}{The path to a directory in which the manipulated .stan
-files without profiling statements should be stored. To avoid overriding of
-the original .stan files, this should be different from the directory of the
-original model and the \code{include_paths}.}
+files should be stored. To avoid overriding of the original .stan files,
+this should be different from the directory of the original model and the
+\code{include_paths}.}
+
+\item{profile}{Logical, defaults to \code{FALSE}. If \code{FALSE}, profiling
+statements are removed from the copied .stan files.}
+
+\item{use_cpp}{Logical, defaults to \code{TRUE}. If \code{FALSE}, every function
+file listed in \code{\link[=stan_cpp_adjoint_files]{stan_cpp_adjoint_files()}} is rewritten to its pure-Stan
+fallback body (\code{\link[=stan_cpp_fallback_body]{stan_cpp_fallback_body()}}) rather than copied as-is, so
+the resulting model compiles without the package's C++ header.}
 }
 \value{
-A \code{list} containing the path to the .stan file without profiling
-statements and the include_paths for the included .stan files without
-profiling statements
+A \code{list} containing the path to the rewritten .stan file and the
+include_paths for the rewritten included .stan files.
 }
 \description{
-Write copies of the .stan files of a Stan model and its #include files
-with all profiling statements removed.
+Write copies of the .stan files of a Stan model and its #include files,
+optionally with profiling statements removed and/or the C++ adjoint
+path swapped for its pure-Stan fallback.
 }
 \seealso{
 Functions used to help convert models into the format required for stan
@@ -43,6 +54,10 @@ Functions used to help convert models into the format required for stan
 \code{\link{enw_set_cache}()},
 \code{\link{enw_stan_to_r}()},
 \code{\link{enw_unset_cache}()},
-\code{\link{remove_profiling}()}
+\code{\link{epinowcast_stan_header}()},
+\code{\link{remove_profiling}()},
+\code{\link{stage_stan_header}()},
+\code{\link{stan_cpp_adjoint_files}()},
+\code{\link{stan_cpp_fallback_body}()}
 }
 \concept{modeltools}

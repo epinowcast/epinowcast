@@ -1,5 +1,7 @@
 functions {
 #include functions/hazard.stan
+#include functions/logit_hazard_to_log_prob_stan.stan
+#include functions/logit_hazard_to_log_prob.stan
 #include functions/expected_obs.stan
 }
 data {
