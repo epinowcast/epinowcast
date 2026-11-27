@@ -9,17 +9,26 @@
  *
  * @param dummy Dummy array parameter, not used in the calculation.
  *
+ * @param use_batched Binary flag (0 or 1). When 1, expected log
+ * observations are computed with `expected_obs_from_snaps_batched()`
+ * instead of `expected_obs_from_snaps()`. Both give identical results; the
+ * batched path amortises `inv_logit()`/`log1m()`/`cumulative_sum()` call
+ * overhead across every snapshot in the range instead of paying it once per
+ * snapshot.
+ *
  * @return Log probability mass of the observations for the specified range.
- * 
+ *
  * @note This function performs the following operations:
  *  1. Determines the relevant range of observed data and lookup indexes.
  *  2. Filters the observed data and lookup indexes for the specified range.
- *  3. Computes expected log observations using `expected_obs_from_snaps`.
+ *  3. Computes expected log observations using `expected_obs_from_snaps`
+ *     or `expected_obs_from_snaps_batched`, depending on `use_batched`.
  *  4. Applies the observation error model using `obs_lpmf`.
  *
 * Dependencies:
  * - `filt_obs_indexes`
  * - `expected_obs_from_snaps`
+ * - `expected_obs_from_snaps_batched`
  * - `obs_lpmf`
  *
  * This function is similar to `delay_group_lpmf` but operates on snapshot
@@ -36,7 +45,8 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
                      array[] int sdmax, array[] int csdmax,
                      int rep_agg_p, array[,,] int rep_agg_n_selected,
                      array[,,,] int rep_agg_selected_idx,
-                     int model_delay_only, array[] int dlo_total) {
+                     int model_delay_only, array[] int dlo_total,
+                     int use_batched) {
   real tar = 0;
   // Where am I in the observed data?
   array[3] int nc = filt_obs_indexes(start, end, cnsl, nsl);
@@ -47,10 +57,17 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
     vector[n[3]] log_exp_obs;
 
     // combine expected final obs and time effects to get expected obs
-    log_exp_obs = expected_obs_from_snaps(
-      start, end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax, rep_agg_p, rep_agg_n_selected,
-      rep_agg_selected_idx
-    );
+    if (use_batched) {
+      log_exp_obs = expected_obs_from_snaps_batched(
+        start, end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax, rep_agg_p, rep_agg_n_selected,
+        rep_agg_selected_idx
+      );
+    } else {
+      log_exp_obs = expected_obs_from_snaps(
+        start, end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax, rep_agg_p, rep_agg_n_selected,
+        rep_agg_selected_idx
+      );
+    }
 
     if (model_delay_only) {
       // Delay-only mode: a (truncated) multinomial per reference date,
@@ -113,20 +130,30 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
  *
  * @param miss_cst Array of cumulative start indices for observations by group in missing_reference.
  *
+ * @param use_batched Binary flag (0 or 1). When 1 and no missing reference
+ * model is in use, expected log observations are computed with
+ * `expected_obs_from_snaps_batched()` instead of `expected_obs_from_snaps()`
+ * (both give identical results). The missing-reference branch always uses
+ * `expected_obs_from_snaps()`, since it is not on the profiled hot path
+ * this flag targets.
+ *
  * @return Log probability mass of the observations for the specified range.
  *
  * @note This function performs the following operations:
  *  1. Determines the relevant range for observed and missing data.
  *  2. Filters and allocates expected log observations, handling missing data.
- *  3. Computes expected log observations using `expected_obs_from_snaps`.
+ *  3. Computes expected log observations using `expected_obs_from_snaps`
+ *     or, when `use_batched` and no missing reference model, using
+ *     `expected_obs_from_snaps_batched`.
  *  4. Applies the observation error model using `obs_lpmf`.
  *  5. Additionally, handles missing data using
  *    `apply_missing_reference_effects` and `log_expected_by_report`
  *     if `model_miss` is 1.
- * 
+ *
  * Dependencies:
  * - `filt_obs_indexes`
  * - `expected_obs_from_snaps`
+ * - `expected_obs_from_snaps_batched`
  * - `obs_lpmf`
  * - `allocate_observed_obs`
  * - `apply_missing_reference_effects`
@@ -150,7 +177,8 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
                       vector refnp_lh, int ref_np,
                       int rep_agg_p, array[,,] int rep_agg_n_selected,
                       array[,,,] int rep_agg_selected_idx,
-                      int model_delay_only, array[] int dlo_total) {
+                      int model_delay_only, array[] int dlo_total,
+                      int use_batched) {
   // Where am I?
   real tar = 0;
   int i_start = ts[1, start];
@@ -196,10 +224,17 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
       );
     }
   }else{
-    log_exp_obs = expected_obs_from_snaps(
-      i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax, rep_agg_p, rep_agg_n_selected,
-      rep_agg_selected_idx
-    );
+    if (use_batched) {
+      log_exp_obs = expected_obs_from_snaps_batched(
+        i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax, rep_agg_p, rep_agg_n_selected,
+        rep_agg_selected_idx
+      );
+    } else {
+      log_exp_obs = expected_obs_from_snaps(
+        i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax, rep_agg_p, rep_agg_n_selected,
+        rep_agg_selected_idx
+      );
+    }
   }
   // Delay-only mode: a (truncated) multinomial per reference date,
   // conditioning on the known total. Incompatible with the missing

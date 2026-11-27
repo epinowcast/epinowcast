@@ -13,6 +13,7 @@ functions {
 #include functions/expected_obs.stan
 #include functions/combine_logit_hazards.stan
 #include functions/expected_obs_from.stan
+#include functions/expected_obs_from_batched.stan
 #include functions/filt_obs_indexes.stan
 #include functions/obs_lpmf.stan
 #include functions/obs_rng.stan
@@ -353,6 +354,9 @@ data {
 
   // Switch to use sparse or dense matrices
   int sparse_design;
+
+  // Switch to use the batched (vs. per-snapshot) likelihood path
+  int<lower=0, upper=1> use_batched_likelihood;
 }
 
 transformed data{
@@ -865,7 +869,8 @@ model {
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
           obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
           refnp_lh, model_refnp, rep_agg_p, rep_agg_n_selected,
-          rep_agg_selected_idx, model_delay_only, dlo_total
+          rep_agg_selected_idx, model_delay_only, dlo_total,
+          use_batched_likelihood
         );
       } else {
         target += reduce_sum(
@@ -873,7 +878,8 @@ model {
           flat_obs_lookup, exp_lobs, sg, st, rep_findex, srdlh, refp_lh,
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, refnp_lh,
           model_refnp, sdmax, csdmax, rep_agg_p, rep_agg_n_selected,
-          rep_agg_selected_idx, model_delay_only, dlo_total
+          rep_agg_selected_idx, model_delay_only, dlo_total,
+          use_batched_likelihood
         );
       }
     } else {
@@ -883,7 +889,8 @@ model {
         ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
         obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
         refnp_lh, model_refnp, rep_agg_p, rep_agg_n_selected,
-        rep_agg_selected_idx, model_delay_only, dlo_total
+        rep_agg_selected_idx, model_delay_only, dlo_total,
+        use_batched_likelihood
       );
     }
   }
