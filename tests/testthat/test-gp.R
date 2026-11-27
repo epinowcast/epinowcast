@@ -17,7 +17,12 @@ test_that("gp() returns an enw_gp_term with the expected fields", {
   expect_identical(a$time, "week")
   expect_null(a$by)
   expect_identical(a$kernel, "matern32")
+  # basis_prop/boundary_scale default to the original fixed values;
+  # automatic sizing from the length-scale prior is opt-in (NULL).
   expect_identical(a$basis_prop, 0.2)
+  expect_identical(a$boundary_scale, 1.5)
+  expect_identical(a$ls_meanlog, log(3))
+  expect_identical(a$ls_sdlog, 0.5)
 
   b <- gp(week, day_of_week, kernel = "se", basis_prop = 0.5)
   expect_identical(b$by, "day_of_week")
@@ -39,6 +44,14 @@ test_that("gp() rejects invalid hyperparameters", {
   expect_error(gp(week, basis_prop = -1), "basis_prop")
   expect_error(gp(week, basis_prop = "x"), "basis_prop")
   expect_error(gp(week, boundary_scale = 0), "boundary_scale")
+  expect_error(gp(week, boundary_scale = -1), "boundary_scale")
+  expect_error(gp(week, boundary_scale = "x"), "boundary_scale")
+  expect_error(gp(week, ls_meanlog = "x"), "ls_meanlog")
+  expect_error(gp(week, ls_sdlog = 0), "ls_sdlog")
+  expect_error(gp(week, ls_sdlog = -1), "ls_sdlog")
+  # NULL (automatic) is valid for basis_prop/boundary_scale.
+  expect_null(gp(week, basis_prop = NULL)$basis_prop)
+  expect_null(gp(week, boundary_scale = NULL)$boundary_scale)
 })
 
 test_that("gp() defaults to d = 0 and validates the differencing order", {
@@ -51,19 +64,142 @@ test_that("gp() defaults to d = 0 and validates the differencing order", {
 })
 
 test_that("construct_gp() sizes the basis to T - d for differencing", {
+  # basis_prop is fixed here to isolate the d-differencing logic from the
+  # automatic sizing exercised separately below.
   T_len <- length(unique(data$week))
-  s0 <- construct_gp(gp(week, d = 0), data)
+  s0 <- construct_gp(gp(week, d = 0, basis_prop = 0.2), data)
   expect_identical(s0$d, 0L)
   expect_identical(nrow(s0$PHI), T_len)
   expect_identical(s0$M, as.integer(ceiling(T_len * 0.2)))
 
-  s1 <- construct_gp(gp(week, d = 1), data)
+  s1 <- construct_gp(gp(week, d = 1, basis_prop = 0.2), data)
   expect_identical(s1$d, 1L)
   # Basis is built on the T - d free values that are integrated in Stan.
   expect_identical(nrow(s1$PHI), T_len - 1L)
   expect_identical(s1$M, as.integer(ceiling((T_len - 1L) * 0.2)))
   # The full integrated series is still length T.
   expect_identical(s1$T, T_len)
+})
+
+test_that(".gp_approx_constants() dispatches by kernel and Matern order", {
+  expect_null(.gp_approx_constants("periodic", 1.5))
+  se <- .gp_approx_constants("se", NA)
+  expect_identical(se, list(m_factor = 1.75, c_factor = 3.2))
+  m52 <- .gp_approx_constants("matern52", 2.5)
+  expect_identical(m52, list(m_factor = 2.65, c_factor = 4.1))
+  # Matern 3/2 and the Ornstein-Uhlenbeck (Matern 1/2) kernel share the
+  # more conservative Matern 3/2 constants.
+  m32 <- .gp_approx_constants("matern32", 1.5)
+  ou <- .gp_approx_constants("ou", 0.5)
+  expect_identical(m32, list(m_factor = 3.42, c_factor = 4.5))
+  expect_identical(ou, m32)
+})
+
+test_that(".gp_half_range() returns half the span, with a floor of 0.5", {
+  expect_identical(.gp_half_range(11), 5)
+  expect_identical(.gp_half_range(2), 0.5)
+  expect_identical(.gp_half_range(1), 0.5)
+})
+
+test_that(".gp_basis_settings() chooses L and M from the length-scale prior when opted in", {
+  # basis_prop/boundary_scale default to fixed values (see gp()); pass
+  # NULL explicitly to opt into automatic sizing from the length-scale
+  # prior.
+  g <- gp(week, kernel = "matern32", basis_prop = NULL, boundary_scale = NULL)
+  n <- 60L
+  out <- .gp_basis_settings(g, n)
+  S <- .gp_half_range(n)
+  const <- .gp_approx_constants("matern32", 1.5)
+  ls_q <- qlnorm(c(0.05, 0.95), g$ls_meanlog, g$ls_sdlog)
+  expect_identical(out$L, max(1.2, const$c_factor * ls_q[2] / S))
+  expect_identical(
+    out$M,
+    as.integer(max(1, min(
+      n, ceiling(const$m_factor * out$L * S / ls_q[1])
+    )))
+  )
+  # A longer reference length scale needs a wider boundary.
+  wide <- .gp_basis_settings(
+    gp(week, ls_meanlog = log(20), basis_prop = NULL, boundary_scale = NULL),
+    n
+  )
+  expect_gt(wide$L, out$L)
+})
+
+test_that(".gp_basis_settings() caps M at one basis function per free time point", {
+  # ls_meanlog/ls_sdlog reference a length scale much shorter than the
+  # span of a short series, which would otherwise choose more basis
+  # functions than there are free time points.
+  g <- gp(week, basis_prop = NULL, boundary_scale = NULL)
+  out <- .gp_basis_settings(g, 9L)
+  expect_lte(out$M, 9L)
+})
+
+test_that("a single basis function (M = 1) flows through construct_gp() cleanly", { # nolint
+  # M = 1 is reachable with default gp() settings on a series with a
+  # handful of distinct time points, and is the edge case gp_priors_lp()
+  # must not crash on (see test-stan_gaussian_process.R). Exercise it via
+  # an explicit basis_prop (automatic sizing off) for both a non-periodic
+  # and the periodic kernel.
+  T_len <- 5L
+  short_weeks <- sort(unique(data$week))[seq_len(T_len)]
+  short_data <- data[week %in% short_weeks]
+
+  # Automatic sizing off: basis_prop chosen so ceiling(basis_prop * T) == 1.
+  s_manual <- construct_gp(
+    gp(week, kernel = "matern32", basis_prop = 0.2), short_data
+  )
+  expect_identical(s_manual$M, 1L)
+  expect_identical(ncol(s_manual$PHI), 1L)
+
+  # Periodic kernel keeps the fixed basis_prop default even when opted in;
+  # a small enough basis_prop still reaches M = 1.
+  s_periodic <- construct_gp(
+    gp(week, kernel = "periodic", basis_prop = 0.2), short_data
+  )
+  expect_identical(s_periodic$M, 1L)
+  expect_identical(ncol(s_periodic$PHI), 2L) # periodic basis is 2M wide
+
+  # The Stan data list wiring is unaffected by M = 1 (no dimension
+  # mismatch/degenerate-shape error when building the design).
+  f <- enw_formula(
+    ~ 1 + gp(week, kernel = "matern32", basis_prop = 0.2), short_data
+  )
+  dl <- enw_formula_as_data_list(f, "test")
+  expect_identical(dl$test_gp_M, 1L)
+  expect_identical(dim(dl$test_gp_PHI), c(dl$test_gp_T, 1L))
+
+  # Automatic sizing (opted in with NULL) on the smallest series a d = 0
+  # gp() term accepts (2 time points): with the package's kernel
+  # constants the M >= 1 floor in .gp_basis_settings() never drops below
+  # the M <= n cap for a realistic length-scale prior, so the smallest M
+  # automatic sizing reaches here is n itself (M = 2), not 1. Exercise
+  # that boundary too, so automatic sizing is covered at the smallest M
+  # it can actually produce.
+  smallest_weeks <- sort(unique(data$week))[1:2]
+  smallest_data <- data[week %in% smallest_weeks]
+  s_auto <- construct_gp(
+    gp(week, kernel = "matern32", basis_prop = NULL, boundary_scale = NULL),
+    smallest_data
+  )
+  expect_identical(s_auto$M, 2L)
+  expect_identical(ncol(s_auto$PHI), 2L)
+})
+
+test_that(".gp_basis_settings() honours an explicit basis_prop/boundary_scale", {
+  g <- gp(week, basis_prop = 0.3, boundary_scale = 2)
+  out <- .gp_basis_settings(g, 50L)
+  expect_identical(out$L, 2)
+  expect_identical(out$M, as.integer(ceiling(0.3 * 50L)))
+})
+
+test_that(".gp_basis_settings() uses the fixed defaults for the periodic kernel, even when opted in", {
+  out <- .gp_basis_settings(
+    gp(week, kernel = "periodic", basis_prop = NULL, boundary_scale = NULL),
+    50L
+  )
+  expect_identical(out$L, 1.5)
+  expect_identical(out$M, as.integer(ceiling(0.2 * 50L)))
 })
 
 test_that("construct_gp() rejects a series too short for d", {
@@ -115,7 +251,7 @@ test_that("parse_formula() routes gp terms separately", {
 })
 
 test_that("construct_gp() builds correct basis metadata", {
-  spec <- construct_gp(gp(week), data)
+  spec <- construct_gp(gp(week, basis_prop = 0.2), data)
   expect_identical(spec$T, length(unique(data$week)))
   expect_identical(spec$G, 1L)
   expect_identical(length(spec$time_idx), nrow(data))
@@ -131,6 +267,21 @@ test_that("construct_gp() builds correct basis metadata", {
   grouped <- construct_gp(gp(week, day_of_week), data)
   expect_identical(grouped$G, length(unique(data$day_of_week)))
   expect_true(all(grouped$group_idx >= 1L & grouped$group_idx <= grouped$G))
+})
+
+test_that("construct_gp() resolves basis_prop/boundary_scale when opted in with NULL", {
+  g <- gp(week, basis_prop = NULL, boundary_scale = NULL)
+  spec <- construct_gp(g, data)
+  n_free <- length(unique(data$week))
+  expected <- .gp_basis_settings(g, n_free)
+  expect_identical(spec$M, expected$M)
+  expect_identical(spec$boundary_scale, expected$L)
+  # Resolved settings are numeric, not the NULL the gp() term carries.
+  expect_type(spec$M, "integer")
+  expect_type(spec$boundary_scale, "double")
+  expect_identical(dim(spec$PHI), c(nrow(spec$PHI), spec$M))
+  # The basis is capped at one function per free time point.
+  expect_lte(spec$M, n_free)
 })
 
 test_that("construct_gp() errors on missing or non-numeric time", {
@@ -156,7 +307,9 @@ test_that("enw_formula() collects gp specs alongside fixed/random", {
 })
 
 test_that("enw_formula_as_data_list() ships the gp Stan data", {
-  f <- enw_formula(~ 1 + gp(week, day_of_week), data, sparse = FALSE)
+  f <- enw_formula(
+    ~ 1 + gp(week, day_of_week, basis_prop = 0.2), data, sparse = FALSE
+  )
   dl <- enw_formula_as_data_list(f, "ref")
 
   expect_identical(dl$ref_gp_present, 1L)
@@ -168,7 +321,7 @@ test_that("enw_formula_as_data_list() ships the gp Stan data", {
   expect_identical(dl$ref_gp_M, as.integer(ceiling(dl$ref_gp_T * 0.2)))
   expect_identical(dim(dl$ref_gp_PHI), c(dl$ref_gp_T, dl$ref_gp_M))
 
-  spec <- construct_gp(gp(week, day_of_week), data)
+  spec <- construct_gp(gp(week, day_of_week, basis_prop = 0.2), data)
   expect_identical(
     dl$ref_gp_flat_idx,
     as.integer((spec$group_idx - 1L) * spec$T + spec$time_idx)
@@ -190,7 +343,9 @@ test_that("enw_formula_as_data_list() returns inert defaults without gp", {
 })
 
 test_that("enw_formula_as_data_list() ships the gp differencing order", {
-  f <- enw_formula(~ 1 + gp(week, d = 1), data, sparse = FALSE)
+  f <- enw_formula(~ 1 + gp(week, d = 1, basis_prop = 0.2), data,
+    sparse = FALSE
+  )
   dl <- enw_formula_as_data_list(f, "ref")
   expect_identical(dl$ref_gp_d, 1L)
   # The basis matrix has T - d rows; the integrated series stays length T.
@@ -415,6 +570,35 @@ test_that("a d = 1 gp() recovers a known integrated (drifting) trend", {
   # The posterior mean tracks the integrated trend.
   expect_lt(sqrt(mean((fhat - true_f)^2)), 0.15)
   expect_true(all(fit$summary(c("rho", "alpha"))$rhat < 1.1))
+})
+
+test_that(".gp_inits() centres eta[1, ] at 0 for a stationary kernel", {
+  data_list <- list(
+    refp_gp_present = 1L, refp_gp_M = 4L, refp_gp_G = 2L,
+    refp_gp_type = 2L
+  )
+  priors <- list(
+    refp_gp_rho_p = c(0, 1), refp_gp_alpha_p = c(0, 1)
+  )
+  init <- .gp_inits(data_list, priors, "refp")
+  expect_identical(dim(init$refp_gp_eta), c(4L, 2L))
+  expect_identical(init$refp_gp_eta[1, ], c(0, 0))
+  # the remaining, non-centred rows keep their small random spread
+  expect_true(all(init$refp_gp_eta[2:4, ] != 0))
+})
+
+test_that(".gp_inits() centres both fundamental-frequency rows for a periodic kernel", {
+  data_list <- list(
+    refp_gp_present = 1L, refp_gp_M = 3L, refp_gp_G = 1L,
+    refp_gp_type = 1L
+  )
+  priors <- list(
+    refp_gp_rho_p = c(0, 1), refp_gp_alpha_p = c(0, 1)
+  )
+  init <- .gp_inits(data_list, priors, "refp")
+  expect_identical(dim(init$refp_gp_eta), c(6L, 1L))
+  expect_identical(init$refp_gp_eta[1, ], 0)
+  expect_identical(init$refp_gp_eta[4, ], 0) # M + 1
 })
 
 test_that("gp() wires data and priors into every supporting module", {

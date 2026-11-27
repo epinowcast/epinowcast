@@ -10,7 +10,9 @@ gp(
   d = 0,
   kernel = c("matern32", "matern52", "ou", "se", "periodic"),
   basis_prop = 0.2,
-  boundary_scale = 1.5
+  boundary_scale = 1.5,
+  ls_meanlog = log(3),
+  ls_sdlog = 0.5
 )
 }
 \arguments{
@@ -41,17 +43,37 @@ of \code{"matern32"} (the default, a Matern 3/2 kernel), \code{"matern52"}
 (Matern 5/2), \code{"ou"} (Ornstein-Uhlenbeck, equivalent to Matern
 1/2), \code{"se"} (squared exponential), or \code{"periodic"}.}
 
-\item{basis_prop}{Numeric in \verb{(0, 1]}. Proportion of time points to
-use as basis functions, controlling the accuracy-speed trade-off of
-the reduced-rank approximation. Defaults to \code{0.2} (the \code{EpiNow2}
-default). The number of basis functions is
-\code{ceiling(basis_prop * T)}.}
+\item{basis_prop}{Numeric in \verb{(0, 1]}, or \code{NULL}. Proportion of time
+points to use as basis functions, controlling the accuracy-speed
+trade-off of the reduced-rank approximation. Defaults to \code{0.2}. The
+number of basis functions is \code{ceiling(basis_prop * T)}. Set to \code{NULL}
+to choose it automatically instead, from \code{ls_meanlog}/\code{ls_sdlog} and
+\code{boundary_scale} (see Details); this is opt-in, not the default,
+because it ties the number of basis functions to the \emph{absolute}
+scale of \code{time} and the reference length-scale prior, which can
+choose a very large basis when \code{time} has few distinct values
+relative to that prior (see Details). Ignored (fixed at \code{0.2}) for
+\code{kernel = "periodic"}, which the automatic selection does not cover.}
 
-\item{boundary_scale}{Numeric, defaults to \code{1.5}. Boundary factor
-\code{L} of the Hilbert-space approximation; the process is approximated
-on the interval scaled by this factor. This has no effect when
-\code{kernel = "periodic"}, which uses a fundamental-frequency basis
-rather than the boundary-scaled basis.}
+\item{boundary_scale}{Numeric, or \code{NULL}. Boundary factor \code{L} of the
+Hilbert-space approximation; the process is approximated on the
+interval scaled by this factor. Defaults to \code{1.5}. Set to \code{NULL} to
+choose it automatically instead, from \code{ls_meanlog}/\code{ls_sdlog} (see
+Details; the same opt-in caveat as \code{basis_prop} applies). Has no
+effect when \code{kernel = "periodic"}, which uses a fundamental-frequency
+basis rather than the boundary-scaled basis.}
+
+\item{ls_meanlog, ls_sdlog}{Numerics, defaulting to \code{log(3)} and
+\code{0.5}. The meanlog/sdlog of a log-normal reference length-scale
+distribution, used only to choose \code{basis_prop}/\code{boundary_scale}
+automatically when either is \code{NULL} (see Details); otherwise unused.
+These default to the same log-normal length-scale prior every
+module ships by default (for example \code{expr_gp_rho}), but that prior
+is specified \emph{on the scale of the module} (for example the log
+growth rate) while \code{ls_meanlog}/\code{ls_sdlog} are on the scale of
+\code{time} itself, which need not match; set them to a value meaningful
+for \code{time}'s own units and range, and check the \verb{$M} of the resulting
+\code{construct_gp()} specification before relying on the automatic choice.}
 }
 \value{
 A list of class \code{enw_gp_term} describing the Gaussian
@@ -84,6 +106,25 @@ and length-scale priors are inherited from \code{EpiNow2} and are set on
 \code{EpiNow2}'s scale; on a given module's scale (for example the log
 growth rate or a logit hazard) they may need tuning with
 \code{\link[=enw_replace_priors]{enw_replace_priors()}}.
+}
+\details{
+When \code{basis_prop} and/or \code{boundary_scale} are \code{NULL}, they are
+chosen from the 5\%/95\% quantiles of the \code{ls_meanlog}/\code{ls_sdlog}
+length-scale prior using the relationships of Riutort-Mayol et al.
+(2023, Section 4.3.1): the boundary factor from the upper quantile
+(longer length scales need a wider boundary) and the number of basis
+functions from the lower quantile (shorter length scales need more
+basis functions), capped at one basis function per free time point.
+This is a one-shot, prior-based approximation of that paper's own
+iterative, posterior-based procedure, and depends on \code{time}'s
+absolute scale: a reference length scale that is short relative to
+the span of \code{time} chooses a large, possibly capped, basis. This is
+opt-in, not the default (see \code{basis_prop}), because tested against
+this package's typical \code{gp()} usage (few distinct \code{time} values
+against the default reference prior) it produced far more basis
+functions than time points and degraded sampling. This package
+does not (yet) warn post-fit when the posterior length scale falls
+outside the range the chosen settings represent accurately.
 }
 \section{Reference}{
 

@@ -603,6 +603,31 @@ transformed parameters{
     if (model_refp > 1) {
       // refp_sd uses a log-link intercept; centring it would need a
       // non-trivial Jacobian, so it is left on the raw design.
+      // The centred low-frequency coefficient(s) in refp_gp_eta (see
+      // gp_priors_lp()) are scaled to refp_gp_alpha's magnitude, but
+      // every other spectral weight below is rescaled by
+      // refp_gp_sd_alpha via diagSPD, which is linear in alpha. Left
+      // alone, the shared centred row(s) would silently keep
+      // refp_gp_alpha's scale instead of refp_gp_sd_alpha's; rescale
+      // them by the ratio of the two magnitudes so the sd path's
+      // low-frequency contribution scales with refp_gp_sd_alpha like
+      // every other coefficient.
+      matrix[
+        refp_gp_type == 1 ? 2 * refp_gp_M : refp_gp_M, refp_gp_G
+      ] refp_gp_sd_eta = refp_gp_eta;
+      if (refp_gp_present && refp_gp_d == 0) {
+        // refp_gp_alpha is a real<lower=0> and can get arbitrarily
+        // close to zero (the weakly-identified-magnitude regime this
+        // centring targets); floor it as the denominator so the ratio
+        // (and so refp_gp_sd_eta, and refp_sd downstream) stays finite.
+        real sd_alpha_ratio =
+          refp_gp_sd_alpha[1] / fmax(refp_gp_alpha[1], 1e-8);
+        refp_gp_sd_eta[1, ] = refp_gp_eta[1, ] * sd_alpha_ratio;
+        if (refp_gp_type == 1) {
+          refp_gp_sd_eta[refp_gp_M + 1, ] =
+            refp_gp_eta[refp_gp_M + 1, ] * sd_alpha_ratio;
+        }
+      }
       refp_sd = regression_predictor(
         {log(refp_sd_int[1])}, refp_sd_beta, refp_fnrow, refp_fncol,
         refp_fdesign, refp_sparse, refp_sd_beta_sd, refp_rdesign, 1,
@@ -613,7 +638,7 @@ transformed parameters{
         refp_arima_sd_sigma,
         refp_arima_flat_idx,
         refp_gp_present, refp_gp_T, refp_gp_G, refp_gp_M, refp_gp_L,
-        refp_gp_type, refp_gp_nu, refp_gp_d, refp_gp_PHI, refp_gp_eta,
+        refp_gp_type, refp_gp_nu, refp_gp_d, refp_gp_PHI, refp_gp_sd_eta,
         refp_gp_rho, refp_gp_sd_alpha, refp_gp_flat_idx
       );
       refp_sd = exp(refp_sd);
@@ -739,7 +764,8 @@ model {
   );
   gp_priors_lp(
     expr_gp_present, expr_gp_eta, expr_gp_rho, expr_gp_alpha,
-    expr_gp_rho_p, expr_gp_alpha_p
+    expr_gp_rho_p, expr_gp_alpha_p,
+    expr_gp_M, expr_gp_L, expr_gp_type, expr_gp_nu, expr_gp_d
   );
   // Per-group LogNormal prior on the estimated population
 
@@ -756,7 +782,8 @@ model {
   );
   gp_priors_lp(
     expl_gp_present, expl_gp_eta, expl_gp_rho, expl_gp_alpha,
-    expl_gp_rho_p, expl_gp_alpha_p
+    expl_gp_rho_p, expl_gp_alpha_p,
+    expl_gp_M, expl_gp_L, expl_gp_type, expl_gp_nu, expl_gp_d
   );
   
   // Reference model
@@ -775,7 +802,8 @@ model {
     );
     gp_priors_lp(
       refp_gp_present, refp_gp_eta, refp_gp_rho, refp_gp_alpha,
-      refp_gp_rho_p, refp_gp_alpha_p
+      refp_gp_rho_p, refp_gp_alpha_p,
+      refp_gp_M, refp_gp_L, refp_gp_type, refp_gp_nu, refp_gp_d
     );
     if (model_refp > 1) {
       effect_priors_lp(
@@ -815,7 +843,8 @@ model {
     );
     gp_priors_lp(
       refnp_gp_present, refnp_gp_eta, refnp_gp_rho, refnp_gp_alpha,
-      refnp_gp_rho_p, refnp_gp_alpha_p
+      refnp_gp_rho_p, refnp_gp_alpha_p,
+      refnp_gp_M, refnp_gp_L, refnp_gp_type, refnp_gp_nu, refnp_gp_d
     );
   }
 
@@ -828,7 +857,8 @@ model {
   );
   gp_priors_lp(
     rep_gp_present, rep_gp_eta, rep_gp_rho, rep_gp_alpha,
-    rep_gp_rho_p, rep_gp_alpha_p
+    rep_gp_rho_p, rep_gp_alpha_p,
+    rep_gp_M, rep_gp_L, rep_gp_type, rep_gp_nu, rep_gp_d
   );
 
   // Missing reference date model
@@ -842,7 +872,8 @@ model {
     );
     gp_priors_lp(
       miss_gp_present, miss_gp_eta, miss_gp_rho, miss_gp_alpha,
-      miss_gp_rho_p, miss_gp_alpha_p
+      miss_gp_rho_p, miss_gp_alpha_p,
+      miss_gp_M, miss_gp_L, miss_gp_type, miss_gp_nu, miss_gp_d
     );
   }
   

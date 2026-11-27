@@ -57,7 +57,7 @@ Add a term to any module's formula with `gp()`:
 - `gp(time, by)` — an independent realisation per level of `by`, sharing the length scale and magnitude.
 - `gp(time, d = 1)` — an integrated (non-stationary) process (see [Differencing order](#differencing)).
 - `gp(time, kernel = "se")` — a different kernel (see [Kernels](#kernels)).
-- `gp(time, basis_prop = 0.3)` — more basis functions, trading speed for approximation accuracy.
+- `gp(time, basis_prop = 0.3)` — a fixed proportion of basis functions rather than the automatic default (see [Automatic approximation sizing](#sizing)), trading speed for approximation accuracy.
 
 `time` is the column the process evolves over, and the optional `by` gives each group its own realisation under shared hyperparameters.
 The [latent processes vignette](latent-processes.html) works through `gp()` on the growth rate and compares it to `rw()`, `arima()`, and lme4-style random effects; the [Priors](#priors) section below covers tuning their regularisation.
@@ -88,15 +88,20 @@ with time rescaled linearly to lie in $[-1, 1]$,
 
 $$t^* = \frac{t - \tfrac{1}{2} t_\mathrm{GP}}{\tfrac{1}{2} t_\mathrm{GP}}.$$
 
-The weights have a standard-normal prior $\beta_j \sim \mathcal{N}(0, 1)$, so the approximation is non-centred: all of the kernel's structure enters through the spectral densities $S_k(\sqrt{\lambda_j})$, which scale each basis function by how much power the kernel places at that frequency.
+Most weights have a standard-normal prior $\beta_j \sim \mathcal{N}(0, 1)$, so the approximation is non-centred for those: the kernel's structure enters through the spectral densities $S_k(\sqrt{\lambda_j})$, which scale each basis function by how much power the kernel places at that frequency.
+For a stationary (`d = 0`) term, the lowest-frequency weight $\beta_1$ (the smoothest basis function) is the most strongly data-identified, so it is centred instead — used directly on the square root of the spectral-density scale, with $\beta_1 \sim \mathcal{N}\!\left(0,\, \sqrt{S_k(\sqrt{\lambda_1})}\right)$ — which avoids a funnel between it and the magnitude $\alpha$ when $\alpha$ is weakly identified.
+A non-stationary (`d \ge 1`) term (see [Differencing order](#differencing) below) keeps every weight, including $\beta_1$, fully non-centred.
+See [Priors](#priors) below.
 
 The basis matrix $\Phi \in \mathbb{R}^{T \times m}$ (with entries $\phi_j(t)$) is data-only: it does not depend on $\rho$ or $\alpha$, so it is built once on the R side in `construct_gp()` and passed to Stan as data.
 The spectral densities are parameter-dependent and rebuilt every gradient evaluation.
 Putting the pieces together, the latent process for one group is
 
 ```text
-S    <- diagSPD(alpha, rho, L, M)     # length-M (or 2M) spectral density
-f    <- PHI * (S .* eta)              # length-T latent, eta ~ Normal(0, 1)
+S    <- diagSPD(alpha, rho, L, M)     # length-M (or 2M) sqrt spectral density
+w    <- S .* eta                      # non-centred weights, eta ~ Normal(0, 1)
+if (d == 0) w[1] <- eta[1]            # stationary only: eta[1] ~ Normal(0, S[1])
+f    <- PHI * w                       # length-T latent
 ```
 
 The Stan implementation of these steps lives in `inst/stan/functions/gaussian_process.stan`, which was adapted from `EpiNow2`.
@@ -128,8 +133,26 @@ The `kernel` argument selects among the following special cases.
 
 - **Periodic** (`kernel = "periodic"`), which repeats on a fixed cycle rather than decaying with separation.
   It uses a fundamental-frequency basis (cosine/sine pairs) rather than the boundary-scaled basis above, so `boundary_scale` has no effect for this kernel.
+  Both coefficients at the fundamental frequency ($\eta_1$, the cosine term, and $\eta_{m+1}$, the sine term) are equally strongly data-identified, so both are centred (see above); the remaining coefficients are non-centred as usual.
 
 The smoother kernels (squared exponential, higher Matérn order) place less power at high frequencies, so their spectral densities decay faster and the approximation needs fewer basis functions for a given accuracy.
+
+# Automatic approximation sizing {#sizing}
+
+`basis_prop` and `boundary_scale` default to `NULL`, in which case `gp()` chooses them automatically using the relationships of Riutort-Mayol et al. [@approxGP, Section 4.3.1]: the boundary factor $L$ from the 95% quantile of a reference length-scale prior (longer length scales need a wider boundary) and the number of basis functions $m$ from its 5% quantile, once $L$ is fixed (shorter length scales need more basis functions).
+This targets accurate approximation over the range of length scales the prior places most of its weight on, rather than the fixed `basis_prop = 0.2`, `boundary_scale = 1.5` every module used before.
+
+The reference length-scale prior is controlled by `gp()`'s `ls_meanlog`/`ls_sdlog` arguments, defaulting to `log(3)`/`0.5` — the same log-normal prior every module ships by default for its length scale (for example `expr_gp_rho`; see [Priors](#priors)).
+If you override that prior through the module's `priors` argument or [enw_replace_priors()], set `ls_meanlog`/`ls_sdlog` to match so the automatic sizing stays tuned to the prior you are actually using; `gp()` has no way to read the prior back once it has been overridden.
+The periodic kernel keeps the fixed `basis_prop = 0.2` default unconditionally: it has no boundary to choose, and Riutort-Mayol et al. do not give sizing relationships for it.
+
+Set `basis_prop` and/or `boundary_scale` explicitly to opt out and recover the previous fixed behaviour, or to tune the approximation directly rather than through the length-scale prior:
+
+```r
+gp(time, basis_prop = 0.2, boundary_scale = 1.5)
+```
+
+`epinowcast` does not (yet) warn after fitting when the posterior length scale falls outside the range the chosen settings represent accurately; this is left as a follow-up.
 
 # Group structure: dependent vs independent
 
@@ -171,7 +194,9 @@ It is permitted on the logit-hazard modules (`refnp`, `rep`, `miss`) for API con
 The default priors follow `EpiNow2` [@approxGP].
 The length scale $\rho$ and magnitude $\alpha$ can both be overridden through the standard `priors` argument of the relevant module; the spectral weights are fixed.
 
-- $\eta_j \sim \mathcal{N}(0, 1)$ — fixed by the non-centred parameterisation; not user-tunable.
+- For a stationary (`d = 0`) term: $\eta_j \sim \mathcal{N}(0, 1)$ for $j \ge 2$ (and, for the periodic kernel, $j \ne m+1$) — fixed by the non-centred parameterisation; not user-tunable.
+- For a stationary (`d = 0`) term: $\eta_1 \sim \mathcal{N}\!\left(0,\, \sqrt{S_k(\sqrt{\lambda_1})}\right)$ (and, for the periodic kernel, $\eta_{m+1}$ the same way) — the centred lowest-frequency coefficient; also not user-tunable, and reparameterised automatically as $\alpha$ and $\rho$ change.
+- For a non-stationary (`d \ge 1`) term: $\eta_j \sim \mathcal{N}(0, 1)$ for every $j$, including $j = 1$ (and, for the periodic kernel, $j = m+1$) — fully non-centred; see [Differencing order](#differencing).
 - $\alpha \sim \mathcal{N}_+(\mu_\alpha, \sigma_\alpha)$ (half-normal) — controls how far the process can deviate from zero. Set through the `<prefix>_gp_alpha` prior.
 - $\rho \sim \mathrm{LogNormal}(\mu_\rho, \sigma_\rho)$ — controls how quickly the process can change. Set through the `<prefix>_gp_rho` prior.
 
@@ -206,7 +231,7 @@ Putting a `gp()` term on the reference delay mean, for instance, models a report
 
 - One Gaussian process term per formula. The R side aborts if multiple are supplied.
 - Grouped series share the length scale and magnitude across groups, and `gp()` does not take a `type` argument.
-- The approximation accuracy is controlled by `basis_prop`; too few basis functions oversmooth short-length-scale structure, while too many slow the fit. The `EpiNow2` default of $b = 0.2$ is a reasonable starting point but may need raising for processes with fast variation.
+- The approximation accuracy is controlled by `basis_prop` and `boundary_scale`; too few basis functions oversmooth short-length-scale structure, while too many slow the fit. By default both are chosen automatically from the length-scale prior (see [Automatic approximation sizing](#sizing)); set them explicitly to tune the approximation directly.
 - When the parametric reference standard deviation is modelled (`model_refp > 1`), it shares the Gaussian process basis, length scale, and spectral weights of the mean but carries an independent magnitude (`refp_gp_sd_alpha`). The two latent processes are therefore perfectly correlated up to that magnitude rather than driven by separate weights.
 
 # References

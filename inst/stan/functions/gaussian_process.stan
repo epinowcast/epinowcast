@@ -20,6 +20,30 @@
  * unit-normal spectral coefficients. The per-observation contribution
  * is gathered from the (T x G) latent matrix with a flat column-major
  * index, mirroring the ARIMA path.
+ *
+ * For a stationary process (`d = 0`), the lowest-frequency coefficient
+ * `eta[1]` (and, for the periodic kernel, the coefficient `eta[M + 1]`
+ * at the same fundamental frequency) is the smoothest and most
+ * data-identified basis function, so it trades off against `alpha`:
+ * only their product is identified, which produces a funnel in the
+ * joint posterior when `alpha` is small (an uninformative-data regime).
+ * `update_gp()` therefore uses that coefficient directly on the
+ * spectral-density scale (a centred parameterisation) instead of
+ * scaling it by the spectral density when `low_freq_centred` is set;
+ * the matching prior lives on `gp_priors_lp()` in regression.stan. The
+ * remaining, less-identified coefficients stay non-centred. See
+ * Betancourt, "Hierarchical Modeling" (mc-stan.org/users/documentation/
+ * case-studies/divergences_and_bias.html) for the general centred vs.
+ * non-centred trade-off this follows.
+ *
+ * For an integrated process (`d >= 1`), `gp_latent_matrix()` leaves
+ * `low_freq_centred` off: the lowest-frequency coefficient there drives
+ * the free values that get cumulatively summed into the trajectory, so
+ * it competes with the anchoring/grand-mean-centring identifiability fix
+ * described on `gp_latent_matrix()` rather than with `alpha` directly.
+ * Centring it in that regime was found empirically to worsen sampling
+ * (more divergences, higher treedepth and R-hat) rather than help, so
+ * `d >= 1` keeps the original fully non-centred parameterisation.
  */
 
 /**
@@ -80,20 +104,20 @@ vector diagSPD_Periodic(real alpha, real rho, int M) {
 }
 
 /**
- * Update a Gaussian process using the spectral densities.
+ * Spectral density of the Gaussian process, dispatched by kernel type.
  *
- * @param PHI   Basis function matrix (T x M, or T x 2M for periodic).
- * @param M     Number of basis functions.
- * @param L     Boundary factor.
+ * Shared by `update_gp()` and `gp_priors_lp()` so the kernel dispatch
+ * logic is written once.
+ *
  * @param alpha Magnitude (marginal standard deviation).
  * @param rho   Length scale.
- * @param eta   Spectral coefficients (M, or 2M for periodic).
+ * @param L     Boundary factor.
+ * @param M     Number of basis functions.
  * @param type  0 = squared exponential, 1 = periodic, 2 = Matern.
  * @param nu    Matern smoothness; one of 0.5, 1.5, 2.5.
- * @return The latent process values (length = rows of PHI).
+ * @return A vector of spectral densities (length M, or 2M for periodic).
  */
-vector update_gp(matrix PHI, int M, real L, real alpha,
-                 real rho, vector eta, int type, real nu) {
+vector gp_diag_spd(real alpha, real rho, real L, int M, int type, real nu) {
   vector[type == 1 ? 2 * M : M] diagSPD;
   if (type == 0) {
     diagSPD = diagSPD_EQ(alpha, rho, L, M);
@@ -110,7 +134,43 @@ vector update_gp(matrix PHI, int M, real L, real alpha,
       reject("nu must be one of 0.5, 1.5, or 2.5; found nu=", nu);
     }
   }
-  return PHI * (diagSPD .* eta);
+  return diagSPD;
+}
+
+/**
+ * Update a Gaussian process using the spectral densities.
+ *
+ * @param PHI              Basis function matrix (T x M, or T x 2M for
+ *                         periodic).
+ * @param M                Number of basis functions.
+ * @param L                Boundary factor.
+ * @param alpha            Magnitude (marginal standard deviation).
+ * @param rho              Length scale.
+ * @param eta              Spectral coefficients (M, or 2M for periodic).
+ * @param type             0 = squared exponential, 1 = periodic,
+ *                         2 = Matern.
+ * @param nu               Matern smoothness; one of 0.5, 1.5, 2.5.
+ * @param low_freq_centred 1 = use `eta[1]` (and, for the periodic
+ *                         kernel, `eta[M + 1]`) directly rather than
+ *                         scaling by the spectral density; see the file
+ *                         header. 0 = fully non-centred (the original
+ *                         behaviour).
+ * @return The latent process values (length = rows of PHI).
+ */
+vector update_gp(matrix PHI, int M, real L, real alpha,
+                 real rho, vector eta, int type, real nu,
+                 int low_freq_centred) {
+  vector[type == 1 ? 2 * M : M] diagSPD = gp_diag_spd(
+    alpha, rho, L, M, type, nu
+  );
+  vector[num_elements(eta)] weights = diagSPD .* eta;
+  if (low_freq_centred) {
+    weights[1] = eta[1];
+    if (type == 1) {
+      weights[M + 1] = eta[M + 1];
+    }
+  }
+  return PHI * weights;
 }
 
 /**
@@ -170,9 +230,13 @@ matrix gp_latent_matrix(int T, int G, int M, real L, int type, real nu,
                         int d, matrix PHI, matrix eta,
                         array[] real rho, array[] real alpha) {
   matrix[T, G] gp_eps;
+  // The lowest-frequency coefficient is only centred for a stationary
+  // process; see the file header for why d >= 1 keeps the original
+  // fully non-centred parameterisation.
+  int low_freq_centred = (d == 0);
   for (g in 1:G) {
     vector[rows(PHI)] f = update_gp(
-      PHI, M, L, alpha[1], rho[1], eta[, g], type, nu
+      PHI, M, L, alpha[1], rho[1], eta[, g], type, nu, low_freq_centred
     );
     if (d == 0) {
       gp_eps[, g] = f;

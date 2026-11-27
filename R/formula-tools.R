@@ -45,7 +45,7 @@ enw_manual_formula <- function(data, fixed = NULL, random = NULL,
     form <- NULL
   }
 
-  cr_in_dt <- purrr::map(
+  cr_in_dt <- map(
     custom_random, ~ colnames(data)[startsWith(colnames(data), .)]
   )
   cr_in_dt <- unlist(cr_in_dt)
@@ -88,7 +88,7 @@ enw_manual_formula <- function(data, fixed = NULL, random = NULL,
 #' @examples
 #' epinowcast:::as_string_formula(~ 1 + age_group)
 as_string_formula <- function(formula) {
-  form <- paste(deparse(formula), collapse = " ")
+  form <- deparse1(formula, collapse = " ")
   form <- gsub("\\s+", " ", form, perl = FALSE)
   form
 }
@@ -310,7 +310,7 @@ remove_gp_terms <- function(formula) {
 #' epinowcast:::parse_formula(~ 1 + (1 | location) + rw(week, location))
 parse_formula <- function(formula) {
   if (!inherits(formula, "formula")) {
-    cli::cli_abort("`formula` must be a formula object.")
+    cli_abort("`formula` must be a formula object.")
   }
   rw <- rw_terms(formula)
   formula <- remove_rw_terms(formula)
@@ -318,8 +318,8 @@ parse_formula <- function(formula) {
   formula <- remove_arima_terms(formula)
   gp <- gp_terms(formula)
   formula <- remove_gp_terms(formula)
-  fixed <- reformulas::nobars(formula)
-  random <- reformulas::findbars(formula)
+  fixed <- nobars(formula)
+  random <- findbars(formula)
 
   model_terms <- list(
     fixed = split_formula_to_terms(fixed),
@@ -365,7 +365,7 @@ parse_formula <- function(formula) {
 #' rw(time, location)
 rw <- function(time, by) {
   if (missing(time)) {
-    cli::cli_abort("`time` must be present")
+    cli_abort("`time` must be present")
   } else {
     time <- deparse(substitute(time))
   }
@@ -423,7 +423,7 @@ rw <- function(time, by) {
 #' arima(time, location, p = 2, d = 1, q = 1)
 arima <- function(time, by, p = 1, d = 0, q = 0) {
   if (missing(time)) {
-    cli::cli_abort("`time` must be present")
+    cli_abort("`time` must be present")
   }
   time <- deparse(substitute(time))
   by <- if (missing(by)) NULL else deparse(substitute(by))
@@ -449,7 +449,7 @@ arima <- function(time, by, p = 1, d = 0, q = 0) {
 #' ar(time)
 #' ar(time, location, p = 2)
 ar <- function(time, by, p = 1) {
-  if (missing(time)) cli::cli_abort("`time` must be present")
+  if (missing(time)) cli_abort("`time` must be present")
   time <- deparse(substitute(time))
   by <- if (missing(by)) NULL else deparse(substitute(by))
   .arima_term(time, by, p = p, d = 0L, q = 0L)
@@ -470,7 +470,7 @@ ar <- function(time, by, p = 1) {
 #' ma(time)
 #' ma(time, location, q = 2)
 ma <- function(time, by, q = 1) {
-  if (missing(time)) cli::cli_abort("`time` must be present")
+  if (missing(time)) cli_abort("`time` must be present")
   time <- deparse(substitute(time))
   by <- if (missing(by)) NULL else deparse(substitute(by))
   .arima_term(time, by, p = 0L, d = 0L, q = q)
@@ -494,7 +494,7 @@ ma <- function(time, by, q = 1) {
 #' arma(time)
 #' arma(time, location, p = 1, q = 1)
 arma <- function(time, by, p = 1, q = 1) {
-  if (missing(time)) cli::cli_abort("`time` must be present")
+  if (missing(time)) cli_abort("`time` must be present")
   time <- deparse(substitute(time))
   by <- if (missing(by)) NULL else deparse(substitute(by))
   .arima_term(time, by, p = p, d = 0L, q = q)
@@ -509,7 +509,7 @@ arma <- function(time, by, p = 1, q = 1) {
   .check_arima_order(d, "d")
   .check_arima_order(q, "q")
   if (p == 0 && d == 0 && q == 0) {
-    cli::cli_abort(
+    cli_abort(
       "`arima(p = 0, d = 0, q = 0)` is degenerate; use a fixed effect."
     )
   }
@@ -527,7 +527,7 @@ arma <- function(time, by, p = 1, q = 1) {
 .check_arima_order <- function(value, name) {
   if (!is.numeric(value) || length(value) != 1L || is.na(value) ||
     !is.finite(value) || value < 0 || value != as.integer(value)) {
-    cli::cli_abort("`{name}` must be a non-negative integer scalar.")
+    cli_abort("`{name}` must be a non-negative integer scalar.")
   }
   invisible(NULL)
 }
@@ -592,23 +592,62 @@ arma <- function(time, by, p = 1, q = 1) {
 #' (Matern 5/2), `"ou"` (Ornstein-Uhlenbeck, equivalent to Matern
 #' 1/2), `"se"` (squared exponential), or `"periodic"`.
 #'
-#' @param basis_prop Numeric in `(0, 1]`. Proportion of time points to
-#' use as basis functions, controlling the accuracy-speed trade-off of
-#' the reduced-rank approximation. Defaults to `0.2` (the `EpiNow2`
-#' default). The number of basis functions is
-#' `ceiling(basis_prop * T)`.
+#' @param basis_prop Numeric in `(0, 1]`, or `NULL`. Proportion of time
+#' points to use as basis functions, controlling the accuracy-speed
+#' trade-off of the reduced-rank approximation. Defaults to `0.2`. The
+#' number of basis functions is `ceiling(basis_prop * T)`. Set to `NULL`
+#' to choose it automatically instead, from `ls_meanlog`/`ls_sdlog` and
+#' `boundary_scale` (see Details); this is opt-in, not the default,
+#' because it ties the number of basis functions to the *absolute*
+#' scale of `time` and the reference length-scale prior, which can
+#' choose a very large basis when `time` has few distinct values
+#' relative to that prior (see Details). Ignored (fixed at `0.2`) for
+#' `kernel = "periodic"`, which the automatic selection does not cover.
 #'
-#' @param boundary_scale Numeric, defaults to `1.5`. Boundary factor
-#' `L` of the Hilbert-space approximation; the process is approximated
-#' on the interval scaled by this factor. This has no effect when
-#' `kernel = "periodic"`, which uses a fundamental-frequency basis
-#' rather than the boundary-scaled basis.
+#' @param boundary_scale Numeric, or `NULL`. Boundary factor `L` of the
+#' Hilbert-space approximation; the process is approximated on the
+#' interval scaled by this factor. Defaults to `1.5`. Set to `NULL` to
+#' choose it automatically instead, from `ls_meanlog`/`ls_sdlog` (see
+#' Details; the same opt-in caveat as `basis_prop` applies). Has no
+#' effect when `kernel = "periodic"`, which uses a fundamental-frequency
+#' basis rather than the boundary-scaled basis.
+#'
+#' @param ls_meanlog,ls_sdlog Numerics, defaulting to `log(3)` and
+#' `0.5`. The meanlog/sdlog of a log-normal reference length-scale
+#' distribution, used only to choose `basis_prop`/`boundary_scale`
+#' automatically when either is `NULL` (see Details); otherwise unused.
+#' These default to the same log-normal length-scale prior every
+#' module ships by default (for example `expr_gp_rho`), but that prior
+#' is specified *on the scale of the module* (for example the log
+#' growth rate) while `ls_meanlog`/`ls_sdlog` are on the scale of
+#' `time` itself, which need not match; set them to a value meaningful
+#' for `time`'s own units and range, and check the `$M` of the resulting
+#' `construct_gp()` specification before relying on the automatic choice.
+#'
+#' @details
+#' When `basis_prop` and/or `boundary_scale` are `NULL`, they are
+#' chosen from the 5%/95% quantiles of the `ls_meanlog`/`ls_sdlog`
+#' length-scale prior using the relationships of Riutort-Mayol et al.
+#' (2023, Section 4.3.1): the boundary factor from the upper quantile
+#' (longer length scales need a wider boundary) and the number of basis
+#' functions from the lower quantile (shorter length scales need more
+#' basis functions), capped at one basis function per free time point.
+#' This is a one-shot, prior-based approximation of that paper's own
+#' iterative, posterior-based procedure, and depends on `time`'s
+#' absolute scale: a reference length scale that is short relative to
+#' the span of `time` chooses a large, possibly capped, basis. This is
+#' opt-in, not the default (see `basis_prop`), because tested against
+#' this package's typical `gp()` usage (few distinct `time` values
+#' against the default reference prior) it produced far more basis
+#' functions than time points and degraded sampling. This package
+#' does not (yet) warn post-fit when the posterior length scale falls
+#' outside the range the chosen settings represent accurately.
 #'
 #' @return A list of class `enw_gp_term` describing the Gaussian
 #' process term, interpretable by [construct_gp()].
 #' @export
 #' @importFrom cli cli_abort
-#' @importFrom rlang arg_match
+#' @importFrom rlang arg_match %||%
 #' @family formulatools
 #' @examples
 #' gp(time)
@@ -617,19 +656,25 @@ arma <- function(time, by, p = 1, q = 1) {
 #' gp(time, d = 1)
 gp <- function(time, by, d = 0, kernel = c(
                  "matern32", "matern52", "ou", "se", "periodic"
-               ), basis_prop = 0.2, boundary_scale = 1.5) {
+               ), basis_prop = 0.2, boundary_scale = 1.5,
+               ls_meanlog = log(3), ls_sdlog = 0.5) {
   if (missing(time)) {
-    cli::cli_abort("`time` must be present")
+    cli_abort("`time` must be present")
   }
   time <- deparse(substitute(time))
   by <- if (missing(by)) NULL else deparse(substitute(by))
-  kernel <- rlang::arg_match(kernel)
+  kernel <- arg_match(kernel)
   # `d` shares the non-negative-integer validation with arima()'s orders.
   .check_arima_order(d, "d")
   .check_gp_basis_prop(basis_prop)
-  if (!is.numeric(boundary_scale) || length(boundary_scale) != 1L ||
-    !is.finite(boundary_scale) || boundary_scale <= 0) {
-    cli::cli_abort("`boundary_scale` must be a positive numeric scalar.")
+  .check_gp_boundary_scale(boundary_scale)
+  if (!is.numeric(ls_meanlog) || length(ls_meanlog) != 1L ||
+    !is.finite(ls_meanlog)) {
+    cli_abort("`ls_meanlog` must be a finite numeric scalar.")
+  }
+  if (!is.numeric(ls_sdlog) || length(ls_sdlog) != 1L ||
+    !is.finite(ls_sdlog) || ls_sdlog <= 0) {
+    cli_abort("`ls_sdlog` must be a positive numeric scalar.")
   }
   # Map the user-facing kernel name to the Stan-side gp_type / nu that
   # the EpiNow2-derived `update_gp()` switch expects. gp_type: 0 = SE,
@@ -648,18 +693,40 @@ gp <- function(time, by, d = 0, kernel = c(
   out <- list(
     time = time, by = by, kernel = kernel,
     gp_type = gp_type, nu = nu, d = as.integer(d),
-    basis_prop = basis_prop, boundary_scale = boundary_scale
+    basis_prop = basis_prop, boundary_scale = boundary_scale,
+    ls_meanlog = ls_meanlog, ls_sdlog = ls_sdlog
   )
   class(out) <- "enw_gp_term"
   out
 }
 
-# Internal helper: validate that the GP `basis_prop` is a numeric scalar
-# in (0, 1].
+# Internal helper: validate that the GP `basis_prop` is `NULL` (automatic)
+# or a numeric scalar in (0, 1].
 .check_gp_basis_prop <- function(value) {
+  if (is.null(value)) {
+    return(invisible(NULL))
+  }
   if (!is.numeric(value) || length(value) != 1L || is.na(value) ||
     !is.finite(value) || value <= 0 || value > 1) {
-    cli::cli_abort("`basis_prop` must be a numeric scalar in (0, 1].")
+    cli_abort(
+      "`basis_prop` must be `NULL` (automatic) or a numeric scalar in (0, 1]."
+    )
+  }
+  invisible(NULL)
+}
+
+# Internal helper: validate that the GP `boundary_scale` is `NULL`
+# (automatic) or a positive numeric scalar.
+.check_gp_boundary_scale <- function(value) {
+  if (is.null(value)) {
+    return(invisible(NULL))
+  }
+  if (!is.numeric(value) || length(value) != 1L ||
+    !is.finite(value) || value <= 0) {
+    cli_abort(paste0(
+      "`boundary_scale` must be `NULL` (automatic) or a positive ",
+      "numeric scalar."
+    ))
   }
   invisible(NULL)
 }
@@ -706,7 +773,7 @@ construct_rw <- function(rw, data) {
     class(rw) <- "enw_arima_term"
   }
   if (!inherits(rw, "enw_arima_term")) {
-    cli::cli_abort(
+    cli_abort(
       "`rw` must be a term constructed by `rw()` or `arima()`."
     )
   }
@@ -749,23 +816,23 @@ construct_rw <- function(rw, data) {
 #' )
 construct_arima <- function(arima, data) {
   if (!inherits(arima, "enw_arima_term")) {
-    cli::cli_abort(
+    cli_abort(
       "Argument `arima` must be constructed by `epinowcast::arima()`."
     )
   }
   data <- coerce_dt(data)
   if (is.null(data[[arima$time]])) {
-    cli::cli_abort(
+    cli_abort(
       "Time variable `{arima$time}` is not present in the supplied data."
     )
   }
   if (!is.numeric(data[[arima$time]])) {
-    cli::cli_abort(
+    cli_abort(
       "Time variable `{arima$time}` must be numeric for an ARIMA term."
     )
   }
   if (anyNA(data[[arima$time]])) {
-    cli::cli_abort(
+    cli_abort(
       "Time variable `{arima$time}` contains missing values."
     )
   }
@@ -780,13 +847,13 @@ construct_arima <- function(arima, data) {
     group_levels <- "1"
   } else {
     if (is.null(data[[arima$by]])) {
-      cli::cli_abort(
+      cli_abort(
         "Grouping variable `{arima$by}` is not present in the data."
       )
     }
     by_vals <- data[[arima$by]]
     if (anyNA(by_vals)) {
-      cli::cli_abort(
+      cli_abort(
         "Grouping variable `{arima$by}` contains missing values."
       )
     }
@@ -797,7 +864,7 @@ construct_arima <- function(arima, data) {
     }
     G <- length(group_levels)
     if (G < 2) {
-      cli::cli_inform(paste0(
+      cli_inform(paste0(
         "Grouping variable `{arima$by}` has fewer than 2 levels; ",
         "ignoring `by`."
       ))
@@ -810,7 +877,7 @@ construct_arima <- function(arima, data) {
   }
 
   if (T_len < arima$p + arima$d + arima$q + 1) {
-    cli::cli_abort(paste0(
+    cli_abort(paste0(
       "ARIMA series has only {T_len} time points; need at least ",
       "{arima$p + arima$d + arima$q + 1} for ARIMA(",
       "{arima$p}, {arima$d}, {arima$q})."
@@ -830,6 +897,71 @@ construct_arima <- function(arima, data) {
     time_vals = time_vals, group_levels = group_levels,
     name = name
   )
+}
+
+# Internal helper: constants linking the length scale to the approximate
+# GP settings, from Riutort-Mayol et al. (2023, Section 4.3.1). With
+# half-range S, boundary factor c and m basis functions, length scales l
+# are approximated accurately when `m >= m_factor * c * S / l` and
+# `c >= c_factor * l / S` (with `c >= 1.2`). The Matern 3/2 constants are
+# used for the Ornstein-Uhlenbeck kernel (Matern 1/2), as the paper does
+# not cover it and these are the more conservative published values.
+# Returns `NULL` for the periodic kernel, which has no boundary.
+.gp_approx_constants <- function(kernel, nu) {
+  if (kernel == "periodic") {
+    return(NULL)
+  }
+  if (kernel == "se") {
+    list(m_factor = 1.75, c_factor = 3.2)
+  } else if (isTRUE(nu == 2.5)) {
+    list(m_factor = 2.65, c_factor = 4.1)
+  } else {
+    list(m_factor = 3.42, c_factor = 4.5)
+  }
+}
+
+# Internal helper: half-range (in time-point units) of n equally spaced
+# time points, with a minimum of 0.5.
+.gp_half_range <- function(n) {
+  max(n - 1, 1) / 2
+}
+
+# Internal helper: choose the boundary factor L and number of basis
+# functions M. Settings left NULL in `gp` are chosen from the
+# `ls_meanlog`/`ls_sdlog` reference length-scale prior via
+# `.gp_approx_constants()`: the boundary factor from the upper (95%)
+# prior quantile (longer length scales need a wider boundary), and the
+# number of basis functions from the lower (5%) prior quantile (shorter
+# length scales need more basis functions), once the boundary is fixed,
+# capped at one basis function per free time point. The periodic kernel
+# keeps the fixed `basis_prop = 0.2` default and has no boundary factor
+# to choose.
+.gp_basis_settings <- function(gp, n) {
+  S <- .gp_half_range(n)
+  L <- gp$boundary_scale
+  basis_prop <- gp$basis_prop
+  constants <- .gp_approx_constants(gp$kernel, gp$nu)
+  if (is.null(constants)) {
+    L <- L %||% 1.5
+    basis_prop <- basis_prop %||% 0.2
+  }
+  if (is.null(L) || is.null(basis_prop)) {
+    ls_quantiles <- stats::qlnorm(
+      c(0.05, 0.95), gp$ls_meanlog, gp$ls_sdlog
+    )
+  }
+  if (is.null(L)) {
+    L <- max(1.2, constants$c_factor * ls_quantiles[2] / S)
+  }
+  M <- if (is.null(basis_prop)) {
+    ceiling(constants$m_factor * L * S / ls_quantiles[1])
+  } else {
+    ceiling(basis_prop * n)
+  }
+  # A reference length scale that is short relative to the span of `time`
+  # can otherwise choose more basis functions than there are free time
+  # points, which is never useful for a *reduced*-rank approximation.
+  list(L = L, M = as.integer(max(1, min(M, n))))
 }
 
 #' Hilbert-space basis functions for the approximate Gaussian process
@@ -897,7 +1029,7 @@ construct_arima <- function(arima, data) {
 #' epinowcast:::construct_gp(gp(week, day_of_week, kernel = "se"), data)
 construct_gp <- function(gp, data) {
   if (!inherits(gp, "enw_gp_term")) {
-    cli::cli_abort(
+    cli_abort(
       "Argument `gp` must be constructed by `epinowcast::gp()`."
     )
   }
@@ -908,14 +1040,17 @@ construct_gp <- function(gp, data) {
   # zero), so the basis is built on T - d points.
   n_free <- idx$T - d
   if (n_free < 2L) {
-    cli::cli_abort(paste0(
+    cli_abort(paste0(
       "Gaussian process series has only {idx$T} time points; need at ",
       "least {d + 2} for a `gp()` term with `d = {d}`."
     ))
   }
-  M <- as.integer(ceiling(gp$basis_prop * n_free))
+  # basis_prop/boundary_scale left NULL in gp() are resolved here from
+  # the length-scale prior (see .gp_basis_settings()); both are always
+  # numeric on the returned spec, whatever gp() itself carries.
+  basis <- .gp_basis_settings(gp, n_free)
   PHI <- .gp_basis_matrix(
-    n_free, M, gp$boundary_scale,
+    n_free, basis$M, basis$L,
     is_periodic = gp$gp_type == 1L, w0 = 1.0
   )
 
@@ -927,8 +1062,9 @@ construct_gp <- function(gp, data) {
   list(
     time = gp$time, by = gp$by, kernel = gp$kernel,
     gp_type = gp$gp_type, nu = gp$nu, d = d,
-    basis_prop = gp$basis_prop, boundary_scale = gp$boundary_scale,
-    T = idx$T, G = idx$G, M = M, PHI = PHI,
+    basis_prop = gp$basis_prop %||% (basis$M / n_free),
+    boundary_scale = basis$L,
+    T = idx$T, G = idx$G, M = basis$M, PHI = PHI,
     time_idx = idx$time_idx, group_idx = idx$group_idx,
     time_vals = idx$time_vals, group_levels = idx$group_levels,
     name = name
@@ -942,17 +1078,17 @@ construct_gp <- function(gp, data) {
 .time_group_index <- function(data, time, by, what = "term") {
   data <- coerce_dt(data)
   if (is.null(data[[time]])) {
-    cli::cli_abort(
+    cli_abort(
       "Time variable `{time}` is not present in the supplied data."
     )
   }
   if (!is.numeric(data[[time]])) {
-    cli::cli_abort(
+    cli_abort(
       "Time variable `{time}` must be numeric for a {what} term."
     )
   }
   if (anyNA(data[[time]])) {
-    cli::cli_abort("Time variable `{time}` contains missing values.")
+    cli_abort("Time variable `{time}` contains missing values.")
   }
 
   time_vals <- sort(unique(data[[time]]))
@@ -967,11 +1103,11 @@ construct_gp <- function(gp, data) {
     ))
   }
   if (is.null(data[[by]])) {
-    cli::cli_abort("Grouping variable `{by}` is not present in the data.")
+    cli_abort("Grouping variable `{by}` is not present in the data.")
   }
   by_vals <- data[[by]]
   if (anyNA(by_vals)) {
-    cli::cli_abort("Grouping variable `{by}` contains missing values.")
+    cli_abort("Grouping variable `{by}` contains missing values.")
   }
   group_levels <- if (is.factor(by_vals)) {
     levels(droplevels(by_vals))
@@ -980,7 +1116,7 @@ construct_gp <- function(gp, data) {
   }
   G <- length(group_levels)
   if (G < 2) {
-    cli::cli_inform(
+    cli_inform(
       "Grouping variable `{by}` has fewer than 2 levels; ignoring `by`."
     )
     return(list(
@@ -1037,7 +1173,7 @@ re <- function(formula) {
 
     if (length(current_random) > 1) {
       if (length(current_random) > 2) {
-        cli::cli_abort(
+        cli_abort(
           paste0(
             "Interactions between more than 2 variables are not currently ",
             "supported on the right hand side of random effects"
@@ -1045,7 +1181,7 @@ re <- function(formula) {
         )
       }
       if (!current_random[2] %in% colnames(data)) {
-        cli::cli_abort(
+        cli_abort(
           paste0(
             "Random effect variable {current_random[2]} is not present ",
             "in the data."
@@ -1053,7 +1189,7 @@ re <- function(formula) {
         )
       }
       if (length(unique(data[[current_random[2]]])) < 2) {
-        cli::cli_inform(
+        cli_inform(
           paste0(
             "A random effect using {current_random[2]} is not possible as ",
             "this variable has fewer than 2 unique values."
@@ -1216,7 +1352,7 @@ re <- function(formula) {
     if (terms_int[i]) {
       expanded_int <- unique(data[[loc_terms[length(loc_terms)]]])
       expanded_int <- paste0(loc_terms[length(loc_terms)], expanded_int)
-      j <- purrr::map(expanded_int, function(x) {
+      j <- map(expanded_int, function(x) {
         j <- NULL
         if (length(loc_terms) > 2) {
           j <- loc_terms[1:(length(loc_terms) - 2)]
@@ -1272,7 +1408,7 @@ re <- function(formula) {
 #' epinowcast:::construct_re(random_effect2, mtcars)
 construct_re <- function(re, data) {
   if (!inherits(re, "enw_re_term")) {
-    cli::cli_abort(
+    cli_abort(
       paste0(
         "Argument `re` must be a random effect term as constructed by ",
         "`epinowcast:::re`"
@@ -1493,11 +1629,11 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # parameter-dependent kernel to unit-normal shocks.
   arima_calls <- c(parsed_formula$rw, parsed_formula$arima)
   if (length(arima_calls) > 0) {
-    arima_specs <- purrr::map(
+    arima_specs <- map(
       arima_calls,
       ~ eval(parse(text = paste0("epinowcast::", .)))
     )
-    arima_specs <- purrr::map(arima_specs, construct_arima, data = data)
+    arima_specs <- map(arima_specs, construct_arima, data = data)
   } else {
     arima_specs <- list()
   }
@@ -1506,11 +1642,11 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # Hilbert-space reduced-rank approximation. Like arima() terms they
   # carry per-observation lookup metadata rather than design columns.
   if (length(parsed_formula$gp) > 0) {
-    gp_specs <- purrr::map(
+    gp_specs <- map(
       parsed_formula$gp,
       ~ eval(parse(text = paste0("epinowcast::", .)))
     )
-    gp_specs <- purrr::map(gp_specs, construct_gp, data = data)
+    gp_specs <- map(gp_specs, construct_gp, data = data)
   } else {
     gp_specs <- list()
   }
@@ -1519,23 +1655,23 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # Happens last as converts all RHS variables to factors (which can interact)
   # with other formula terms (i.e. random walks)
   if (length(parsed_formula$random) > 0) {
-    random <- purrr::map(parsed_formula$random, re)
+    random <- map(parsed_formula$random, re)
     for (i in seq_along(random)) {
       random[[i]] <- construct_re(random[[i]], data)
       data <- random[[i]]$data
       random[[i]]$data <- NULL
     }
-    random <- purrr::transpose(random)
+    random <- transpose(random)
 
     random_terms <- unlist(random$terms)
     # Check that the user hasn't specified the same fixed and random effect
     if (any(random_terms %in% parsed_formula$fixed)) {
-      cli::cli_abort(
+      cli_abort(
         "Random effect terms must not be included in the fixed effects formula",
         call. = FALSE
       )
     }
-    random_metadata <- data.table::rbindlist(
+    random_metadata <- rbindlist(
       random$effects,
       use.names = TRUE, fill = TRUE
     )
@@ -1571,7 +1707,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # stays aligned for ARIMA and GP simultaneously, then remap each term's
   # `time_idx`/`group_idx` onto the deduplicated rows.
   if (sparse && (length(arima_specs) > 0 || length(gp_specs) > 0)) {
-    joint <- data.table::data.table(cov = fixed$index)
+    joint <- data.table(cov = fixed$index)
     key_cols <- "cov"
     if (length(arima_specs) > 0) {
       joint[, "at" := arima_specs[[1]]$time_idx]
@@ -1586,7 +1722,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     joint[, "uniq" := .GRP, by = key_cols]
     new_index <- joint[["uniq"]]
     uniq <- unique(joint, by = key_cols)
-    data.table::setorderv(uniq, "uniq")
+    setorderv(uniq, "uniq")
     fixed$design <- fixed$design[uniq[["cov"]], , drop = FALSE]
     fixed$index <- new_index
     if (length(arima_specs) > 0) {
@@ -1614,7 +1750,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
 
   metadata <- cbind(
     metadata[, "effects"],
-    data.table::setnafill(metadata[, -"effects"], fill = 0)
+    setnafill(metadata[, -"effects"], fill = 0)
   )
 
   # Make the random effects design matrix
