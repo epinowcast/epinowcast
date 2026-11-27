@@ -314,10 +314,13 @@ test_that("gp(d = 0) reproduces the stationary fit and d = 1 integrates", {
   skip_on_os("windows")
   skip_on_local()
   fit_pobs <- enw_example("preprocessed")
+  # The d = 1 integrated GP is funnel-prone, so it needs a stronger sampler
+  # and more warmup to converge robustly (a borderline adapt_delta tips into
+  # divergences under small perturbations, e.g. covr instrumentation).
   fit_opts <- enw_fit_opts(
     save_warmup = FALSE, pp = FALSE, chains = 2, parallel_chains = 2,
-    iter_warmup = 250, iter_sampling = 250, show_messages = FALSE,
-    show_exceptions = FALSE, refresh = 0, adapt_delta = 0.95, seed = 1,
+    iter_warmup = 500, iter_sampling = 500, show_messages = FALSE,
+    show_exceptions = FALSE, refresh = 0, adapt_delta = 0.99, seed = 1,
     max_treedepth = 12
   )
   # d = 0 must reproduce the default stationary gp() exactly: same data

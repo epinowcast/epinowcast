@@ -1,19 +1,23 @@
 /**
  * Compute log of expected observations from latent values
- * 
+ *
  * This function calculates the expected observations in log scale based on
  * latent expected values, weighting factors, and observational proportions.
  * The weighting factors are derived from a sparse matrix, which is
- * constructed using the `csr_extract` and `convolution_matrix`
- * R functions in `epinowcast`.
- * 
+ * constructed using `csr_extract` and the `convolution_matrix()`
+ * R function in `epinowcast`. The same path is used for both fixed
+ * PMFs (where the sparse components are precomputed in transformed data) and
+ * uncertain PMFs (where the real-valued weights are rebuilt per posterior
+ * sample from a sampled PMF while reusing the precomputed integer sparsity
+ * pattern).
+ *
  * @param exp_llatent Array of vectors of log latent expected values.
  *
  * @param rd_n Length of the reporting delay (1 for immediate reporting).
  *
  * @param w Vector of weighting factors derived from a sparse matrix.
  *
- * @param v, u Arrays for sparse matrix representation, as obtained from 
+ * @param v, u Arrays for sparse matrix representation, as obtained from
  * `csr_extract`.
  *
  * @param t Number of time periods.
@@ -21,29 +25,29 @@
  * @param g Number of groups.
  *
  * @param latent_obs_prop Vector of observational proportions for latent values.
- * 
- * @return An array of vectors containing log-transformed expected observed 
+ *
+ * @return An array of vectors containing log-transformed expected observed
  * values for each group and time period.
- * 
+ *
  * @note The function performs different operations based on the value of
  * `rd_n`:
  *       1. If `rd_n` is 1 (immediate reporting):
- *          a. Directly adds the log latent values, log of weights, and 
+ *          a. Directly adds the log latent values, log of weights, and
  *             observational proportions for each group.
  *       2. If `rd_n` > 1 (delayed reporting):
- *          a. Uses a convolution matrix constructed using `convolution_matrix`
-               or otherwise, representing reporting delays.
+ *          a. Uses a convolution matrix constructed using the
+ *             `convolution_matrix()` R function or otherwise, representing
+ *             reporting delays.
  *          b. Prior to being used as an input this is converted to a sparse
  *             matrix format using `csr_extract`.
- *          c. Applies the sparse matrix multiplication to the latent values in
-               a sparse matrix multiplication.
+ *          c. Applies the sparse matrix multiplication to the latent values.
  *          d. Converts the resulting values back to the log scale and adds the
  *             observational proportions for each group.
- * 
+ *
  * These steps account for different reporting delays and the distribution
  * of observations over time.
- * 
- * @see `csr_matrix` and `convolution_matrix` stan function and epinowcast R
+ *
+ * @see `csr_matrix` Stan function and the `convolution_matrix()` epinowcast R
  * function for details on sparse matrix construction and convolution matrix
  * generation.
  */

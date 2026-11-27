@@ -32,6 +32,7 @@ test_that("enw_expectation produces the expected default model", {
     exp$inits(c(exp$data, obs$data), exp$priors)(),
     c(
       "expr_beta", "expr_beta_sd", "expr_lelatent_int", "expr_r_int",
+      "expr_gt_mean", "expr_gt_sd", "expl_lrd_mean", "expl_lrd_sd",
       "expl_beta", "expl_beta_sd",
       "expr_arima_pacf", "expr_arima_theta", "expr_arima_sigma",
       "expr_gp_rho", "expr_gp_alpha",
@@ -136,7 +137,9 @@ test_that(
       ),
       list(
         expr_beta = 3L, expr_beta_sd = 1L, expr_lelatent_int = c(2L, 3L),
-        expr_r_int = 1L, expl_beta = 6L, expl_beta_sd = 3L,
+        expr_r_int = 1L, expr_gt_mean = NULL, expr_gt_sd = NULL,
+        expl_lrd_mean = NULL, expl_lrd_sd = NULL,
+        expl_beta = 6L, expl_beta_sd = 3L,
         expr_arima_pacf = NULL, expr_arima_theta = NULL,
         expr_arima_sigma = NULL,
         expr_gp_rho = NULL, expr_gp_alpha = NULL,
@@ -147,6 +150,37 @@ test_that(
     )
   }
 )
+
+test_that("uncertain generation time/latent delay sd inits stay strictly
+           above the Stan `<lower=1e-3>` bound (#836)", {
+  # A tiny sd-prior scale forces the sd init draw well below 1e-3, so the
+  # floor is guaranteed to bind (`pmax()` clips it to the floor value).
+  gt_spec <- enw_uncertain(
+    "lognormal", mean = c(1, 1), sd = c(1e-8, 1e-8), max = 5
+  )
+  lrd_spec <- enw_uncertain(
+    "gamma", mean = c(1, 1), sd = c(1e-8, 1e-8), max = 5
+  )
+  expectation <- enw_expectation(
+    r = ~1, generation_time = gt_spec, latent_reporting_delay = lrd_spec,
+    data = pobs
+  )
+  set.seed(1)
+  # The `_p` prior-data fields (e.g. `expr_gt_mean_p`) are assembled from
+  # `$priors` by `epinowcast()` itself (see `enw_priors_as_data_list()`);
+  # reproduce that merge here to exercise `$inits()` as it is actually
+  # called.
+  data_list <- c(
+    expectation$data, list(g = pobs$groups[[1]]),
+    enw_priors_as_data_list(expectation$priors)
+  )
+  inits <- expectation$inits(data_list, expectation$priors)()
+  # Stan's unconstraining transform for `<lower=1e-3>` is `log(x - 1e-3)`,
+  # which is -Inf (and rejected) at exactly the bound, so the init must be
+  # strictly greater, not merely `>= 1e-3`.
+  expect_gt(as.vector(inits$expr_gt_sd), 1e-3)
+  expect_gt(as.vector(inits$expl_lrd_sd), 1e-3)
+})
 
 test_that("enw_expectation defaults to no susceptible-depletion adjustment", {
   expectation <- enw_expectation(data = pobs)

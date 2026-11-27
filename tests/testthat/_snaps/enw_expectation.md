@@ -116,6 +116,9 @@
       $data$expr_lrgt
       [1] 0
       
+      $data$expr_gt_dist
+      [1] 0
+      
       $data$expr_t
       [1] 39
       
@@ -686,6 +689,15 @@
       [39,]     0     1     0
       [40,]     0     0     1
       
+      $data$expl_lrd_dist
+      [1] 0
+      
+      $data$expl_lrd_w_idx
+      [1] 1
+      
+      $data$expl_lrd_w_n
+      [1] 1
+      
       $data$expl_obs
       [1] 0
       
@@ -826,26 +838,34 @@
        5:   expr_arima_pacf         1
        6:       expr_gp_rho         1
        7:     expr_gp_alpha         1
-       8:          expr_pop         1
-       9:      expl_beta_sd         1
-      10:  expl_arima_sigma         1
-      11:   expl_arima_pacf         1
-      12:       expl_gp_rho         1
-      13:     expl_gp_alpha         1
-                                                                                                                                                                     description
-       1:                                                                                                                                       Intercept of the log growth rate
-       2:                                                                                                            Standard deviation of scaled pooled log growth rate effects
-       3:                                                                                                Intercept for initial log observations (ordered by group and then time)
-       4:                                                                                                     Standard deviation of the ARIMA latent residual on log growth rate
-       5:              Partial autocorrelations of the ARIMA latent residual on the log growth rate; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
-       6:                                                           Length scale of the Gaussian process on the log growth rate; log-normal prior on the (positive) length scale
-       7:                                                              Magnitude (marginal standard deviation) of the Gaussian process on the log growth rate; half-normal prior
-       8:                                   Initial susceptible population (per group) for the susceptible-depletion adjustment (LogNormal, log scale; only used when estimated)
-       9:                                                                                                            Standard deviation of scaled pooled log growth rate effects
-      10:                                                                                        Standard deviation of the ARIMA latent residual on log latent-to-obs proportion
-      11: Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
-      12:                                              Length scale of the Gaussian process on the log latent-to-obs proportion; log-normal prior on the (positive) length scale
-      13:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the log latent-to-obs proportion; half-normal prior
+       8:      expr_gt_mean         1
+       9:        expr_gt_sd         1
+      10:          expr_pop         1
+      11:      expl_beta_sd         1
+      12:  expl_arima_sigma         1
+      13:   expl_arima_pacf         1
+      14:       expl_gp_rho         1
+      15:     expl_gp_alpha         1
+      16:     expl_lrd_mean         1
+      17:       expl_lrd_sd         1
+                                                                                                                                                                                                                 description
+       1:                                                                                                                                                                                   Intercept of the log growth rate
+       2:                                                                                                                                                        Standard deviation of scaled pooled log growth rate effects
+       3:                                                                                                                                            Intercept for initial log observations (ordered by group and then time)
+       4:                                                                                                                                                 Standard deviation of the ARIMA latent residual on log growth rate
+       5:                                                          Partial autocorrelations of the ARIMA latent residual on the log growth rate; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+       6:                                                                                                       Length scale of the Gaussian process on the log growth rate; log-normal prior on the (positive) length scale
+       7:                                                                                                          Magnitude (marginal standard deviation) of the Gaussian process on the log growth rate; half-normal prior
+       8:                                                       Prior location (mean, or meanlog for the lognormal family) for the uncertain generation time distribution; only used when generation_time is enw_uncertain()
+       9:               Prior scale (sd, or sdlog for the lognormal family) for the uncertain generation time distribution; only used when generation_time is enw_uncertain() with a distribution that has a scale parameter
+      10:                                                                               Initial susceptible population (per group) for the susceptible-depletion adjustment (LogNormal, log scale; only used when estimated)
+      11:                                                                                                                                                        Standard deviation of scaled pooled log growth rate effects
+      12:                                                                                                                                    Standard deviation of the ARIMA latent residual on log latent-to-obs proportion
+      13:                                             Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+      14:                                                                                          Length scale of the Gaussian process on the log latent-to-obs proportion; log-normal prior on the (positive) length scale
+      15:                                                                                             Magnitude (marginal standard deviation) of the Gaussian process on the log latent-to-obs proportion; half-normal prior
+      16:                                         Prior location (mean, or meanlog for the lognormal family) for the uncertain latent reporting delay distribution; only used when latent_reporting_delay is enw_uncertain()
+      17: Prior scale (sd, or sdlog for the lognormal family) for the uncertain latent reporting delay distribution; only used when latent_reporting_delay is enw_uncertain() with a distribution that has a scale parameter
                    distribution     mean   sd
        1:                Normal 0.000000 0.20
        2: Zero truncated normal 0.000000 1.00
@@ -854,12 +874,16 @@
        5:               Uniform 0.000000 0.00
        6:            Log normal 1.098612 0.50
        7: Zero truncated normal 0.000000 0.05
-       8:            Log normal 0.000000 1.00
-       9: Zero truncated normal 0.000000 1.00
-      10: Zero truncated normal 0.000000 0.20
-      11:               Uniform 0.000000 0.00
-      12:            Log normal 1.098612 0.50
-      13: Zero truncated normal 0.000000 0.05
+       8:                Normal 1.000000 1.00
+       9: Zero truncated normal 0.500000 1.00
+      10:            Log normal 0.000000 1.00
+      11: Zero truncated normal 0.000000 1.00
+      12: Zero truncated normal 0.000000 0.20
+      13:               Uniform 0.000000 0.00
+      14:            Log normal 1.098612 0.50
+      15: Zero truncated normal 0.000000 0.05
+      16:                Normal 1.000000 1.00
+      17: Zero truncated normal 0.500000 1.00
       
 
 # enw_expectation supports custom expectation models
@@ -974,6 +998,9 @@
       [1] 1
       
       $data$expr_lrgt
+      [1] 0
+      
+      $data$expr_gt_dist
       [1] 0
       
       $data$expr_t
@@ -1342,6 +1369,15 @@
       [39,]     0     1     0
       [40,]     0     0     1
       
+      $data$expl_lrd_dist
+      [1] 0
+      
+      $data$expl_lrd_w_idx
+      [1] 1
+      
+      $data$expl_lrd_w_n
+      [1] 1
+      
       $data$expl_obs
       [1] 0
       
@@ -1482,26 +1518,34 @@
        5:   expr_arima_pacf         1
        6:       expr_gp_rho         1
        7:     expr_gp_alpha         1
-       8:          expr_pop         1
-       9:      expl_beta_sd         1
-      10:  expl_arima_sigma         1
-      11:   expl_arima_pacf         1
-      12:       expl_gp_rho         1
-      13:     expl_gp_alpha         1
-                                                                                                                                                                     description
-       1:                                                                                                                                       Intercept of the log growth rate
-       2:                                                                                                            Standard deviation of scaled pooled log growth rate effects
-       3:                                                                                                Intercept for initial log observations (ordered by group and then time)
-       4:                                                                                                     Standard deviation of the ARIMA latent residual on log growth rate
-       5:              Partial autocorrelations of the ARIMA latent residual on the log growth rate; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
-       6:                                                           Length scale of the Gaussian process on the log growth rate; log-normal prior on the (positive) length scale
-       7:                                                              Magnitude (marginal standard deviation) of the Gaussian process on the log growth rate; half-normal prior
-       8:                                   Initial susceptible population (per group) for the susceptible-depletion adjustment (LogNormal, log scale; only used when estimated)
-       9:                                                                                                            Standard deviation of scaled pooled log growth rate effects
-      10:                                                                                        Standard deviation of the ARIMA latent residual on log latent-to-obs proportion
-      11: Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
-      12:                                              Length scale of the Gaussian process on the log latent-to-obs proportion; log-normal prior on the (positive) length scale
-      13:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the log latent-to-obs proportion; half-normal prior
+       8:      expr_gt_mean         1
+       9:        expr_gt_sd         1
+      10:          expr_pop         1
+      11:      expl_beta_sd         1
+      12:  expl_arima_sigma         1
+      13:   expl_arima_pacf         1
+      14:       expl_gp_rho         1
+      15:     expl_gp_alpha         1
+      16:     expl_lrd_mean         1
+      17:       expl_lrd_sd         1
+                                                                                                                                                                                                                 description
+       1:                                                                                                                                                                                   Intercept of the log growth rate
+       2:                                                                                                                                                        Standard deviation of scaled pooled log growth rate effects
+       3:                                                                                                                                            Intercept for initial log observations (ordered by group and then time)
+       4:                                                                                                                                                 Standard deviation of the ARIMA latent residual on log growth rate
+       5:                                                          Partial autocorrelations of the ARIMA latent residual on the log growth rate; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+       6:                                                                                                       Length scale of the Gaussian process on the log growth rate; log-normal prior on the (positive) length scale
+       7:                                                                                                          Magnitude (marginal standard deviation) of the Gaussian process on the log growth rate; half-normal prior
+       8:                                                       Prior location (mean, or meanlog for the lognormal family) for the uncertain generation time distribution; only used when generation_time is enw_uncertain()
+       9:               Prior scale (sd, or sdlog for the lognormal family) for the uncertain generation time distribution; only used when generation_time is enw_uncertain() with a distribution that has a scale parameter
+      10:                                                                               Initial susceptible population (per group) for the susceptible-depletion adjustment (LogNormal, log scale; only used when estimated)
+      11:                                                                                                                                                        Standard deviation of scaled pooled log growth rate effects
+      12:                                                                                                                                    Standard deviation of the ARIMA latent residual on log latent-to-obs proportion
+      13:                                             Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+      14:                                                                                          Length scale of the Gaussian process on the log latent-to-obs proportion; log-normal prior on the (positive) length scale
+      15:                                                                                             Magnitude (marginal standard deviation) of the Gaussian process on the log latent-to-obs proportion; half-normal prior
+      16:                                         Prior location (mean, or meanlog for the lognormal family) for the uncertain latent reporting delay distribution; only used when latent_reporting_delay is enw_uncertain()
+      17: Prior scale (sd, or sdlog for the lognormal family) for the uncertain latent reporting delay distribution; only used when latent_reporting_delay is enw_uncertain() with a distribution that has a scale parameter
                    distribution     mean   sd
        1:                Normal 0.000000 0.20
        2: Zero truncated normal 0.000000 1.00
@@ -1510,12 +1554,16 @@
        5:               Uniform 0.000000 0.00
        6:            Log normal 1.098612 0.50
        7: Zero truncated normal 0.000000 0.05
-       8:            Log normal 0.000000 1.00
-       9: Zero truncated normal 0.000000 1.00
-      10: Zero truncated normal 0.000000 0.20
-      11:               Uniform 0.000000 0.00
-      12:            Log normal 1.098612 0.50
-      13: Zero truncated normal 0.000000 0.05
+       8:                Normal 1.000000 1.00
+       9: Zero truncated normal 0.500000 1.00
+      10:            Log normal 0.000000 1.00
+      11: Zero truncated normal 0.000000 1.00
+      12: Zero truncated normal 0.000000 0.20
+      13:               Uniform 0.000000 0.00
+      14:            Log normal 1.098612 0.50
+      15: Zero truncated normal 0.000000 0.05
+      16:                Normal 1.000000 1.00
+      17: Zero truncated normal 0.500000 1.00
       
 
 # enw_expectation works as expected when multiple timeseries are present
@@ -1636,6 +1684,9 @@
       
       $data$expr_lrgt
       [1] -0.1053605 -2.3025851
+      
+      $data$expr_gt_dist
+      [1] 0
       
       $data$expr_t
       [1] 9
@@ -1794,6 +1845,15 @@
        [9,]  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.9  0.1   0.0   0.0
       [10,]  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.9   0.1   0.0
       [11,]  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0   0.9   0.1
+      
+      $data$expl_lrd_dist
+      [1] 0
+      
+      $data$expl_lrd_w_idx
+      [1] 1
+      
+      $data$expl_lrd_w_n
+      [1] 1
       
       $data$expl_obs
       [1] 1
@@ -1967,35 +2027,45 @@
       10:   expr_arima_pacf         1
       11:       expr_gp_rho         1
       12:     expr_gp_alpha         1
-      13:          expr_pop         1
-      14:          expr_pop         2
-      15:          expr_pop         3
-      16:      expl_beta_sd         1
-      17:  expl_arima_sigma         1
-      18:   expl_arima_pacf         1
-      19:       expl_gp_rho         1
-      20:     expl_gp_alpha         1
-                                                                                                                                                                     description
-       1:                                                                                                                                       Intercept of the log growth rate
-       2:                                                                                                            Standard deviation of scaled pooled log growth rate effects
-       3:                                                                                                Intercept for initial log observations (ordered by group and then time)
-       4:                                                                                                Intercept for initial log observations (ordered by group and then time)
-       5:                                                                                                Intercept for initial log observations (ordered by group and then time)
-       6:                                                                                                Intercept for initial log observations (ordered by group and then time)
-       7:                                                                                                Intercept for initial log observations (ordered by group and then time)
-       8:                                                                                                Intercept for initial log observations (ordered by group and then time)
-       9:                                                                                                     Standard deviation of the ARIMA latent residual on log growth rate
-      10:              Partial autocorrelations of the ARIMA latent residual on the log growth rate; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
-      11:                                                           Length scale of the Gaussian process on the log growth rate; log-normal prior on the (positive) length scale
-      12:                                                              Magnitude (marginal standard deviation) of the Gaussian process on the log growth rate; half-normal prior
-      13:                                   Initial susceptible population (per group) for the susceptible-depletion adjustment (LogNormal, log scale; only used when estimated)
-      14:                                   Initial susceptible population (per group) for the susceptible-depletion adjustment (LogNormal, log scale; only used when estimated)
-      15:                                   Initial susceptible population (per group) for the susceptible-depletion adjustment (LogNormal, log scale; only used when estimated)
-      16:                                                                                                            Standard deviation of scaled pooled log growth rate effects
-      17:                                                                                        Standard deviation of the ARIMA latent residual on log latent-to-obs proportion
-      18: Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
-      19:                                              Length scale of the Gaussian process on the log latent-to-obs proportion; log-normal prior on the (positive) length scale
-      20:                                                 Magnitude (marginal standard deviation) of the Gaussian process on the log latent-to-obs proportion; half-normal prior
+      13:      expr_gt_mean         1
+      14:        expr_gt_sd         1
+      15:          expr_pop         1
+      16:          expr_pop         2
+      17:          expr_pop         3
+      18:      expl_beta_sd         1
+      19:  expl_arima_sigma         1
+      20:   expl_arima_pacf         1
+      21:       expl_gp_rho         1
+      22:     expl_gp_alpha         1
+      23:     expl_lrd_mean         1
+      24:       expl_lrd_sd         1
+                   variable dimension
+                                                                                                                                                                                                                 description
+       1:                                                                                                                                                                                   Intercept of the log growth rate
+       2:                                                                                                                                                        Standard deviation of scaled pooled log growth rate effects
+       3:                                                                                                                                            Intercept for initial log observations (ordered by group and then time)
+       4:                                                                                                                                            Intercept for initial log observations (ordered by group and then time)
+       5:                                                                                                                                            Intercept for initial log observations (ordered by group and then time)
+       6:                                                                                                                                            Intercept for initial log observations (ordered by group and then time)
+       7:                                                                                                                                            Intercept for initial log observations (ordered by group and then time)
+       8:                                                                                                                                            Intercept for initial log observations (ordered by group and then time)
+       9:                                                                                                                                                 Standard deviation of the ARIMA latent residual on log growth rate
+      10:                                                          Partial autocorrelations of the ARIMA latent residual on the log growth rate; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+      11:                                                                                                       Length scale of the Gaussian process on the log growth rate; log-normal prior on the (positive) length scale
+      12:                                                                                                          Magnitude (marginal standard deviation) of the Gaussian process on the log growth rate; half-normal prior
+      13:                                                       Prior location (mean, or meanlog for the lognormal family) for the uncertain generation time distribution; only used when generation_time is enw_uncertain()
+      14:               Prior scale (sd, or sdlog for the lognormal family) for the uncertain generation time distribution; only used when generation_time is enw_uncertain() with a distribution that has a scale parameter
+      15:                                                                               Initial susceptible population (per group) for the susceptible-depletion adjustment (LogNormal, log scale; only used when estimated)
+      16:                                                                               Initial susceptible population (per group) for the susceptible-depletion adjustment (LogNormal, log scale; only used when estimated)
+      17:                                                                               Initial susceptible population (per group) for the susceptible-depletion adjustment (LogNormal, log scale; only used when estimated)
+      18:                                                                                                                                                        Standard deviation of scaled pooled log growth rate effects
+      19:                                                                                                                                    Standard deviation of the ARIMA latent residual on log latent-to-obs proportion
+      20:                                             Partial autocorrelations of the ARIMA latent residual on the log latent-to-obs proportion; Uniform(-1, 1) when sd = 0, otherwise Normal(mean, sd) truncated to (-1, 1)
+      21:                                                                                          Length scale of the Gaussian process on the log latent-to-obs proportion; log-normal prior on the (positive) length scale
+      22:                                                                                             Magnitude (marginal standard deviation) of the Gaussian process on the log latent-to-obs proportion; half-normal prior
+      23:                                         Prior location (mean, or meanlog for the lognormal family) for the uncertain latent reporting delay distribution; only used when latent_reporting_delay is enw_uncertain()
+      24: Prior scale (sd, or sdlog for the lognormal family) for the uncertain latent reporting delay distribution; only used when latent_reporting_delay is enw_uncertain() with a distribution that has a scale parameter
+                                                                                                                                                                                                                 description
                    distribution     mean   sd
        1:                Normal 0.000000 0.20
        2: Zero truncated normal 0.000000 1.00
@@ -2009,13 +2079,18 @@
       10:               Uniform 0.000000 0.00
       11:            Log normal 1.098612 0.50
       12: Zero truncated normal 0.000000 0.05
-      13:            Log normal 0.000000 1.00
-      14:            Log normal 0.000000 1.00
+      13:                Normal 1.000000 1.00
+      14: Zero truncated normal 0.500000 1.00
       15:            Log normal 0.000000 1.00
-      16: Zero truncated normal 0.000000 1.00
-      17: Zero truncated normal 0.000000 0.20
-      18:               Uniform 0.000000 0.00
-      19:            Log normal 1.098612 0.50
-      20: Zero truncated normal 0.000000 0.05
+      16:            Log normal 0.000000 1.00
+      17:            Log normal 0.000000 1.00
+      18: Zero truncated normal 0.000000 1.00
+      19: Zero truncated normal 0.000000 0.20
+      20:               Uniform 0.000000 0.00
+      21:            Log normal 1.098612 0.50
+      22: Zero truncated normal 0.000000 0.05
+      23:                Normal 1.000000 1.00
+      24: Zero truncated normal 0.500000 1.00
+                   distribution     mean   sd
       
 
