@@ -43,10 +43,10 @@ incidence <- enw_filter_reference_dates(
 enw_incidence_to_linelist(incidence, reference_date = "onset_date")
 }
 \seealso{
-Data converters
-\code{\link{enw_add_cumulative}()},
-\code{\link{enw_add_incidence}()},
-\code{\link{enw_aggregate_cumulative}()},
-\code{\link{enw_linelist_to_incidence}()}
+Data converters:
+\code{\link[=enw_add_cumulative]{enw_add_cumulative()}},
+\code{\link[=enw_add_incidence]{enw_add_incidence()}},
+\code{\link[=enw_aggregate_cumulative]{enw_aggregate_cumulative()}},
+\code{\link[=enw_linelist_to_incidence]{enw_linelist_to_incidence()}}
 }
 \concept{dataconverters}

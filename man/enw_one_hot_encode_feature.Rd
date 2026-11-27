@@ -30,10 +30,10 @@ enw_one_hot_encode_feature(metaobs, "week")
 enw_one_hot_encode_feature(metaobs, "week", contrasts = TRUE)
 }
 \seealso{
-Functions used to formulate models
-\code{\link{enw_add_cumulative_membership}()},
-\code{\link{enw_add_pooling_effect}()},
-\code{\link{enw_design}()},
-\code{\link{enw_effects_metadata}()}
+Functions used to formulate models:
+\code{\link[=enw_add_cumulative_membership]{enw_add_cumulative_membership()}},
+\code{\link[=enw_add_pooling_effect]{enw_add_pooling_effect()}},
+\code{\link[=enw_design]{enw_design()}},
+\code{\link[=enw_effects_metadata]{enw_effects_metadata()}}
 }
 \concept{modeldesign}

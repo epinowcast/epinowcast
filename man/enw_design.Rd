@@ -24,6 +24,14 @@ TRUE.}
   \describe{
     \item{\code{object}}{an object of an appropriate class.  For the default
     method, a model \link[stats]{formula} or a \code{\link[stats]{terms}} object.}
+    \item{\code{contrasts.arg}}{a list, whose entries are values (numeric
+    matrices, \code{\link{function}}s or character strings naming
+    functions) to be used
+    as replacement values for the \code{\link[stats]{contrasts}}
+    replacement function and whose names are the names of
+    columns of \code{data} containing \code{\link{factor}}s.}
+    \item{\code{xlev}}{to be used as argument of \code{\link[stats]{model.frame}} if
+    \code{data} is such that \code{model.frame} is called.}
   }}
 }
 \value{
@@ -47,10 +55,10 @@ enw_design(a ~ c, data, sparse = TRUE)
 enw_design(a ~ c, data, sparse = FALSE)
 }
 \seealso{
-Functions used to formulate models
-\code{\link{enw_add_cumulative_membership}()},
-\code{\link{enw_add_pooling_effect}()},
-\code{\link{enw_effects_metadata}()},
-\code{\link{enw_one_hot_encode_feature}()}
+Functions used to formulate models:
+\code{\link[=enw_add_cumulative_membership]{enw_add_cumulative_membership()}},
+\code{\link[=enw_add_pooling_effect]{enw_add_pooling_effect()}},
+\code{\link[=enw_effects_metadata]{enw_effects_metadata()}},
+\code{\link[=enw_one_hot_encode_feature]{enw_one_hot_encode_feature()}}
 }
 \concept{modeldesign}

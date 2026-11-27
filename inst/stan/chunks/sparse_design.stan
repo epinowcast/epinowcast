@@ -13,6 +13,8 @@
   tuple(vector[refnp_nonzero], array[refnp_nonzero] int, array[refnp_fnindex + 1] int) refnp_sparse;
   int miss_nonzero = num_nonzero(miss_fdesign);
   tuple(vector[miss_nonzero], array[miss_nonzero] int, array[miss_fnindex + 1] int) miss_sparse;
+  int sec_nonzero = num_nonzero(sec_fdesign);
+  tuple(vector[sec_nonzero], array[sec_nonzero] int, array[sec_fnindex + 1] int) sec_sparse;
 
   // The non-parametric reference design is structurally sparse for the
   // common categorical specifications (e.g. ~1 + (1 | delay), each row has
@@ -62,5 +64,9 @@
     // ---- Missing reference date model ----
     if (miss_nonzero > 0) {
       miss_sparse = csr_extract(miss_fdesign);
+    }
+    // ---- Secondary observation model ----
+    if (sec_nonzero > 0) {
+      sec_sparse = csr_extract(sec_fdesign);
     }
   }

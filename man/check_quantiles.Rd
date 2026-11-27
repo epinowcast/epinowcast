@@ -17,17 +17,17 @@ c(0.5, 0.95, 0.2, 0.8).}
 Check required quantiles are present
 }
 \seealso{
-Functions used for checking inputs
-\code{\link{check_design_matrix_sparsity}()},
-\code{\link{check_group}()},
-\code{\link{check_group_date_unique}()},
-\code{\link{check_max_delay}()},
-\code{\link{check_module}()},
-\code{\link{check_modules_compatible}()},
-\code{\link{check_numeric_timestep}()},
-\code{\link{check_observation_indicator}()},
-\code{\link{check_timestep}()},
-\code{\link{check_timestep_by_date}()},
-\code{\link{check_timestep_by_group}()}
+Functions used for checking inputs:
+\code{\link[=check_design_matrix_sparsity]{check_design_matrix_sparsity()}},
+\code{\link[=check_group]{check_group()}},
+\code{\link[=check_group_date_unique]{check_group_date_unique()}},
+\code{\link[=check_max_delay]{check_max_delay()}},
+\code{\link[=check_module]{check_module()}},
+\code{\link[=check_modules_compatible]{check_modules_compatible()}},
+\code{\link[=check_numeric_timestep]{check_numeric_timestep()}},
+\code{\link[=check_observation_indicator]{check_observation_indicator()}},
+\code{\link[=check_timestep]{check_timestep()}},
+\code{\link[=check_timestep_by_date]{check_timestep_by_date()}},
+\code{\link[=check_timestep_by_group]{check_timestep_by_group()}}
 }
 \concept{check}

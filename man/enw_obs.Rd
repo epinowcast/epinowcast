@@ -64,12 +64,14 @@ enw_obs(data = enw_example("preprocessed"))
 enw_obs(delay_only = TRUE, data = enw_example("preprocessed"))
 }
 \seealso{
-Model modules
-\code{\link{.expectation_is_minimal}()},
-\code{\link{enw_expectation}()},
-\code{\link{enw_fit_opts}()},
-\code{\link{enw_missing}()},
-\code{\link{enw_reference}()},
-\code{\link{enw_report}()}
+Model modules:
+\code{\link[=.expectation_is_minimal]{.expectation_is_minimal()}},
+\code{\link[=enw_expectation]{enw_expectation()}},
+\code{\link[=enw_fit_opts]{enw_fit_opts()}},
+\code{\link[=enw_missing]{enw_missing()}},
+\code{\link[=enw_reference]{enw_reference()}},
+\code{\link[=enw_report]{enw_report()}},
+\code{\link[=enw_secondary]{enw_secondary()}},
+\code{\link[=enw_secondary_opts]{enw_secondary_opts()}}
 }
 \concept{modelmodules}

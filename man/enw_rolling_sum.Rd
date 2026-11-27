@@ -26,13 +26,13 @@ timestep, aggregating by specified columns. It's particularly useful for
 aggregating observations over certain periods.
 }
 \seealso{
-Utility functions
-\code{\link{coerce_date}()},
-\code{\link{coerce_dt}()},
-\code{\link{date_to_numeric_modulus}()},
-\code{\link{enw_get_data}()},
-\code{\link{get_internal_timestep}()},
-\code{\link{is.Date}()},
-\code{\link{stan_fns_as_string}()}
+Utility functions:
+\code{\link[=coerce_date]{coerce_date()}},
+\code{\link[=coerce_dt]{coerce_dt()}},
+\code{\link[=date_to_numeric_modulus]{date_to_numeric_modulus()}},
+\code{\link[=enw_get_data]{enw_get_data()}},
+\code{\link[=get_internal_timestep]{get_internal_timestep()}},
+\code{\link[=is.Date]{is.Date()}},
+\code{\link[=stan_fns_as_string]{stan_fns_as_string()}}
 }
 \concept{utils}

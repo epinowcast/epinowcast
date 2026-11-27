@@ -24,17 +24,17 @@ size the residual category when an observation indicator leaves some
 before-cutoff cells unobserved.
 }
 \seealso{
-Helper functions for model modules
-\code{\link{add_max_observed_delay}()},
-\code{\link{add_pmfs}()},
-\code{\link{convolution_matrix}()},
-\code{\link{delay_only_ltotal}()},
-\code{\link{enw_dayofweek_structural_reporting}()},
-\code{\link{enw_reference_by_report}()},
-\code{\link{enw_reps_with_complete_refs}()},
-\code{\link{enw_structural_reporting_metadata}()},
-\code{\link{extract_obs_metadata}()},
-\code{\link{extract_sparse_matrix}()},
-\code{\link{latest_obs_as_matrix}()}
+Helper functions for model modules:
+\code{\link[=add_max_observed_delay]{add_max_observed_delay()}},
+\code{\link[=add_pmfs]{add_pmfs()}},
+\code{\link[=convolution_matrix]{convolution_matrix()}},
+\code{\link[=delay_only_ltotal]{delay_only_ltotal()}},
+\code{\link[=enw_dayofweek_structural_reporting]{enw_dayofweek_structural_reporting()}},
+\code{\link[=enw_reference_by_report]{enw_reference_by_report()}},
+\code{\link[=enw_reps_with_complete_refs]{enw_reps_with_complete_refs()}},
+\code{\link[=enw_structural_reporting_metadata]{enw_structural_reporting_metadata()}},
+\code{\link[=extract_obs_metadata]{extract_obs_metadata()}},
+\code{\link[=extract_sparse_matrix]{extract_sparse_matrix()}},
+\code{\link[=latest_obs_as_matrix]{latest_obs_as_matrix()}}
 }
 \concept{modelmodulehelpers}

@@ -82,28 +82,28 @@ plot(pobs, type = "delay_quantiles")
 plot(pobs, type = "delay_counts")
 }
 \seealso{
-Other epinowcast: 
-\code{\link{epinowcast}()},
-\code{\link{plot.epinowcast}()},
-\code{\link{print.enw_preprocess_data}()},
-\code{\link{print.epinowcast}()},
-\code{\link{print.summary.enw_preprocess_data}()},
-\code{\link{summary.enw_preprocess_data}()},
-\code{\link{summary.epinowcast}()}
+Other epinowcast:
+\code{\link[=epinowcast]{epinowcast()}},
+\code{\link[=plot.epinowcast]{plot.epinowcast()}},
+\code{\link[=print.enw_preprocess_data]{print.enw_preprocess_data()}},
+\code{\link[=print.epinowcast]{print.epinowcast()}},
+\code{\link[=print.summary.enw_preprocess_data]{print.summary.enw_preprocess_data()}},
+\code{\link[=summary.enw_preprocess_data]{summary.enw_preprocess_data()}},
+\code{\link[=summary.epinowcast]{summary.epinowcast()}}
 
-Plotting functions
-\code{\link{enw_delay_categories}()},
-\code{\link{enw_delay_quantiles}()},
-\code{\link{enw_plot_delay_counts}()},
-\code{\link{enw_plot_delay_cumulative}()},
-\code{\link{enw_plot_delay_fraction}()},
-\code{\link{enw_plot_delay_quantiles}()},
-\code{\link{enw_plot_nowcast_quantiles}()},
-\code{\link{enw_plot_obs}()},
-\code{\link{enw_plot_pp_quantiles}()},
-\code{\link{enw_plot_quantiles}()},
-\code{\link{enw_plot_theme}()},
-\code{\link{plot.epinowcast}()}
+Plotting functions:
+\code{\link[=enw_delay_categories]{enw_delay_categories()}},
+\code{\link[=enw_delay_quantiles]{enw_delay_quantiles()}},
+\code{\link[=enw_plot_delay_counts]{enw_plot_delay_counts()}},
+\code{\link[=enw_plot_delay_cumulative]{enw_plot_delay_cumulative()}},
+\code{\link[=enw_plot_delay_fraction]{enw_plot_delay_fraction()}},
+\code{\link[=enw_plot_delay_quantiles]{enw_plot_delay_quantiles()}},
+\code{\link[=enw_plot_nowcast_quantiles]{enw_plot_nowcast_quantiles()}},
+\code{\link[=enw_plot_obs]{enw_plot_obs()}},
+\code{\link[=enw_plot_pp_quantiles]{enw_plot_pp_quantiles()}},
+\code{\link[=enw_plot_quantiles]{enw_plot_quantiles()}},
+\code{\link[=enw_plot_theme]{enw_plot_theme()}},
+\code{\link[=plot.epinowcast]{plot.epinowcast()}}
 }
 \concept{epinowcast}
 \concept{plot}

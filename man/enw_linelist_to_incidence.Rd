@@ -73,10 +73,10 @@ enw_linelist_to_incidence(
 )
 }
 \seealso{
-Data converters
-\code{\link{enw_add_cumulative}()},
-\code{\link{enw_add_incidence}()},
-\code{\link{enw_aggregate_cumulative}()},
-\code{\link{enw_incidence_to_linelist}()}
+Data converters:
+\code{\link[=enw_add_cumulative]{enw_add_cumulative()}},
+\code{\link[=enw_add_incidence]{enw_add_incidence()}},
+\code{\link[=enw_aggregate_cumulative]{enw_aggregate_cumulative()}},
+\code{\link[=enw_incidence_to_linelist]{enw_incidence_to_linelist()}}
 }
 \concept{dataconverters}

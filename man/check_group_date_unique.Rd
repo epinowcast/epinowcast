@@ -18,17 +18,17 @@ number of observations for each combination of these variables, and
 throwing a warning if any combination has more than one observation.
 }
 \seealso{
-Functions used for checking inputs
-\code{\link{check_design_matrix_sparsity}()},
-\code{\link{check_group}()},
-\code{\link{check_max_delay}()},
-\code{\link{check_module}()},
-\code{\link{check_modules_compatible}()},
-\code{\link{check_numeric_timestep}()},
-\code{\link{check_observation_indicator}()},
-\code{\link{check_quantiles}()},
-\code{\link{check_timestep}()},
-\code{\link{check_timestep_by_date}()},
-\code{\link{check_timestep_by_group}()}
+Functions used for checking inputs:
+\code{\link[=check_design_matrix_sparsity]{check_design_matrix_sparsity()}},
+\code{\link[=check_group]{check_group()}},
+\code{\link[=check_max_delay]{check_max_delay()}},
+\code{\link[=check_module]{check_module()}},
+\code{\link[=check_modules_compatible]{check_modules_compatible()}},
+\code{\link[=check_numeric_timestep]{check_numeric_timestep()}},
+\code{\link[=check_observation_indicator]{check_observation_indicator()}},
+\code{\link[=check_quantiles]{check_quantiles()}},
+\code{\link[=check_timestep]{check_timestep()}},
+\code{\link[=check_timestep_by_date]{check_timestep_by_date()}},
+\code{\link[=check_timestep_by_group]{check_timestep_by_group()}}
 }
 \concept{check}
