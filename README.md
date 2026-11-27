@@ -337,7 +337,8 @@ specification. Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Aparksw3">parksw3</a>,
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3ATimTaylor">TimTaylor</a>,
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3AWardBrian">WardBrian</a>,
-<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajimrothstein">jimrothstein</a>
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajimrothstein">jimrothstein</a>,
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3AMichaelChirico">MichaelChirico</a>
 
 <!-- markdownlint-enable -->
 
