@@ -302,3 +302,129 @@ test_that("enw_expectation warns when population is set without a renewal", {
     "uncertain"
   )
 })
+
+test_that("enw_expectation defaults to no cross-group mixing", {
+  gt <- c(0.2, 0.5, 0.3)
+  expectation <- enw_expectation(generation_time = gt, data = pobs)
+  expect_identical(expectation$data$expr_mixing_use, 0L)
+  expect_identical(expectation$data$expr_mixing, diag(pobs$groups[[1]]))
+})
+
+test_that("enw_expectation accepts a mixing matrix for the renewal path", {
+  multi_pobs <- multi_group_pobs()
+  groups <- multi_pobs$groups[[1]]
+  gt <- c(0.2, 0.5, 0.3)
+  K <- matrix(c(0.9, 0.1, 0.2, 0.8), nrow = 2, byrow = TRUE)
+
+  expectation <- enw_expectation(
+    generation_time = gt, mixing = K, data = multi_pobs
+  )
+  expect_identical(expectation$data$expr_mixing_use, 1L)
+  expect_identical(expectation$data$expr_mixing, K)
+
+  # The identity matrix is the explicit form of the (default) uncoupled model.
+  identity_expectation <- enw_expectation(
+    generation_time = gt, mixing = diag(groups), data = multi_pobs
+  )
+  expect_identical(identity_expectation$data$expr_mixing_use, 1L)
+  no_mixing_expectation <- enw_expectation(
+    generation_time = gt, data = multi_pobs
+  )
+  expect_identical(
+    identity_expectation$data$expr_mixing,
+    no_mixing_expectation$data$expr_mixing
+  )
+})
+
+test_that("enw_expectation validates the mixing argument", {
+  multi_pobs <- multi_group_pobs()
+  groups <- multi_pobs$groups[[1]]
+  gt <- c(0.2, 0.5, 0.3)
+
+  # Wrong shape.
+  expect_error(
+    enw_expectation(
+      generation_time = gt, mixing = matrix(1, 3, 3), data = multi_pobs
+    ),
+    "`mixing`"
+  )
+  # Not a matrix.
+  expect_error(
+    enw_expectation(
+      generation_time = gt, mixing = seq_len(groups^2), data = multi_pobs
+    ),
+    "`mixing`"
+  )
+  # Non-finite entries.
+  expect_error(
+    enw_expectation(
+      generation_time = gt,
+      mixing = matrix(c(1, NA, 0, 1), nrow = 2), data = multi_pobs
+    ),
+    "`mixing`"
+  )
+  expect_error(
+    enw_expectation(
+      generation_time = gt,
+      mixing = matrix(c(1, Inf, 0, 1), nrow = 2), data = multi_pobs
+    ),
+    "`mixing`"
+  )
+})
+
+test_that("enw_expectation warns when mixing is set without a renewal", {
+  multi_pobs <- multi_group_pobs()
+  groups <- multi_pobs$groups[[1]]
+  expect_warning(
+    enw_expectation(mixing = diag(groups), data = multi_pobs),
+    "ignored for the daily growth rate model"
+  )
+})
+
+test_that("epinowcast() fits a non-identity mixing matrix in compiled Stan", {
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_on_local()
+  # This is the only path that exercises the use_mixing == 1 branch of
+  # log_expected_latent_from_r() in compiled Stan, so a wiring error (for
+  # example the expr_mixing_use/expr_mixing argument order or a transposed
+  # matrix) would pass the R-level data-list tests above and the exposed-
+  # function tests in test-stan_log_expected_latent_from_r.R without being
+  # caught.
+  mix_pobs <- multi_group_pobs()
+  groups <- mix_pobs$groups[[1]]
+  gt <- c(0.2, 0.3, 0.5)
+  K <- matrix(c(0.8, 0.2, 0.3, 0.7), nrow = groups, byrow = TRUE)
+  fit_opts <- enw_fit_opts(
+    save_warmup = FALSE, pp = FALSE, chains = 2, parallel_chains = 2,
+    iter_warmup = 250, iter_sampling = 250, show_messages = FALSE,
+    show_exceptions = FALSE, refresh = 0, adapt_delta = 0.95, seed = 1,
+    max_treedepth = 12
+  )
+
+  nowcast_mixed <- suppressWarnings(epinowcast(
+    mix_pobs,
+    expectation = enw_expectation(
+      generation_time = gt, mixing = K, data = mix_pobs
+    ),
+    fit = fit_opts
+  ))
+  expect_convergence(nowcast_mixed, rhat = 1.1)
+
+  nowcast_unmixed <- suppressWarnings(epinowcast(
+    mix_pobs,
+    expectation = enw_expectation(generation_time = gt, data = mix_pobs),
+    fit = fit_opts
+  ))
+  expect_convergence(nowcast_unmixed, rhat = 1.1)
+
+  # A real off-diagonal K changes the fitted latent trajectories relative to
+  # the (default) uncoupled model.
+  mixed_latent <- suppressWarnings(summary(nowcast_mixed, type = "fit"))[
+    grepl("^exp_llatent", variable)
+  ]$mean
+  unmixed_latent <- suppressWarnings(summary(nowcast_unmixed, type = "fit"))[
+    grepl("^exp_llatent", variable)
+  ]$mean
+  expect_false(isTRUE(all.equal(mixed_latent, unmixed_latent)))
+})

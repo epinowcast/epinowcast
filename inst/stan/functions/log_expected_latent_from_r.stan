@@ -53,6 +53,17 @@ vector extract_group_rates(vector r, array[] int r_g, int k, int r_t) {
  * transmission-rate denominator only. Matches EpiNow2's `rt_opts(pop_floor)`.
  * Only used when `use_pop > 0`.
  *
+ * @param mixing A `g x g` mixing matrix redistributing each group's
+ * generation-time-weighted incidence pressure across groups before `R_t` is
+ * applied, `Lambda[k] = sum_h mixing[k, h] * lambda[h]` where `lambda[h]` is
+ * group `h`'s own convolved history. Ignored when `use_mixing == 0`. Row `k`
+ * says where group `k`'s force of infection comes from; the identity matrix
+ * leaves groups uncoupled.
+ *
+ * @param use_mixing Cross-group mixing switch (0 = off, 1 = on). Only used on
+ * the renewal path (`gt_n > 1`); `use_mixing == 0` runs the independent-groups
+ * loop, with no cross-group term.
+ *
  * @return An array of vectors of log-transformed expected latent values by
  * group and time.
  *
@@ -63,14 +74,20 @@ vector extract_group_rates(vector r, array[] int r_g, int k, int r_t) {
  * When `use_pop > 0`, new cases are capped by the remaining susceptibles
  * (`fmax(0, pop - cum_cases)`) so depletion cannot exceed the pool, and a
  * small `1e-8` floor keeps the subsequent `log()` finite near exhaustion.
- * Groups are independent well-mixed populations with no waning or vital
- * dynamics. Adapted from EpiNow2's `generate_infections()`
+ * With `use_mixing == 0` groups are independent well-mixed populations with
+ * no waning or vital dynamics. Adapted from EpiNow2's `generate_infections()`
  * (epiforecasts/EpiNow2, MIT licence).
+ *
+ * When `use_mixing > 0`, mixing is applied to each group's convolved
+ * incidence pressure before `R_t` and before any susceptible-depletion
+ * adjustment, so a group's depletion still tracks its own pool while its
+ * force of infection can be driven by other groups' histories.
  */
 array[] vector log_expected_latent_from_r(
   matrix lexp_latent_int, vector r, array[] int r_g, int r_t,
   int r_seed, int gt_n, vector lrgt, int t, int g,
-  vector pop, int use_pop, real pop_floor
+  vector pop, int use_pop, real pop_floor,
+  matrix mixing, int use_mixing
 ) {
   array[g] vector[t] exp_lobs;
 
@@ -81,6 +98,46 @@ array[] vector log_expected_latent_from_r(
       local_r = extract_group_rates(r, r_g, k, r_t);
       exp_lobs[k][1] = lexp_latent_int[1, k];
       exp_lobs[k][(r_seed + 1):t] = exp_lobs[k][1] + cumulative_sum(local_r);
+    }
+  } else if (use_mixing) {
+    // Renewal equation with cross-group mixing: all groups are advanced
+    // together, time loop outermost, because each group's force of infection
+    // at time i depends on every group's convolved history at i.
+    vector[gt_n] rgt = exp(lrgt);
+    array[g] vector[t] exp_obs;
+    array[g] vector[r_t] local_R;
+    vector[g] cum_cases = rep_vector(0, g);
+    for (k in 1:g) {
+      local_R[k] = exp(extract_group_rates(r, r_g, k, r_t));
+      exp_obs[k][1:r_seed] = exp(lexp_latent_int[1:r_seed, k]);
+      if (use_pop) {
+        cum_cases[k] = sum(exp_obs[k][1:r_seed]);
+      }
+    }
+    for (i in 1:r_t) {
+      vector[g] lambda;
+      for (h in 1:g) {
+        // Each group's own generation-time-weighted incidence pressure,
+        // before mixing redistributes it.
+        lambda[h] = dot_product(
+          segment(exp_obs[h], r_seed + i - gt_n, gt_n), rgt
+        );
+      }
+      vector[g] mixed = mixing * lambda;
+      for (k in 1:g) {
+        if (use_pop) {
+          real remaining_susceptible = fmax(0, pop[k] - cum_cases[k]);
+          real denom = fmax(pop_floor, remaining_susceptible);
+          real adj = 1 - exp(-local_R[k][i] * mixed[k] / denom);
+          exp_obs[k][r_seed + i] = fmax(1e-8, remaining_susceptible * adj);
+          cum_cases[k] += exp_obs[k][r_seed + i];
+        } else {
+          exp_obs[k][r_seed + i] = local_R[k][i] * mixed[k];
+        }
+      }
+    }
+    for (k in 1:g) {
+      exp_lobs[k] = log(exp_obs[k]);
     }
   } else {
     // Renewal equation: work on natural scale for numerical stability

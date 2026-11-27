@@ -1,3 +1,12 @@
+# epinowcast 0.8.0.1000
+
+## Model
+
+- Added an optional cross-group (patch) mixing matrix to the renewal expectation model via the new `mixing` argument to `enw_expectation()`.
+  When a `groups x groups` matrix is supplied, each group's generation-time-weighted incidence pressure is redistributed across groups before `R_t` and before any susceptible-depletion adjustment, so a group's force of infection can be driven by other groups' histories while depletion still tracks its own pool.
+  The adjustment is opt-in, applies to the renewal path only, and defaults to no coupling (independent groups).
+  See #924 by @seabbs-bot.
+
 # epinowcast 0.8.0
 
 This is the first release of `epinowcast` to CRAN.
@@ -21,6 +30,11 @@ This is the first release of `epinowcast` to CRAN.
   The population can be fixed or fitted via a LogNormal prior, and is per-group: groups are treated as independent well-mixed populations (a single value is recycled across groups with a warning, or a length-`groups` vector sets group-specific values).
   The adjustment is opt-in and applies to the renewal path only; the renewal logic is adapted from `EpiNow2` (`rt_opts(pop = ...)`, MIT licence).
   See #826.
+- Added an optional cross-group (patch) mixing matrix to the renewal expectation model via the new `mixing` argument to `enw_expectation()`.
+  When a `groups x groups` matrix is supplied, each group's generation-time-weighted incidence pressure is redistributed across groups before `R_t` and before any susceptible-depletion adjustment, so a group's force of infection can be driven by other groups' histories while depletion still tracks its own pool.
+  The adjustment is opt-in, applies to the renewal path only, and defaults to no coupling (independent groups, as before this argument existed); the identity matrix reproduces the independent-groups model exactly.
+  Mirrors the coupling operator in `ComposableTuringIDModels.jl`'s `Renewal`; unlike there, `mixing` is currently always fixed data rather than inferred.
+  See @placeholder.
 - Added a delay-only model that fits the reporting-delay distribution conditional on known per-reference-date totals, treating those totals as fixed truth (the standard delay-estimation pattern of Kalbfleisch & Lawless, 1989; Höhle & an der Heiden, 2014).
   Enable it with `enw_obs(delay_only = TRUE)`: a delay-only fit is just `epinowcast(data, obs = enw_obs(delay_only = TRUE, data = data))`, as `epinowcast()` minimises the (now inert) expectation automatically.
   The latent process and per-cell observation model are replaced by a (truncated) multinomial likelihood over the reported cells of each reference date.

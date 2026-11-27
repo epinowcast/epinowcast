@@ -14,6 +14,7 @@ enw_expectation(
   population_uncertain = FALSE,
   population_cv = 0.1,
   data,
+  mixing = NULL,
   ...
 )
 }
@@ -75,6 +76,17 @@ coefficient of variation \code{population_cv}. Ignored when \code{population} is
 the LogNormal population prior when \code{population_uncertain} is \code{TRUE}.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
+
+\item{mixing}{Optional \verb{groups x groups} numeric matrix coupling the
+renewal process across groups (strata). Defaults to \code{NULL} (groups
+independent). Entry \verb{[k, h]} is the weight group \code{k} places on group \code{h}'s
+generation-time-weighted incidence; the mixed pressure is applied before
+\code{R_t} and before any susceptible-depletion adjustment. Supplying the
+identity matrix (\code{diag(groups)}) reproduces the independent-groups model
+exactly. Nothing about \code{mixing} is checked or normalised beyond being
+finite and the right shape: row- or doubly stochastic normalisation, if
+wanted, is the caller's responsibility. Only used on the renewal path
+(\code{length(generation_time) > 1}).}
 
 \item{...}{Additional parameters passed to \code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}}. The
 same arguments as passed to \code{enw_preprocess_data()} should be used here.}

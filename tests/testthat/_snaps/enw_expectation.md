@@ -140,6 +140,13 @@
       $data$expr_pop_floor
       [1] 1
       
+      $data$expr_mixing_use
+      [1] 0
+      
+      $data$expr_mixing
+           [,1]
+      [1,]    1
+      
       $data$expr_fintercept
       [1] 0
       
@@ -1000,6 +1007,13 @@
       $data$expr_pop_floor
       [1] 1
       
+      $data$expr_mixing_use
+      [1] 0
+      
+      $data$expr_mixing
+           [,1]
+      [1,]    1
+      
       $data$expr_fintercept
       [1] 1
       
@@ -1660,6 +1674,15 @@
       
       $data$expr_pop_floor
       [1] 1
+      
+      $data$expr_mixing_use
+      [1] 0
+      
+      $data$expr_mixing
+           [,1] [,2] [,3]
+      [1,]    1    0    0
+      [2,]    0    1    0
+      [3,]    0    0    1
       
       $data$expr_fintercept
       [1] 1
