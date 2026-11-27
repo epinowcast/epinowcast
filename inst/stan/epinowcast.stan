@@ -1,6 +1,7 @@
 functions {
 #include functions/utils.stan
 #include functions/combine_effects.stan
+#include functions/prior_lpdf.stan
 #include functions/effects_priors_lp.stan
 #include functions/arima_kernel.stan
 #include functions/gaussian_process.stan
@@ -68,8 +69,11 @@ data {
   array[g] int expr_g; // starting time points for growth of each group
   // Priors for growth rate and initial log latent cases
   array[2, g * expr_r_seed] real expr_lelatent_int_p; 
+  int<lower=0, upper=4> expr_lelatent_int_p_dist;
   array[2, 1] real expr_r_int_p;
+  int<lower=0, upper=4> expr_r_int_p_dist;
   array[2, 1] real expr_beta_sd_p;
+  int<lower=0, upper=4> expr_beta_sd_p_dist;
   // ARIMA(p, d, q) latent residual on growth rate
   int<lower=0, upper=1> expr_arima_present;
   int<lower=0> expr_arima_T;
@@ -80,7 +84,9 @@ data {
   int<lower=0> expr_arima_n_obs;
   array[expr_arima_n_obs] int<lower=1> expr_arima_flat_idx;
   array[2, 1] real expr_arima_sigma_p;
+  int<lower=0, upper=4> expr_arima_sigma_p_dist;
   array[2, 1] real expr_arima_pacf_p;
+  int<lower=0, upper=4> expr_arima_pacf_p_dist;
   // Gaussian process latent term on growth rate
   int<lower=0, upper=1> expr_gp_present;
   int<lower=0> expr_gp_T;
@@ -95,7 +101,9 @@ data {
     expr_gp_type == 1 ? 2 * expr_gp_M : expr_gp_M] expr_gp_PHI;
   array[expr_gp_n_obs] int<lower=1> expr_gp_flat_idx;
   array[2, 1] real expr_gp_rho_p;
+  int<lower=0, upper=4> expr_gp_rho_p_dist;
   array[2, 1] real expr_gp_alpha_p;
+  int<lower=0, upper=4> expr_gp_alpha_p_dist;
   // ---- Susceptible-depletion (population) adjustment ----
   int<lower=0, upper=1> expr_pop_use; // 0 = off, 1 = on
   int<lower=0, upper=1> expr_pop_uncertain; // population estimated (1) or fixed
@@ -103,6 +111,7 @@ data {
   real<lower=0> expr_pop_floor; // rate-denominator floor
   // Per-group LogNormal prior (row 1 = log median per group, row 2 = log sd)
   array[2, g] real expr_pop_p;
+  int<lower=0, upper=4> expr_pop_p_dist;
   // ---- Latent case submodule ----
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
   // Partial PMF of the latent delay distribution as a convolution matrix
@@ -117,6 +126,7 @@ data {
   matrix[expl_fnindex, expl_fncol] expl_fdesign;
   matrix[expl_fncol, expl_rncol + 1] expl_rdesign;
   array[2, 1] real expl_beta_sd_p;
+  int<lower=0, upper=4> expl_beta_sd_p_dist;
   // ARIMA latent residual on log latent-to-obs proportion
   int<lower=0, upper=1> expl_arima_present;
   int<lower=0> expl_arima_T;
@@ -127,7 +137,9 @@ data {
   int<lower=0> expl_arima_n_obs;
   array[expl_arima_n_obs] int<lower=1> expl_arima_flat_idx;
   array[2, 1] real expl_arima_sigma_p;
+  int<lower=0, upper=4> expl_arima_sigma_p_dist;
   array[2, 1] real expl_arima_pacf_p;
+  int<lower=0, upper=4> expl_arima_pacf_p_dist;
   // Gaussian process latent term on log latent-to-obs proportion
   int<lower=0, upper=1> expl_gp_present;
   int<lower=0> expl_gp_T;
@@ -142,7 +154,9 @@ data {
     expl_gp_type == 1 ? 2 * expl_gp_M : expl_gp_M] expl_gp_PHI;
   array[expl_gp_n_obs] int<lower=1> expl_gp_flat_idx;
   array[2, 1] real expl_gp_rho_p;
+  int<lower=0, upper=4> expl_gp_rho_p_dist;
   array[2, 1] real expl_gp_alpha_p;
+  int<lower=0, upper=4> expl_gp_alpha_p_dist;
 
   // Reference time model
   // Parametric reference model
@@ -155,9 +169,13 @@ data {
   int refp_rncol;
   matrix[refp_fncol, refp_rncol + 1] refp_rdesign;
   array[2, 1] real refp_mean_int_p;
+  int<lower=0, upper=4> refp_mean_int_p_dist;
   array[2, 1] real refp_sd_int_p;
+  int<lower=0, upper=4> refp_sd_int_p_dist;
   array[2, 1] real refp_mean_beta_sd_p;
+  int<lower=0, upper=4> refp_mean_beta_sd_p_dist;
   array[2, 1] real refp_sd_beta_sd_p;
+  int<lower=0, upper=4> refp_sd_beta_sd_p_dist;
   // ARIMA latent residual on the parametric reference. Shocks and
   // kernel are shared between mean and sd; each quantity has its own
   // scale (sigma) so they can grow time-varying structure
@@ -173,8 +191,11 @@ data {
   int<lower=0> refp_arima_n_obs;
   array[refp_arima_n_obs] int<lower=1> refp_arima_flat_idx;
   array[2, 1] real refp_arima_sigma_p;     // mean scale prior
+  int<lower=0, upper=4> refp_arima_sigma_p_dist;
   array[2, 1] real refp_arima_pacf_p;
+  int<lower=0, upper=4> refp_arima_pacf_p_dist;
   array[2, 1] real refp_arima_sd_sigma_p;  // sd scale prior
+  int<lower=0, upper=4> refp_arima_sd_sigma_p_dist;
   // Gaussian process latent term on the parametric reference. Basis,
   // length scale and spectral coefficients are shared between mean and
   // sd; each quantity has its own magnitude (alpha) so they can grow
@@ -192,8 +213,11 @@ data {
     refp_gp_type == 1 ? 2 * refp_gp_M : refp_gp_M] refp_gp_PHI;
   array[refp_gp_n_obs] int<lower=1> refp_gp_flat_idx;
   array[2, 1] real refp_gp_rho_p;
+  int<lower=0, upper=4> refp_gp_rho_p_dist;
   array[2, 1] real refp_gp_alpha_p;     // mean magnitude prior
+  int<lower=0, upper=4> refp_gp_alpha_p_dist;
   array[2, 1] real refp_gp_sd_alpha_p;  // sd magnitude prior
+  int<lower=0, upper=4> refp_gp_sd_alpha_p_dist;
   // Non-parametric reference model
   int model_refnp;
   int refnp_fnindex;
@@ -204,7 +228,9 @@ data {
   vector[refnp_fncol] refnp_fdesign_means; // obs-weighted column means
   matrix[refnp_fncol, refnp_rncol + 1] refnp_rdesign;
   array[2, 1] real refnp_int_p;
+  int<lower=0, upper=4> refnp_int_p_dist;
   array[2, 1] real refnp_beta_sd_p;
+  int<lower=0, upper=4> refnp_beta_sd_p_dist;
   // ARIMA latent residual on non-parametric reference logit hazards
   int<lower=0, upper=1> refnp_arima_present;
   int<lower=0> refnp_arima_T;
@@ -215,7 +241,9 @@ data {
   int<lower=0> refnp_arima_n_obs;
   array[refnp_arima_n_obs] int<lower=1> refnp_arima_flat_idx;
   array[2, 1] real refnp_arima_sigma_p;
+  int<lower=0, upper=4> refnp_arima_sigma_p_dist;
   array[2, 1] real refnp_arima_pacf_p;
+  int<lower=0, upper=4> refnp_arima_pacf_p_dist;
   // Gaussian process latent term on non-parametric reference logit hazards
   int<lower=0, upper=1> refnp_gp_present;
   int<lower=0> refnp_gp_T;
@@ -231,7 +259,9 @@ data {
     refnp_gp_PHI;
   array[refnp_gp_n_obs] int<lower=1> refnp_gp_flat_idx;
   array[2, 1] real refnp_gp_rho_p;
+  int<lower=0, upper=4> refnp_gp_rho_p_dist;
   array[2, 1] real refnp_gp_alpha_p;
+  int<lower=0, upper=4> refnp_gp_alpha_p_dist;
 
   // Reporting time model
   int model_rep;
@@ -243,6 +273,7 @@ data {
   int rep_rncol;
   matrix[rep_fncol, rep_rncol + 1] rep_rdesign;
   array[2, 1] real rep_beta_sd_p;
+  int<lower=0, upper=4> rep_beta_sd_p_dist;
   // ARIMA latent residual on report-time logit hazards (joint sparse
   // dedup as for refp).
   int<lower=0, upper=1> rep_arima_present;
@@ -254,7 +285,9 @@ data {
   int<lower=0> rep_arima_n_obs;
   array[rep_arima_n_obs] int<lower=1> rep_arima_flat_idx;
   array[2, 1] real rep_arima_sigma_p;
+  int<lower=0, upper=4> rep_arima_sigma_p_dist;
   array[2, 1] real rep_arima_pacf_p;
+  int<lower=0, upper=4> rep_arima_pacf_p_dist;
   // Gaussian process latent term on report-time logit hazards (joint
   // sparse dedup as for refp).
   int<lower=0, upper=1> rep_gp_present;
@@ -270,7 +303,9 @@ data {
     rep_gp_type == 1 ? 2 * rep_gp_M : rep_gp_M] rep_gp_PHI;
   array[rep_gp_n_obs] int<lower=1> rep_gp_flat_idx;
   array[2, 1] real rep_gp_rho_p;
+  int<lower=0, upper=4> rep_gp_rho_p_dist;
   array[2, 1] real rep_gp_alpha_p;
+  int<lower=0, upper=4> rep_gp_alpha_p_dist;
   // Reporting probability aggregation: precomputed indices for log_sum_exp
   int rep_agg_p;
   array[rep_agg_p ? g : 0, rep_agg_p ? t : 0, rep_agg_p ? dmax : 0] int rep_agg_n_selected;
@@ -299,7 +334,9 @@ data {
   array[miss_obs ? g : 0] int miss_st;
   array[miss_obs ? g : 0] int miss_cst;
   array[2, 1] real miss_int_p;
+  int<lower=0, upper=4> miss_int_p_dist;
   array[2, 1] real miss_beta_sd_p;
+  int<lower=0, upper=4> miss_beta_sd_p_dist;
   // ARIMA latent residual on missing-reference logit proportion
   int<lower=0, upper=1> miss_arima_present;
   int<lower=0> miss_arima_T;
@@ -310,7 +347,9 @@ data {
   int<lower=0> miss_arima_n_obs;
   array[miss_arima_n_obs] int<lower=1> miss_arima_flat_idx;
   array[2, 1] real miss_arima_sigma_p;
+  int<lower=0, upper=4> miss_arima_sigma_p_dist;
   array[2, 1] real miss_arima_pacf_p;
+  int<lower=0, upper=4> miss_arima_pacf_p_dist;
   // Gaussian process latent term on missing-reference logit proportion
   int<lower=0, upper=1> miss_gp_present;
   int<lower=0> miss_gp_T;
@@ -325,11 +364,14 @@ data {
     miss_gp_type == 1 ? 2 * miss_gp_M : miss_gp_M] miss_gp_PHI;
   array[miss_gp_n_obs] int<lower=1> miss_gp_flat_idx;
   array[2, 1] real miss_gp_rho_p;
+  int<lower=0, upper=4> miss_gp_rho_p_dist;
   array[2, 1] real miss_gp_alpha_p;
+  int<lower=0, upper=4> miss_gp_alpha_p_dist;
 
   // Observation model
   int model_obs; // control parameter for the observation model
   array[2, 1] real sqrt_phi_p; // 1/sqrt (overdispersion)
+  int<lower=0, upper=4> sqrt_phi_p_dist;
 
   // Delay-only model: fit the delay distribution conditional on known totals
   // via a (truncated) multinomial instead of the latent + obs model.
@@ -722,65 +764,82 @@ model {
   // Expectation model
   // ---- Growth rate submodule ----
   // intercept/initial latent cases (log)
-  to_vector(expr_lelatent_int) ~ normal(
+  target += prior_lpdf(
+    to_vector(expr_lelatent_int) | expr_lelatent_int_p_dist,
     expr_lelatent_int_p[1], expr_lelatent_int_p[2]
   );
   // intercept of growth rate
   if (expr_fintercept) {
-    expr_r_int[expr_fintercept]  ~ normal(expr_r_int_p[1], expr_r_int_p[2]); 
+    target += prior_lpdf(
+      expr_r_int[expr_fintercept] | expr_r_int_p_dist,
+      expr_r_int_p[1, 1], expr_r_int_p[2, 1]
+    );
   }
   
   // growth rate effect + ARIMA priors
   regression_priors_lp(
-    expr_beta, expr_beta_sd, expr_beta_sd_p, expr_fncol, expr_rncol,
+    expr_beta, expr_beta_sd, expr_beta_sd_p, expr_beta_sd_p_dist,
+    expr_fncol, expr_rncol,
     expr_arima_present, expr_arima_p, expr_arima_q,
     expr_arima_z, expr_arima_pacf, expr_arima_theta,
-    expr_arima_sigma, expr_arima_sigma_p, expr_arima_pacf_p
+    expr_arima_sigma, expr_arima_sigma_p, expr_arima_sigma_p_dist,
+    expr_arima_pacf_p, expr_arima_pacf_p_dist
   );
   gp_priors_lp(
     expr_gp_present, expr_gp_eta, expr_gp_rho, expr_gp_alpha,
-    expr_gp_rho_p, expr_gp_alpha_p
+    expr_gp_rho_p, expr_gp_rho_p_dist, expr_gp_alpha_p, expr_gp_alpha_p_dist
   );
   // Per-group LogNormal prior on the estimated population
 
   if (expr_pop_uncertain) {
-    expr_pop_est ~ lognormal(expr_pop_p[1], expr_pop_p[2]);
+    target += prior_lpdf(
+      expr_pop_est | expr_pop_p_dist, expr_pop_p[1], expr_pop_p[2]
+    );
   }
   // ---- Latent case submodule ----
   // latent-to-obs proportion effect + ARIMA priors
   regression_priors_lp(
-    expl_beta, expl_beta_sd, expl_beta_sd_p, expl_fncol, expl_rncol,
+    expl_beta, expl_beta_sd, expl_beta_sd_p, expl_beta_sd_p_dist,
+    expl_fncol, expl_rncol,
     expl_arima_present, expl_arima_p, expl_arima_q,
     expl_arima_z, expl_arima_pacf, expl_arima_theta,
-    expl_arima_sigma, expl_arima_sigma_p, expl_arima_pacf_p
+    expl_arima_sigma, expl_arima_sigma_p, expl_arima_sigma_p_dist,
+    expl_arima_pacf_p, expl_arima_pacf_p_dist
   );
   gp_priors_lp(
     expl_gp_present, expl_gp_eta, expl_gp_rho, expl_gp_alpha,
-    expl_gp_rho_p, expl_gp_alpha_p
+    expl_gp_rho_p, expl_gp_rho_p_dist, expl_gp_alpha_p, expl_gp_alpha_p_dist
   );
   
   // Reference model
   // Parametric reference model
   if (model_refp) {
-    refp_mean_int ~ normal(refp_mean_int_p[1], refp_mean_int_p[2]);
+    target += prior_lpdf(
+      refp_mean_int[1] | refp_mean_int_p_dist,
+      refp_mean_int_p[1, 1], refp_mean_int_p[2, 1]
+    );
     if (model_refp > 1) {
-      refp_sd_int ~ normal(refp_sd_int_p[1], refp_sd_int_p[2]);
+      target += prior_lpdf(
+        refp_sd_int[1] | refp_sd_int_p_dist,
+        refp_sd_int_p[1, 1], refp_sd_int_p[2, 1]
+      );
     }
     regression_priors_lp(
       refp_mean_beta, refp_mean_beta_sd, refp_mean_beta_sd_p,
-      refp_fncol, refp_rncol,
+      refp_mean_beta_sd_p_dist, refp_fncol, refp_rncol,
       refp_arima_present, refp_arima_p, refp_arima_q,
       refp_arima_z, refp_arima_pacf, refp_arima_theta,
-      refp_arima_sigma, refp_arima_sigma_p, refp_arima_pacf_p
+      refp_arima_sigma, refp_arima_sigma_p, refp_arima_sigma_p_dist,
+      refp_arima_pacf_p, refp_arima_pacf_p_dist
     );
     gp_priors_lp(
       refp_gp_present, refp_gp_eta, refp_gp_rho, refp_gp_alpha,
-      refp_gp_rho_p, refp_gp_alpha_p
+      refp_gp_rho_p, refp_gp_rho_p_dist, refp_gp_alpha_p, refp_gp_alpha_p_dist
     );
     if (model_refp > 1) {
       effect_priors_lp(
-        refp_sd_beta, refp_sd_beta_sd, refp_sd_beta_sd_p, refp_fncol,
-        refp_rncol
+        refp_sd_beta, refp_sd_beta_sd, refp_sd_beta_sd_p,
+        refp_sd_beta_sd_p_dist, refp_fncol, refp_rncol
       );
     }
     // Per-quantity sd scale for the shared ARIMA latent. Shocks /
@@ -788,68 +847,83 @@ model {
     // regression_priors_lp() above, so only the second scale needs a
     // prior here.
     if (refp_arima_present && model_refp > 1) {
-      refp_arima_sd_sigma[1] ~ normal(
+      target += prior_lpdf(
+        refp_arima_sd_sigma[1] | refp_arima_sd_sigma_p_dist,
         refp_arima_sd_sigma_p[1, 1], refp_arima_sd_sigma_p[2, 1]
-      ) T[0, ];
+      );
     }
     // Per-quantity sd magnitude for the shared GP latent. The basis,
     // length scale and spectral coefficients are already priored by the
     // mean-side gp_priors_lp() above, so only the sd magnitude needs a
     // prior here.
     if (refp_gp_present && model_refp > 1) {
-      refp_gp_sd_alpha[1] ~ normal(
+      target += prior_lpdf(
+        refp_gp_sd_alpha[1] | refp_gp_sd_alpha_p_dist,
         refp_gp_sd_alpha_p[1, 1], refp_gp_sd_alpha_p[2, 1]
-      ) T[0, ];
+      );
     }
   }
   // Non-parametric reference model
   if (model_refnp) {
     if (refnp_fintercept) {
-      refnp_int[refnp_fintercept] ~ normal(refnp_int_p[1], refnp_int_p[2]);
+      target += prior_lpdf(
+        refnp_int[refnp_fintercept] | refnp_int_p_dist,
+        refnp_int_p[1, 1], refnp_int_p[2, 1]
+      );
     }
     regression_priors_lp(
-      refnp_beta, refnp_beta_sd, refnp_beta_sd_p, refnp_fncol, refnp_rncol,
+      refnp_beta, refnp_beta_sd, refnp_beta_sd_p, refnp_beta_sd_p_dist,
+      refnp_fncol, refnp_rncol,
       refnp_arima_present, refnp_arima_p, refnp_arima_q,
       refnp_arima_z, refnp_arima_pacf, refnp_arima_theta,
-      refnp_arima_sigma, refnp_arima_sigma_p, refnp_arima_pacf_p
+      refnp_arima_sigma, refnp_arima_sigma_p, refnp_arima_sigma_p_dist,
+      refnp_arima_pacf_p, refnp_arima_pacf_p_dist
     );
     gp_priors_lp(
       refnp_gp_present, refnp_gp_eta, refnp_gp_rho, refnp_gp_alpha,
-      refnp_gp_rho_p, refnp_gp_alpha_p
+      refnp_gp_rho_p, refnp_gp_rho_p_dist, refnp_gp_alpha_p, refnp_gp_alpha_p_dist
     );
   }
 
   // Report model
   regression_priors_lp(
-    rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol,
+    rep_beta, rep_beta_sd, rep_beta_sd_p, rep_beta_sd_p_dist,
+    rep_fncol, rep_rncol,
     rep_arima_present, rep_arima_p, rep_arima_q,
     rep_arima_z, rep_arima_pacf, rep_arima_theta,
-    rep_arima_sigma, rep_arima_sigma_p, rep_arima_pacf_p
+    rep_arima_sigma, rep_arima_sigma_p, rep_arima_sigma_p_dist,
+    rep_arima_pacf_p, rep_arima_pacf_p_dist
   );
   gp_priors_lp(
     rep_gp_present, rep_gp_eta, rep_gp_rho, rep_gp_alpha,
-    rep_gp_rho_p, rep_gp_alpha_p
+    rep_gp_rho_p, rep_gp_rho_p_dist, rep_gp_alpha_p, rep_gp_alpha_p_dist
   );
 
   // Missing reference date model
   if (model_miss) {
-    miss_int ~ normal(miss_int_p[1], miss_int_p[2]);
+    target += prior_lpdf(
+      miss_int[1] | miss_int_p_dist, miss_int_p[1, 1], miss_int_p[2, 1]
+    );
     regression_priors_lp(
-      miss_beta, miss_beta_sd, miss_beta_sd_p, miss_fncol, miss_rncol,
+      miss_beta, miss_beta_sd, miss_beta_sd_p, miss_beta_sd_p_dist,
+      miss_fncol, miss_rncol,
       miss_arima_present, miss_arima_p, miss_arima_q,
       miss_arima_z, miss_arima_pacf, miss_arima_theta,
-      miss_arima_sigma, miss_arima_sigma_p, miss_arima_pacf_p
+      miss_arima_sigma, miss_arima_sigma_p, miss_arima_sigma_p_dist,
+      miss_arima_pacf_p, miss_arima_pacf_p_dist
     );
     gp_priors_lp(
       miss_gp_present, miss_gp_eta, miss_gp_rho, miss_gp_alpha,
-      miss_gp_rho_p, miss_gp_alpha_p
+      miss_gp_rho_p, miss_gp_rho_p_dist, miss_gp_alpha_p, miss_gp_alpha_p_dist
     );
   }
   
   // Observation model
   // overdispersion (1/sqrt)
   if (model_obs) {   
-    sqrt_phi[1] ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,]; 
+    target += prior_lpdf(
+      sqrt_phi[1] | sqrt_phi_p_dist, sqrt_phi_p[1, 1], sqrt_phi_p[2, 1]
+    );
   }
   
   }

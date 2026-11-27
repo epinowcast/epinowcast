@@ -142,29 +142,33 @@ vector regression_predictor(
 }
 
 void regression_priors_lp(
-  vector beta, vector beta_sd, array[,] real beta_sd_p,
+  vector beta, vector beta_sd, array[,] real beta_sd_p, int beta_sd_p_dist,
   int fixed, int random,
   int arima_present, int arima_p, int arima_q,
   matrix arima_z, vector arima_pacf, vector arima_theta,
   array[] real arima_sigma, array[,] real arima_sigma_p,
-  array[,] real arima_pacf_p
+  int arima_sigma_p_dist, array[,] real arima_pacf_p, int arima_pacf_p_dist
 ) {
-  effect_priors_lp(beta, beta_sd, beta_sd_p, fixed, random);
+  effect_priors_lp(beta, beta_sd, beta_sd_p, beta_sd_p_dist, fixed, random);
   if (arima_present) {
     to_vector(arima_z) ~ std_normal();
     // Partial autocorrelations are Uniform(-1, 1) by default via their
-    // parameter bounds. A positive prior sd switches to a Normal(mean, sd)
-    // truncated to (-1, 1); the truncation constant is fixed by the bounds
-    // and so is dropped. A non-positive sd leaves the Uniform default.
-    if (arima_p > 0 && arima_pacf_p[2, 1] > 0) {
-      arima_pacf ~ normal(arima_pacf_p[1, 1], arima_pacf_p[2, 1]);
+    // parameter bounds (a flat prior, distribution id 0). A prior with a
+    // distribution id switches to that prior truncated to (-1, 1); the
+    // truncation constant is fixed by the bounds and so is dropped.
+    if (arima_p > 0) {
+      target += prior_lpdf(
+        arima_pacf | arima_pacf_p_dist, arima_pacf_p[1, 1],
+        arima_pacf_p[2, 1]
+      );
     }
     if (arima_q > 0) {
       arima_theta ~ std_normal();
     }
-    arima_sigma[1] ~ normal(
-      arima_sigma_p[1, 1], arima_sigma_p[2, 1]
-    ) T[0, ];
+    target += prior_lpdf(
+      arima_sigma[1] | arima_sigma_p_dist, arima_sigma_p[1, 1],
+      arima_sigma_p[2, 1]
+    );
   }
 }
 
@@ -172,18 +176,24 @@ void regression_priors_lp(
  * Priors for an approximate Gaussian process latent term.
  *
  * The spectral coefficients `eta` get a unit-normal (non-centred)
- * prior. The length scale `rho` gets a log-normal prior and the
- * magnitude `alpha` a half-normal prior, with each prior (mean, sd)
- * supplied as data. Inert when `gp_present == 0`.
+ * prior. The length scale `rho` and the magnitude `alpha` get the priors
+ * selected by their distribution ids (log-normal and half-normal by
+ * default), with each prior (location, scale) supplied as data. Inert
+ * when `gp_present == 0`.
  */
 void gp_priors_lp(
   int gp_present, matrix gp_eta,
   array[] real gp_rho, array[] real gp_alpha,
-  array[,] real gp_rho_p, array[,] real gp_alpha_p
+  array[,] real gp_rho_p, int gp_rho_p_dist,
+  array[,] real gp_alpha_p, int gp_alpha_p_dist
 ) {
   if (gp_present) {
     to_vector(gp_eta) ~ std_normal();
-    gp_rho[1] ~ lognormal(gp_rho_p[1, 1], gp_rho_p[2, 1]);
-    gp_alpha[1] ~ normal(gp_alpha_p[1, 1], gp_alpha_p[2, 1]) T[0, ];
+    target += prior_lpdf(
+      gp_rho[1] | gp_rho_p_dist, gp_rho_p[1, 1], gp_rho_p[2, 1]
+    );
+    target += prior_lpdf(
+      gp_alpha[1] | gp_alpha_p_dist, gp_alpha_p[1, 1], gp_alpha_p[2, 1]
+    );
   }
 }
