@@ -663,16 +663,20 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   )
 
   # Set up growth rate features
+  timestep <- data$timestep[[1]]
+  internal_timestep <- get_internal_timestep(timestep)
   r_features <- data$metareference[[1]]
   if (length(latent_reporting_delay) > 1) {
     r_features <- enw_extend_date(
       r_features,
-      days = length(latent_reporting_delay) - 1, direction = "start"
+      days = (length(latent_reporting_delay) - 1) * internal_timestep,
+      direction = "start",
+      timestep = timestep
     )
     suppressWarnings(enw_add_metaobs_features(r_features, ...))
   }
   r_features <- r_features[
-    date >= (min(date) + length(generation_time))
+    date >= (min(date) + length(generation_time) * internal_timestep)
   ]
 
   # Growth rate indicator variables & generation time terms
