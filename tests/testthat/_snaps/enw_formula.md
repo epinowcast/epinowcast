@@ -22,6 +22,9 @@
       $parsed_formula$gp
       character(0)
       
+      $parsed_formula$secondary
+      character(0)
+      
       
       $expanded_formula
       [1] "~1 + age_group"
@@ -59,6 +62,9 @@
       $gp
       list()
       
+      $secondary
+      NULL
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -86,6 +92,9 @@
       character(0)
       
       $parsed_formula$gp
+      character(0)
+      
+      $parsed_formula$secondary
       character(0)
       
       
@@ -126,6 +135,9 @@
       $gp
       list()
       
+      $secondary
+      NULL
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -153,6 +165,9 @@
       character(0)
       
       $parsed_formula$gp
+      character(0)
+      
+      $parsed_formula$secondary
       character(0)
       
       
@@ -250,6 +265,9 @@
       $gp
       list()
       
+      $secondary
+      NULL
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -278,6 +296,9 @@
       character(0)
       
       $parsed_formula$gp
+      character(0)
+      
+      $parsed_formula$secondary
       character(0)
       
       
@@ -327,6 +348,9 @@
       $gp
       list()
       
+      $secondary
+      NULL
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -354,6 +378,9 @@
       character(0)
       
       $parsed_formula$gp
+      character(0)
+      
+      $parsed_formula$secondary
       character(0)
       
       
@@ -433,6 +460,9 @@
       $gp
       list()
       
+      $secondary
+      NULL
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -460,6 +490,9 @@
       character(0)
       
       $parsed_formula$gp
+      character(0)
+      
+      $parsed_formula$secondary
       character(0)
       
       
@@ -539,6 +572,9 @@
       $gp
       list()
       
+      $secondary
+      NULL
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -566,6 +602,9 @@
       character(0)
       
       $parsed_formula$gp
+      character(0)
+      
+      $parsed_formula$secondary
       character(0)
       
       
@@ -650,6 +689,9 @@
       $gp
       list()
       
+      $secondary
+      NULL
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -677,6 +719,9 @@
       character(0)
       
       $parsed_formula$gp
+      character(0)
+      
+      $parsed_formula$secondary
       character(0)
       
       
@@ -717,6 +762,9 @@
       $gp
       list()
       
+      $secondary
+      NULL
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -742,6 +790,9 @@
       character(0)
       
       $parsed_formula$gp
+      character(0)
+      
+      $parsed_formula$secondary
       character(0)
       
       
@@ -785,6 +836,9 @@
       $gp
       list()
       
+      $secondary
+      NULL
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -815,6 +869,9 @@
       character(0)
       
       $parsed_formula$gp
+      character(0)
+      
+      $parsed_formula$secondary
       character(0)
       
       
@@ -892,6 +949,9 @@
       $gp
       list()
       
+      $secondary
+      NULL
+      
       attr(,"class")
       [1] "enw_formula" "list"       
 
@@ -919,6 +979,9 @@
       character(0)
       
       $parsed_formula$gp
+      character(0)
+      
+      $parsed_formula$secondary
       character(0)
       
       
@@ -995,6 +1058,9 @@
       
       $gp
       list()
+      
+      $secondary
+      NULL
       
       attr(,"class")
       [1] "enw_formula" "list"       
