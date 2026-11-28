@@ -302,3 +302,71 @@ test_that("enw_expectation warns when population is set without a renewal", {
     "uncertain"
   )
 })
+
+test_that(
+  "enw_expectation drops seeding steps and extends latent delay in timestep units (#938)", # nolint: line_length_linter.
+  {
+    make_pobs <- function(step_days, timestep, n_steps = 12L, max_delay = 4L) {
+      start <- data.table::as.IDate("2024-01-01")
+      obs <- data.table::CJ(
+        reference_date = start + step_days * (0:(n_steps - 1L)),
+        delay = 0:(max_delay - 1L)
+      )
+      obs[, report_date := reference_date + step_days * delay]
+      obs[, delay := NULL]
+      obs <- obs[report_date <= start + step_days * (n_steps - 1L)]
+      obs[, confirm := 10L]
+      suppressWarnings(
+        enw_preprocess_data(obs, max_delay = max_delay, timestep = timestep)
+      )
+    }
+
+    weekly_pobs <- make_pobs(7L, "week")
+    exp_gt <- enw_expectation(
+      r = ~1, generation_time = c(0.5, 0.5), data = weekly_pobs
+    )
+    expect_identical(exp_gt$data$expr_t, 10)
+    expect_identical(exp_gt$data$expr_ft, 12)
+    expect_identical(
+      as.integer(exp_gt$data$expr_ft - exp_gt$data$expl_lrd_n + 1),
+      weekly_pobs$time[[1]]
+    )
+    expect_identical(
+      min(exp_gt$data_raw$r$date),
+      data.table::as.IDate("2024-01-01") + 14L
+    )
+
+    exp_lrd <- enw_expectation(
+      r = ~1, generation_time = 1, latent_reporting_delay = c(0.2, 0.5, 0.3),
+      data = weekly_pobs
+    )
+    expect_identical(exp_lrd$data$expr_t, 13)
+    expect_identical(exp_lrd$data$expr_ft, 14)
+    expect_identical(
+      as.integer(exp_lrd$data$expr_ft - exp_lrd$data$expl_lrd_n + 1),
+      weekly_pobs$time[[1]]
+    )
+    expect_identical(
+      min(exp_lrd$data_raw$r$date),
+      data.table::as.IDate("2024-01-01") - 7L
+    )
+    expect_true(all(diff(exp_lrd$data_raw$r$date) == 7L))
+
+    three_day_pobs <- make_pobs(3L, 3L)
+    exp_both <- enw_expectation(
+      r = ~1, generation_time = c(0.2, 0.5, 0.3),
+      latent_reporting_delay = c(0.4, 0.6), data = three_day_pobs
+    )
+    expect_identical(exp_both$data$expr_t, 10)
+    expect_identical(exp_both$data$expr_ft, 13)
+    expect_identical(
+      as.integer(exp_both$data$expr_ft - exp_both$data$expl_lrd_n + 1),
+      three_day_pobs$time[[1]]
+    )
+    expect_identical(
+      min(exp_both$data_raw$r$date),
+      data.table::as.IDate("2024-01-01") + 6L
+    )
+    expect_true(all(diff(exp_both$data_raw$r$date) == 3L))
+  }
+)
